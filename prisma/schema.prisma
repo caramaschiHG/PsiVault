@@ -43,6 +43,7 @@ model Workspace {
   ownerAccount   Account  @relation(fields: [ownerAccountId], references: [id], onDelete: Cascade)
   sessions       Session[]
   practiceProfile PracticeProfile?
+  patients        Patient[]
 
   @@unique([id, ownerAccountId])
 }
@@ -129,4 +130,39 @@ model SignatureAsset {
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
   profile    PracticeProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Patient {
+  id          String    @id @default(cuid())
+  workspaceId String
+
+  // Core identity
+  fullName   String
+  socialName String?
+
+  // Contact (optional)
+  email String?
+  phone String?
+
+  // Guardian (optional — minor patients or caregiver contexts)
+  guardianName  String?
+  guardianPhone String?
+
+  // Emergency contact (optional)
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  // Important observations — must not appear in list/agenda surfaces
+  importantObservations String?
+
+  // Soft archive
+  archivedAt           DateTime?
+  archivedByAccountId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, archivedAt])
 }
