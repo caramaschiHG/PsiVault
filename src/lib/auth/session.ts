@@ -1,4 +1,3 @@
-import { randomBytes } from "node:crypto";
 import { AUTH_ROUTE_PATHS, SESSION_TTL_MS, isVaultRoute } from "./config";
 
 export interface SessionRecord {
@@ -37,7 +36,10 @@ interface SessionDependencies {
 }
 
 function createOpaqueId() {
-  return randomBytes(12).toString("hex");
+  const buffer = new Uint8Array(12);
+  globalThis.crypto.getRandomValues(buffer);
+
+  return Array.from(buffer, (value) => value.toString(16).padStart(2, "0")).join("");
 }
 
 export function createSession(
@@ -148,4 +150,3 @@ export function decideVaultAccess(input: {
     redirectTo: null,
   };
 }
-
