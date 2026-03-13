@@ -11,6 +11,12 @@ enum MfaMethod {
   TOTP
 }
 
+enum ServiceMode {
+  IN_PERSON
+  ONLINE
+  HYBRID
+}
+
 model Account {
   id                 String              @id @default(cuid())
   email              String              @unique
@@ -36,6 +42,7 @@ model Workspace {
   updatedAt      DateTime @updatedAt
   ownerAccount   Account  @relation(fields: [ownerAccountId], references: [id], onDelete: Cascade)
   sessions       Session[]
+  practiceProfile PracticeProfile?
 
   @@unique([id, ownerAccountId])
 }
@@ -93,4 +100,33 @@ model MfaEnrollment {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
   account            Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
+model PracticeProfile {
+  id                                String         @id @default(cuid())
+  workspaceId                       String         @unique
+  fullName                          String?
+  crp                               String?
+  contactEmail                      String?
+  contactPhone                      String?
+  defaultAppointmentDurationMinutes Int?
+  defaultSessionPriceInCents        Int?
+  serviceModes                      ServiceMode[]
+  createdAt                         DateTime       @default(now())
+  updatedAt                         DateTime       @updatedAt
+  workspace                         Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  signatureAsset                    SignatureAsset?
+}
+
+model SignatureAsset {
+  id         String          @id @default(cuid())
+  profileId  String          @unique
+  storageKey String
+  fileName   String
+  mimeType   String
+  fileSize   Int
+  uploadedAt DateTime
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  profile    PracticeProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
