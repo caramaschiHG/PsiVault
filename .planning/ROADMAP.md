@@ -40,7 +40,7 @@ Phase 1 is the global blocker because it defines authentication, security bounda
 Plans:
 - [x] 01-01: App scaffold, auth/session architecture, and secure environment baseline
 - [ ] 01-02: Professional profile, account settings, and signature/identity assets
-- [ ] 01-03: Audit/event model, sensitive-data boundaries, and logging/redaction baseline
+- [x] 01-03: Audit/event model, sensitive-data boundaries, and logging/redaction baseline
 
 ### Phase 2: Patient and Agenda Core
 **Goal**: A professional can register patients, understand patient context at a glance, and manage the real rhythm of scheduling with recurrence, conflict prevention, status transitions, and rapid rebooking.
@@ -130,7 +130,7 @@ Parallel execution is allowed at the plan level where dependencies permit it, bu
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Vault Foundation | 1/3 | In Progress | 2026-03-13 |
+| 1. Vault Foundation | 2/3 | In Progress | - |
 | 2. Patient and Agenda Core | 0/3 | Not started | - |
 | 3. Clinical Record Core | 0/3 | Not started | - |
 | 4. Document Vault | 0/3 | Not started | - |
