@@ -36,6 +36,8 @@ model Workspace {
   updatedAt      DateTime @updatedAt
   ownerAccount   Account  @relation(fields: [ownerAccountId], references: [id], onDelete: Cascade)
   sessions       Session[]
+
+  @@unique([id, ownerAccountId])
 }
 
 model Session {
@@ -92,4 +94,3 @@ model MfaEnrollment {
   updatedAt          DateTime  @updatedAt
   account            Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
 }
-

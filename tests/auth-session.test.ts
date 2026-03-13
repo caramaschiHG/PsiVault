@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { enforceVaultAccess } from "../src/middleware";
+import { buildOwnedWorkspaceSelector, ownsWorkspace } from "../src/lib/db";
 import { createTotpEnrollment, generateTotpCode, verifyTotpCode } from "../src/lib/auth/mfa";
 import { createSession, getSessionSnapshot } from "../src/lib/auth/session";
 import {
@@ -160,5 +161,34 @@ describe("auth/session baseline", () => {
     });
   });
 
-  it.todo("account boundary");
+  it("account boundary scopes workspace access to the owning professional", () => {
+    expect(buildOwnedWorkspaceSelector("acct_1", "ws_1")).toEqual({
+      id_ownerAccountId: {
+        id: "ws_1",
+        ownerAccountId: "acct_1",
+      },
+    });
+
+    expect(
+      ownsWorkspace(
+        {
+          id: "ws_1",
+          ownerAccountId: "acct_1",
+        },
+        "acct_1",
+        "ws_1",
+      ),
+    ).toBe(true);
+
+    expect(
+      ownsWorkspace(
+        {
+          id: "ws_2",
+          ownerAccountId: "acct_2",
+        },
+        "acct_1",
+        "ws_1",
+      ),
+    ).toBe(false);
+  });
 });

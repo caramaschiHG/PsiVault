@@ -2,7 +2,7 @@ export default function HomePage() {
   return (
     <main
       style={{
-        minHeight: "100vh",
+        minHeight: "100%",
         display: "grid",
         placeItems: "center",
         padding: "2rem",
@@ -30,14 +30,40 @@ export default function HomePage() {
           PsiVault
         </p>
         <h1 style={{ marginBottom: "0.75rem", fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>
-          Vault foundation ready for authentication and setup flows.
+          Um vault discreto para cuidar da rotina inteira do consultório.
         </h1>
         <p style={{ margin: 0, lineHeight: 1.6, color: "#44403c" }}>
-          This initial scaffold establishes the Next.js runtime, Prisma data model,
-          and Wave 0 verification baseline for the secure professional vault.
+          A fundação já separa identidade profissional, workspace proprietário,
+          sessão persistente e o hub protegido de preparação do ambiente.
         </p>
+        <div style={{ display: "flex", gap: "0.9rem", flexWrap: "wrap", marginTop: "1.5rem" }}>
+          <a
+            href="/sign-up"
+            style={{
+              borderRadius: "999px",
+              padding: "0.9rem 1.2rem",
+              background: "#9a3412",
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 700,
+            }}
+          >
+            Criar conta
+          </a>
+          <a
+            href="/sign-in"
+            style={{
+              borderRadius: "999px",
+              padding: "0.9rem 1.2rem",
+              border: "1px solid rgba(146, 64, 14, 0.16)",
+              textDecoration: "none",
+              fontWeight: 700,
+            }}
+          >
+            Entrar e seguir para o setup
+          </a>
+        </div>
       </section>
     </main>
   );
 }
-

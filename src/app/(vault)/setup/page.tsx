@@ -8,6 +8,31 @@ export default function VaultSetupPage() {
           Este hub concentra a preparação inicial do ambiente seguro antes das
           próximas fases aprofundarem agenda, prontuário, documentos e finanças.
         </p>
+        <div
+          style={{
+            display: "grid",
+            gap: "0.9rem",
+            marginTop: "1.5rem",
+          }}
+        >
+          {[
+            "Confirmar identidade profissional e CRP",
+            "Definir preferências básicas do consultório",
+            "Concluir os sinais de prontidão do vault",
+          ].map((item) => (
+            <div
+              key={item}
+              style={{
+                padding: "1rem 1.1rem",
+                borderRadius: "18px",
+                background: "rgba(255, 255, 255, 0.74)",
+                border: "1px solid rgba(146, 64, 14, 0.12)",
+              }}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
       </section>
     </main>
   );
