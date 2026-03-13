@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-13T22:39:46.206Z"
+stopped_at: Completed 02-patient-and-agenda-core 02-01-PLAN.md
+last_updated: "2026-03-13T23:19:13.246Z"
 last_activity: 2026-03-13 — completed `01-02` summary and reconciled Phase 1 roadmap/state after both Wave 2 plans landed
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 6
+  completed_plans: 4
 ---
 
 # Project State
@@ -47,6 +47,7 @@ Progress: [###-------] 3 of 18 plans complete
 | 04-document-vault | 0/3 | Not started |
 | 05-finance-assisted-ops | 0/3 | Not started |
 | 06-retrieval-recovery-polish | 0/3 | Not started |
+| Phase 02-patient-and-agenda-core P01 | 55 | 3 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,9 @@ Progress: [###-------] 3 of 18 plans complete
 - [Phase 01-vault-foundation]: Audit storage remains behind a repository abstraction in Phase 1 so later phases can add durable persistence without changing the event contract.
 - [Phase 01-vault-foundation]: Security settings surfaces should stay human-readable and calm, using friendly session labels instead of forensic wording.
 - [Phase 01-vault-foundation]: Sensitive actions use a 10-minute re-auth window plus explicit confirmation text before completion.
+- [Phase 02-patient-and-agenda-core]: Patient soft archive uses explicit archivedAt + archivedByAccountId fields rather than a status enum for unambiguous reversibility.
+- [Phase 02-patient-and-agenda-core]: PatientOperationalSummary defaults session fields to null (not empty strings) so the contract stays honest before the scheduling domain hydrates it.
+- [Phase 02-patient-and-agenda-core]: importantObservations is profile-only by design — excluded from all list and agenda surfaces to enforce Phase 1 privacy baseline.
 
 ### Pending Todos
 
@@ -80,6 +84,6 @@ Progress: [###-------] 3 of 18 plans complete
 
 ## Session Continuity
 
-Last session: 2026-03-13T22:39:46.203Z
-Stopped at: Phase 2 context gathered
+Last session: 2026-03-13T23:19:13.243Z
+Stopped at: Completed 02-patient-and-agenda-core 02-01-PLAN.md
 Resume: Start Phase 2 planning

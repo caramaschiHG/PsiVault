@@ -19,10 +19,10 @@
 
 ### Patients
 
-- [ ] **PATI-01**: Professional can create a patient profile with basic identification and contact data.
-- [ ] **PATI-02**: Professional can record social name, emergency contact, legal guardian, and important observations when relevant.
-- [ ] **PATI-03**: Professional can open a patient profile and immediately see last session, pending items, documents, and financial status.
-- [ ] **PATI-04**: Professional can archive a patient without deleting the clinical history.
+- [x] **PATI-01**: Professional can create a patient profile with basic identification and contact data.
+- [x] **PATI-02**: Professional can record social name, emergency contact, legal guardian, and important observations when relevant.
+- [x] **PATI-03**: Professional can open a patient profile and immediately see last session, pending items, documents, and financial status.
+- [x] **PATI-04**: Professional can archive a patient without deleting the clinical history.
 
 ### Scheduling
 
@@ -133,10 +133,10 @@
 | AUTH-04 | Phase 1 | Complete |
 | PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 1 | Complete |
-| PATI-01 | Phase 2 | Pending |
-| PATI-02 | Phase 2 | Pending |
-| PATI-03 | Phase 2 | Pending |
-| PATI-04 | Phase 2 | Pending |
+| PATI-01 | Phase 2 | Complete |
+| PATI-02 | Phase 2 | Complete |
+| PATI-03 | Phase 2 | Complete |
+| PATI-04 | Phase 2 | Complete |
 | SCHD-01 | Phase 2 | Pending |
 | SCHD-02 | Phase 2 | Pending |
 | SCHD-03 | Phase 2 | Pending |
