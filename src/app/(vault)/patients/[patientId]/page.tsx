@@ -3,23 +3,36 @@
  *
  * Structure:
  * 1. PatientProfileHeader (identity, social name, contact, archive action)
- * 2. PatientSummaryCards (operational summary with fallback states)
- * 3. Edit form (below the fold)
+ * 2. PatientSummaryCards (scheduling-backed operational summary)
+ * 3. QuickNextSessionCard (prefilled defaults from last appointment or profile)
+ * 4. Edit form (below the fold)
+ * 5. Important observations (profile-only surface)
  *
- * The operational summary is rendered with safe fallback states.
- * Real session, document, and financial data will be hydrated once
- * the corresponding domains (02-02 and beyond) are complete.
+ * Now that 02-02 provides appointment occurrences, the summary is hydrated
+ * from real scheduling data via derivePatientSummaryFromAppointments rather
+ * than returning safe fallback null values.
+ *
+ * Quick next-session: prefills patient, duration, care mode, price from
+ * the most recent appointment or practice profile defaults. Date and time
+ * are left empty so the professional chooses the new slot intentionally.
  */
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPatientRepository } from "../../../../lib/patients/store";
-import { derivePatientSummary } from "../../../../lib/patients/summary";
+import { getAppointmentRepository } from "../../../../lib/appointments/store";
+import { getPracticeProfileSnapshot } from "../../../../lib/setup/profile";
+import {
+  derivePatientSummaryFromAppointments,
+} from "../../../../lib/patients/summary";
+import { deriveNextSessionDefaults } from "../../../../lib/appointments/defaults";
 import { PatientProfileHeader } from "../components/patient-profile-header";
 import { PatientSummaryCards } from "../components/patient-summary-cards";
 import { PatientForm } from "../components/patient-form";
+import { QuickNextSessionCard } from "./components/quick-next-session-card";
 
 const WORKSPACE_ID = "ws_1";
+const ACCOUNT_ID = "acct_1";
 
 interface PatientProfilePageProps {
   params: Promise<{ patientId: string }>;
@@ -27,15 +40,58 @@ interface PatientProfilePageProps {
 
 export default async function PatientProfilePage({ params }: PatientProfilePageProps) {
   const { patientId } = await params;
-  const repo = getPatientRepository();
-  const patient = repo.findById(patientId, WORKSPACE_ID);
+
+  const patientRepo = getPatientRepository();
+  const appointmentRepo = getAppointmentRepository();
+  const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
+
+  const patient = patientRepo.findById(patientId, WORKSPACE_ID);
 
   if (!patient) {
     notFound();
   }
 
-  // Derive summary with fallback states (scheduling domain not yet available)
-  const summary = derivePatientSummary({ patientId: patient.id });
+  // Load all appointments for this patient to hydrate the summary and defaults
+  const appointments = appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
+
+  // Derive scheduling-backed summary
+  const summary = derivePatientSummaryFromAppointments({
+    patientId: patient.id,
+    appointments,
+  });
+
+  // Find the most recent completed or scheduled appointment for defaults
+  const lastRelevantAppointment =
+    appointments.find((a) => a.status === "COMPLETED") ??
+    appointments.find((a) => a.status === "SCHEDULED" || a.status === "CONFIRMED") ??
+    null;
+
+  // Resolve default care mode from practice profile (HYBRID is not a booking value)
+  const profileCareMode =
+    profile.serviceModes.includes("online") && !profile.serviceModes.includes("in_person")
+      ? ("ONLINE" as const)
+      : ("IN_PERSON" as const);
+
+  // Derive quick next-session defaults
+  const nextSessionDefaults = deriveNextSessionDefaults({
+    patientId: patient.id,
+    lastAppointment: lastRelevantAppointment
+      ? {
+          durationMinutes: lastRelevantAppointment.durationMinutes,
+          careMode: lastRelevantAppointment.careMode,
+          priceInCents: null, // Price domain not yet available in 02-03
+        }
+      : null,
+    profileDefaults: {
+      defaultDurationMinutes: profile.defaultAppointmentDurationMinutes ?? 50,
+      defaultPriceInCents: profile.defaultSessionPriceInCents ?? null,
+      defaultCareMode: profileCareMode,
+    },
+  });
+
+  const patientDisplayName = patient.socialName
+    ? `${patient.fullName} (${patient.socialName})`
+    : patient.fullName;
 
   return (
     <main style={shellStyle}>
@@ -51,10 +107,16 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
       {/* 1. Identity header — leads the page */}
       <PatientProfileHeader patient={patient} />
 
-      {/* 2. Operational summary — immediately below identity, within first screenful */}
+      {/* 2. Scheduling-backed operational summary */}
       <PatientSummaryCards summary={summary} />
 
-      {/* 3. Edit form — below the fold */}
+      {/* 3. Quick next-session card — patient-context entry point */}
+      <QuickNextSessionCard
+        defaults={nextSessionDefaults}
+        patientDisplayName={patientDisplayName}
+      />
+
+      {/* 4. Edit form — below the fold */}
       <section style={editSectionStyle}>
         <div style={editHeadingStyle}>
           <p style={eyebrowStyle}>Dados do paciente</p>

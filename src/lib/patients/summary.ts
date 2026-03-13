@@ -62,6 +62,80 @@ export function derivePatientSummary(input: DerivePatientSummaryInput): PatientO
   };
 }
 
+// ---------------------------------------------------------------------------
+// Scheduling-domain hydration (02-03)
+// ---------------------------------------------------------------------------
+
+/**
+ * Minimal appointment shape required for patient summary hydration.
+ * Uses a structural subset so this function does not import from the
+ * appointments domain — avoiding circular dependency.
+ */
+export interface AppointmentForSummary {
+  id: string;
+  patientId: string;
+  workspaceId: string;
+  startsAt: Date;
+  status: "SCHEDULED" | "CONFIRMED" | "COMPLETED" | "CANCELED" | "NO_SHOW";
+}
+
+export interface DerivePatientSummaryFromAppointmentsInput {
+  patientId: string;
+  /** All appointments for this patient (any status). */
+  appointments: AppointmentForSummary[];
+  /** Reference point for "future" comparisons. Defaults to Date.now(). */
+  now?: Date;
+  /** Provided by document domain once complete. */
+  documentCount?: number;
+}
+
+/**
+ * Derive a PatientOperationalSummary hydrated from real appointment data.
+ *
+ * - lastSession: most recent COMPLETED appointment (highest startsAt)
+ * - nextSession: earliest future SCHEDULED or CONFIRMED appointment
+ * - pendingItemsCount: count of future SCHEDULED appointments (upcoming
+ *   appointments that still need confirmation — actionable scheduling pendency)
+ */
+export function derivePatientSummaryFromAppointments(
+  input: DerivePatientSummaryFromAppointmentsInput,
+): PatientOperationalSummary {
+  const now = input.now ?? new Date();
+
+  // Last completed session
+  const completedAppointments = input.appointments
+    .filter((a) => a.status === "COMPLETED")
+    .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
+  const lastSession = completedAppointments[0]?.startsAt ?? null;
+
+  // Next scheduled/confirmed session (earliest future occurrence)
+  const upcomingAppointments = input.appointments
+    .filter(
+      (a) =>
+        (a.status === "SCHEDULED" || a.status === "CONFIRMED") &&
+        a.startsAt.getTime() > now.getTime(),
+    )
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+  const nextSession = upcomingAppointments[0]?.startsAt ?? null;
+
+  // Pending items: future SCHEDULED appointments still needing confirmation
+  const pendingItemsCount = input.appointments.filter(
+    (a) =>
+      a.status === "SCHEDULED" &&
+      a.startsAt.getTime() > now.getTime(),
+  ).length;
+
+  return {
+    patientId: input.patientId,
+    lastSession,
+    nextSession,
+    pendingItemsCount,
+    documentCount: input.documentCount ?? 0,
+    financialStatus: "no_data",
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Label helpers for UI rendering
 
 type SummaryLabelKey = "lastSession" | "nextSession" | "financialStatus";
