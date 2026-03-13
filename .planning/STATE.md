@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-patient-and-agenda-core 02-01-PLAN.md
-last_updated: "2026-03-13T23:19:13.246Z"
+stopped_at: Completed 02-patient-and-agenda-core 02-02-PLAN.md
+last_updated: "2026-03-13T23:27:51.790Z"
 last_activity: 2026-03-13 — completed `01-02` summary and reconciled Phase 1 roadmap/state after both Wave 2 plans landed
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Project State
@@ -48,6 +48,7 @@ Progress: [###-------] 3 of 18 plans complete
 | 05-finance-assisted-ops | 0/3 | Not started |
 | 06-retrieval-recovery-polish | 0/3 | Not started |
 | Phase 02-patient-and-agenda-core P01 | 55 | 3 tasks | 15 files |
+| Phase 02-patient-and-agenda-core P02 | 6 | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,10 @@ Progress: [###-------] 3 of 18 plans complete
 - [Phase 02-patient-and-agenda-core]: Patient soft archive uses explicit archivedAt + archivedByAccountId fields rather than a status enum for unambiguous reversibility.
 - [Phase 02-patient-and-agenda-core]: PatientOperationalSummary defaults session fields to null (not empty strings) so the contract stays honest before the scheduling domain hydrates it.
 - [Phase 02-patient-and-agenda-core]: importantObservations is profile-only by design — excluded from all list and agenda surfaces to enforce Phase 1 privacy baseline.
+- [Phase 02-02]: HYBRID care mode excluded from appointment booking — only IN_PERSON and ONLINE are valid per-occurrence values to prevent ambiguous care-mode data.
+- [Phase 02-02]: Rescheduling creates a new occurrence linked via rescheduledFromId — original row stays immutable to preserve visible history and audit trail.
+- [Phase 02-02]: Weekly series materialized as concrete rows at creation time so agenda queries are simple date-range scans, not rule expansions at render time.
+- [Phase 02-02]: Finalized occurrences (COMPLETED/CANCELED/NO_SHOW) are never overwritten by series edits — they represent completed clinical facts.
 
 ### Pending Todos
 
@@ -84,6 +89,6 @@ Progress: [###-------] 3 of 18 plans complete
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:19:13.243Z
-Stopped at: Completed 02-patient-and-agenda-core 02-01-PLAN.md
+Last session: 2026-03-13T23:27:51.787Z
+Stopped at: Completed 02-patient-and-agenda-core 02-02-PLAN.md
 Resume: Start Phase 2 planning

@@ -26,12 +26,12 @@
 
 ### Scheduling
 
-- [ ] **SCHD-01**: Professional can create an appointment linked to a patient with date, time, duration, and care mode (online or in-person).
-- [ ] **SCHD-02**: Professional can reschedule or cancel an appointment.
-- [ ] **SCHD-03**: Professional can mark an appointment as confirmed, completed, canceled, or no-show.
-- [ ] **SCHD-04**: Professional can create recurring weekly appointments.
+- [x] **SCHD-01**: Professional can create an appointment linked to a patient with date, time, duration, and care mode (online or in-person).
+- [x] **SCHD-02**: Professional can reschedule or cancel an appointment.
+- [x] **SCHD-03**: Professional can mark an appointment as confirmed, completed, canceled, or no-show.
+- [x] **SCHD-04**: Professional can create recurring weekly appointments.
 - [ ] **SCHD-05**: Professional can view agenda in daily and weekly layouts.
-- [ ] **SCHD-06**: System warns about conflicting appointment times before saving.
+- [x] **SCHD-06**: System warns about conflicting appointment times before saving.
 - [ ] **SCHD-07**: Professional can create the next session quickly from an existing appointment or patient context.
 
 ### Clinical Records
@@ -137,12 +137,12 @@
 | PATI-02 | Phase 2 | Complete |
 | PATI-03 | Phase 2 | Complete |
 | PATI-04 | Phase 2 | Complete |
-| SCHD-01 | Phase 2 | Pending |
-| SCHD-02 | Phase 2 | Pending |
-| SCHD-03 | Phase 2 | Pending |
-| SCHD-04 | Phase 2 | Pending |
+| SCHD-01 | Phase 2 | Complete |
+| SCHD-02 | Phase 2 | Complete |
+| SCHD-03 | Phase 2 | Complete |
+| SCHD-04 | Phase 2 | Complete |
 | SCHD-05 | Phase 2 | Pending |
-| SCHD-06 | Phase 2 | Pending |
+| SCHD-06 | Phase 2 | Complete |
 | SCHD-07 | Phase 2 | Pending |
 | CLIN-01 | Phase 3 | Pending |
 | CLIN-02 | Phase 3 | Pending |
