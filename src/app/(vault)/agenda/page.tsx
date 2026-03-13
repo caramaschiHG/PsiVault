@@ -25,12 +25,17 @@
 import Link from "next/link";
 import { getAppointmentRepository } from "../../../lib/appointments/store";
 import { getPatientRepository } from "../../../lib/patients/store";
+import { getPracticeProfileSnapshot } from "../../../lib/setup/profile";
 import { deriveDayAgenda, deriveWeekAgenda } from "../../../lib/appointments/agenda";
+import { deriveNextSessionDefaults } from "../../../lib/appointments/defaults";
 import { AgendaToolbar } from "./components/agenda-toolbar";
 import { AgendaDayView } from "./components/agenda-day-view";
 import { AgendaWeekView } from "./components/agenda-week-view";
+import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
 
+// Stub — real workspace/account resolution comes from session in production
 const WORKSPACE_ID = "ws_1";
+const ACCOUNT_ID = "acct_1";
 const TIMEZONE = "America/Sao_Paulo";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
@@ -66,6 +71,42 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const patientNames: Record<string, string> = {};
   for (const p of allPatients) {
     patientNames[p.id] = p.socialName ? `${p.fullName} (${p.socialName})` : p.fullName;
+  }
+
+  // Load practice profile for next-session defaults
+  const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
+
+  // Resolve default care mode from practice profile (HYBRID is not a booking value)
+  const profileCareMode =
+    profile.serviceModes.includes("online") && !profile.serviceModes.includes("in_person")
+      ? ("ONLINE" as const)
+      : ("IN_PERSON" as const);
+
+  // Build nextSessionActions map for COMPLETED appointment cards
+  const nextSessionActions: Record<string, React.ReactNode> = {};
+  for (const appt of appointments) {
+    if (appt.status !== "COMPLETED") continue;
+
+    const defaults = deriveNextSessionDefaults({
+      patientId: appt.patientId,
+      lastAppointment: {
+        durationMinutes: appt.durationMinutes,
+        careMode: appt.careMode,
+        priceInCents: null, // Price domain not yet available in Phase 2
+      },
+      profileDefaults: {
+        defaultDurationMinutes: profile.defaultAppointmentDurationMinutes ?? 50,
+        defaultPriceInCents: profile.defaultSessionPriceInCents ?? null,
+        defaultCareMode: profileCareMode,
+      },
+    });
+
+    nextSessionActions[appt.id] = (
+      <CompletedAppointmentNextSessionAction
+        appointmentId={appt.id}
+        defaults={defaults}
+      />
+    );
   }
 
   // Derive view models
@@ -117,9 +158,9 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
       {/* Agenda content */}
       {activeView === "day" ? (
-        <AgendaDayView day={dayResult} patientNames={patientNames} />
+        <AgendaDayView day={dayResult} patientNames={patientNames} nextSessionActions={nextSessionActions} />
       ) : (
-        <AgendaWeekView week={weekResult} patientNames={patientNames} />
+        <AgendaWeekView week={weekResult} patientNames={patientNames} nextSessionActions={nextSessionActions} />
       )}
     </main>
   );
