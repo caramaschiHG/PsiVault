@@ -14,8 +14,8 @@
 
 ### Professional Setup
 
-- [ ] **PROF-01**: Professional can store and edit profile details including full name, CRP, contact data, and signature assets.
-- [ ] **PROF-02**: Professional can configure default appointment duration, session price, and service preferences used across the app.
+- [x] **PROF-01**: Professional can store and edit profile details including full name, CRP, contact data, and signature assets.
+- [x] **PROF-02**: Professional can configure default appointment duration, session price, and service preferences used across the app.
 
 ### Patients
 
@@ -131,8 +131,8 @@
 | AUTH-02 | Phase 1 | Complete |
 | AUTH-03 | Phase 1 | Complete |
 | AUTH-04 | Phase 1 | Complete |
-| PROF-01 | Phase 1 | Pending |
-| PROF-02 | Phase 1 | Pending |
+| PROF-01 | Phase 1 | Complete |
+| PROF-02 | Phase 1 | Complete |
 | PATI-01 | Phase 2 | Pending |
 | PATI-02 | Phase 2 | Pending |
 | PATI-03 | Phase 2 | Pending |
@@ -188,4 +188,4 @@
 
 ---
 *Requirements defined: 2026-03-13*
-*Last updated: 2026-03-13 after initial definition*
+*Last updated: 2026-03-13 after Phase 1 completion*
