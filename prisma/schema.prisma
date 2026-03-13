@@ -44,6 +44,7 @@ model Workspace {
   sessions       Session[]
   practiceProfile PracticeProfile?
   patients        Patient[]
+  appointments    Appointment[]
 
   @@unique([id, ownerAccountId])
 }
@@ -132,6 +133,56 @@ model SignatureAsset {
   profile    PracticeProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
+enum AppointmentCareMode {
+  IN_PERSON
+  ONLINE
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELED
+  NO_SHOW
+}
+
+model Appointment {
+  id          String    @id @default(cuid())
+  workspaceId String
+  patientId   String
+
+  startsAt        DateTime
+  endsAt          DateTime
+  durationMinutes Int
+
+  careMode AppointmentCareMode
+  status   AppointmentStatus   @default(SCHEDULED)
+
+  // Recurrence linkage (null for standalone appointments)
+  seriesId    String?
+  seriesIndex Int?
+
+  // Reschedule linkage — preserves visible history
+  rescheduledFromId String?
+
+  // Lifecycle timestamps
+  canceledAt           DateTime?
+  canceledByAccountId  String?
+  confirmedAt          DateTime?
+  completedAt          DateTime?
+  noShowAt             DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  patient   Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, startsAt])
+  @@index([workspaceId, patientId])
+  @@index([seriesId])
+}
+
 model Patient {
   id          String    @id @default(cuid())
   workspaceId String
@@ -162,7 +213,8 @@ model Patient {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
 
   @@index([workspaceId, archivedAt])
 }
