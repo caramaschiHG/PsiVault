@@ -150,5 +150,52 @@ describe("audit contract baseline", () => {
     ]);
   });
 
-  it.todo("sensitive action guard");
+  it("sensitive action guard", async () => {
+    const {
+      createSensitiveActionChallenge,
+      evaluateSensitiveAction,
+    } = await import("../src/lib/security/sensitive-actions");
+
+    const challenge = createSensitiveActionChallenge(
+      {
+        actionId: "revoke-session",
+        title: "Encerrar acesso deste dispositivo",
+        reason: "Esta ação remove um acesso ativo do vault.",
+        confirmationLabel: "ENCERRAR ACESSO",
+      },
+      {
+        now,
+        createId: () => "challenge_1",
+      },
+    );
+
+    expect(challenge).toMatchObject({
+      id: "challenge_1",
+      actionId: "revoke-session",
+      requiresReauth: true,
+      confirmationLabel: "ENCERRAR ACESSO",
+    });
+    expect(
+      evaluateSensitiveAction({
+        challenge,
+        confirmationValue: "ENCERRAR ACESSO",
+        reauthVerifiedAt: null,
+        now,
+      }),
+    ).toMatchObject({
+      allowed: false,
+      status: "needs_reauth",
+    });
+    expect(
+      evaluateSensitiveAction({
+        challenge,
+        confirmationValue: "encerrar acesso",
+        reauthVerifiedAt: new Date("2026-03-13T14:26:00.000Z"),
+        now,
+      }),
+    ).toMatchObject({
+      allowed: true,
+      status: "approved",
+    });
+  });
 });
