@@ -7,10 +7,10 @@
 
 ### Authentication
 
-- [ ] **AUTH-01**: Professional can create an account with email and password.
-- [ ] **AUTH-02**: Professional can sign in and stay signed in across browser refreshes.
-- [ ] **AUTH-03**: Professional must complete a second authentication factor to access clinical data.
-- [ ] **AUTH-04**: Professional can reset password through a secure recovery flow.
+- [x] **AUTH-01**: Professional can create an account with email and password.
+- [x] **AUTH-02**: Professional can sign in and stay signed in across browser refreshes.
+- [x] **AUTH-03**: Professional must complete a second authentication factor to access clinical data.
+- [x] **AUTH-04**: Professional can reset password through a secure recovery flow.
 
 ### Professional Setup
 
@@ -88,7 +88,7 @@
 
 ### Security and Governance
 
-- [ ] **SECU-01**: Clinical and financial records are visible only to the authenticated professional who owns the account.
+- [x] **SECU-01**: Clinical and financial records are visible only to the authenticated professional who owns the account.
 - [ ] **SECU-02**: System records an audit trail for sensitive create/update/delete actions on patient, clinical, document, and financial data.
 - [ ] **SECU-03**: Professional can export patient-related data when necessary.
 - [ ] **SECU-04**: System provides a backup and recovery path for practice data with restore verification.
@@ -127,10 +127,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
 | PROF-01 | Phase 1 | Pending |
 | PROF-02 | Phase 1 | Pending |
 | PATI-01 | Phase 2 | Pending |
@@ -175,7 +175,7 @@
 | DASH-02 | Phase 6 | Pending |
 | SRCH-01 | Phase 6 | Pending |
 | SRCH-02 | Phase 6 | Pending |
-| SECU-01 | Phase 1 | Pending |
+| SECU-01 | Phase 1 | Complete |
 | SECU-02 | Phase 1 | Pending |
 | SECU-03 | Phase 6 | Pending |
 | SECU-04 | Phase 6 | Pending |
