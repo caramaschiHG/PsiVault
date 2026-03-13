@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MfaMethod {
+  TOTP
+}
+
+model Account {
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  passwordHash       String
+  displayName        String?
+  emailVerifiedAt    DateTime?
+  mfaRequired        Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  workspace          Workspace?
+  sessions           Session[]
+  verificationTokens VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  mfaEnrollment      MfaEnrollment?
+}
+
+model Workspace {
+  id             String   @id @default(cuid())
+  ownerAccountId String   @unique
+  slug           String   @unique
+  displayName    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ownerAccount   Account  @relation(fields: [ownerAccountId], references: [id], onDelete: Cascade)
+  sessions       Session[]
+}
+
+model Session {
+  id            String    @id @default(cuid())
+  accountId     String
+  workspaceId   String
+  sessionToken  String    @unique
+  expiresAt     DateTime
+  lastSeenAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  account       Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, revokedAt])
+  @@index([workspaceId, revokedAt])
+}
+
+model VerificationToken {
+  id         String    @id @default(cuid())
+  accountId  String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  account    Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, consumedAt])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  accountId  String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  account    Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId, consumedAt])
+}
+
+model MfaEnrollment {
+  id                 String    @id @default(cuid())
+  accountId          String    @unique
+  method             MfaMethod @default(TOTP)
+  secretCiphertext   String
+  recoveryCodesHash  String[]
+  verifiedAt         DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  account            Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+}
+
