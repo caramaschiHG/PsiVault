@@ -24,7 +24,7 @@ export interface AuditEvent {
 interface CreateAuditEventDependencies {
   now: Date;
   createId?: () => string;
-  redact?: (value: Record<string, unknown>) => Record<string, unknown>;
+  redact?: (value: unknown) => unknown;
 }
 
 function createOpaqueId() {
@@ -49,7 +49,8 @@ export function createAuditEvent(
   deps: CreateAuditEventDependencies,
 ): AuditEvent {
   const createId = deps.createId ?? createOpaqueId;
-  const redact = deps.redact ?? ((value: Record<string, unknown>) => value);
+  const redact = deps.redact ?? ((value: unknown) => value);
+  const metadata = redact(input.metadata ?? {});
 
   return {
     id: createId(),
@@ -58,7 +59,10 @@ export function createAuditEvent(
     actor: input.actor,
     subject: input.subject,
     summary: normalizeSummary(input.summary),
-    metadata: redact(input.metadata ?? {}),
+    metadata:
+      metadata && typeof metadata === "object" && !Array.isArray(metadata)
+        ? (metadata as Record<string, unknown>)
+        : {},
   };
 }
 

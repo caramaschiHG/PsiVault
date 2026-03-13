@@ -83,6 +83,72 @@ describe("audit contract baseline", () => {
     });
   });
 
-  it.todo("session revocation");
+  it("session revocation", async () => {
+    const { createSession } = await import("../src/lib/auth/session");
+    const { createInMemoryAuditRepository } = await import("../src/lib/audit/repository");
+    const { buildVisibleSessionList, revokeSessionAccess } = await import("../src/lib/security/session-control");
+
+    const currentSession = createSession(
+      {
+        accountId: "acct_1",
+        workspaceId: "ws_1",
+        userAgent:
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/537.36 Chrome/123.0.0.0 Safari/537.36",
+      },
+      {
+        now,
+        createId: () => "sess_current",
+        createToken: () => "sess_current_token",
+      },
+    );
+    const mobileSession = createSession(
+      {
+        accountId: "acct_1",
+        workspaceId: "ws_1",
+        userAgent:
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 Version/17.4 Mobile/15E148 Safari/604.1",
+      },
+      {
+        now: new Date("2026-03-13T09:00:00.000Z"),
+        createId: () => "sess_mobile",
+        createToken: () => "sess_mobile_token",
+      },
+    );
+    const repository = createInMemoryAuditRepository();
+
+    const result = revokeSessionAccess(
+      {
+        sessions: [currentSession, mobileSession],
+        sessionId: "sess_mobile",
+        currentSessionId: "sess_current",
+        actingAccountId: "acct_1",
+        workspaceId: "ws_1",
+      },
+      {
+        now,
+        repository,
+        createAuditEventId: () => "audit_2",
+      },
+    );
+
+    expect(result.status).toBe("revoked");
+    expect(result.auditEvent?.type).toBe("security.session.revoked");
+    expect(result.sessions.find((session) => session.id === "sess_mobile")?.revokedAt).toEqual(now);
+    expect(repository.listForWorkspace("ws_1")).toHaveLength(1);
+    expect(
+      buildVisibleSessionList({
+        sessions: result.sessions,
+        currentSessionId: "sess_current",
+        now,
+      }),
+    ).toEqual([
+      expect.objectContaining({
+        id: "sess_current",
+        title: "Sessão atual",
+        canRevoke: false,
+      }),
+    ]);
+  });
+
   it.todo("sensitive action guard");
 });
