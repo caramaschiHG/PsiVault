@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-patient-and-agenda-core 02-03-PLAN.md
-last_updated: "2026-03-13T23:37:34.070Z"
+stopped_at: Completed 02-patient-and-agenda-core 02-04-PLAN.md
+last_updated: "2026-03-14T10:13:30.293Z"
 last_activity: 2026-03-13 — completed `01-02` summary and reconciled Phase 1 roadmap/state after both Wave 2 plans landed
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 7
+  completed_plans: 7
 ---
 
 # Project State
@@ -50,6 +50,7 @@ Progress: [###-------] 3 of 18 plans complete
 | Phase 02-patient-and-agenda-core P01 | 55 | 3 tasks | 15 files |
 | Phase 02-patient-and-agenda-core P02 | 6 | 3 tasks | 12 files |
 | Phase 02-patient-and-agenda-core P03 | 7 | 3 tasks | 12 files |
+| Phase 02-patient-and-agenda-core P04 | 12 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Progress: [###-------] 3 of 18 plans complete
 - [Phase 02-03]: quick next-session defaults never include date/time — professional must choose slot intentionally to avoid silent scheduling assumptions
 - [Phase 02-03]: derivePatientSummaryFromAppointments uses AppointmentForSummary structural subset to avoid circular dependency between patient and appointment domains
 - [Phase 02-03]: pendingItemsCount counts future SCHEDULED appointments (actionable scheduling pendency needing confirmation)
+- [Phase 02-04]: priceInCents URL param reserved but not forwarded to AppointmentForm — finance domain arrives in Phase 5
+- [Phase 02-04]: nextSessionActions map built server-side in agenda/page.tsx keeping view components presentational and free of data-fetching concerns
 
 ### Pending Todos
 
@@ -94,6 +97,6 @@ Progress: [###-------] 3 of 18 plans complete
 
 ## Session Continuity
 
-Last session: 2026-03-13T23:37:34.067Z
-Stopped at: Completed 02-patient-and-agenda-core 02-03-PLAN.md
+Last session: 2026-03-14T10:13:30.291Z
+Stopped at: Completed 02-patient-and-agenda-core 02-04-PLAN.md
 Resume: Start Phase 2 planning
