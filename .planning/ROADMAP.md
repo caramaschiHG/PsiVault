@@ -99,12 +99,12 @@ Plans:
   2. Receipt flows fit naturally into the financial context instead of feeling like a detached document action.
   3. Online appointments carry link, mode, and issue-tracking context without pretending to be a built-in telehealth platform.
   4. Reminder, reschedule, and document-send actions can open prefilled outbound messages from the right context while keeping the app as the source of truth.
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Financial ledger, payment-state UX, and monthly financial summary
-- [ ] 05-02: Online-care organization and appointment communication context
-- [ ] 05-03: Assisted outbound message actions for reminders, reschedules, and document delivery
+- [ ] 05-01-PLAN.md — Finance domain (SessionCharge model, repository, store, audit), Appointment model extension (priceInCents, meetingLink, remoteIssueNote), communication templates + TDD
+- [ ] 05-02-PLAN.md — Charge auto-creation in completeAppointmentAction, updateChargeAction, FinanceSection on patient profile, /financeiro monthly route, patient summary hydration
+- [ ] 05-03-PLAN.md — Online care inline forms (meetingLink, remoteIssueNote), Comunicacao action groups on agenda/timeline/documents
 
 ### Phase 6: Retrieval, Recovery, and Launch Polish
 **Goal**: The product is launch-ready: the home experience surfaces what matters today, information is easy to find anywhere, reminders are actionable, and backup/export confidence completes the vault promise.
