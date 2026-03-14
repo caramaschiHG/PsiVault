@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, revalidatePath } from "next/navigation";
 import {
   createAppointment,
   rescheduleAppointment,
@@ -17,6 +17,10 @@ import { getAppointmentRepository } from "../../../lib/appointments/store";
 import { getPatientRepository } from "../../../lib/patients/store";
 import { createAppointmentAuditEvent } from "../../../lib/appointments/audit";
 import { createInMemoryAuditRepository } from "../../../lib/audit/repository";
+import { getFinanceRepository } from "../../../lib/finance/store";
+import { createSessionCharge, updateSessionCharge } from "../../../lib/finance/model";
+import type { ChargeStatus, PaymentMethod } from "../../../lib/finance/model";
+import { createChargeAuditEvent } from "../../../lib/finance/audit";
 
 // ─── Module-level audit repository ────────────────────────────────────────────
 
@@ -404,6 +408,32 @@ export async function completeAppointmentAction(formData: FormData) {
     ),
   );
 
+  // Auto-create a SessionCharge (idempotent: skip if one already exists for this appointment)
+  const financeRepo = getFinanceRepository();
+  const existingCharge = financeRepo.findByAppointmentId(completed.id);
+  if (!existingCharge) {
+    const charge = createSessionCharge(
+      {
+        workspaceId: DEFAULT_WORKSPACE_ID,
+        patientId: completed.patientId,
+        appointmentId: completed.id,
+        amountInCents: completed.priceInCents ?? null,
+      },
+      { now, createId: generateId },
+    );
+    financeRepo.save(charge);
+    audit.append(
+      createChargeAuditEvent(
+        {
+          type: "charge.created",
+          charge,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+  }
+
   redirect(`/appointments/${appointmentId}`);
 }
 
@@ -433,6 +463,47 @@ export async function noShowAppointmentAction(formData: FormData) {
   );
 
   redirect(`/appointments/${appointmentId}`);
+}
+
+// ─── Update charge ─────────────────────────────────────────────────────────────
+
+export async function updateChargeAction(formData: FormData) {
+  const financeRepo = getFinanceRepository();
+  const audit = getAuditRepository();
+  const now = new Date();
+
+  const chargeId = String(formData.get("chargeId") ?? "");
+  const status = String(formData.get("status") ?? "pendente") as ChargeStatus;
+  const amountStr = String(formData.get("amount") ?? "");
+  const paymentMethodRaw = formData.get("paymentMethod");
+  const paymentMethod: PaymentMethod | null =
+    paymentMethodRaw && String(paymentMethodRaw) !== ""
+      ? (String(paymentMethodRaw) as PaymentMethod)
+      : null;
+
+  // Convert R$ string to cents
+  const amountInCents: number | null =
+    amountStr.trim() !== "" ? Math.round(parseFloat(amountStr) * 100) : null;
+
+  const charge = financeRepo.findById(chargeId);
+  if (!charge) return;
+
+  const updated = updateSessionCharge(charge, { status, amountInCents, paymentMethod }, { now });
+  financeRepo.save(updated);
+
+  audit.append(
+    createChargeAuditEvent(
+      {
+        type: "charge.updated",
+        charge: updated,
+        newStatus: updated.status,
+        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+      },
+      { now, createId: generateId },
+    ),
+  );
+
+  revalidatePath(`/patients/${charge.patientId}`);
 }
 
 // ─── Edit recurrence series ────────────────────────────────────────────────────
