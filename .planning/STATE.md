@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-14T23:11:09.766Z"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-14T23:19:09.010Z"
 last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 16
-  completed_plans: 15
+  completed_plans: 16
   percent: 100
 ---
 
@@ -58,6 +58,7 @@ Progress: [██████████] 100%
 | Phase 04-document-vault P01 | 3 | 2 tasks | 6 files |
 | Phase 05-finance-and-assisted-operations P01 | 5 | 1 tasks | 11 files |
 | Phase 05 P02 | 6 | 2 tasks | 6 files |
+| Phase 05 P03 | 25 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,9 @@ Progress: [██████████] 100%
 - [Phase 05-02]: revalidatePath imported from next/cache not next/navigation — server action cache invalidation uses the cache module
 - [Phase 05-02]: listActive + listArchived used to aggregate all patients for monthly /financeiro view — avoids adding listAll to PatientRepository interface
 - [Phase 05-02]: Vault layout created from scratch — no (vault)/layout.tsx existed; new file wraps all vault routes with shared navigation
+- [Phase 05-03]: ONLINE care fields rendered for all appointment statuses so professionals can update meeting links post-session
+- [Phase 05-03]: appointment.updated added to AppointmentAuditEventType union to support meetingLink/remoteIssueNote server actions
+- [Phase 05-03]: Comunicacao section rendered for ALL appointment statuses (COMM-01/COMM-02) per domain spec
 
 ### Pending Todos
 
@@ -122,6 +126,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-03-14T23:11:01.201Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-14T23:18:56.834Z
+Stopped at: Completed 05-03-PLAN.md
 Resume: Start Phase 4 planning (Document Vault)

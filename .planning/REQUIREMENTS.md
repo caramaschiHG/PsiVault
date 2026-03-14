@@ -64,7 +64,7 @@
 ### Remote Care Support
 
 - [x] **ONLN-01**: Professional can store the online session link associated with an appointment.
-- [ ] **ONLN-02**: Professional can view whether an appointment is online or in-person from agenda and patient context.
+- [x] **ONLN-02**: Professional can view whether an appointment is online or in-person from agenda and patient context.
 - [x] **ONLN-03**: Professional can register remote-session issues such as connection problems in the appointment history.
 
 ### Assisted Communication
@@ -163,7 +163,7 @@
 | FIN-04 | Phase 5 | Complete |
 | FIN-05 | Phase 5 | Complete |
 | ONLN-01 | Phase 5 | Complete |
-| ONLN-02 | Phase 5 | Pending |
+| ONLN-02 | Phase 5 | Complete |
 | ONLN-03 | Phase 5 | Complete |
 | COMM-01 | Phase 5 | Complete |
 | COMM-02 | Phase 5 | Complete |

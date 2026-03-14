@@ -21,7 +21,7 @@ Phase 1 is the global blocker because it defines authentication, security bounda
 - [x] **Phase 2: Patient and Agenda Core** - Patient profiles, summaries, agenda lifecycle, recurrence, conflict handling, and quick next-session flows (completed 2026-03-13)
 - [x] **Phase 3: Clinical Record Core** - Session-note workflow, structured/freeform records, audit-preserving edits, and patient longitudinal timeline (completed 2026-03-14)
 - [ ] **Phase 4: Document Vault** - Template-driven document creation, secure document storage, provenance, and patient-linked retrieval
-- [ ] **Phase 5: Finance and Assisted Operations** - Minimal financial tracking, receipts, online-care organization, and assisted outbound communication
+- [x] **Phase 5: Finance and Assisted Operations** - Minimal financial tracking, receipts, online-care organization, and assisted outbound communication (completed 2026-03-14)
 - [ ] **Phase 6: Retrieval, Recovery, and Launch Polish** - Dashboard, reminders, search, export/backup confidence, and launch hardening
 
 ## Phase Details
@@ -134,5 +134,5 @@ Parallel execution is allowed at the plan level where dependencies permit it, bu
 | 2. Patient and Agenda Core | 3/3 | Complete    | 2026-03-14 |
 | 3. Clinical Record Core | 3/3 | Complete   | 2026-03-14 |
 | 4. Document Vault | 1/3 | In Progress|  |
-| 5. Finance and Assisted Operations | 2/3 | In Progress|  |
+| 5. Finance and Assisted Operations | 3/3 | Complete   | 2026-03-14 |
 | 6. Retrieval, Recovery, and Launch Polish | 0/3 | Not started | - |
