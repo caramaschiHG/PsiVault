@@ -20,7 +20,8 @@ export type AppointmentAuditEventType =
   | "appointment.canceled"
   | "appointment.no_show"
   | "appointment.rescheduled"
-  | "appointment.series_edited";
+  | "appointment.series_edited"
+  | "appointment.updated";
 
 interface CreateAppointmentAuditEventInput {
   type: AppointmentAuditEventType;
@@ -42,6 +43,7 @@ const AUDIT_SUMMARIES: Record<AppointmentAuditEventType, string> = {
   "appointment.no_show": "Paciente não compareceu.",
   "appointment.rescheduled": "Consulta reagendada.",
   "appointment.series_edited": "Série de consultas editada.",
+  "appointment.updated": "Consulta atualizada.",
 };
 
 export function createAppointmentAuditEvent(

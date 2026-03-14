@@ -1,6 +1,7 @@
 "use server";
 
-import { redirect, revalidatePath } from "next/navigation";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import {
   createAppointment,
   rescheduleAppointment,
@@ -8,6 +9,7 @@ import {
   confirmAppointment,
   completeAppointment,
   noShowAppointment,
+  updateAppointmentOnlineCare,
 } from "../../../lib/appointments/model";
 import type { AppointmentCareMode } from "../../../lib/appointments/model";
 import { checkConflicts, assertPatientSchedulable } from "../../../lib/appointments/conflicts";
@@ -504,6 +506,74 @@ export async function updateChargeAction(formData: FormData) {
   );
 
   revalidatePath(`/patients/${charge.patientId}`);
+}
+
+// ─── Edit meeting link (ONLN-01) ──────────────────────────────────────────────
+
+export async function editMeetingLinkAction(formData: FormData) {
+  const repo = getAppointmentRepository();
+  const audit = getAuditRepository();
+  const now = new Date();
+
+  const appointmentId = String(formData.get("appointmentId") ?? "");
+  const meetingLinkRaw = String(formData.get("meetingLink") ?? "");
+  const meetingLink = meetingLinkRaw.trim() || null;
+
+  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  if (!existing) return;
+  if (existing.careMode !== "ONLINE") return;
+
+  const updated = updateAppointmentOnlineCare(existing, { meetingLink }, { now });
+  repo.save(updated);
+
+  audit.append(
+    createAppointmentAuditEvent(
+      {
+        type: "appointment.updated",
+        appointment: updated,
+        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        metadata: { summary: "Link da sessão online atualizado." },
+      },
+      { now, createId: generateId },
+    ),
+  );
+
+  revalidatePath("/agenda");
+  revalidatePath(`/patients/${existing.patientId}`);
+}
+
+// ─── Add remote issue note (ONLN-03) ──────────────────────────────────────────
+
+export async function addRemoteIssueNoteAction(formData: FormData) {
+  const repo = getAppointmentRepository();
+  const audit = getAuditRepository();
+  const now = new Date();
+
+  const appointmentId = String(formData.get("appointmentId") ?? "");
+  const remoteIssueNoteRaw = String(formData.get("remoteIssueNote") ?? "");
+  const remoteIssueNote = remoteIssueNoteRaw.trim() || null;
+
+  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  if (!existing) return;
+
+  // Domain function guards against non-ONLINE appointments — let error propagate to Next.js error boundary
+  const updated = updateAppointmentOnlineCare(existing, { remoteIssueNote }, { now });
+  repo.save(updated);
+
+  audit.append(
+    createAppointmentAuditEvent(
+      {
+        type: "appointment.updated",
+        appointment: updated,
+        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        metadata: { summary: "Registro de problema de conexão adicionado." },
+      },
+      { now, createId: generateId },
+    ),
+  );
+
+  revalidatePath("/agenda");
+  revalidatePath(`/patients/${existing.patientId}`);
 }
 
 // ─── Edit recurrence series ────────────────────────────────────────────────────
