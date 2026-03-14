@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-14T16:16:20.399Z"
+stopped_at: Completed 04-document-vault 04-01-PLAN.md
+last_updated: "2026-03-14T16:44:13.649Z"
 last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 13
+  completed_plans: 11
   percent: 100
 ---
 
@@ -55,6 +55,7 @@ Progress: [██████████] 100%
 | Phase 03-clinical-record-core P01 | 2 | 2 tasks | 6 files |
 | Phase 03-clinical-record-core P02 | 4 | 3 tasks | 4 files |
 | Phase 03-clinical-record-core P03 | 4 | 2 tasks | 2 files |
+| Phase 04-document-vault P01 | 3 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,8 @@ Progress: [██████████] 100%
 - [Phase 03-02]: Note entry points merged into nextSessionActions React.Fragment to avoid touching view component signatures
 - [Phase 03-03]: ClinicalTimeline is a pure presentational server component — all data loaded in the page and passed as props to keep data-fetching concerns in one place
 - [Phase 03-03]: notesByAppointment map built server-side in patient profile page for O(1) note lookup per appointment without N+1 repository calls
+- [Phase 04-document-vault]: Receipt template uses R$ ________ placeholder — Phase 5 finance domain will enrich with real payment data
+- [Phase 04-document-vault]: createdByName is a snapshot field frozen at document creation time — professional name changes do not retroactively affect documents
 
 ### Pending Todos
 
@@ -110,6 +113,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-03-14T16:16:20.396Z
-Stopped at: Phase 4 context gathered
+Last session: 2026-03-14T16:44:13.647Z
+Stopped at: Completed 04-document-vault 04-01-PLAN.md
 Resume: Start Phase 4 planning (Document Vault)

@@ -44,14 +44,14 @@
 
 ### Documents
 
-- [ ] **DOCS-01**: Professional can generate a document from a predefined template without starting from a blank page.
-- [ ] **DOCS-02**: System pre-fills document templates with patient data, professional data, and relevant dates.
-- [ ] **DOCS-03**: Professional can create and store declarations of attendance.
-- [ ] **DOCS-04**: Professional can create and store receipts.
-- [ ] **DOCS-05**: Professional can create and store anamnesis records.
-- [ ] **DOCS-06**: Professional can create and store psychological reports.
-- [ ] **DOCS-07**: Professional can create and store consent-related and service-contract documents.
-- [ ] **DOCS-08**: Generated documents remain attached to the related patient record with stored provenance for later retrieval.
+- [x] **DOCS-01**: Professional can generate a document from a predefined template without starting from a blank page.
+- [x] **DOCS-02**: System pre-fills document templates with patient data, professional data, and relevant dates.
+- [x] **DOCS-03**: Professional can create and store declarations of attendance.
+- [x] **DOCS-04**: Professional can create and store receipts.
+- [x] **DOCS-05**: Professional can create and store anamnesis records.
+- [x] **DOCS-06**: Professional can create and store psychological reports.
+- [x] **DOCS-07**: Professional can create and store consent-related and service-contract documents.
+- [x] **DOCS-08**: Generated documents remain attached to the related patient record with stored provenance for later retrieval.
 
 ### Finance
 
@@ -149,14 +149,14 @@
 | CLIN-03 | Phase 3 | Complete |
 | CLIN-04 | Phase 3 | Complete |
 | CLIN-05 | Phase 3 | Complete |
-| DOCS-01 | Phase 4 | Pending |
-| DOCS-02 | Phase 4 | Pending |
-| DOCS-03 | Phase 4 | Pending |
-| DOCS-04 | Phase 4 | Pending |
-| DOCS-05 | Phase 4 | Pending |
-| DOCS-06 | Phase 4 | Pending |
-| DOCS-07 | Phase 4 | Pending |
-| DOCS-08 | Phase 4 | Pending |
+| DOCS-01 | Phase 4 | Complete |
+| DOCS-02 | Phase 4 | Complete |
+| DOCS-03 | Phase 4 | Complete |
+| DOCS-04 | Phase 4 | Complete |
+| DOCS-05 | Phase 4 | Complete |
+| DOCS-06 | Phase 4 | Complete |
+| DOCS-07 | Phase 4 | Complete |
+| DOCS-08 | Phase 4 | Complete |
 | FIN-01 | Phase 5 | Pending |
 | FIN-02 | Phase 5 | Pending |
 | FIN-03 | Phase 5 | Pending |

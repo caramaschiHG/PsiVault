@@ -133,6 +133,6 @@ Parallel execution is allowed at the plan level where dependencies permit it, bu
 | 1. Vault Foundation | 3/3 | Complete | 2026-03-13 |
 | 2. Patient and Agenda Core | 3/3 | Complete    | 2026-03-14 |
 | 3. Clinical Record Core | 3/3 | Complete   | 2026-03-14 |
-| 4. Document Vault | 0/3 | Not started | - |
+| 4. Document Vault | 1/3 | In Progress|  |
 | 5. Finance and Assisted Operations | 0/3 | Not started | - |
 | 6. Retrieval, Recovery, and Launch Polish | 0/3 | Not started | - |
