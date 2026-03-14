@@ -36,11 +36,11 @@
 
 ### Clinical Records
 
-- [ ] **CLIN-01**: Professional can register a session note from the completed appointment context.
-- [ ] **CLIN-02**: Session note supports free-text writing without forcing a rigid template.
-- [ ] **CLIN-03**: Session note supports optional structured fields such as demand, observed mood, themes, evolution, and next steps.
-- [ ] **CLIN-04**: Professional can edit a session note while preserving an audit trail of changes.
-- [ ] **CLIN-05**: Patient record shows a chronological timeline of sessions and clinical evolution.
+- [x] **CLIN-01**: Professional can register a session note from the completed appointment context.
+- [x] **CLIN-02**: Session note supports free-text writing without forcing a rigid template.
+- [x] **CLIN-03**: Session note supports optional structured fields such as demand, observed mood, themes, evolution, and next steps.
+- [x] **CLIN-04**: Professional can edit a session note while preserving an audit trail of changes.
+- [x] **CLIN-05**: Patient record shows a chronological timeline of sessions and clinical evolution.
 
 ### Documents
 
@@ -144,11 +144,11 @@
 | SCHD-05 | Phase 2 | Complete |
 | SCHD-06 | Phase 2 | Complete |
 | SCHD-07 | Phase 2 | Complete |
-| CLIN-01 | Phase 3 | Pending |
-| CLIN-02 | Phase 3 | Pending |
-| CLIN-03 | Phase 3 | Pending |
-| CLIN-04 | Phase 3 | Pending |
-| CLIN-05 | Phase 3 | Pending |
+| CLIN-01 | Phase 3 | Complete |
+| CLIN-02 | Phase 3 | Complete |
+| CLIN-03 | Phase 3 | Complete |
+| CLIN-04 | Phase 3 | Complete |
+| CLIN-05 | Phase 3 | Complete |
 | DOCS-01 | Phase 4 | Pending |
 | DOCS-02 | Phase 4 | Pending |
 | DOCS-03 | Phase 4 | Pending |

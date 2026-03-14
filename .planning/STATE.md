@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-14T10:28:32.903Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-14T10:49:06.847Z"
 last_activity: 2026-03-13 — completed `01-02` summary and reconciled Phase 1 roadmap/state after both Wave 2 plans landed
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 10
+  completed_plans: 8
 ---
 
 # Project State
@@ -51,6 +51,7 @@ Progress: [###-------] 3 of 18 plans complete
 | Phase 02-patient-and-agenda-core P02 | 6 | 3 tasks | 12 files |
 | Phase 02-patient-and-agenda-core P03 | 7 | 3 tasks | 12 files |
 | Phase 02-patient-and-agenda-core P04 | 12 | 2 tasks | 2 files |
+| Phase 03-clinical-record-core P01 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,10 @@ Progress: [###-------] 3 of 18 plans complete
 - [Phase 02-03]: pendingItemsCount counts future SCHEDULED appointments (actionable scheduling pendency needing confirmation)
 - [Phase 02-04]: priceInCents URL param reserved but not forwarded to AppointmentForm — finance domain arrives in Phase 5
 - [Phase 02-04]: nextSessionActions map built server-side in agenda/page.tsx keeping view components presentational and free of data-fetching concerns
+- [Phase 03-clinical-record-core]: ClinicalNote structured fields default to null (not empty strings) so the contract stays honest when not filled
+- [Phase 03-clinical-record-core]: deriveSessionNumber counts only COMPLETED appointments — CANCELED and NO_SHOW are excluded from session numbering
+- [Phase 03-clinical-record-core]: Audit metadata restricted to appointmentId only (SECU-05) — clinical content never leaks into audit or log surfaces
+- [Phase 03-clinical-record-core]: editedAt is null on creation and set to now on every updateClinicalNote call, distinguishing pristine from edited notes
 
 ### Pending Todos
 
@@ -97,6 +102,6 @@ Progress: [###-------] 3 of 18 plans complete
 
 ## Session Continuity
 
-Last session: 2026-03-14T10:28:32.900Z
-Stopped at: Phase 3 context gathered
+Last session: 2026-03-14T10:49:06.845Z
+Stopped at: Completed 03-01-PLAN.md
 Resume: Start Phase 2 planning
