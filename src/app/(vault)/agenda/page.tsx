@@ -25,6 +25,7 @@
 import Link from "next/link";
 import { getAppointmentRepository } from "../../../lib/appointments/store";
 import { getPatientRepository } from "../../../lib/patients/store";
+import { getClinicalNoteRepository } from "../../../lib/clinical/store";
 import { getPracticeProfileSnapshot } from "../../../lib/setup/profile";
 import { deriveDayAgenda, deriveWeekAgenda } from "../../../lib/appointments/agenda";
 import { deriveNextSessionDefaults } from "../../../lib/appointments/defaults";
@@ -82,7 +83,20 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       ? ("ONLINE" as const)
       : ("IN_PERSON" as const);
 
-  // Build nextSessionActions map for COMPLETED appointment cards
+  // Load clinical repository to check note existence for completed appointments
+  const clinicalRepo = getClinicalNoteRepository();
+
+  // Build set of appointment IDs that already have a note
+  const notedAppointmentIds = new Set(
+    appointments
+      .filter((a) => a.status === "COMPLETED")
+      .filter((a) => clinicalRepo.findByAppointmentId(a.id, WORKSPACE_ID) !== null)
+      .map((a) => a.id),
+  );
+
+  // Build nextSessionActions map for COMPLETED appointment cards.
+  // Each entry combines the "Agendar próxima sessão" action with the
+  // "Registrar evolução" / "Ver evolução" clinical note entry point.
   const nextSessionActions: Record<string, React.ReactNode> = {};
   for (const appt of appointments) {
     if (appt.status !== "COMPLETED") continue;
@@ -101,11 +115,24 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       },
     });
 
+    const hasNote = notedAppointmentIds.has(appt.id);
+
     nextSessionActions[appt.id] = (
-      <CompletedAppointmentNextSessionAction
-        appointmentId={appt.id}
-        defaults={defaults}
-      />
+      <>
+        <CompletedAppointmentNextSessionAction
+          appointmentId={appt.id}
+          defaults={defaults}
+        />
+        {hasNote ? (
+          <Link href={`/sessions/${appt.id}/note`} style={viewNoteStyle}>
+            Ver evolução
+          </Link>
+        ) : (
+          <Link href={`/sessions/${appt.id}/note`} style={registerNoteStyle}>
+            Registrar evolução
+          </Link>
+        )}
+      </>
     );
   }
 
@@ -266,4 +293,32 @@ const newApptButtonStyle = {
   textDecoration: "none",
   fontWeight: 700,
   fontSize: "0.95rem",
+} satisfies React.CSSProperties;
+
+const registerNoteStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  marginTop: "0.5rem",
+  padding: "0.38rem 0.875rem",
+  borderRadius: "10px",
+  background: "rgba(239, 246, 255, 0.85)",
+  border: "1px solid rgba(59, 130, 246, 0.2)",
+  color: "#1e3a8a",
+  textDecoration: "none",
+  fontWeight: 600,
+  fontSize: "0.82rem",
+} satisfies React.CSSProperties;
+
+const viewNoteStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  marginTop: "0.5rem",
+  padding: "0.38rem 0.875rem",
+  borderRadius: "10px",
+  background: "rgba(236, 253, 245, 0.85)",
+  border: "1px solid rgba(16, 185, 129, 0.2)",
+  color: "#065f46",
+  textDecoration: "none",
+  fontWeight: 600,
+  fontSize: "0.82rem",
 } satisfies React.CSSProperties;
