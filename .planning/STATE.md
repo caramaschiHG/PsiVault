@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-14T22:38:40.659Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-14T23:02:21.038Z"
 last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
 progress:
   total_phases: 6
   completed_phases: 4
-  total_plans: 13
-  completed_plans: 13
+  total_plans: 16
+  completed_plans: 14
   percent: 100
 ---
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 03-clinical-record-core P02 | 4 | 3 tasks | 4 files |
 | Phase 03-clinical-record-core P03 | 4 | 2 tasks | 2 files |
 | Phase 04-document-vault P01 | 3 | 2 tasks | 6 files |
+| Phase 05-finance-and-assisted-operations P01 | 5 | 1 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,10 @@ Progress: [██████████] 100%
 - [Phase 03-03]: notesByAppointment map built server-side in patient profile page for O(1) note lookup per appointment without N+1 repository calls
 - [Phase 04-document-vault]: Receipt template uses R$ ________ placeholder — Phase 5 finance domain will enrich with real payment data
 - [Phase 04-document-vault]: createdByName is a snapshot field frozen at document creation time — professional name changes do not retroactively affect documents
+- [Phase 05-01]: ChargeStatus uses Portuguese literals (pendente/pago/atrasado) to match domain language and avoid translation at the UI layer
+- [Phase 05-01]: updateAppointmentOnlineCare is a dedicated function separate from a generic update — keeps ONLINE care concern isolated and testable
+- [Phase 05-01]: remoteIssueNote guard enforced at model layer (throws Error) not server-action layer — correctness closest to data
+- [Phase 05-01]: Charge audit metadata whitelist: only chargeId, appointmentId, and newStatus included — never amountInCents or paymentMethod (SECU-05)
 
 ### Pending Todos
 
@@ -113,6 +118,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-03-14T22:38:40.656Z
-Stopped at: Phase 5 context gathered
+Last session: 2026-03-14T23:02:21.036Z
+Stopped at: Completed 05-01-PLAN.md
 Resume: Start Phase 4 planning (Document Vault)

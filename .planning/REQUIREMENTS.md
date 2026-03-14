@@ -55,23 +55,23 @@
 
 ### Finance
 
-- [ ] **FIN-01**: Professional can define session price by appointment or patient context.
-- [ ] **FIN-02**: Professional can mark a charge as paid, pending, due today, or overdue.
-- [ ] **FIN-03**: Professional can record payment method including Pix, bank transfer, cash, or other simple options.
-- [ ] **FIN-04**: Professional can view the patient's payment history and outstanding balances.
-- [ ] **FIN-05**: Professional can view a monthly summary of sessions completed, amounts received, and amounts pending.
+- [x] **FIN-01**: Professional can define session price by appointment or patient context.
+- [x] **FIN-02**: Professional can mark a charge as paid, pending, due today, or overdue.
+- [x] **FIN-03**: Professional can record payment method including Pix, bank transfer, cash, or other simple options.
+- [x] **FIN-04**: Professional can view the patient's payment history and outstanding balances.
+- [x] **FIN-05**: Professional can view a monthly summary of sessions completed, amounts received, and amounts pending.
 
 ### Remote Care Support
 
-- [ ] **ONLN-01**: Professional can store the online session link associated with an appointment.
+- [x] **ONLN-01**: Professional can store the online session link associated with an appointment.
 - [ ] **ONLN-02**: Professional can view whether an appointment is online or in-person from agenda and patient context.
-- [ ] **ONLN-03**: Professional can register remote-session issues such as connection problems in the appointment history.
+- [x] **ONLN-03**: Professional can register remote-session issues such as connection problems in the appointment history.
 
 ### Assisted Communication
 
-- [ ] **COMM-01**: Professional can open a prefilled reminder or confirmation message for a patient through an external channel such as WhatsApp or email.
-- [ ] **COMM-02**: Professional can open a prefilled reschedule or cancellation message from the appointment context.
-- [ ] **COMM-03**: Professional can open a prefilled message to send receipt, declaration, or online-session link.
+- [x] **COMM-01**: Professional can open a prefilled reminder or confirmation message for a patient through an external channel such as WhatsApp or email.
+- [x] **COMM-02**: Professional can open a prefilled reschedule or cancellation message from the appointment context.
+- [x] **COMM-03**: Professional can open a prefilled message to send receipt, declaration, or online-session link.
 
 ### Tasks and Reminders
 
@@ -157,17 +157,17 @@
 | DOCS-06 | Phase 4 | Complete |
 | DOCS-07 | Phase 4 | Complete |
 | DOCS-08 | Phase 4 | Complete |
-| FIN-01 | Phase 5 | Pending |
-| FIN-02 | Phase 5 | Pending |
-| FIN-03 | Phase 5 | Pending |
-| FIN-04 | Phase 5 | Pending |
-| FIN-05 | Phase 5 | Pending |
-| ONLN-01 | Phase 5 | Pending |
+| FIN-01 | Phase 5 | Complete |
+| FIN-02 | Phase 5 | Complete |
+| FIN-03 | Phase 5 | Complete |
+| FIN-04 | Phase 5 | Complete |
+| FIN-05 | Phase 5 | Complete |
+| ONLN-01 | Phase 5 | Complete |
 | ONLN-02 | Phase 5 | Pending |
-| ONLN-03 | Phase 5 | Pending |
-| COMM-01 | Phase 5 | Pending |
-| COMM-02 | Phase 5 | Pending |
-| COMM-03 | Phase 5 | Pending |
+| ONLN-03 | Phase 5 | Complete |
+| COMM-01 | Phase 5 | Complete |
+| COMM-02 | Phase 5 | Complete |
+| COMM-03 | Phase 5 | Complete |
 | TASK-01 | Phase 6 | Pending |
 | TASK-02 | Phase 6 | Pending |
 | TASK-03 | Phase 6 | Pending |
