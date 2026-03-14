@@ -166,10 +166,19 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
       />
 
       {/* 4. Clinical timeline — longitudinal session history */}
-      <ClinicalTimeline entries={timelineEntries} />
+      <ClinicalTimeline
+        entries={timelineEntries}
+        patientName={patientDisplayName}
+        patientPhone={patient.phone}
+      />
 
       {/* 5. Documents section — patient vault */}
-      <DocumentsSection documents={activeDocuments} patientId={patient.id} />
+      <DocumentsSection
+        documents={activeDocuments}
+        patientId={patient.id}
+        patientName={patientDisplayName}
+        patientPhone={patient.phone}
+      />
 
       {/* 6. Finance section — charge history and inline edit form */}
       <FinanceSection

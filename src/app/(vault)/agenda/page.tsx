@@ -29,6 +29,13 @@ import { getClinicalNoteRepository } from "../../../lib/clinical/store";
 import { getPracticeProfileSnapshot } from "../../../lib/setup/profile";
 import { deriveDayAgenda, deriveWeekAgenda } from "../../../lib/appointments/agenda";
 import { deriveNextSessionDefaults } from "../../../lib/appointments/defaults";
+import {
+  buildReminderWhatsAppUrl,
+  buildRescheduleWhatsAppUrl,
+  buildReminderMailtoUrl,
+  buildRescheduleMailtoUrl,
+} from "../../../lib/communication/templates";
+import { editMeetingLinkAction, addRemoteIssueNoteAction } from "../appointments/actions";
 import { AgendaToolbar } from "./components/agenda-toolbar";
 import { AgendaDayView } from "./components/agenda-day-view";
 import { AgendaWeekView } from "./components/agenda-week-view";
@@ -94,46 +101,171 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       .map((a) => a.id),
   );
 
-  // Build nextSessionActions map for COMPLETED appointment cards.
-  // Each entry combines the "Agendar próxima sessão" action with the
-  // "Registrar evolução" / "Ver evolução" clinical note entry point.
+  // Build nextSessionActions map for appointment cards.
+  // COMPLETED entries include next-session action and clinical note entry point.
+  // All entries include ONLINE care fields (if applicable) and Comunicacao group.
   const nextSessionActions: Record<string, React.ReactNode> = {};
   for (const appt of appointments) {
-    if (appt.status !== "COMPLETED") continue;
+    const patientName = patientNames[appt.patientId] ?? "Paciente";
 
-    const defaults = deriveNextSessionDefaults({
-      patientId: appt.patientId,
-      lastAppointment: {
-        durationMinutes: appt.durationMinutes,
-        careMode: appt.careMode,
-        priceInCents: null, // Price domain not yet available in Phase 2
-      },
-      profileDefaults: {
-        defaultDurationMinutes: profile.defaultAppointmentDurationMinutes ?? 50,
-        defaultPriceInCents: profile.defaultSessionPriceInCents ?? null,
-        defaultCareMode: profileCareMode,
-      },
+    const apptDate = new Intl.DateTimeFormat("pt-BR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "America/Sao_Paulo",
+    }).format(appt.startsAt);
+
+    const apptTime = new Intl.DateTimeFormat("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "America/Sao_Paulo",
+    }).format(appt.startsAt);
+
+    const reminderWhatsApp = buildReminderWhatsAppUrl({
+      patientName,
+      patientPhone: null,
+      appointmentDate: apptDate,
+      appointmentTime: apptTime,
     });
 
-    const hasNote = notedAppointmentIds.has(appt.id);
+    const reminderMailto = buildReminderMailtoUrl({
+      patientName,
+      patientEmail: null,
+      appointmentDate: apptDate,
+      appointmentTime: apptTime,
+    });
 
-    nextSessionActions[appt.id] = (
-      <>
-        <CompletedAppointmentNextSessionAction
-          appointmentId={appt.id}
-          defaults={defaults}
-        />
-        {hasNote ? (
-          <Link href={`/sessions/${appt.id}/note`} style={viewNoteStyle}>
-            Ver evolução
-          </Link>
-        ) : (
-          <Link href={`/sessions/${appt.id}/note`} style={registerNoteStyle}>
-            Registrar evolução
-          </Link>
-        )}
-      </>
+    const rescheduleWhatsApp = buildRescheduleWhatsAppUrl({
+      patientName,
+      patientPhone: null,
+      originalDate: apptDate,
+      originalTime: apptTime,
+    });
+
+    const rescheduleMailto = buildRescheduleMailtoUrl({
+      patientName,
+      patientEmail: null,
+      originalDate: apptDate,
+      originalTime: apptTime,
+    });
+
+    const comunicacaoSection = (
+      <section style={comunicacaoSectionStyle}>
+        <p style={comunicacaoLabelStyle}>Comunicação</p>
+        <div style={comunicacaoRowStyle}>
+          <span style={comunicacaoItemLabelStyle}>Lembrete</span>
+          <a href={reminderWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
+            WhatsApp
+          </a>
+          <a href={reminderMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
+            Email
+          </a>
+        </div>
+        <div style={comunicacaoRowStyle}>
+          <span style={comunicacaoItemLabelStyle}>Reagendamento</span>
+          <a href={rescheduleWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
+            WhatsApp
+          </a>
+          <a href={rescheduleMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
+            Email
+          </a>
+        </div>
+      </section>
     );
+
+    // ONLINE-only section: meetingLink + remoteIssueNote forms (for all statuses)
+    const onlineSection = appt.careMode === "ONLINE" ? (
+      <section style={onlineSectionStyle}>
+        <p style={onlineSectionLabelStyle}>Link da sessão</p>
+        {appt.meetingLink && (
+          <a
+            href={appt.meetingLink}
+            target="_blank"
+            rel="noreferrer"
+            style={openLinkStyle}
+          >
+            Abrir link
+          </a>
+        )}
+        <form action={editMeetingLinkAction} style={inlineFormStyle}>
+          <input type="hidden" name="appointmentId" value={appt.id} />
+          <input
+            type="url"
+            name="meetingLink"
+            defaultValue={appt.meetingLink ?? ""}
+            placeholder="https://meet.google.com/..."
+            style={urlInputStyle}
+          />
+          <button type="submit" style={submitButtonStyle}>
+            Salvar link
+          </button>
+        </form>
+        <details style={detailsStyle}>
+          <summary style={detailsSummaryStyle}>Problemas de conexão</summary>
+          {appt.remoteIssueNote && (
+            <p style={remoteIssueNoteStyle}>{appt.remoteIssueNote}</p>
+          )}
+          <form action={addRemoteIssueNoteAction} style={inlineFormStyle}>
+            <input type="hidden" name="appointmentId" value={appt.id} />
+            <textarea
+              name="remoteIssueNote"
+              defaultValue={appt.remoteIssueNote ?? ""}
+              placeholder="Descreva o problema..."
+              style={textareaStyle}
+            />
+            <button type="submit" style={submitButtonStyle}>
+              Registrar
+            </button>
+          </form>
+        </details>
+      </section>
+    ) : null;
+
+    if (appt.status === "COMPLETED") {
+      const defaults = deriveNextSessionDefaults({
+        patientId: appt.patientId,
+        lastAppointment: {
+          durationMinutes: appt.durationMinutes,
+          careMode: appt.careMode,
+          priceInCents: null,
+        },
+        profileDefaults: {
+          defaultDurationMinutes: profile.defaultAppointmentDurationMinutes ?? 50,
+          defaultPriceInCents: profile.defaultSessionPriceInCents ?? null,
+          defaultCareMode: profileCareMode,
+        },
+      });
+
+      const hasNote = notedAppointmentIds.has(appt.id);
+
+      nextSessionActions[appt.id] = (
+        <>
+          <CompletedAppointmentNextSessionAction
+            appointmentId={appt.id}
+            defaults={defaults}
+          />
+          {hasNote ? (
+            <Link href={`/sessions/${appt.id}/note`} style={viewNoteStyle}>
+              Ver evolução
+            </Link>
+          ) : (
+            <Link href={`/sessions/${appt.id}/note`} style={registerNoteStyle}>
+              Registrar evolução
+            </Link>
+          )}
+          {onlineSection}
+          {comunicacaoSection}
+        </>
+      );
+    } else {
+      // SCHEDULED, CONFIRMED, CANCELED, NO_SHOW
+      nextSessionActions[appt.id] = (
+        <>
+          {onlineSection}
+          {comunicacaoSection}
+        </>
+      );
+    }
   }
 
   // Derive view models
@@ -321,4 +453,135 @@ const viewNoteStyle = {
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "0.82rem",
+} satisfies React.CSSProperties;
+
+// ─── Online care & communication styles ───────────────────────────────────────
+
+const comunicacaoSectionStyle = {
+  marginTop: "0.75rem",
+  padding: "0.75rem",
+  borderRadius: "12px",
+  background: "rgba(240, 253, 244, 0.7)",
+  border: "1px solid rgba(16, 185, 129, 0.15)",
+  display: "grid",
+  gap: "0.375rem",
+} satisfies React.CSSProperties;
+
+const comunicacaoLabelStyle = {
+  margin: 0,
+  fontSize: "0.72rem",
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.1em",
+  color: "#065f46",
+} satisfies React.CSSProperties;
+
+const comunicacaoRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.5rem",
+} satisfies React.CSSProperties;
+
+const comunicacaoItemLabelStyle = {
+  fontSize: "0.8rem",
+  color: "#44403c",
+  minWidth: "7rem",
+} satisfies React.CSSProperties;
+
+const commLinkStyle = {
+  fontSize: "0.8rem",
+  color: "#9a3412",
+  textDecoration: "none",
+  fontWeight: 500,
+  padding: "0.15rem 0.5rem",
+  borderRadius: "6px",
+  background: "rgba(255, 247, 237, 0.8)",
+  border: "1px solid rgba(146, 64, 14, 0.2)",
+} satisfies React.CSSProperties;
+
+const onlineSectionStyle = {
+  marginTop: "0.75rem",
+  padding: "0.75rem",
+  borderRadius: "12px",
+  background: "rgba(239, 246, 255, 0.7)",
+  border: "1px solid rgba(59, 130, 246, 0.15)",
+  display: "grid",
+  gap: "0.5rem",
+} satisfies React.CSSProperties;
+
+const onlineSectionLabelStyle = {
+  margin: 0,
+  fontSize: "0.72rem",
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.1em",
+  color: "#1e3a8a",
+} satisfies React.CSSProperties;
+
+const openLinkStyle = {
+  fontSize: "0.85rem",
+  color: "#1e3a8a",
+  fontWeight: 500,
+  textDecoration: "none",
+} satisfies React.CSSProperties;
+
+const inlineFormStyle = {
+  display: "flex",
+  gap: "0.4rem",
+  alignItems: "center",
+  flexWrap: "wrap" as const,
+} satisfies React.CSSProperties;
+
+const urlInputStyle = {
+  flex: 1,
+  minWidth: "12rem",
+  padding: "0.3rem 0.5rem",
+  fontSize: "0.82rem",
+  borderRadius: "6px",
+  border: "1px solid rgba(59, 130, 246, 0.3)",
+  background: "#fff",
+} satisfies React.CSSProperties;
+
+const textareaStyle = {
+  flex: 1,
+  minWidth: "12rem",
+  padding: "0.3rem 0.5rem",
+  fontSize: "0.82rem",
+  borderRadius: "6px",
+  border: "1px solid rgba(59, 130, 246, 0.3)",
+  background: "#fff",
+  resize: "vertical" as const,
+  minHeight: "4rem",
+} satisfies React.CSSProperties;
+
+const submitButtonStyle = {
+  padding: "0.3rem 0.75rem",
+  borderRadius: "6px",
+  border: "none",
+  background: "#1e3a8a",
+  color: "#fff",
+  fontSize: "0.82rem",
+  fontWeight: 600,
+  cursor: "pointer",
+} satisfies React.CSSProperties;
+
+const detailsStyle = {
+  fontSize: "0.85rem",
+} satisfies React.CSSProperties;
+
+const detailsSummaryStyle = {
+  cursor: "pointer",
+  fontSize: "0.82rem",
+  color: "#57534e",
+  fontWeight: 500,
+} satisfies React.CSSProperties;
+
+const remoteIssueNoteStyle = {
+  margin: "0.5rem 0",
+  fontSize: "0.82rem",
+  color: "#44403c",
+  background: "rgba(255, 247, 237, 0.8)",
+  padding: "0.4rem 0.6rem",
+  borderRadius: "6px",
+  whiteSpace: "pre-wrap" as const,
 } satisfies React.CSSProperties;

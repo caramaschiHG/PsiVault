@@ -10,6 +10,12 @@
  */
 
 import Link from "next/link";
+import {
+  buildReminderWhatsAppUrl,
+  buildRescheduleWhatsAppUrl,
+  buildReminderMailtoUrl,
+  buildRescheduleMailtoUrl,
+} from "../../../../../lib/communication/templates";
 
 interface TimelineEntry {
   appointmentId: string;
@@ -24,6 +30,8 @@ interface TimelineEntry {
 
 interface ClinicalTimelineProps {
   entries: TimelineEntry[]; // sorted most-recent first by parent
+  patientName: string;
+  patientPhone: string | null;
 }
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -63,7 +71,80 @@ function StatusChip({ status }: { status: TimelineEntry["status"] }) {
   }
 }
 
-function CompletedEntryCard({ entry }: { entry: TimelineEntry }) {
+interface CommProps {
+  patientName: string;
+  patientPhone: string | null;
+  startsAt: Date;
+}
+
+function ComunicacaoGroup({ patientName, patientPhone, startsAt }: CommProps) {
+  const apptDate = new Intl.DateTimeFormat("pt-BR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "America/Sao_Paulo",
+  }).format(startsAt);
+
+  const apptTime = new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
+  }).format(startsAt);
+
+  const reminderWhatsApp = buildReminderWhatsAppUrl({
+    patientName,
+    patientPhone,
+    appointmentDate: apptDate,
+    appointmentTime: apptTime,
+  });
+
+  const reminderMailto = buildReminderMailtoUrl({
+    patientName,
+    patientEmail: null,
+    appointmentDate: apptDate,
+    appointmentTime: apptTime,
+  });
+
+  const rescheduleWhatsApp = buildRescheduleWhatsAppUrl({
+    patientName,
+    patientPhone,
+    originalDate: apptDate,
+    originalTime: apptTime,
+  });
+
+  const rescheduleMailto = buildRescheduleMailtoUrl({
+    patientName,
+    patientEmail: null,
+    originalDate: apptDate,
+    originalTime: apptTime,
+  });
+
+  return (
+    <div style={comunicacaoGroupStyle}>
+      <p style={comunicacaoGroupLabelStyle}>Comunicação</p>
+      <div style={comunicacaoRowStyle}>
+        <span style={comunicacaoItemLabelStyle}>Lembrete</span>
+        <a href={reminderWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          WhatsApp
+        </a>
+        <a href={reminderMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          Email
+        </a>
+      </div>
+      <div style={comunicacaoRowStyle}>
+        <span style={comunicacaoItemLabelStyle}>Reagendamento</span>
+        <a href={rescheduleWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          WhatsApp
+        </a>
+        <a href={rescheduleMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          Email
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function CompletedEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
   const sessionLabel =
     entry.sessionNumber !== null
       ? `Sessão ${entry.sessionNumber}`
@@ -102,11 +183,12 @@ function CompletedEntryCard({ entry }: { entry: TimelineEntry }) {
           </Link>
         )}
       </div>
+      <ComunicacaoGroup patientName={patientName} patientPhone={patientPhone} startsAt={entry.startsAt} />
     </div>
   );
 }
 
-function ScheduledEntryCard({ entry }: { entry: TimelineEntry }) {
+function ScheduledEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
   return (
     <div style={activeCardStyle}>
       <div style={cardRowStyle}>
@@ -119,11 +201,12 @@ function ScheduledEntryCard({ entry }: { entry: TimelineEntry }) {
           <StatusChip status={entry.status} />
         </div>
       </div>
+      <ComunicacaoGroup patientName={patientName} patientPhone={patientPhone} startsAt={entry.startsAt} />
     </div>
   );
 }
 
-function MutedEntryCard({ entry }: { entry: TimelineEntry }) {
+function MutedEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
   return (
     <div style={mutedCardStyle}>
       <div style={cardRowStyle}>
@@ -134,11 +217,12 @@ function MutedEntryCard({ entry }: { entry: TimelineEntry }) {
           <StatusChip status={entry.status} />
         </div>
       </div>
+      <ComunicacaoGroup patientName={patientName} patientPhone={patientPhone} startsAt={entry.startsAt} />
     </div>
   );
 }
 
-export function ClinicalTimeline({ entries }: ClinicalTimelineProps) {
+export function ClinicalTimeline({ entries, patientName, patientPhone }: ClinicalTimelineProps) {
   return (
     <section style={sectionStyle}>
       <div style={headingBlockStyle}>
@@ -152,13 +236,13 @@ export function ClinicalTimeline({ entries }: ClinicalTimelineProps) {
         <div style={entriesListStyle}>
           {entries.map((entry) => {
             if (entry.status === "COMPLETED") {
-              return <CompletedEntryCard key={entry.appointmentId} entry={entry} />;
+              return <CompletedEntryCard key={entry.appointmentId} entry={entry} patientName={patientName} patientPhone={patientPhone} />;
             }
             if (entry.status === "SCHEDULED" || entry.status === "CONFIRMED") {
-              return <ScheduledEntryCard key={entry.appointmentId} entry={entry} />;
+              return <ScheduledEntryCard key={entry.appointmentId} entry={entry} patientName={patientName} patientPhone={patientPhone} />;
             }
             // CANCELED or NO_SHOW
-            return <MutedEntryCard key={entry.appointmentId} entry={entry} />;
+            return <MutedEntryCard key={entry.appointmentId} entry={entry} patientName={patientName} patientPhone={patientPhone} />;
           })}
         </div>
       )}
@@ -338,4 +422,48 @@ const registerNoteLinkStyle = {
   fontWeight: 500,
   color: "#b45309",
   textDecoration: "none",
+} satisfies React.CSSProperties;
+
+// ─── Comunicacao group styles ──────────────────────────────────────────────────
+
+const comunicacaoGroupStyle = {
+  marginTop: "0.5rem",
+  padding: "0.625rem 0.75rem",
+  borderRadius: "10px",
+  background: "rgba(240, 253, 244, 0.7)",
+  border: "1px solid rgba(16, 185, 129, 0.15)",
+  display: "grid",
+  gap: "0.3rem",
+} satisfies React.CSSProperties;
+
+const comunicacaoGroupLabelStyle = {
+  margin: 0,
+  fontSize: "0.7rem",
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.1em",
+  color: "#065f46",
+} satisfies React.CSSProperties;
+
+const comunicacaoRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.4rem",
+} satisfies React.CSSProperties;
+
+const comunicacaoItemLabelStyle = {
+  fontSize: "0.78rem",
+  color: "#44403c",
+  minWidth: "7rem",
+} satisfies React.CSSProperties;
+
+const commLinkStyle = {
+  fontSize: "0.78rem",
+  color: "#9a3412",
+  textDecoration: "none",
+  fontWeight: 500,
+  padding: "0.12rem 0.45rem",
+  borderRadius: "6px",
+  background: "rgba(255, 247, 237, 0.8)",
+  border: "1px solid rgba(146, 64, 14, 0.2)",
 } satisfies React.CSSProperties;

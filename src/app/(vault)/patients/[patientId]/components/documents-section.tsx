@@ -7,6 +7,10 @@
 
 import Link from "next/link";
 import type { PracticeDocument, DocumentType } from "../../../../../lib/documents/model";
+import {
+  buildDocumentDeliveryWhatsAppUrl,
+  buildDocumentDeliveryMailtoUrl,
+} from "../../../../../lib/communication/templates";
 
 const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   declaration_of_attendance: "Declaração de Comparecimento",
@@ -23,9 +27,11 @@ const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
 interface DocumentsSectionProps {
   documents: PracticeDocument[]; // already filtered to active (non-archived)
   patientId: string;
+  patientName: string;
+  patientPhone: string | null;
 }
 
-export function DocumentsSection({ documents, patientId }: DocumentsSectionProps) {
+export function DocumentsSection({ documents, patientId, patientName, patientPhone }: DocumentsSectionProps) {
   return (
     <section style={sectionStyle}>
       <div style={headingRowStyle}>
@@ -45,24 +51,49 @@ export function DocumentsSection({ documents, patientId }: DocumentsSectionProps
         <p style={emptyStateStyle}>Nenhum documento registrado.</p>
       ) : (
         <div style={listStyle}>
-          {documents.map((doc) => (
-            <div key={doc.id} style={rowStyle}>
-              <div style={rowInfoStyle}>
-                <span style={typeLabelStyle}>
-                  {DOCUMENT_TYPE_LABELS[doc.type]}
-                </span>
-                <span style={dateLabelStyle}>
-                  {shortDateFormatter.format(doc.createdAt)}
-                </span>
+          {documents.map((doc) => {
+            const docTypeLabel = DOCUMENT_TYPE_LABELS[doc.type];
+            const waUrl = buildDocumentDeliveryWhatsAppUrl({
+              patientName,
+              patientPhone,
+              documentType: docTypeLabel,
+            });
+            const mailtoUrl = buildDocumentDeliveryMailtoUrl({
+              patientName,
+              patientEmail: null,
+              documentType: docTypeLabel,
+            });
+
+            return (
+              <div key={doc.id} style={rowStyle}>
+                <div style={rowInfoStyle}>
+                  <span style={typeLabelStyle}>{docTypeLabel}</span>
+                  <span style={dateLabelStyle}>
+                    {shortDateFormatter.format(doc.createdAt)}
+                  </span>
+                </div>
+                <div style={rowActionsStyle}>
+                  <details style={enviarDetailsStyle}>
+                    <summary style={enviarSummaryStyle}>Enviar</summary>
+                    <div style={enviarLinksStyle}>
+                      <a href={waUrl} target="_blank" rel="noreferrer" style={commLinkStyle}>
+                        WhatsApp
+                      </a>
+                      <a href={mailtoUrl} target="_blank" rel="noreferrer" style={commLinkStyle}>
+                        Email
+                      </a>
+                    </div>
+                  </details>
+                  <Link
+                    href={`/patients/${patientId}/documents/${doc.id}`}
+                    style={viewLinkStyle}
+                  >
+                    Ver →
+                  </Link>
+                </div>
               </div>
-              <Link
-                href={`/patients/${patientId}/documents/${doc.id}`}
-                style={viewLinkStyle}
-              >
-                Ver →
-              </Link>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </section>
@@ -163,4 +194,53 @@ const viewLinkStyle = {
   color: "#9a3412",
   textDecoration: "none",
   whiteSpace: "nowrap" as const,
+} satisfies React.CSSProperties;
+
+const rowActionsStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.625rem",
+  flexShrink: 0,
+} satisfies React.CSSProperties;
+
+const enviarDetailsStyle = {
+  position: "relative" as const,
+} satisfies React.CSSProperties;
+
+const enviarSummaryStyle = {
+  cursor: "pointer",
+  fontSize: "0.82rem",
+  fontWeight: 500,
+  color: "#065f46",
+  padding: "0.15rem 0.5rem",
+  borderRadius: "6px",
+  background: "rgba(240, 253, 244, 0.8)",
+  border: "1px solid rgba(16, 185, 129, 0.2)",
+  listStyle: "none" as const,
+} satisfies React.CSSProperties;
+
+const enviarLinksStyle = {
+  position: "absolute" as const,
+  right: 0,
+  top: "100%",
+  zIndex: 10,
+  display: "flex",
+  gap: "0.4rem",
+  padding: "0.5rem",
+  borderRadius: "8px",
+  background: "#fff",
+  border: "1px solid rgba(146, 64, 14, 0.15)",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  whiteSpace: "nowrap" as const,
+} satisfies React.CSSProperties;
+
+const commLinkStyle = {
+  fontSize: "0.8rem",
+  color: "#9a3412",
+  textDecoration: "none",
+  fontWeight: 500,
+  padding: "0.15rem 0.5rem",
+  borderRadius: "6px",
+  background: "rgba(255, 247, 237, 0.8)",
+  border: "1px solid rgba(146, 64, 14, 0.2)",
 } satisfies React.CSSProperties;
