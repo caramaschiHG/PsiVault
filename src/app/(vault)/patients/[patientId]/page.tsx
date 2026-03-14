@@ -5,8 +5,9 @@
  * 1. PatientProfileHeader (identity, social name, contact, archive action)
  * 2. PatientSummaryCards (scheduling-backed operational summary)
  * 3. QuickNextSessionCard (prefilled defaults from last appointment or profile)
- * 4. Edit form (below the fold)
- * 5. Important observations (profile-only surface)
+ * 4. ClinicalTimeline (longitudinal session history, all statuses)
+ * 5. Edit form (below the fold)
+ * 6. Important observations (profile-only surface)
  *
  * Now that 02-02 provides appointment occurrences, the summary is hydrated
  * from real scheduling data via derivePatientSummaryFromAppointments rather
@@ -26,10 +27,13 @@ import {
   derivePatientSummaryFromAppointments,
 } from "../../../../lib/patients/summary";
 import { deriveNextSessionDefaults } from "../../../../lib/appointments/defaults";
+import { getClinicalNoteRepository } from "../../../../lib/clinical/store";
+import { deriveSessionNumber } from "../../../../lib/clinical/model";
 import { PatientProfileHeader } from "../components/patient-profile-header";
 import { PatientSummaryCards } from "../components/patient-summary-cards";
 import { PatientForm } from "../components/patient-form";
 import { QuickNextSessionCard } from "./components/quick-next-session-card";
+import { ClinicalTimeline } from "./components/clinical-timeline";
 
 const WORKSPACE_ID = "ws_1";
 const ACCOUNT_ID = "acct_1";
@@ -89,6 +93,30 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
     },
   });
 
+  // Load clinical notes and build timeline entries
+  const clinicalRepo = getClinicalNoteRepository();
+
+  // Build a map of appointmentId -> noteId for COMPLETED appointments that have a note
+  const notesByAppointment = new Map<string, string>();
+  for (const appt of appointments) {
+    if (appt.status !== "COMPLETED") continue;
+    const note = clinicalRepo.findByAppointmentId(appt.id, WORKSPACE_ID);
+    if (note) notesByAppointment.set(appt.id, note.id);
+  }
+
+  // Build timeline entries — all appointments, most recent first
+  // (appointments is already sorted most-recent first from listByPatient)
+  const timelineEntries = appointments.map((appt) => ({
+    appointmentId: appt.id,
+    startsAt: appt.startsAt,
+    durationMinutes: appt.durationMinutes,
+    careMode: appt.careMode,
+    status: appt.status,
+    sessionNumber: deriveSessionNumber(appt.id, appointments),
+    hasNote: notesByAppointment.has(appt.id),
+    noteId: notesByAppointment.get(appt.id) ?? null,
+  }));
+
   const patientDisplayName = patient.socialName
     ? `${patient.fullName} (${patient.socialName})`
     : patient.fullName;
@@ -116,7 +144,10 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
         patientDisplayName={patientDisplayName}
       />
 
-      {/* 4. Edit form — below the fold */}
+      {/* 4. Clinical timeline — longitudinal session history */}
+      <ClinicalTimeline entries={timelineEntries} />
+
+      {/* 5. Edit form — below the fold */}
       <section style={editSectionStyle}>
         <div style={editHeadingStyle}>
           <p style={eyebrowStyle}>Dados do paciente</p>
