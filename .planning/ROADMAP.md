@@ -70,9 +70,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Clinical domain module (model, repository, store, audit) + unit tests (TDD)
-- [ ] 03-02-PLAN.md — Note composer page, server actions, and agenda entry point integration
-- [ ] 03-03-PLAN.md — Patient longitudinal clinical timeline on the patient profile page
+- [x] 03-01-PLAN.md — Clinical domain module (model, repository, store, audit) + unit tests (TDD)
+- [x] 03-02-PLAN.md — Note composer page, server actions, and agenda entry point integration
+- [x] 03-03-PLAN.md — Patient longitudinal clinical timeline on the patient profile page
 
 ### Phase 4: Document Vault
 **Goal**: The professional can generate real practice documents from templates, store them securely with provenance, and retrieve them later from the patient context without breaking trust.
