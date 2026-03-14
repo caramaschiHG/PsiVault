@@ -67,12 +67,12 @@ Plans:
   2. The professional can use free text alone or combine it with optional structured blocks without the UX feeling rigid.
   3. Editing a record preserves traceability instead of silently overwriting history.
   4. The patient timeline clearly shows session evolution in chronological order and becomes the trusted summary of case progression.
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Clinical-record data model and post-session note workflow
-- [ ] 03-02: Structured/freeform note composition UX with audit-preserving updates
-- [ ] 03-03: Patient longitudinal timeline and retrieval views
+- [ ] 03-01-PLAN.md — Clinical domain module (model, repository, store, audit) + unit tests (TDD)
+- [ ] 03-02-PLAN.md — Note composer page, server actions, and agenda entry point integration
+- [ ] 03-03-PLAN.md — Patient longitudinal clinical timeline on the patient profile page
 
 ### Phase 4: Document Vault
 **Goal**: The professional can generate real practice documents from templates, store them securely with provenance, and retrieve them later from the patient context without breaking trust.
