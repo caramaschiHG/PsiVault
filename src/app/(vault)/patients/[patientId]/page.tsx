@@ -37,6 +37,10 @@ import { QuickNextSessionCard } from "./components/quick-next-session-card";
 import { ClinicalTimeline } from "./components/clinical-timeline";
 import { getDocumentRepository } from "../../../../lib/documents/store";
 import { DocumentsSection } from "./components/documents-section";
+import { getFinanceRepository } from "../../../../lib/finance/store";
+import { deriveFinancialStatus } from "../../../../lib/finance/model";
+import { FinanceSection } from "./components/finance-section";
+import { updateChargeAction } from "../../appointments/actions";
 
 const WORKSPACE_ID = "ws_1";
 const ACCOUNT_ID = "acct_1";
@@ -61,11 +65,9 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   // Load all appointments for this patient to hydrate the summary and defaults
   const appointments = appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
 
-  // Derive scheduling-backed summary
-  const summary = derivePatientSummaryFromAppointments({
-    patientId: patient.id,
-    appointments,
-  });
+  // Derive scheduling-backed summary (financialStatus populated after charges are loaded below)
+  // Note: charges loaded after appointments, so we compute summary after loading charges
+  // Summary will be recalculated below once financialStatus is available
 
   // Find the most recent completed or scheduled appointment for defaults
   const lastRelevantAppointment =
@@ -99,6 +101,18 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   // Load active documents for this patient
   const docRepo = getDocumentRepository();
   const activeDocuments = docRepo.listActiveByPatient(patient.id, WORKSPACE_ID);
+
+  // Load charges for financial status derivation
+  const financeRepo = getFinanceRepository();
+  const charges = financeRepo.listByPatient(patient.id, WORKSPACE_ID);
+  const financialStatus = deriveFinancialStatus(charges);
+
+  // Derive scheduling-backed summary with real financial status
+  const summary = derivePatientSummaryFromAppointments({
+    patientId: patient.id,
+    appointments,
+    financialStatus,
+  });
 
   // Load clinical notes and build timeline entries
   const clinicalRepo = getClinicalNoteRepository();
@@ -157,7 +171,14 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
       {/* 5. Documents section — patient vault */}
       <DocumentsSection documents={activeDocuments} patientId={patient.id} />
 
-      {/* 6. Edit form — below the fold */}
+      {/* 6. Finance section — charge history and inline edit form */}
+      <FinanceSection
+        charges={charges}
+        patientId={patient.id}
+        updateChargeAction={updateChargeAction}
+      />
+
+      {/* 8. Edit form — below the fold */}
       <section style={editSectionStyle}>
         <div style={editHeadingStyle}>
           <p style={eyebrowStyle}>Dados do paciente</p>

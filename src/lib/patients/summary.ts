@@ -87,6 +87,8 @@ export interface DerivePatientSummaryFromAppointmentsInput {
   now?: Date;
   /** Provided by document domain once complete. */
   documentCount?: number;
+  /** Provided by finance domain once complete. */
+  financialStatus?: FinancialStatus;
 }
 
 /**
@@ -131,7 +133,7 @@ export function derivePatientSummaryFromAppointments(
     nextSession,
     pendingItemsCount,
     documentCount: input.documentCount ?? 0,
-    financialStatus: "no_data",
+    financialStatus: input.financialStatus ?? "no_data",
   };
 }
 
