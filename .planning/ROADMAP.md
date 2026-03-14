@@ -83,12 +83,12 @@ Plans:
   2. Declaration, receipt, anamnesis, report, and consent/service-related document flows all produce storable outputs inside the patient record.
   3. Generated documents carry provenance metadata and remain retrievable later from the related patient context.
   4. File storage and retrieval behavior preserves the vault posture instead of exposing documents through casual access patterns.
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Document taxonomy, metadata model, and secure storage workflow
-- [ ] 04-02: Template engine and prefilled generation for core document types
-- [ ] 04-03: Patient-linked document vault retrieval and provenance display
+- [ ] 04-01-PLAN.md — Document domain module (model, repository, store, audit, templates) + TDD
+- [ ] 04-02-PLAN.md — Document generation composer, signature gate, server action, and client form
+- [ ] 04-03-PLAN.md — Patient-linked document retrieval, view page, archive action, and profile integration
 
 ### Phase 5: Finance and Assisted Operations
 **Goal**: The office loop closes operationally: the professional can track whether a session was paid, issue/attach receipts, organize online-care context, and open useful reminder/communication flows without turning the product into an ERP or chat app.
@@ -114,7 +114,7 @@ Plans:
   1. The home screen shows today's agenda, upcoming work, reminders, and payment pendencies in a way that helps the professional orient immediately.
   2. Search and retrieval flows can find a patient, session, document, canceled appointment, or pending payment quickly enough to be trusted in daily work.
   3. Reminders can be created and completed without losing history, and operational pendencies surface clearly.
-  4. Export and backup/recovery paths exist with enough confidence to make the “vault” positioning credible at launch.
+  4. Export and backup/recovery paths exist with enough confidence to make the "vault" positioning credible at launch.
 **Plans**: TBD
 
 Plans:
