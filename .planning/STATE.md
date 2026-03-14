@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-14T23:02:21.038Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-14T23:11:09.766Z"
 last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 15
   percent: 100
 ---
 
@@ -57,6 +57,7 @@ Progress: [██████████] 100%
 | Phase 03-clinical-record-core P03 | 4 | 2 tasks | 2 files |
 | Phase 04-document-vault P01 | 3 | 2 tasks | 6 files |
 | Phase 05-finance-and-assisted-operations P01 | 5 | 1 tasks | 11 files |
+| Phase 05 P02 | 6 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,9 @@ Progress: [██████████] 100%
 - [Phase 05-01]: updateAppointmentOnlineCare is a dedicated function separate from a generic update — keeps ONLINE care concern isolated and testable
 - [Phase 05-01]: remoteIssueNote guard enforced at model layer (throws Error) not server-action layer — correctness closest to data
 - [Phase 05-01]: Charge audit metadata whitelist: only chargeId, appointmentId, and newStatus included — never amountInCents or paymentMethod (SECU-05)
+- [Phase 05-02]: revalidatePath imported from next/cache not next/navigation — server action cache invalidation uses the cache module
+- [Phase 05-02]: listActive + listArchived used to aggregate all patients for monthly /financeiro view — avoids adding listAll to PatientRepository interface
+- [Phase 05-02]: Vault layout created from scratch — no (vault)/layout.tsx existed; new file wraps all vault routes with shared navigation
 
 ### Pending Todos
 
@@ -118,6 +122,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-03-14T23:02:21.036Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-14T23:11:01.201Z
+Stopped at: Completed 05-02-PLAN.md
 Resume: Start Phase 4 planning (Document Vault)
