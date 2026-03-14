@@ -1,0 +1,169 @@
+/**
+ * Document content template factory.
+ *
+ * buildDocumentContent returns pre-filled Portuguese prose for each of the 5
+ * document types. Phase 5 (finance) will enrich the receipt template with
+ * real payment data; for now the amount field uses a placeholder.
+ *
+ * Security policy (SECU-05):
+ * - These templates produce document content — they must never be called from
+ *   audit, log, or any surface that might store their output outside the
+ *   document vault.
+ */
+
+import type { DocumentType } from "./model";
+
+export interface DocumentPreFillContext {
+  patientFullName: string;
+  professionalName: string;
+  crp: string;
+  todayLabel: string;
+  sessionCount?: number | null;
+  sessionDateRange?: string | null;
+  intakeDate?: string | null;
+  amountLabel?: string | null;
+  paymentMethod?: string | null;
+}
+
+function signatureBlock(professionalName: string, crp: string, todayLabel: string): string {
+  return `\n\nProfissional: ${professionalName} — ${crp}\nData: ${todayLabel}`;
+}
+
+function buildDeclarationOfAttendance(ctx: DocumentPreFillContext): string {
+  const sessionLine =
+    ctx.sessionCount != null
+      ? `Total de ${ctx.sessionCount} sessões`
+      : "Total de ________ sessões";
+
+  const dateRangeLine =
+    ctx.sessionDateRange != null
+      ? `Período: ${ctx.sessionDateRange}`
+      : "Período: ________ a ________";
+
+  return `DECLARAÇÃO DE COMPARECIMENTO
+
+Declaramos que ${ctx.patientFullName} compareceu às consultas de psicologia realizadas por ${ctx.professionalName} (${ctx.crp}).
+
+${sessionLine}.
+${dateRangeLine}.
+
+Esta declaração é fornecida para os fins que se fizerem necessários.${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
+function buildReceipt(ctx: DocumentPreFillContext): string {
+  const amount = ctx.amountLabel ?? "R$ ________";
+  const payment = ctx.paymentMethod ?? "________";
+
+  return `RECIBO DE PAGAMENTO
+
+Recebi de ${ctx.patientFullName} a quantia de ${amount} referente à prestação de serviços de psicologia.
+
+Profissional: ${ctx.professionalName} — ${ctx.crp}
+Forma de pagamento: ${payment}
+Data: ${ctx.todayLabel}
+
+Valor: ${amount}${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
+function buildAnamnesis(ctx: DocumentPreFillContext): string {
+  const intakeDate = ctx.intakeDate ?? "________";
+
+  return `ANAMNESE PSICOLÓGICA
+
+Paciente: ${ctx.patientFullName}
+Profissional responsável: ${ctx.professionalName} (${ctx.crp})
+Data de início do atendimento: ${intakeDate}
+
+I. IDENTIFICAÇÃO
+Nome completo: ${ctx.patientFullName}
+Data de início: ${intakeDate}
+
+II. QUEIXA PRINCIPAL
+[A ser preenchido pelo profissional]
+
+III. HISTÓRIA DO PROBLEMA ATUAL
+[A ser preenchido pelo profissional]
+
+IV. HISTÓRIA PESSOAL E FAMILIAR
+[A ser preenchido pelo profissional]
+
+V. HISTÓRICO DE SAÚDE
+[A ser preenchido pelo profissional]
+
+VI. OBSERVAÇÕES CLÍNICAS
+[A ser preenchido pelo profissional]${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
+function buildPsychologicalReport(ctx: DocumentPreFillContext): string {
+  return `LAUDO PSICOLÓGICO
+
+Profissional: ${ctx.professionalName}
+Registro profissional: ${ctx.crp}
+Avaliado(a): ${ctx.patientFullName}
+Data: ${ctx.todayLabel}
+
+I. IDENTIFICAÇÃO
+Nome: ${ctx.patientFullName}
+Profissional responsável: ${ctx.professionalName} (${ctx.crp})
+
+II. OBJETIVO DO LAUDO
+[A ser preenchido pelo profissional]
+
+III. PROCEDIMENTOS UTILIZADOS
+[A ser preenchido pelo profissional]
+
+IV. RESULTADOS E ANÁLISE
+[A ser preenchido pelo profissional]
+
+V. CONCLUSÃO
+[A ser preenchido pelo profissional]
+
+Este laudo foi elaborado com base em avaliação psicológica realizada conforme as normas do Conselho Federal de Psicologia.${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
+function buildConsentAndServiceContract(ctx: DocumentPreFillContext): string {
+  return `CONTRATO DE PRESTAÇÃO DE SERVIÇOS PSICOLÓGICOS
+
+Partes contratantes:
+
+CONTRATADO(A): ${ctx.professionalName}, psicólogo(a), ${ctx.crp}.
+CONTRATANTE: ${ctx.patientFullName}.
+
+Data de início: ${ctx.todayLabel}
+
+CLÁUSULA 1 — OBJETO DO CONTRATO
+O(A) profissional se compromete a prestar serviços de psicologia ao(à) contratante, conforme as normas éticas do Conselho Federal de Psicologia.
+
+CLÁUSULA 2 — SIGILO PROFISSIONAL
+Todas as informações compartilhadas durante os atendimentos são protegidas pelo sigilo profissional, conforme o Código de Ética do Psicólogo.
+
+CLÁUSULA 3 — FREQUÊNCIA E DURAÇÃO
+[A ser preenchido pelo profissional]
+
+CLÁUSULA 4 — HONORÁRIOS
+[A ser preenchido pelo profissional]
+
+CLÁUSULA 5 — CANCELAMENTO E REAGENDAMENTO
+[A ser preenchido pelo profissional]
+
+CLÁUSULA 6 — CONSENTIMENTO INFORMADO
+O(A) contratante declara ter lido e compreendido este contrato e consente com os termos aqui estabelecidos.
+
+Assinatura do(a) contratante: ________________________
+Assinatura do(a) profissional: ________________________${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
+export function buildDocumentContent(type: DocumentType, context: DocumentPreFillContext): string {
+  switch (type) {
+    case "declaration_of_attendance":
+      return buildDeclarationOfAttendance(context);
+    case "receipt":
+      return buildReceipt(context);
+    case "anamnesis":
+      return buildAnamnesis(context);
+    case "psychological_report":
+      return buildPsychologicalReport(context);
+    case "consent_and_service_contract":
+      return buildConsentAndServiceContract(context);
+  }
+}
