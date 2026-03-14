@@ -56,6 +56,13 @@ export interface Appointment {
   completedAt: Date | null;
   noShowAt: Date | null;
 
+  // Finance — deferred from Phase 2 [02-04], hydrated in Phase 5
+  priceInCents: number | null;
+
+  // Online care — ONLN-01, ONLN-03
+  meetingLink: string | null;
+  remoteIssueNote: string | null;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -69,6 +76,8 @@ export interface CreateAppointmentInput {
   seriesId?: string | null;
   seriesIndex?: number | null;
   rescheduledFromId?: string | null;
+  priceInCents?: number | null;
+  meetingLink?: string | null;
 }
 
 interface CreateAppointmentDeps {
@@ -105,7 +114,39 @@ export function createAppointment(
     confirmedAt: null,
     completedAt: null,
     noShowAt: null,
+    priceInCents: input.priceInCents ?? null,
+    meetingLink: input.meetingLink ?? null,
+    remoteIssueNote: null,
     createdAt: deps.now,
+    updatedAt: deps.now,
+  };
+}
+
+export interface UpdateAppointmentOnlineCareInput {
+  meetingLink?: string | null;
+  remoteIssueNote?: string | null;
+}
+
+interface UpdateAppointmentOnlineCareDeps {
+  now: Date;
+}
+
+export function updateAppointmentOnlineCare(
+  appointment: Appointment,
+  input: UpdateAppointmentOnlineCareInput,
+  deps: UpdateAppointmentOnlineCareDeps,
+): Appointment {
+  if (input.remoteIssueNote != null && appointment.careMode !== "ONLINE") {
+    throw new Error("remoteIssueNote is only valid for ONLINE appointments");
+  }
+
+  return {
+    ...appointment,
+    meetingLink: input.meetingLink !== undefined ? input.meetingLink : appointment.meetingLink,
+    remoteIssueNote:
+      input.remoteIssueNote !== undefined
+        ? input.remoteIssueNote
+        : appointment.remoteIssueNote,
     updatedAt: deps.now,
   };
 }
@@ -148,6 +189,9 @@ export function rescheduleAppointment(
     confirmedAt: null,
     completedAt: null,
     noShowAt: null,
+    priceInCents: appointment.priceInCents,
+    meetingLink: null,
+    remoteIssueNote: null,
     createdAt: deps.now,
     updatedAt: deps.now,
   };

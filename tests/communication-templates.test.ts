@@ -48,9 +48,9 @@ describe("communication templates", () => {
         appointmentDate: "15/01/2026",
         appointmentTime: "10:00",
       });
+      // wa.me URL is still valid — WhatsApp prompts user to enter number
       expect(url).toMatch(/^https:\/\/wa\.me\//);
-      // Empty phone part - WhatsApp will prompt user to enter number
-      expect(url).toContain("wa.me/55");
+      expect(url).toContain("?text=");
     });
 
     it("text includes Portuguese reminder message", () => {

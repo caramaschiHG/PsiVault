@@ -24,6 +24,9 @@ function makeAppointment(overrides: Partial<Appointment> & { id: string }): Appo
     confirmedAt: overrides.confirmedAt ?? null,
     completedAt: overrides.completedAt ?? null,
     noShowAt: overrides.noShowAt ?? null,
+    priceInCents: overrides.priceInCents ?? null,
+    meetingLink: overrides.meetingLink ?? null,
+    remoteIssueNote: overrides.remoteIssueNote ?? null,
     createdAt: overrides.createdAt ?? new Date("2026-03-01T00:00:00.000Z"),
     updatedAt: overrides.updatedAt ?? new Date("2026-03-01T00:00:00.000Z"),
   };
