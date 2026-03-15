@@ -75,9 +75,9 @@
 
 ### Tasks and Reminders
 
-- [ ] **TASK-01**: Professional can create reminders linked to a patient, appointment, document, or payment.
+- [x] **TASK-01**: Professional can create reminders linked to a patient, appointment, document, or payment.
 - [ ] **TASK-02**: Dashboard highlights overdue payments, upcoming sessions, and pending follow-ups.
-- [ ] **TASK-03**: Professional can mark reminders as complete without losing their history.
+- [x] **TASK-03**: Professional can mark reminders as complete without losing their history.
 
 ### Dashboard and Search
 
@@ -168,9 +168,9 @@
 | COMM-01 | Phase 5 | Complete |
 | COMM-02 | Phase 5 | Complete |
 | COMM-03 | Phase 5 | Complete |
-| TASK-01 | Phase 6 | Pending |
+| TASK-01 | Phase 6 | Complete |
 | TASK-02 | Phase 6 | Pending |
-| TASK-03 | Phase 6 | Pending |
+| TASK-03 | Phase 6 | Complete |
 | DASH-01 | Phase 6 | Pending |
 | DASH-02 | Phase 6 | Pending |
 | SRCH-01 | Phase 6 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-14T23:53:31.350Z"
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-15T03:10:38.869Z"
 last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 16
-  completed_plans: 16
+  total_plans: 20
+  completed_plans: 17
   percent: 100
 ---
 
@@ -59,6 +59,7 @@ Progress: [██████████] 100%
 | Phase 05-finance-and-assisted-operations P01 | 5 | 1 tasks | 11 files |
 | Phase 05 P02 | 6 | 2 tasks | 6 files |
 | Phase 05 P03 | 25 | 2 tasks | 6 files |
+| Phase 06-retrieval-recovery-and-launch-polish P01 | 177 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,9 @@ Progress: [██████████] 100%
 - [Phase 05-03]: ONLINE care fields rendered for all appointment statuses so professionals can update meeting links post-session
 - [Phase 05-03]: appointment.updated added to AppointmentAuditEventType union to support meetingLink/remoteIssueNote server actions
 - [Phase 05-03]: Comunicacao section rendered for ALL appointment statuses (COMM-01/COMM-02) per domain spec
+- [Phase 06-retrieval-recovery-and-launch-polish]: createReminderAuditEvent accepts flat input (eventType, reminderId, workspaceId, accountId, now) — simpler API than charge audit, no nested object needed
+- [Phase 06-retrieval-recovery-and-launch-polish]: Wave 0 scaffold tests reference actual future import paths (no mocks) so downstream plan executors have exact contracts to implement against
+- [Phase 06-retrieval-recovery-and-launch-polish]: listByWorkspaceAndMonth uses UTC boundaries matching listByMonth pattern (createdAt-based, Date.UTC, exclusive upper bound)
 
 ### Pending Todos
 
@@ -126,6 +130,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-03-14T23:53:31.347Z
-Stopped at: Phase 6 context gathered
+Last session: 2026-03-15T03:10:38.866Z
+Stopped at: Completed 06-01-PLAN.md
 Resume: Start Phase 4 planning (Document Vault)
