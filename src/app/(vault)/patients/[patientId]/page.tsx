@@ -44,6 +44,9 @@ import { deriveFinancialStatus } from "../../../../lib/finance/model";
 import { FinanceSection } from "./components/finance-section";
 import { updateChargeAction } from "../../appointments/actions";
 import { ExportSection } from "./components/export-section";
+import { getReminderRepository } from "../../../../lib/reminders/store";
+import { RemindersSection } from "./components/reminders-section";
+import { createReminderAction, completeReminderAction } from "../../actions/reminders";
 
 const WORKSPACE_ID = "ws_1";
 const ACCOUNT_ID = "acct_1";
@@ -100,6 +103,11 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
       defaultCareMode: profileCareMode,
     },
   });
+
+  // Load reminders for this patient (active + completed history)
+  const reminderRepo = getReminderRepository();
+  const activeReminders = reminderRepo.listActiveByPatient(patient.id, WORKSPACE_ID);
+  const completedReminders = reminderRepo.listCompletedByPatient(patient.id, WORKSPACE_ID);
 
   // Load active documents for this patient
   const docRepo = getDocumentRepository();
@@ -190,7 +198,16 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
         updateChargeAction={updateChargeAction}
       />
 
-      {/* 7. Export section — per-patient data export trigger (SECU-03) */}
+      {/* 7. Reminders section — active reminders and completion history */}
+      <RemindersSection
+        activeReminders={activeReminders}
+        completedReminders={completedReminders}
+        createReminderAction={createReminderAction}
+        completeReminderAction={completeReminderAction}
+        patientId={patient.id}
+      />
+
+      {/* 8. Export section — per-patient data export trigger (SECU-03) */}
       <ExportSection patientId={patient.id} patientName={patientDisplayName} />
 
       {/* 8. Edit form — below the fold */}
