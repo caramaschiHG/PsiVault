@@ -2,13 +2,22 @@
  * Vault layout — shared navigation for all authenticated vault routes.
  *
  * Renders a persistent top navigation bar with links to the main vault
- * sections: Agenda, Pacientes, Financeiro, Configurações.
+ * sections: Agenda, Pacientes, Financeiro, Configurações, and a global
+ * SearchBar client island for cross-domain search (SRCH-01, SRCH-02).
+ *
+ * This file intentionally stays a server component — SearchBar is a client
+ * island imported here; Next.js resolves the client boundary automatically.
  */
+
+import { SearchBar } from "./components/search-bar";
 
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={vaultShellStyle}>
       <nav style={navStyle}>
+        <a href="/inicio" style={navLinkStyle}>
+          Início
+        </a>
         <a href="/agenda" style={navLinkStyle}>
           Agenda
         </a>
@@ -21,6 +30,7 @@ export default function VaultLayout({ children }: { children: React.ReactNode })
         <a href="/settings/profile" style={navLinkStyle}>
           Configurações
         </a>
+        <SearchBar />
       </nav>
       {children}
     </div>
