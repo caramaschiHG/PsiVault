@@ -115,13 +115,14 @@ Plans:
   2. Search and retrieval flows can find a patient, session, document, canceled appointment, or pending payment quickly enough to be trusted in daily work.
   3. Reminders can be created and completed without losing history, and operational pendencies surface clearly.
   4. Export and backup/recovery paths exist with enough confidence to make the "vault" positioning credible at launch.
-**Plans**: 4 plans
+**Plans**: 5 plans
 
 Plans:
 - [ ] 06-01-PLAN.md — Reminders domain module (model, repository, store, audit) + all Wave 0 test scaffolds
 - [ ] 06-02-PLAN.md — Dashboard /inicio page, reminders on patient profile, and nav link
 - [ ] 06-03-PLAN.md — Global search (SearchBar client island, searchAllAction, grouped dropdown)
 - [ ] 06-04-PLAN.md — Export/backup route handlers, Settings > Dados e Privacidade, backup verification
+- [ ] 06-05-PLAN.md — Gap closure: settings sub-navigation so Dados e Privacidade is discoverable alongside Perfil and Seguranca
 
 ## Progress
 
@@ -136,4 +137,4 @@ Parallel execution is allowed at the plan level where dependencies permit it, bu
 | 3. Clinical Record Core | 3/3 | Complete   | 2026-03-14 |
 | 4. Document Vault | 1/3 | In Progress|  |
 | 5. Finance and Assisted Operations | 3/3 | Complete   | 2026-03-14 |
-| 6. Retrieval, Recovery, and Launch Polish | 4/4 | Complete   | 2026-03-15 |
+| 6. Retrieval, Recovery, and Launch Polish | 4/5 | In Progress (gap closure) | |
