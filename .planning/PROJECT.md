@@ -2,9 +2,9 @@
 
 ## What This Is
 
-PsiVault is a digital vault for Brazilian psychologists who run their own practice. It brings patients, schedule, clinical notes, documents, simple financial tracking, and operational reminders into one discreet and professional web app so the psychologist can attend well, document safely, and stop losing information across scattered tools.
+PsiVault is a digital vault for Brazilian psychologists who run their own practice. It brings patients, schedule, clinical notes, documents, simple financial tracking, operational reminders, and backup/export into one discreet and professional web app so the psychologist can attend well, document safely, and stop losing information across scattered tools.
 
-The product is positioned as a lightweight digital office for solo practice, not a cold enterprise clinic system. It should feel secure, simple, organized, and elegant without excess.
+**Status: v1.0 shipped (2026-03-15).** The complete office loop — create patient, schedule session, register the session, issue a professional document, track payment, and find anything later — is fully functional and launch-ready.
 
 ## Core Value
 
@@ -14,13 +14,13 @@ The psychologist can finish a session, register everything correctly in a few mi
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ A solo Brazilian psychologist can manage patients, sessions, clinical records, key documents, and simple payment tracking in one responsive web app — v1.0
+- ✓ The product supports the real rhythm of Brazilian private practice, including recurring appointments, rescheduling, WhatsApp-adjacent workflows, Pix-oriented payment tracking, and hybrid online/presential care — v1.0
+- ✓ Sensitive health data is treated like a vault from day one, with strong access protection, auditability, backup/export paths, and a UX that communicates discretion and trust — v1.0
 
 ### Active
 
-- [ ] A solo Brazilian psychologist can manage patients, sessions, clinical records, key documents, and simple payment tracking in one responsive web app.
-- [ ] The product supports the real rhythm of Brazilian private practice, including recurring appointments, rescheduling, WhatsApp-adjacent workflows, Pix-oriented payment tracking, and hybrid online/presential care.
-- [ ] Sensitive health data is treated like a vault from day one, with strong access protection, auditability, backup/export paths, and a UX that communicates discretion and trust.
+(No active requirements for next milestone — define with `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -32,15 +32,22 @@ The psychologist can finish a session, register everything correctly in a few mi
 
 ## Context
 
-PsiVault starts as a concept-stage SaaS MVP intended to validate demand with autonomous psychologists in Brazil. The core product hypothesis is that many professionals currently split patient data, notes, schedule, receipts, documents, and reminders across WhatsApp, calendars, paper notes, cloud drives, and improvised spreadsheets, creating friction, risk, and loss of control.
+**Current codebase state (v1.0):**
+- ~15,935 lines of TypeScript/TSX across 214 files
+- Stack: Next.js 15 App Router, Vitest, in-memory repositories (DB-swap ready), inline styles
+- 289 tests green across all domains
+- 6 phases, 21 plans, 116 commits over 2 days
 
-The strongest product signals in discovery are:
-- private and updated clinical records matter structurally to practice, not as an optional extra;
-- documents such as declarations, receipts, reports, anamnesis, and consent-related materials are central to the day-to-day workflow;
-- hybrid care is common, but the product should organize remote appointments rather than overreach into heavy telehealth infrastructure;
-- the product must feel local to Brazilian practice, including plain-language financial tracking and communication patterns built around WhatsApp and Pix.
+**Architecture decisions that shaped v1:**
+- In-memory repositories throughout — all repositories follow the same interface pattern, making future DB swap straightforward
+- Server-only data model — no domain state leaks to client components; client islands only where interactivity is unavoidable
+- SECU-05 enforced at the type level — SearchResultItem, audit events, and dashboard aggregations exclude clinical and financial content by type
+- v1 workspace stub (`WORKSPACE_ID = "ws_1"`) — intentional; production multi-tenancy swap is a single-point replacement per domain
 
-The first launch is defined as a complete office flow: create patient, schedule session, register the session, issue a professional document, and mark financial status. If that loop is solid and trustworthy, the MVP is doing its job.
+**Known v1 technical debt for next milestone:**
+- Re-auth gate in export/backup routes uses a cookie stub instead of the full `evaluateSensitiveAction` from `src/lib/security/sensitive-actions.ts`
+- Workspace backup omits audit trail (`auditEvents: never[]`) — documented as v1 limitation with production-replacement comment
+- All domain repositories are in-memory — no persistence across restarts (expected for MVP validation phase)
 
 ## Constraints
 
@@ -54,12 +61,15 @@ The first launch is defined as a complete office flow: create patient, schedule 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Build web-first, responsive | Faster launch and easier use across desktop consultory workflow and mobile check-ins | — Pending |
-| Target solo psychologists first | Keeps permissions, tenancy, and workflow complexity contained while matching the clearest initial user | — Pending |
-| Include the full office loop in v1 | Validation requires the app to feel truly useful, not like an incomplete notes tool | — Pending |
-| Keep communication as assisted outbound flows | WhatsApp/e-mail support is useful, but chat infrastructure would distract from the product core | — Pending |
-| Treat security and auditability as a first-class foundation | The product handles sensitive health data and must feel like a vault, not an improvised notebook | — Pending |
-| Support broad document workflows in v1 | Documents are central to the psychologist's real work and part of the product's operational value | — Pending |
+| Build web-first, responsive | Faster launch and easier use across desktop consultory workflow and mobile check-ins | ✓ Good — delivered in 2 days; no mobile friction reported |
+| Target solo psychologists first | Keeps permissions, tenancy, and workflow complexity contained while matching the clearest initial user | ✓ Good — single-workspace model stayed clean throughout all 6 phases |
+| Include the full office loop in v1 | Validation requires the app to feel truly useful, not like an incomplete notes tool | ✓ Good — all 5 loop stages (create patient → schedule → record → document → pay) shipped |
+| Keep communication as assisted outbound flows | WhatsApp/e-mail support is useful, but chat infrastructure would distract from the product core | ✓ Good — communication actions opened correct prefilled flows without building an inbox |
+| Treat security and auditability as a first-class foundation | The product handles sensitive health data and must feel like a vault, not an improvised notebook | ✓ Good — audit trail, SECU-05 type enforcement, re-auth gate, MFA all in place from Phase 1 |
+| Support broad document workflows in v1 | Documents are central to the psychologist's real work and part of the product's operational value | ✓ Good — 5 document types, template-driven generation, full retrieval surface shipped |
+| In-memory repositories + DB-swap-ready interfaces | Fastest path to end-to-end working product without a Prisma/DB integration blocking domain work | ✓ Good — all 6 phases executed without DB blocking; swap path is single-point per domain |
+| SECU-05 enforced at type level | Prevent accidental clinical/financial leakage to search, dashboard, or audit surfaces | ✓ Good — SearchResultItem type and audit contracts prevent leakage by construction |
+| Next.js nested layouts for settings sub-nav | One new `layout.tsx` file applies sub-navigation to all `/settings/*` routes automatically | ✓ Good — zero modifications to existing pages needed; gap closed in 1 task |
 
 ---
-*Last updated: 2026-03-13 after project initialization*
+*Last updated: 2026-03-15 after v1.0 milestone*

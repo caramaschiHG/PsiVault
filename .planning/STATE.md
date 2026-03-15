@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: planning
-stopped_at: Completed 06-05-PLAN.md
-last_updated: "2026-03-15T03:41:31.035Z"
-last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
+milestone_name: MVP
+status: milestone_complete
+stopped_at: v1.0 milestone archived
+last_updated: "2026-03-15"
+last_activity: 2026-03-15 — v1.0 milestone complete; all 6 phases verified and archived
 progress:
   total_phases: 6
   completed_phases: 6
@@ -18,17 +18,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-13)
+See: .planning/PROJECT.md (updated 2026-03-15 after v1.0 milestone)
 
 **Core value:** The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
-**Current focus:** Phase 1 is complete. The vault foundation now covers auth/session, professional setup, and the visible trust surface, so the next step is Phase 2 planning.
+**Current focus:** v1.0 milestone shipped. Planning next milestone with `/gsd:new-milestone`.
 
 ## Current Position
 
-Phase: 3 of 6 — **Clinical Record Core complete**
-Plan: 3 of 3 completed
-Status: Ready for Phase 4 planning (Document Vault)
-Last activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
+Phase: 6 of 6 — **All phases complete ✓**
+Plans: 21 of 21 completed
+Status: v1.0 milestone archived — ready for next milestone planning
+Last activity: 2026-03-15 — v1.0 milestone complete; 6 phases, 21 plans, 289 tests, 15,935 LOC
 
 Progress: [██████████] 100%
 
