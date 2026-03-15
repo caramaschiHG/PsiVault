@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 06-03-PLAN.md
-last_updated: "2026-03-15T03:19:12.444Z"
+stopped_at: "Completed 06-02-PLAN.md — checkpoint:human-verify pending"
+last_updated: "2026-03-15T03:21:27.811Z"
 last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
 progress:
   total_phases: 6
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 20
-  completed_plans: 19
+  completed_plans: 20
   percent: 100
 ---
 
@@ -62,6 +62,7 @@ Progress: [██████████] 100%
 | Phase 06-retrieval-recovery-and-launch-polish P01 | 177 | 2 tasks | 9 files |
 | Phase 06-retrieval-recovery-and-launch-polish P04 | 45 | 3 tasks | 10 files |
 | Phase 06-retrieval-recovery-and-launch-polish P03 | 18 | 2 tasks | 4 files |
+| Phase 06-retrieval-recovery-and-launch-polish P02 | 5 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,9 @@ Progress: [██████████] 100%
 - [Phase 06-retrieval-recovery-and-launch-polish]: All financial fields included in export - backup is trusted vault operation, SECU-05 whitelist does not apply to owner backup surface
 - [Phase 06-retrieval-recovery-and-launch-polish]: searchAll returns flat SearchResultItem[] (not grouped) — Wave 0 test is authoritative over plan interface description; groupSearchResults helper added for UI layer
 - [Phase 06-retrieval-recovery-and-launch-polish]: SearchResultItem uses type field (not domain) — matches Wave 0 scaffold contract; clinicalNotes accepted in SearchInput but never indexed (SECU-05)
+- [Phase 06-02]: /inicio uses filterTodayAppointments to narrow listByDateRange to UTC day window — no new repo method needed
+- [Phase 06-02]: completeReminderAction accepts reminderId string (not FormData) — cleaner .bind(null, id) binding in JSX
+- [Phase 06-02]: RemindersSection placed after FinanceSection on patient profile — all operational-status sections grouped before ExportSection
 
 ### Pending Todos
 
@@ -137,6 +141,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-03-15T03:19:12.442Z
-Stopped at: Completed 06-03-PLAN.md
+Last session: 2026-03-15T03:21:27.808Z
+Stopped at: Completed 06-02-PLAN.md — checkpoint:human-verify pending
 Resume: Start Phase 4 planning (Document Vault)

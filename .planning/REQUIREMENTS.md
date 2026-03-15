@@ -76,13 +76,13 @@
 ### Tasks and Reminders
 
 - [x] **TASK-01**: Professional can create reminders linked to a patient, appointment, document, or payment.
-- [ ] **TASK-02**: Dashboard highlights overdue payments, upcoming sessions, and pending follow-ups.
+- [x] **TASK-02**: Dashboard highlights overdue payments, upcoming sessions, and pending follow-ups.
 - [x] **TASK-03**: Professional can mark reminders as complete without losing their history.
 
 ### Dashboard and Search
 
-- [ ] **DASH-01**: Professional sees today's agenda, next appointments, reminders, and payment pendencies on the home screen.
-- [ ] **DASH-02**: Professional sees a simple monthly operational summary with active patients, completed sessions, received payments, and pending payments.
+- [x] **DASH-01**: Professional sees today's agenda, next appointments, reminders, and payment pendencies on the home screen.
+- [x] **DASH-02**: Professional sees a simple monthly operational summary with active patients, completed sessions, received payments, and pending payments.
 - [x] **SRCH-01**: Professional can search patients quickly by name or identifying info.
 - [x] **SRCH-02**: Professional can find past sessions, documents, canceled appointments, and pending payments from the product's search/navigation flows.
 
@@ -169,10 +169,10 @@
 | COMM-02 | Phase 5 | Complete |
 | COMM-03 | Phase 5 | Complete |
 | TASK-01 | Phase 6 | Complete |
-| TASK-02 | Phase 6 | Pending |
+| TASK-02 | Phase 6 | Complete |
 | TASK-03 | Phase 6 | Complete |
-| DASH-01 | Phase 6 | Pending |
-| DASH-02 | Phase 6 | Pending |
+| DASH-01 | Phase 6 | Complete |
+| DASH-02 | Phase 6 | Complete |
 | SRCH-01 | Phase 6 | Complete |
 | SRCH-02 | Phase 6 | Complete |
 | SECU-01 | Phase 1 | Complete |
