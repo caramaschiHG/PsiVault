@@ -1,33 +1,59 @@
-# Roadmap: PsiVault
+# Execution Roadmap: PsiVault v1.1
 
-## Milestones
+## Phase 7: Infrastructure Foundation
+**Goal:** Establish the production database and ORM layer connected to Supabase.
+**Requirements:** INFRA-01, INFRA-02, INFRA-03
 
-- ✅ **v1.0 MVP** — Phases 1–6 (shipped 2026-03-15)
-- 📋 **v2.0 Expansion** — Deferred features after v1 validation (multi-user clinic, telehealth, AI, heavier integrations)
+**Success Criteria:**
+1. Supabase project is provisioned and connection strings are in local `.env`
+2. `schema.prisma` is fully defined and successfully migrated to the Supabase database
+3. Prisma client can connect via Supavisor pool without exhaustion in test scripts
 
-## Phases
+---
 
-<details>
-<summary>✅ v1.0 MVP (Phases 1–6) — SHIPPED 2026-03-15</summary>
+## Phase 8: Authentication & Workspaces
+**Goal:** Replace the v1.0 auth stub with real Supabase authentication.
+**Requirements:** AUTH-01, AUTH-02, AUTH-03, AUTH-04
 
-- [x] Phase 1: Vault Foundation (3/3 plans) — completed 2026-03-13
-- [x] Phase 2: Patient and Agenda Core (4/4 plans) — completed 2026-03-14
-- [x] Phase 3: Clinical Record Core (3/3 plans) — completed 2026-03-14
-- [x] Phase 4: Document Vault (3/3 plans) — completed 2026-03-14
-- [x] Phase 5: Finance and Assisted Operations (3/3 plans) — completed 2026-03-14
-- [x] Phase 6: Retrieval, Recovery, and Launch Polish (5/5 plans) — completed 2026-03-15
+**Success Criteria:**
+1. Users can sign up and sign in using email/password via Supabase Auth
+2. `middleware.ts` correctly reads and refreshes the Supabase session cookie
+3. Protected routes correctly redirect unauthenticated users to the sign-in page
+4. The authenticated user ID maps correctly to a persistent `Workspace` and `Account` in the database
 
-Full phase details: `.planning/milestones/v1.0-ROADMAP.md`
+---
 
-</details>
+## Phase 9: Patient & Agenda Persistence
+**Goal:** Replace in-memory patient and agenda repositories with Prisma implementations.
+**Requirements:** REPO-01, REPO-02
 
-## Progress
+**Success Criteria:**
+1. `PrismaPatientRepository` implements all methods of `PatientRepository`
+2. `PrismaAgendaRepository` implements all methods of `AgendaRepository`
+3. Creating, editing, and listing patients and appointments persists across server restarts
+4. All existing Patient and Agenda domain tests pass against the new Prisma implementations
 
-| Phase | Milestone | Plans Complete | Status | Completed |
-|-------|-----------|----------------|--------|-----------|
-| 1. Vault Foundation | v1.0 | 3/3 | Complete | 2026-03-13 |
-| 2. Patient and Agenda Core | v1.0 | 4/4 | Complete | 2026-03-14 |
-| 3. Clinical Record Core | v1.0 | 3/3 | Complete | 2026-03-14 |
-| 4. Document Vault | v1.0 | 3/3 | Complete | 2026-03-14 |
-| 5. Finance and Assisted Operations | v1.0 | 3/3 | Complete | 2026-03-14 |
-| 6. Retrieval, Recovery, and Launch Polish | v1.0 | 5/5 | Complete | 2026-03-15 |
+---
+
+## Phase 10: Clinical & Document Persistence
+**Goal:** Replace in-memory clinical and document repositories with Prisma implementations.
+**Requirements:** REPO-03, REPO-04
+
+**Success Criteria:**
+1. `PrismaClinicalRepository` implements all methods of `ClinicalRepository`
+2. `PrismaDocumentRepository` implements all methods of `DocumentRepository`
+3. Clinical notes and generated documents persist across server restarts
+4. All existing Clinical and Document domain tests pass against the new Prisma implementations
+
+---
+
+## Phase 11: Finance & Ops Persistence
+**Goal:** Replace in-memory finance and audit repositories with Prisma implementations.
+**Requirements:** REPO-05, REPO-06
+
+**Success Criteria:**
+1. `PrismaFinanceRepository` implements all methods of `FinanceRepository`
+2. `PrismaAuditRepository` implements all methods of `AuditRepository`
+3. Financial charges and audit events persist across server restarts
+4. All existing Finance and Audit domain tests pass against the new Prisma implementations
+5. The application is fully functional end-to-end without any in-memory state leakage

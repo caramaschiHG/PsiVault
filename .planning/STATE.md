@@ -4,9 +4,9 @@ milestone: v1.1
 milestone_name: Supabase Backend
 status: milestone_started
 last_updated: "2026-03-15"
-last_activity: 2026-03-15 — Milestone v1.1 started
+last_activity: 2026-03-15 — Roadmap approved with 5 phases
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -24,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-03-15 after v1.1 milestone started)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 1 of 5 (Phase 7: Infrastructure Foundation)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-03-15 — Milestone v1.1 started
+Status: Ready to start Phase 7
+Last activity: 2026-03-15 — Roadmap approved with 5 phases
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -38,7 +38,13 @@ Progress: [░░░░░░░░░░] 0%
 - Total execution time: 0h 0m
 
 **By Phase:**
-(To be defined)
+| Phase | Plans | Status |
+|-------|-------|--------|
+| 07-infrastructure-foundation | 0/? | Not started |
+| 08-authentication-workspaces | 0/? | Not started |
+| 09-patient-agenda-persistence | 0/? | Not started |
+| 10-clinical-document-persistence | 0/? | Not started |
+| 11-finance-ops-persistence | 0/? | Not started |
 
 ## Accumulated Context
 
