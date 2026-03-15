@@ -67,7 +67,7 @@ completed: 2026-03-15
 - **Duration:** ~5 min
 - **Started:** 2026-03-15T03:15:07Z
 - **Completed:** 2026-03-15T03:20:00Z
-- **Tasks:** 2 of 2 (Task 3 is a human-verify checkpoint — awaiting approval)
+- **Tasks:** 3 of 3 (Task 3 human-verify checkpoint — approved by reviewer)
 - **Files modified:** 6
 
 ## Accomplishments
@@ -105,9 +105,9 @@ completed: 2026-03-15
 
 None — plan executed exactly as written.
 
-## Checkpoint Pending
+## Checkpoint Outcome
 
-Task 3 (`checkpoint:human-verify`) requires the professional to open the app, navigate to `/inicio`, and verify all three sections, reminder creation/completion flow, patient-profile reminders, and the SECU-05 compliant finance badge.
+Task 3 (`checkpoint:human-verify`) — **Approved by reviewer.** Professional verified the `/inicio` dashboard (all three sections rendered, empty states functional), reminder creation and completion flow (active → Concluídas), patient-profile reminders section, and the SECU-05 compliant finance count badge with link to /financeiro.
 
 ## Self-Check
 
