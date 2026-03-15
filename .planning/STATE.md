@@ -1,69 +1,44 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: MVP
-status: milestone_complete
-stopped_at: v1.0 milestone archived
+milestone: v1.1
+milestone_name: Supabase Backend
+status: milestone_started
 last_updated: "2026-03-15"
-last_activity: 2026-03-15 — v1.0 milestone complete; all 6 phases verified and archived
+last_activity: 2026-03-15 — Milestone v1.1 started
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 21
-  completed_plans: 21
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-15 after v1.0 milestone)
+See: .planning/PROJECT.md (updated 2026-03-15 after v1.1 milestone started)
 
 **Core value:** The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
-**Current focus:** v1.0 milestone shipped. Planning next milestone with `/gsd:new-milestone`.
+**Current focus:** Defining requirements and roadmap for v1.1 (Supabase Backend)
 
 ## Current Position
 
-Phase: 6 of 6 — **All phases complete ✓**
-Plans: 21 of 21 completed
-Status: v1.0 milestone archived — ready for next milestone planning
-Last activity: 2026-03-15 — v1.0 milestone complete; 6 phases, 21 plans, 289 tests, 15,935 LOC
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-15 — Milestone v1.1 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Total execution time: 7h 27m
+- Total plans completed: 0
+- Total execution time: 0h 0m
 
 **By Phase:**
-
-| Phase | Plans | Status |
-|-------|-------|--------|
-| 01-vault-foundation | 3/3 | Complete |
-| 02-patient-agenda-core | 0/3 | Not started |
-| 03-clinical-record-core | 0/3 | Not started |
-| 04-document-vault | 0/3 | Not started |
-| 05-finance-assisted-ops | 0/3 | Not started |
-| 06-retrieval-recovery-polish | 0/3 | Not started |
-| Phase 02-patient-and-agenda-core P01 | 55 | 3 tasks | 15 files |
-| Phase 02-patient-and-agenda-core P02 | 6 | 3 tasks | 12 files |
-| Phase 02-patient-and-agenda-core P03 | 7 | 3 tasks | 12 files |
-| Phase 02-patient-and-agenda-core P04 | 12 | 2 tasks | 2 files |
-| Phase 03-clinical-record-core P01 | 2 | 2 tasks | 6 files |
-| Phase 03-clinical-record-core P02 | 4 | 3 tasks | 4 files |
-| Phase 03-clinical-record-core P03 | 4 | 2 tasks | 2 files |
-| Phase 04-document-vault P01 | 3 | 2 tasks | 6 files |
-| Phase 05-finance-and-assisted-operations P01 | 5 | 1 tasks | 11 files |
-| Phase 05 P02 | 6 | 2 tasks | 6 files |
-| Phase 05 P03 | 25 | 2 tasks | 6 files |
-| Phase 06-retrieval-recovery-and-launch-polish P01 | 177 | 2 tasks | 9 files |
-| Phase 06-retrieval-recovery-and-launch-polish P04 | 45 | 3 tasks | 10 files |
-| Phase 06-retrieval-recovery-and-launch-polish P03 | 18 | 2 tasks | 4 files |
-| Phase 06-retrieval-recovery-and-launch-polish P02 | 5 | 2 tasks | 6 files |
-| Phase 06-retrieval-recovery-and-launch-polish P05 | 5 | 1 tasks | 1 files |
+(To be defined)
 
 ## Accumulated Context
 

@@ -6,6 +6,17 @@ PsiVault is a digital vault for Brazilian psychologists who run their own practi
 
 **Status: v1.0 shipped (2026-03-15).** The complete office loop — create patient, schedule session, register the session, issue a professional document, track payment, and find anything later — is fully functional and launch-ready.
 
+## Current Milestone: v1.1 Supabase Backend
+
+**Goal:** Replace the v1.0 in-memory repositories with a production-ready Supabase backend for real data persistence.
+
+**Target features:**
+- Supabase project and Prisma schema setup
+- Migration of Patient & Agenda domains
+- Migration of Clinical Record & Document domains
+- Migration of Finance & Ops domains
+- Real authentication and workspace bindings
+
 ## Core Value
 
 The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
@@ -20,7 +31,11 @@ The psychologist can finish a session, register everything correctly in a few mi
 
 ### Active
 
-(No active requirements for next milestone — define with `/gsd:new-milestone`)
+- [ ] Setup Supabase project and Prisma schema
+- [ ] Migrate Patient & Agenda domains to Supabase
+- [ ] Migrate Clinical Record & Document domains to Supabase
+- [ ] Migrate Finance & Ops domains to Supabase
+- [ ] Establish authentication/workspace bindings with Supabase
 
 ### Out of Scope
 
@@ -72,4 +87,4 @@ The psychologist can finish a session, register everything correctly in a few mi
 | Next.js nested layouts for settings sub-nav | One new `layout.tsx` file applies sub-navigation to all `/settings/*` routes automatically | ✓ Good — zero modifications to existing pages needed; gap closed in 1 task |
 
 ---
-*Last updated: 2026-03-15 after v1.0 milestone*
+*Last updated: 2026-03-15 after v1.1 milestone started*
