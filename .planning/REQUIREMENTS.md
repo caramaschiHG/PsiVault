@@ -90,8 +90,8 @@
 
 - [x] **SECU-01**: Clinical and financial records are visible only to the authenticated professional who owns the account.
 - [x] **SECU-02**: System records an audit trail for sensitive create/update/delete actions on patient, clinical, document, and financial data.
-- [ ] **SECU-03**: Professional can export patient-related data when necessary.
-- [ ] **SECU-04**: System provides a backup and recovery path for practice data with restore verification.
+- [x] **SECU-03**: Professional can export patient-related data when necessary.
+- [x] **SECU-04**: System provides a backup and recovery path for practice data with restore verification.
 - [x] **SECU-05**: System avoids unnecessary sensitive data exposure in lists, notifications, and secondary UI surfaces.
 
 ## v2 Requirements
@@ -177,8 +177,8 @@
 | SRCH-02 | Phase 6 | Pending |
 | SECU-01 | Phase 1 | Complete |
 | SECU-02 | Phase 1 | Complete |
-| SECU-03 | Phase 6 | Pending |
-| SECU-04 | Phase 6 | Pending |
+| SECU-03 | Phase 6 | Complete |
+| SECU-04 | Phase 6 | Complete |
 | SECU-05 | Phase 1 | Complete |
 
 **Coverage:**

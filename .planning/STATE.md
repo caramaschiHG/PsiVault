@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-15T03:10:38.869Z"
+stopped_at: Completed 06-04-PLAN.md
+last_updated: "2026-03-15T03:13:32.240Z"
 last_activity: 2026-03-14 — completed `03-03` ClinicalTimeline plan; checkpoint verified and approved
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 20
-  completed_plans: 17
+  completed_plans: 18
   percent: 100
 ---
 
@@ -60,6 +60,7 @@ Progress: [██████████] 100%
 | Phase 05 P02 | 6 | 2 tasks | 6 files |
 | Phase 05 P03 | 25 | 2 tasks | 6 files |
 | Phase 06-retrieval-recovery-and-launch-polish P01 | 177 | 2 tasks | 9 files |
+| Phase 06-retrieval-recovery-and-launch-polish P04 | 45 | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,9 @@ Progress: [██████████] 100%
 - [Phase 06-retrieval-recovery-and-launch-polish]: createReminderAuditEvent accepts flat input (eventType, reminderId, workspaceId, accountId, now) — simpler API than charge audit, no nested object needed
 - [Phase 06-retrieval-recovery-and-launch-polish]: Wave 0 scaffold tests reference actual future import paths (no mocks) so downstream plan executors have exact contracts to implement against
 - [Phase 06-retrieval-recovery-and-launch-polish]: listByWorkspaceAndMonth uses UTC boundaries matching listByMonth pattern (createdAt-based, Date.UTC, exclusive upper bound)
+- [Phase 06-retrieval-recovery-and-launch-polish]: Re-auth gate for export/backup uses short-lived cookies (v1 stub) - marked for production replacement with evaluateSensitiveAction
+- [Phase 06-retrieval-recovery-and-launch-polish]: VerifyBackupForm uses FileReader API for client-side schema validation - no server round-trip, validateBackupSchema is pure
+- [Phase 06-retrieval-recovery-and-launch-polish]: All financial fields included in export - backup is trusted vault operation, SECU-05 whitelist does not apply to owner backup surface
 
 ### Pending Todos
 
@@ -130,6 +134,6 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-03-15T03:10:38.866Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-03-15T03:13:32.237Z
+Stopped at: Completed 06-04-PLAN.md
 Resume: Start Phase 4 planning (Document Vault)
