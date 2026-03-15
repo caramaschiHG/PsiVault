@@ -1,3 +1,5 @@
+import { signIn } from "../actions";
+
 export default function SignInPage() {
   return (
     <main style={shellStyle}>
@@ -8,14 +10,14 @@ export default function SignInPage() {
           A sessão permanece ativa no dia a dia, mas o vault exige e-mail
           verificado e MFA concluído antes da área protegida.
         </p>
-        <form style={formStyle}>
+        <form style={formStyle} action={signIn}>
           <label style={labelStyle}>
             E-mail
-            <input style={inputStyle} type="email" placeholder="voce@consultorio.com.br" />
+            <input style={inputStyle} type="email" name="email" placeholder="voce@consultorio.com.br" required />
           </label>
           <label style={labelStyle}>
             Senha
-            <input style={inputStyle} type="password" placeholder="Sua senha" />
+            <input style={inputStyle} type="password" name="password" placeholder="Sua senha" required />
           </label>
           <button style={buttonStyle} type="submit">
             Entrar
@@ -88,4 +90,3 @@ const buttonStyle = {
   color: "#fff",
   fontWeight: 700,
 } satisfies React.CSSProperties;
-

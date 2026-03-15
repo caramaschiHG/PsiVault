@@ -1,3 +1,5 @@
+import { signUp } from "../actions";
+
 export default function SignUpPage() {
   return (
     <main style={shellStyle}>
@@ -8,18 +10,18 @@ export default function SignUpPage() {
           O acesso completo ao vault só é liberado depois da verificação de
           e-mail e da configuração do segundo fator.
         </p>
-        <form style={formStyle}>
+        <form style={formStyle} action={signUp}>
           <label style={labelStyle}>
             Nome profissional
-            <input style={inputStyle} placeholder="Dra. Helena Prado" />
+            <input style={inputStyle} name="displayName" placeholder="Dra. Helena Prado" required />
           </label>
           <label style={labelStyle}>
             E-mail
-            <input style={inputStyle} placeholder="voce@consultorio.com.br" type="email" />
+            <input style={inputStyle} name="email" placeholder="voce@consultorio.com.br" type="email" required />
           </label>
           <label style={labelStyle}>
             Senha
-            <input style={inputStyle} placeholder="Crie uma senha forte" type="password" />
+            <input style={inputStyle} name="password" placeholder="Crie uma senha forte" type="password" required />
           </label>
           <button style={buttonStyle} type="submit">
             Continuar para verificação
@@ -92,4 +94,3 @@ const buttonStyle: React.CSSProperties = {
   color: "#fff",
   fontWeight: 700,
 };
-
