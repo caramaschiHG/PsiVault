@@ -1,9 +1,14 @@
+// Wave 0 scaffold — implementation created in Plan 06-04 (export)
+
 /**
  * Tests for export serializer: buildPatientExport, buildWorkspaceBackup, validateBackupSchema
  *
  * Coverage requirements:
  * - SECU-03: per-patient data export
  * - SECU-04: full workspace backup + backup verification
+ *
+ * These tests will FAIL with import errors until Plan 06-04 creates
+ * src/lib/export/serializer.ts. That is the expected Wave 0 state.
  */
 
 import { describe, it, expect } from "vitest";

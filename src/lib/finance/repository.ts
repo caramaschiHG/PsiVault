@@ -4,6 +4,9 @@
  * listByMonth uses UTC boundaries:
  *   from = Date.UTC(year, month-1, 1) — inclusive
  *   to   = Date.UTC(year, month, 1)   — exclusive
+ *
+ * listByWorkspaceAndMonth: same UTC boundaries but workspace-scoped (no patientId filter).
+ * Used by DASH-02 dashboard aggregation to sum all charges in a calendar month.
  */
 
 import type { SessionCharge } from "./model";
@@ -14,6 +17,7 @@ export interface SessionChargeRepository {
   findByAppointmentId(appointmentId: string): SessionCharge | null;
   listByPatient(patientId: string, workspaceId: string): SessionCharge[];
   listByMonth(workspaceId: string, patientId: string, year: number, month: number): SessionCharge[];
+  listByWorkspaceAndMonth(workspaceId: string, year: number, month: number): SessionCharge[];
 }
 
 export function createInMemorySessionChargeRepository(): SessionChargeRepository {
@@ -53,6 +57,22 @@ export function createInMemorySessionChargeRepository(): SessionChargeRepository
       const result: SessionCharge[] = [];
       for (const charge of store.values()) {
         if (charge.workspaceId !== workspaceId || charge.patientId !== patientId) {
+          continue;
+        }
+        const createdMs = charge.createdAt.getTime();
+        if (createdMs >= from && createdMs < to) {
+          result.push(charge);
+        }
+      }
+      return result;
+    },
+
+    listByWorkspaceAndMonth(workspaceId: string, year: number, month: number): SessionCharge[] {
+      const from = Date.UTC(year, month - 1, 1);
+      const to = Date.UTC(year, month, 1);
+      const result: SessionCharge[] = [];
+      for (const charge of store.values()) {
+        if (charge.workspaceId !== workspaceId) {
           continue;
         }
         const createdMs = charge.createdAt.getTime();
