@@ -7,8 +7,10 @@
  * 3. QuickNextSessionCard (prefilled defaults from last appointment or profile)
  * 4. ClinicalTimeline (longitudinal session history, all statuses)
  * 5. DocumentsSection (active patient documents — type, date, view link)
- * 6. Edit form (below the fold)
- * 7. Important observations (profile-only surface)
+ * 6. FinanceSection (charge history and inline edit form)
+ * 7. ExportSection (per-patient data export trigger — SECU-03)
+ * 8. Edit form (below the fold)
+ * 9. Important observations (profile-only surface)
  *
  * Now that 02-02 provides appointment occurrences, the summary is hydrated
  * from real scheduling data via derivePatientSummaryFromAppointments rather
@@ -41,6 +43,7 @@ import { getFinanceRepository } from "../../../../lib/finance/store";
 import { deriveFinancialStatus } from "../../../../lib/finance/model";
 import { FinanceSection } from "./components/finance-section";
 import { updateChargeAction } from "../../appointments/actions";
+import { ExportSection } from "./components/export-section";
 
 const WORKSPACE_ID = "ws_1";
 const ACCOUNT_ID = "acct_1";
@@ -186,6 +189,9 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
         patientId={patient.id}
         updateChargeAction={updateChargeAction}
       />
+
+      {/* 7. Export section — per-patient data export trigger (SECU-03) */}
+      <ExportSection patientId={patient.id} patientName={patientDisplayName} />
 
       {/* 8. Edit form — below the fold */}
       <section style={editSectionStyle}>
