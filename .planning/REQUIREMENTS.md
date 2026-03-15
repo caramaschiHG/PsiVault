@@ -83,8 +83,8 @@
 
 - [ ] **DASH-01**: Professional sees today's agenda, next appointments, reminders, and payment pendencies on the home screen.
 - [ ] **DASH-02**: Professional sees a simple monthly operational summary with active patients, completed sessions, received payments, and pending payments.
-- [ ] **SRCH-01**: Professional can search patients quickly by name or identifying info.
-- [ ] **SRCH-02**: Professional can find past sessions, documents, canceled appointments, and pending payments from the product's search/navigation flows.
+- [x] **SRCH-01**: Professional can search patients quickly by name or identifying info.
+- [x] **SRCH-02**: Professional can find past sessions, documents, canceled appointments, and pending payments from the product's search/navigation flows.
 
 ### Security and Governance
 
@@ -173,8 +173,8 @@
 | TASK-03 | Phase 6 | Complete |
 | DASH-01 | Phase 6 | Pending |
 | DASH-02 | Phase 6 | Pending |
-| SRCH-01 | Phase 6 | Pending |
-| SRCH-02 | Phase 6 | Pending |
+| SRCH-01 | Phase 6 | Complete |
+| SRCH-02 | Phase 6 | Complete |
 | SECU-01 | Phase 1 | Complete |
 | SECU-02 | Phase 1 | Complete |
 | SECU-03 | Phase 6 | Complete |
