@@ -42,6 +42,8 @@ model Workspace {
   practiceProfile PracticeProfile?
   patients        Patient[]
   appointments    Appointment[]
+  clinicalNotes   ClinicalNote[]
+  documents       PracticeDocument[]
 
   @@unique([id, ownerAccountId])
   @@map("workspaces")
@@ -133,11 +135,19 @@ model Appointment {
   completedAt         DateTime? @map("completed_at")
   noShowAt            DateTime? @map("no_show_at")
 
+  // Finance — deferred from Phase 2 [02-04], hydrated in Phase 5
+  priceInCents Int? @map("price_in_cents")
+
+  // Online care — ONLN-01, ONLN-03
+  meetingLink     String? @map("meeting_link")
+  remoteIssueNote String? @map("remote_issue_note")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  patient   Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  patient      Patient       @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  clinicalNote ClinicalNote?
 
   @@index([workspaceId, startsAt])
   @@index([workspaceId, patientId])
@@ -175,9 +185,61 @@ model Patient {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  appointments Appointment[]
+  workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  appointments  Appointment[]
+  clinicalNotes ClinicalNote[]
+  documents     PracticeDocument[]
 
   @@index([workspaceId, deletedAt])
   @@map("patients")
+}
+
+model ClinicalNote {
+  id            String @id @default(uuid())
+  workspaceId   String @map("workspace_id")
+  patientId     String @map("patient_id")
+  appointmentId String @unique @map("appointment_id")
+
+  freeText          String  @map("free_text")
+  demand            String?
+  observedMood      String? @map("observed_mood")
+  themes            String?
+  clinicalEvolution String? @map("clinical_evolution")
+  nextSteps         String? @map("next_steps")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  editedAt  DateTime? @map("edited_at")
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, patientId])
+  @@map("clinical_notes")
+}
+
+model PracticeDocument {
+  id          String @id @default(uuid())
+  workspaceId String @map("workspace_id")
+  patientId   String @map("patient_id")
+
+  type    String // DocumentType stored as TEXT — cast in mapToDomain()
+  content String // PostgreSQL TEXT, no size limit
+
+  createdByAccountId String @map("created_by_account_id")
+  createdByName      String @map("created_by_name")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  editedAt  DateTime? @map("edited_at")
+
+  archivedAt          DateTime? @map("archived_at")
+  archivedByAccountId String?   @map("archived_by_account_id")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  patient   Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, patientId])
+  @@map("practice_documents")
 }
