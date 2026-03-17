@@ -39,7 +39,7 @@
 **Goal:** Replace in-memory clinical and document repositories with Prisma implementations.
 **Requirements:** REPO-03, REPO-04
 
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] 10-01-PLAN.md — Extend schema.prisma with ClinicalNote + PracticeDocument models and run migration

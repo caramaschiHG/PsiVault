@@ -24,10 +24,46 @@ Requirements for the Supabase backend migration. Each maps to roadmap phases.
 
 - [ ] **REPO-01**: Implement `PrismaPatientRepository` and replace in-memory stub
 - [ ] **REPO-02**: Implement `PrismaAgendaRepository` and replace in-memory stub
-- [ ] **REPO-03**: Implement `PrismaClinicalRepository` and replace in-memory stub
-- [ ] **REPO-04**: Implement `PrismaDocumentRepository` and replace in-memory stub
+- [x] **REPO-03**: Implement `PrismaClinicalRepository` and replace in-memory stub
+- [x] **REPO-04**: Implement `PrismaDocumentRepository` and replace in-memory stub
 - [ ] **REPO-05**: Implement `PrismaFinanceRepository` and replace in-memory stub
 - [ ] **REPO-06**: Implement `PrismaAuditRepository` and replace in-memory stub
+
+## v1.2 Requirements
+
+Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
+
+### Authentication UX
+
+- [ ] **AUTHUX-01**: Implement a professional sign-in page (email/password) with proper form validation and error messages
+- [ ] **AUTHUX-02**: Implement a sign-up page with user-friendly onboarding flow using Supabase Auth
+- [ ] **AUTHUX-03**: Implement a password reset flow (request reset email + update password page)
+- [ ] **AUTHUX-04**: Handle Supabase Auth errors gracefully with user-facing Portuguese messages
+- [ ] **AUTHUX-05**: Protect auth pages from authenticated users (redirect logged-in users away from login/signup)
+
+### UI/UX Polish
+
+- [ ] **UIUX-01**: Establish a consistent design system — typography scale, color palette, spacing tokens, and border-radius applied throughout
+- [ ] **UIUX-02**: Apply professional visual design to all primary views (inicio, agenda, patients list, patient profile, financeiro)
+- [ ] **UIUX-03**: Ensure all pages are fully responsive across mobile, tablet, and desktop viewports
+- [ ] **UIUX-04**: Achieve WCAG 2.1 AA color contrast ratios on all interactive elements and body text
+- [ ] **UIUX-05**: Add proper empty states, loading states, and error states to all data-dependent pages
+- [ ] **UIUX-06**: Polish navigation — clear active states, breadcrumbs where helpful, smooth transitions
+
+### Quality & Production Hardening
+
+- [ ] **QUAL-01**: Replace the re-auth gate stub in export/backup routes with the real `evaluateSensitiveAction` flow
+- [ ] **QUAL-02**: Add structured error boundaries to all route segments to prevent white-screen crashes
+- [ ] **QUAL-03**: Harden all server actions — validate inputs, handle Prisma errors, return typed error responses
+- [ ] **QUAL-04**: Ensure workspace audit trail is complete — remove the `auditEvents: never[]` stub from backup
+- [ ] **QUAL-05**: Security review — confirm no sensitive data leaks in search, audit, or dashboard surfaces (SECU-05 audit)
+- [ ] **QUAL-06**: Ensure all domain tests pass against Prisma implementations (no in-memory repository leakage)
+
+### Deployment Readiness
+
+- [ ] **DEPLOY-01**: Configure production environment variables for Supabase, Prisma, and Next.js
+- [ ] **DEPLOY-02**: Verify the application builds and starts cleanly in production mode (`next build`)
+- [ ] **DEPLOY-03**: Confirm Prisma migrations are applied and the production database schema is correct
 
 ## v2 Requirements
 
@@ -57,16 +93,37 @@ Requirements for the Supabase backend migration. Each maps to roadmap phases.
 | AUTH-04 | Phase 8 | Pending |
 | REPO-01 | Phase 9 | Pending |
 | REPO-02 | Phase 9 | Pending |
-| REPO-03 | Phase 10 | Pending |
-| REPO-04 | Phase 10 | Pending |
+| REPO-03 | Phase 10 | Complete |
+| REPO-04 | Phase 10 | Complete |
 | REPO-05 | Phase 11 | Pending |
 | REPO-06 | Phase 11 | Pending |
+| AUTHUX-01 | Phase 12 | Pending |
+| AUTHUX-02 | Phase 12 | Pending |
+| AUTHUX-03 | Phase 12 | Pending |
+| AUTHUX-04 | Phase 12 | Pending |
+| AUTHUX-05 | Phase 12 | Pending |
+| UIUX-01 | Phase 13 | Pending |
+| UIUX-02 | Phase 13 | Pending |
+| UIUX-03 | Phase 13 | Pending |
+| UIUX-04 | Phase 13 | Pending |
+| UIUX-05 | Phase 13 | Pending |
+| UIUX-06 | Phase 13 | Pending |
+| QUAL-01 | Phase 14 | Pending |
+| QUAL-02 | Phase 14 | Pending |
+| QUAL-03 | Phase 14 | Pending |
+| QUAL-04 | Phase 14 | Pending |
+| QUAL-05 | Phase 14 | Pending |
+| QUAL-06 | Phase 14 | Pending |
+| DEPLOY-01 | Phase 14 | Pending |
+| DEPLOY-02 | Phase 14 | Pending |
+| DEPLOY-03 | Phase 14 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 13 total
-- Mapped to phases: 13
+- v1.2 requirements: 20 total
+- Mapped to phases: 33
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-15 after initial definition*
+*Last updated: 2026-03-17 after v1.2 milestone requirements added*

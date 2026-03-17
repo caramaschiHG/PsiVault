@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: Ready to start Phase 10
-stopped_at: Phase 10 context gathered
-last_updated: "2026-03-17T22:23:08.776Z"
+stopped_at: Completed 10-01-PLAN.md
+last_updated: "2026-03-17T22:42:39.178Z"
 last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 progress:
   total_phases: 8
   completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  total_plans: 4
+  completed_plans: 2
   percent: 43
 ---
 
@@ -49,6 +49,7 @@ Progress: [████░░░░░░] 43%
 | 12-authentication-ux | 0/? | Not started |
 | 13-ui-ux-polish | 0/? | Not started |
 | 14-quality-production-hardening | 0/? | Not started |
+| Phase 10-clinical-document-persistence P01 | 5 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,9 @@ Progress: [████░░░░░░] 43%
 - [Phase 06-05]: Settings layout kept as server component with no usePathname — page heading indicates active section, no client JS needed
 - [Phase 06-05]: Tab strip renders above children without adding padding — each settings page owns its own layout padding
 - [v1.2-00]: v1.2 "Lançamento" merges remaining v1.1 phases (10–11) with auth UX polish and production hardening into one release milestone.
+- [Phase 10-01]: ClinicalNote.appointmentId has @unique — enforces one-to-one at DB level, not application level
+- [Phase 10-01]: PracticeDocument.type and .content are plain String (not Prisma enum) — domain DocumentType cast in repository mapToDomain()
+- [Phase 10-01]: Migration SQL created manually because DIRECT_URL password is a placeholder — apply with npx prisma migrate deploy after configuring Supabase password
 
 ### Pending Todos
 
@@ -133,6 +137,6 @@ Progress: [████░░░░░░] 43%
 
 ## Session Continuity
 
-Last session: 2026-03-17T22:23:08.774Z
-Stopped at: Phase 10 context gathered
+Last session: 2026-03-17T22:42:39.175Z
+Stopped at: Completed 10-01-PLAN.md
 Resume: Plan or execute Phase 10 — /gsd:plan-phase 10
