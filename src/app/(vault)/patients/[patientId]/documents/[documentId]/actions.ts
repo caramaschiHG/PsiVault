@@ -30,7 +30,7 @@ export async function archiveDocumentAction(formData: FormData) {
   const patientId = String(formData.get("patientId") ?? "");
 
   const repo = getDocumentRepository();
-  const doc = repo.findById(documentId, WORKSPACE_ID);
+  const doc = await repo.findById(documentId, WORKSPACE_ID);
   if (!doc || doc.patientId !== patientId) {
     // Already archived or not found — redirect silently
     redirect(`/patients/${patientId}`);
@@ -38,7 +38,7 @@ export async function archiveDocumentAction(formData: FormData) {
 
   const now = new Date();
   const archived = archivePracticeDocument(doc, ACCOUNT_ID, { now });
-  repo.save(archived);
+  await repo.save(archived);
 
   const auditRepo = getAuditRepository();
   const auditEvent = createDocumentAuditEvent(

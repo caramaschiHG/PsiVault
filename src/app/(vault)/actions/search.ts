@@ -28,26 +28,27 @@ export async function searchAllAction(query: string): Promise<SearchResultItem[]
   const chargeRepo = getFinanceRepository();
 
   // Load all patients (active + archived)
-  const activePatients = patientRepo.listActive(WORKSPACE_ID);
-  const archivedPatients = patientRepo.listArchived(WORKSPACE_ID);
+  const [activePatients, archivedPatients] = await Promise.all([
+    patientRepo.listActive(WORKSPACE_ID),
+    patientRepo.listArchived(WORKSPACE_ID),
+  ]);
   const allPatients = [...activePatients, ...archivedPatients];
 
   // Load all appointments using a wide date range stub
   // (no listAll method available — use wide date range)
-  const appointments = appointmentRepo.listByDateRange(
+  const appointments = await appointmentRepo.listByDateRange(
     WORKSPACE_ID,
     new Date(2020, 0, 1),
     new Date(2030, 11, 31),
   );
 
-  // Load all documents by iterating over all patients
-  // (PracticeDocumentRepository only has listByPatient, not workspace-level listing)
-  const documents = allPatients.flatMap((p) =>
-    documentRepo.listByPatient(p.id, WORKSPACE_ID),
+  // Load all documents by iterating over all patients (Asynchronous)
+  const documentsResults = await Promise.all(
+    allPatients.map((p) => documentRepo.listByPatient(p.id, WORKSPACE_ID)),
   );
+  const documents = documentsResults.flat();
 
-  // Load all charges by iterating over all patients
-  // (SessionChargeRepository.listByPatient is the workspace-scoped method)
+  // Load all charges by iterating over all patients (Synchronous)
   const charges = allPatients.flatMap((p) =>
     chargeRepo.listByPatient(p.id, WORKSPACE_ID),
   );

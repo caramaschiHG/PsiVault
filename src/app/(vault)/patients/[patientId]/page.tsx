@@ -62,14 +62,14 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   const appointmentRepo = getAppointmentRepository();
   const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
 
-  const patient = patientRepo.findById(patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(patientId, WORKSPACE_ID);
 
   if (!patient) {
     notFound();
   }
 
   // Load all appointments for this patient to hydrate the summary and defaults
-  const appointments = appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
+  const appointments = await appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
 
   // Derive scheduling-backed summary (financialStatus populated after charges are loaded below)
   // Note: charges loaded after appointments, so we compute summary after loading charges
@@ -104,16 +104,16 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
     },
   });
 
-  // Load reminders for this patient (active + completed history)
+  // Load reminders for this patient (active + completed history) - Synchronous
   const reminderRepo = getReminderRepository();
   const activeReminders = reminderRepo.listActiveByPatient(patient.id, WORKSPACE_ID);
   const completedReminders = reminderRepo.listCompletedByPatient(patient.id, WORKSPACE_ID);
 
-  // Load active documents for this patient
+  // Load active documents for this patient - Asynchronous
   const docRepo = getDocumentRepository();
-  const activeDocuments = docRepo.listActiveByPatient(patient.id, WORKSPACE_ID);
+  const activeDocuments = await docRepo.listActiveByPatient(patient.id, WORKSPACE_ID);
 
-  // Load charges for financial status derivation
+  // Load charges for financial status derivation - Synchronous
   const financeRepo = getFinanceRepository();
   const charges = financeRepo.listByPatient(patient.id, WORKSPACE_ID);
   const financialStatus = deriveFinancialStatus(charges);
@@ -129,12 +129,15 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   const clinicalRepo = getClinicalNoteRepository();
 
   // Build a map of appointmentId -> noteId for COMPLETED appointments that have a note
+  const completedAppointments = appointments.filter((appt) => appt.status === "COMPLETED");
+  const noteResults = await Promise.all(
+    completedAppointments.map((appt) => clinicalRepo.findByAppointmentId(appt.id, WORKSPACE_ID)),
+  );
   const notesByAppointment = new Map<string, string>();
-  for (const appt of appointments) {
-    if (appt.status !== "COMPLETED") continue;
-    const note = clinicalRepo.findByAppointmentId(appt.id, WORKSPACE_ID);
+  completedAppointments.forEach((appt, i) => {
+    const note = noteResults[i];
     if (note) notesByAppointment.set(appt.id, note.id);
-  }
+  });
 
   // Build timeline entries — all appointments, most recent first
   // (appointments is already sorted most-recent first from listByPatient)

@@ -32,23 +32,23 @@ export default async function NotePage({ params }: NotePageProps) {
   const clinicalRepo = getClinicalNoteRepository();
 
   // Guard: appointment must exist and be COMPLETED
-  const appointment = appointmentRepo.findById(appointmentId, WORKSPACE_ID);
+  const appointment = await appointmentRepo.findById(appointmentId, WORKSPACE_ID);
   if (!appointment || appointment.status !== "COMPLETED") {
     notFound();
   }
 
   // Guard: patient must exist
-  const patient = patientRepo.findById(appointment.patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(appointment.patientId, WORKSPACE_ID);
   if (!patient) {
     notFound();
   }
 
   // Compute session number
-  const allAppointments = appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
+  const allAppointments = await appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
   const sessionNumber = deriveSessionNumber(appointmentId, allAppointments);
 
   // Load existing note (null if first creation)
-  const existingNote = clinicalRepo.findByAppointmentId(appointmentId, WORKSPACE_ID);
+  const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, WORKSPACE_ID);
 
   // Build read-only header labels
   const sessionLabel =

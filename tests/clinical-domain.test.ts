@@ -216,9 +216,9 @@ describe("clinical domain", () => {
         },
         { now, createId: () => "note_8" },
       );
-      repo.save(note);
+      await repo.save(note);
 
-      const found = repo.findByAppointmentId("appt_8", "ws_1");
+      const found = await repo.findByAppointmentId("appt_8", "ws_1");
       expect(found).not.toBeNull();
       expect(found?.id).toBe("note_8");
       expect(found?.freeText).toBe("Evolução da sessão.");
@@ -228,7 +228,7 @@ describe("clinical domain", () => {
       const { createInMemoryClinicalRepository } = await import("../src/lib/clinical/repository");
 
       const repo = createInMemoryClinicalRepository();
-      const found = repo.findByAppointmentId("no-such-appt", "ws_1");
+      const found = await repo.findByAppointmentId("no-such-appt", "ws_1");
       expect(found).toBeNull();
     });
 
@@ -248,10 +248,10 @@ describe("clinical domain", () => {
         },
         { now, createId: () => "note_9" },
       );
-      repo.save(note);
+      await repo.save(note);
 
       // Different workspace — should not see note
-      const found = repo.findByAppointmentId("appt_9", "ws_2");
+      const found = await repo.findByAppointmentId("appt_9", "ws_2");
       expect(found).toBeNull();
     });
 
@@ -289,11 +289,11 @@ describe("clinical domain", () => {
         { now: new Date("2026-03-12T10:00:00.000Z"), createId: () => "note_12" },
       );
 
-      repo.save(oldest);
-      repo.save(newest);
-      repo.save(middle);
+      await repo.save(oldest);
+      await repo.save(newest);
+      await repo.save(middle);
 
-      const list = repo.listByPatient("pat_2", "ws_1");
+      const list = await repo.listByPatient("pat_2", "ws_1");
       expect(list).toHaveLength(3);
       expect(list[0].id).toBe("note_12");
       expect(list[1].id).toBe("note_11");
@@ -316,10 +316,10 @@ describe("clinical domain", () => {
         { now, createId: () => "note_14" },
       );
 
-      repo.save(ws1Note);
-      repo.save(ws2Note);
+      await repo.save(ws1Note);
+      await repo.save(ws2Note);
 
-      const ws1List = repo.listByPatient("pat_3", "ws_1");
+      const ws1List = await repo.listByPatient("pat_3", "ws_1");
       expect(ws1List).toHaveLength(1);
       expect(ws1List[0].id).toBe("note_13");
     });
@@ -335,13 +335,13 @@ describe("clinical domain", () => {
         { workspaceId: "ws_1", patientId: "pat_1", appointmentId: "appt_15", freeText: "Nota." },
         { now, createId: () => "note_15" },
       );
-      repo.save(note);
+      await repo.save(note);
 
-      const found = repo.findById("note_15", "ws_1");
+      const found = await repo.findById("note_15", "ws_1");
       expect(found).not.toBeNull();
       expect(found?.id).toBe("note_15");
 
-      const notFound = repo.findById("note_15", "ws_2");
+      const notFound = await repo.findById("note_15", "ws_2");
       expect(notFound).toBeNull();
     });
   });

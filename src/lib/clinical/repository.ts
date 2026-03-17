@@ -10,10 +10,10 @@
 import type { ClinicalNote } from "./model";
 
 export interface ClinicalNoteRepository {
-  save(note: ClinicalNote): ClinicalNote;
-  findById(id: string, workspaceId: string): ClinicalNote | null;
-  findByAppointmentId(appointmentId: string, workspaceId: string): ClinicalNote | null;
-  listByPatient(patientId: string, workspaceId: string): ClinicalNote[];
+  save(note: ClinicalNote): Promise<ClinicalNote>;
+  findById(id: string, workspaceId: string): Promise<ClinicalNote | null>;
+  findByAppointmentId(appointmentId: string, workspaceId: string): Promise<ClinicalNote | null>;
+  listByPatient(patientId: string, workspaceId: string): Promise<ClinicalNote[]>;
 }
 
 export function createInMemoryClinicalRepository(
@@ -28,18 +28,18 @@ export function createInMemoryClinicalRepository(
   }
 
   return {
-    save(note: ClinicalNote): ClinicalNote {
+    async save(note: ClinicalNote): Promise<ClinicalNote> {
       store.set(note.id, note);
       return note;
     },
 
-    findById(id: string, workspaceId: string): ClinicalNote | null {
+    async findById(id: string, workspaceId: string): Promise<ClinicalNote | null> {
       const note = store.get(id);
       if (!note || note.workspaceId !== workspaceId) return null;
       return note;
     },
 
-    findByAppointmentId(appointmentId: string, workspaceId: string): ClinicalNote | null {
+    async findByAppointmentId(appointmentId: string, workspaceId: string): Promise<ClinicalNote | null> {
       for (const note of store.values()) {
         if (note.appointmentId === appointmentId && note.workspaceId === workspaceId) {
           return note;
@@ -48,7 +48,7 @@ export function createInMemoryClinicalRepository(
       return null;
     },
 
-    listByPatient(patientId: string, workspaceId: string): ClinicalNote[] {
+    async listByPatient(patientId: string, workspaceId: string): Promise<ClinicalNote[]> {
       return Array.from(store.values())
         .filter((note) => note.patientId === patientId && note.workspaceId === workspaceId)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());

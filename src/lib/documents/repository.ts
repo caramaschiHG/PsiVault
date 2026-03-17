@@ -9,10 +9,10 @@
 import type { PracticeDocument } from "./model";
 
 export interface PracticeDocumentRepository {
-  save(doc: PracticeDocument): PracticeDocument;
-  findById(id: string, workspaceId: string): PracticeDocument | null;
-  listByPatient(patientId: string, workspaceId: string): PracticeDocument[];
-  listActiveByPatient(patientId: string, workspaceId: string): PracticeDocument[];
+  save(doc: PracticeDocument): Promise<PracticeDocument>;
+  findById(id: string, workspaceId: string): Promise<PracticeDocument | null>;
+  listByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]>;
+  listActiveByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]>;
 }
 
 export function createInMemoryDocumentRepository(
@@ -27,24 +27,24 @@ export function createInMemoryDocumentRepository(
   }
 
   return {
-    save(doc: PracticeDocument): PracticeDocument {
+    async save(doc: PracticeDocument): Promise<PracticeDocument> {
       store.set(doc.id, doc);
       return doc;
     },
 
-    findById(id: string, workspaceId: string): PracticeDocument | null {
+    async findById(id: string, workspaceId: string): Promise<PracticeDocument | null> {
       const doc = store.get(id);
       if (!doc || doc.workspaceId !== workspaceId) return null;
       return doc;
     },
 
-    listByPatient(patientId: string, workspaceId: string): PracticeDocument[] {
+    async listByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]> {
       return Array.from(store.values()).filter(
         (doc) => doc.patientId === patientId && doc.workspaceId === workspaceId,
       );
     },
 
-    listActiveByPatient(patientId: string, workspaceId: string): PracticeDocument[] {
+    async listActiveByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]> {
       return Array.from(store.values()).filter(
         (doc) =>
           doc.patientId === patientId &&

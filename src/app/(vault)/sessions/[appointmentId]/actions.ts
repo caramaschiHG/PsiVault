@@ -61,11 +61,11 @@ export async function createNoteAction(formData: FormData) {
   const nextSteps = nullCoerce(formData.get("nextSteps"));
 
   // Guard: appointment must exist and be COMPLETED
-  const appointment = appointmentRepo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const appointment = await appointmentRepo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!appointment || appointment.status !== "COMPLETED") return;
 
   // Guard: do not create duplicate — if note exists, redirect to patient profile
-  const existingNote = clinicalRepo.findByAppointmentId(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, DEFAULT_WORKSPACE_ID);
   if (existingNote) {
     redirect(`/patients/${patientId}`);
   }
@@ -85,7 +85,7 @@ export async function createNoteAction(formData: FormData) {
     { now, createId: generateId },
   );
 
-  clinicalRepo.save(note);
+  await clinicalRepo.save(note);
 
   audit.append(
     createClinicalNoteAuditEvent(
@@ -118,7 +118,7 @@ export async function updateNoteAction(formData: FormData) {
   const nextSteps = nullCoerce(formData.get("nextSteps"));
 
   // Guard: note must exist
-  const existingNote = clinicalRepo.findById(noteId, DEFAULT_WORKSPACE_ID);
+  const existingNote = await clinicalRepo.findById(noteId, DEFAULT_WORKSPACE_ID);
   if (!existingNote) return;
 
   const updatedNote = updateClinicalNote(
@@ -134,7 +134,7 @@ export async function updateNoteAction(formData: FormData) {
     { now },
   );
 
-  clinicalRepo.save(updatedNote);
+  await clinicalRepo.save(updatedNote);
 
   audit.append(
     createClinicalNoteAuditEvent(

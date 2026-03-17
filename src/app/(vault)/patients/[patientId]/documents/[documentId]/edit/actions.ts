@@ -31,14 +31,14 @@ export async function updateDocumentAction(formData: FormData) {
   const content = String(formData.get("content") ?? "").trim();
 
   const repo = getDocumentRepository();
-  const doc = repo.findById(documentId, WORKSPACE_ID);
+  const doc = await repo.findById(documentId, WORKSPACE_ID);
   if (!doc || doc.patientId !== patientId || doc.archivedAt !== null) {
     redirect(`/patients/${patientId}`);
   }
 
   const now = new Date();
   const updated = updatePracticeDocument(doc, { content }, { now });
-  repo.save(updated);
+  await repo.save(updated);
 
   const auditRepo = getAuditRepository();
   const auditEvent = createDocumentAuditEvent(

@@ -199,7 +199,7 @@ describe("document domain", () => {
   });
 
   describe("createInMemoryDocumentRepository", () => {
-    it("save + findById returns saved document scoped by workspaceId", () => {
+    it("save + findById returns saved document scoped by workspaceId", async () => {
       const repo = createInMemoryDocumentRepository();
       const doc = createPracticeDocument(
         {
@@ -212,14 +212,14 @@ describe("document domain", () => {
         },
         { now: NOW, createId: makeId },
       );
-      repo.save(doc);
+      await repo.save(doc);
 
-      const found = repo.findById(doc.id, "ws_1");
+      const found = await repo.findById(doc.id, "ws_1");
       expect(found).not.toBeNull();
       expect(found?.id).toBe(doc.id);
     });
 
-    it("findById returns null for different workspaceId (workspace isolation)", () => {
+    it("findById returns null for different workspaceId (workspace isolation)", async () => {
       const repo = createInMemoryDocumentRepository();
       const doc = createPracticeDocument(
         {
@@ -232,13 +232,13 @@ describe("document domain", () => {
         },
         { now: NOW, createId: makeId },
       );
-      repo.save(doc);
+      await repo.save(doc);
 
-      const notFound = repo.findById(doc.id, "ws_2");
+      const notFound = await repo.findById(doc.id, "ws_2");
       expect(notFound).toBeNull();
     });
 
-    it("listByPatient returns all docs for patient (including archived)", () => {
+    it("listByPatient returns all docs for patient (including archived)", async () => {
       const repo = createInMemoryDocumentRepository();
       const active = createPracticeDocument(
         {
@@ -267,14 +267,14 @@ describe("document domain", () => {
         { now: new Date("2026-01-20T10:00:00Z") },
       );
 
-      repo.save(active);
-      repo.save(archived);
+      await repo.save(active);
+      await repo.save(archived);
 
-      const list = repo.listByPatient("pat_2", "ws_1");
+      const list = await repo.listByPatient("pat_2", "ws_1");
       expect(list).toHaveLength(2);
     });
 
-    it("listActiveByPatient returns only docs with archivedAt === null", () => {
+    it("listActiveByPatient returns only docs with archivedAt === null", async () => {
       const repo = createInMemoryDocumentRepository();
       const active = createPracticeDocument(
         {
@@ -303,15 +303,15 @@ describe("document domain", () => {
         { now: new Date("2026-01-20T10:00:00Z") },
       );
 
-      repo.save(active);
-      repo.save(archived);
+      await repo.save(active);
+      await repo.save(archived);
 
-      const activeList = repo.listActiveByPatient("pat_3", "ws_1");
+      const activeList = await repo.listActiveByPatient("pat_3", "ws_1");
       expect(activeList).toHaveLength(1);
       expect(activeList[0].id).toBe(active.id);
     });
 
-    it("listActiveByPatient excludes archived docs", () => {
+    it("listActiveByPatient excludes archived docs", async () => {
       const repo = createInMemoryDocumentRepository();
       const doc = createPracticeDocument(
         {
@@ -325,9 +325,9 @@ describe("document domain", () => {
         { now: NOW, createId: makeId },
       );
       const archivedDoc = archivePracticeDocument(doc, "acct_1", { now: new Date("2026-01-20T10:00:00Z") });
-      repo.save(archivedDoc);
+      await repo.save(archivedDoc);
 
-      const activeList = repo.listActiveByPatient("pat_4", "ws_1");
+      const activeList = await repo.listActiveByPatient("pat_4", "ws_1");
       expect(activeList).toHaveLength(0);
     });
   });

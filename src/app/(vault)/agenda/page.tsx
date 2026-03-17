@@ -72,10 +72,10 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     ? new Date(anchorDate.getTime() + 2 * DAY_MS)
     : new Date(anchorDate.getTime() + WEEK_MS + DAY_MS);
 
-  const appointments = appointmentRepo.listByDateRange(WORKSPACE_ID, rangeFrom, rangeTo);
+  const appointments = await appointmentRepo.listByDateRange(WORKSPACE_ID, rangeFrom, rangeTo);
 
   // Build patient name lookup from the patient repository
-  const allPatients = patientRepo.listActive(WORKSPACE_ID);
+  const allPatients = await patientRepo.listActive(WORKSPACE_ID);
   const patientNames: Record<string, string> = {};
   for (const p of allPatients) {
     patientNames[p.id] = p.socialName ? `${p.fullName} (${p.socialName})` : p.fullName;
@@ -94,12 +94,14 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const clinicalRepo = getClinicalNoteRepository();
 
   // Build set of appointment IDs that already have a note
-  const notedAppointmentIds = new Set(
-    appointments
-      .filter((a) => a.status === "COMPLETED")
-      .filter((a) => clinicalRepo.findByAppointmentId(a.id, WORKSPACE_ID) !== null)
-      .map((a) => a.id),
+  const notedAppointmentIds = new Set<string>();
+  const completedAppts = appointments.filter((a) => a.status === "COMPLETED");
+  const agendaNoteResults = await Promise.all(
+    completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, WORKSPACE_ID)),
   );
+  completedAppts.forEach((a, i) => {
+    if (agendaNoteResults[i]) notedAppointmentIds.add(a.id);
+  });
 
   // Build nextSessionActions map for appointment cards.
   // COMPLETED entries include next-session action and clinical note entry point.
@@ -493,7 +495,7 @@ const commLinkStyle = {
   color: "#9a3412",
   textDecoration: "none",
   fontWeight: 500,
-  padding: "0.15rem 0.5rem",
+  padding: "0.15rem 0.55rem",
   borderRadius: "6px",
   background: "rgba(255, 247, 237, 0.8)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
@@ -504,7 +506,7 @@ const onlineSectionStyle = {
   padding: "0.75rem",
   borderRadius: "12px",
   background: "rgba(239, 246, 255, 0.7)",
-  border: "1px solid rgba(59, 130, 246, 0.15)",
+  border: "1px solid rgba(130, 160, 246, 0.15)",
   display: "grid",
   gap: "0.5rem",
 } satisfies React.CSSProperties;

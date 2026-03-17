@@ -48,7 +48,7 @@ export async function GET(
   // ── Load patient ────────────────────────────────────────────────────────
   const { patientId } = await params;
   const patientRepo = getPatientRepository();
-  const patient = patientRepo.findById(patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(patientId, WORKSPACE_ID);
 
   if (!patient) {
     return Response.json({ error: "Paciente não encontrado" }, { status: 404 });
@@ -60,9 +60,9 @@ export async function GET(
   const docRepo = getDocumentRepository();
   const financeRepo = getFinanceRepository();
 
-  const appointments = appointmentRepo.listByPatient(patientId, WORKSPACE_ID);
-  const clinicalNotes = clinicalRepo.listByPatient(patientId, WORKSPACE_ID);
-  const documents = docRepo.listActiveByPatient(patientId, WORKSPACE_ID);
+  const appointments = await appointmentRepo.listByPatient(patientId, WORKSPACE_ID);
+  const clinicalNotes = await clinicalRepo.listByPatient(patientId, WORKSPACE_ID);
+  const documents = await docRepo.listActiveByPatient(patientId, WORKSPACE_ID);
   const charges = financeRepo.listByPatient(patientId, WORKSPACE_ID);
 
   // ── Build and return export ─────────────────────────────────────────────

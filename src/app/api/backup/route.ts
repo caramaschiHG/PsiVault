@@ -51,20 +51,27 @@ export async function GET(
   const docRepo = getDocumentRepository();
   const financeRepo = getFinanceRepository();
 
-  const activePatients = patientRepo.listActive(WORKSPACE_ID);
-  const archivedPatients = patientRepo.listArchived(WORKSPACE_ID);
+  const [activePatients, archivedPatients] = await Promise.all([
+    patientRepo.listActive(WORKSPACE_ID),
+    patientRepo.listArchived(WORKSPACE_ID),
+  ]);
   const patients = [...activePatients, ...archivedPatients];
 
-  // Load all appointments, clinical notes, documents, and charges per patient
-  const appointments = patients.flatMap((p) =>
+  // Load all appointments (Asynchronous)
+  const appointmentsResults = await Promise.all(patients.map((p) =>
     appointmentRepo.listByPatient(p.id, WORKSPACE_ID),
-  );
-  const clinicalNotes = patients.flatMap((p) =>
+  ));
+  const appointments = appointmentsResults.flat();
+
+  // Load clinical notes per patient (Asynchronous)
+  const clinicalNotesResults = await Promise.all(patients.map((p) =>
     clinicalRepo.listByPatient(p.id, WORKSPACE_ID),
-  );
-  const documents = patients.flatMap((p) =>
+  ));
+  const clinicalNotes = clinicalNotesResults.flat();
+  const documentsResults = await Promise.all(patients.map((p) =>
     docRepo.listByPatient(p.id, WORKSPACE_ID),
-  );
+  ));
+  const documents = documentsResults.flat();
   const charges = patients.flatMap((p) =>
     financeRepo.listByPatient(p.id, WORKSPACE_ID),
   );

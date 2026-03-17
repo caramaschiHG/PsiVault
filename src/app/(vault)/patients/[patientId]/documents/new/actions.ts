@@ -39,7 +39,7 @@ const VALID_TYPES = new Set<DocumentType>([
 
 /**
  * Converts a FormData entry to string | null.
- * Empty strings are treated as "not filled" → null.
+ * Empty strings (blank textareas) are treated as "not filled" → null.
  * Security: document content must never leak into audit metadata (SECU-05).
  */
 function nullCoerce(value: FormDataEntryValue | null): string | null {
@@ -91,7 +91,7 @@ export async function createDocumentAction(formData: FormData) {
   );
 
   const repo = getDocumentRepository();
-  repo.save(doc);
+  await repo.save(doc);
 
   // Fire-and-forget audit (SECU-05: metadata contains only documentType)
   const auditRepo = getAuditRepository();
