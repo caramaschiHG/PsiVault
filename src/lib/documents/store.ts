@@ -1,12 +1,4 @@
-/**
- * Module-level in-memory document store.
- *
- * Mirrors the Phase 1 profile/patient/appointment/clinical store pattern so the
- * document repository is available across server actions without requiring a DB
- * connection in this phase.
- */
-
-import { createInMemoryDocumentRepository } from "./repository";
+import { createPrismaDocumentRepository } from "./repository.prisma";
 import type { PracticeDocumentRepository } from "./repository";
 
 declare global {
@@ -15,6 +7,6 @@ declare global {
 }
 
 export function getDocumentRepository(): PracticeDocumentRepository {
-  globalThis.__psivaultDocumentRepository__ ??= createInMemoryDocumentRepository();
+  globalThis.__psivaultDocumentRepository__ ??= createPrismaDocumentRepository();
   return globalThis.__psivaultDocumentRepository__;
 }
