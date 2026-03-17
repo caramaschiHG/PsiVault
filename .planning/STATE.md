@@ -1,50 +1,54 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: Supabase Backend
-status: milestone_started
-last_updated: "2026-03-15"
-last_activity: 2026-03-15 — Roadmap approved with 5 phases
+milestone_name: milestone
+status: Ready to start Phase 10
+stopped_at: Phase 10 context gathered
+last_updated: "2026-03-17T22:23:08.776Z"
+last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 progress:
-  total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 8
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 43
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-15 after v1.1 milestone started)
+See: .planning/PROJECT.md (updated 2026-03-17 after v1.2 milestone defined)
 
 **Core value:** The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
-**Current focus:** Defining requirements and roadmap for v1.1 (Supabase Backend)
+**Current focus:** Phase 10 — Clinical & Document Persistence (first incomplete phase)
 
 ## Current Position
 
-Phase: 1 of 5 (Phase 7: Infrastructure Foundation)
+Phase: 4 of 7 (Phase 10: Clinical & Document Persistence)
 Plan: —
-Status: Ready to start Phase 7
-Last activity: 2026-03-15 — Roadmap approved with 5 phases
+Status: Ready to start Phase 10
+Last activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████░░░░░░] 43%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Total execution time: 0h 0m
+- Total plans completed: 3
+- Total execution time: —
 
 **By Phase:**
 | Phase | Plans | Status |
 |-------|-------|--------|
-| 07-infrastructure-foundation | 0/? | Not started |
-| 08-authentication-workspaces | 0/? | Not started |
-| 09-patient-agenda-persistence | 0/? | Not started |
+| 07-infrastructure-foundation | 1/1 | ✓ Complete |
+| 08-authentication-workspaces | 1/1 | ✓ Complete |
+| 09-patient-agenda-persistence | 1/1 | ✓ Complete |
 | 10-clinical-document-persistence | 0/? | Not started |
 | 11-finance-ops-persistence | 0/? | Not started |
+| 12-authentication-ux | 0/? | Not started |
+| 13-ui-ux-polish | 0/? | Not started |
+| 14-quality-production-hardening | 0/? | Not started |
 
 ## Accumulated Context
 
@@ -112,11 +116,15 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase 06-02]: RemindersSection placed after FinanceSection on patient profile — all operational-status sections grouped before ExportSection
 - [Phase 06-05]: Settings layout kept as server component with no usePathname — page heading indicates active section, no client JS needed
 - [Phase 06-05]: Tab strip renders above children without adding padding — each settings page owns its own layout padding
+- [v1.2-00]: v1.2 "Lançamento" merges remaining v1.1 phases (10–11) with auth UX polish and production hardening into one release milestone.
 
 ### Pending Todos
 
-- Plan Phase 2 (`patient and agenda core`) now that the foundation phase is fully executed.
-- Decide whether `tsconfig.tsbuildinfo` should be ignored or cleaned up in repo tooling.
+- Plan and execute Phase 10 (Clinical & Document Persistence).
+- Plan and execute Phase 11 (Finance & Ops Persistence).
+- Plan and execute Phase 12 (Authentication UX).
+- Plan and execute Phase 13 (UI/UX Polish).
+- Plan and execute Phase 14 (Quality & Production Hardening).
 
 ### Blockers/Concerns
 
@@ -125,6 +133,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-15T03:37:40.747Z
-Stopped at: Completed 06-05-PLAN.md
-Resume: Continue Phase 6 — next plan is 06-03 (Global Search) or 06-04 (Data Export/Backup)
+Last session: 2026-03-17T22:23:08.774Z
+Stopped at: Phase 10 context gathered
+Resume: Plan or execute Phase 10 — /gsd:plan-phase 10
