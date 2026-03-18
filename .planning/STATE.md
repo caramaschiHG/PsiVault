@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: Ready to start Phase 10
-stopped_at: Completed 13-ui-ux-polish 13-02-PLAN.md
-last_updated: "2026-03-18T11:16:02.673Z"
+stopped_at: Completed 13-ui-ux-polish 13-03-PLAN.md
+last_updated: "2026-03-18T11:16:23.017Z"
 last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 progress:
   total_phases: 8
@@ -61,6 +61,7 @@ Progress: [████░░░░░░] 43%
 | Phase 12-authentication-ux P03 | 12 | 2 tasks | 3 files |
 | Phase 13-ui-ux-polish P01 | 8 | 1 tasks | 1 files |
 | Phase 13-ui-ux-polish P02 | 2 | 2 tasks | 3 files |
+| Phase 13-ui-ux-polish P03 | 12 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -155,6 +156,7 @@ Progress: [████░░░░░░] 43%
 - [Phase 13-ui-ux-polish]: Tokens tipograficos com valores exatos: 1.5rem page-title, 0.9375rem body, 0.8125rem meta, 0.75rem label
 - [Phase 13-ui-ux-polish]: Breakpoint vault: max-width:767px mobile (bottom-nav), min-width:768px desktop (sidebar)
 - [Phase 13-ui-ux-polish]: Avatar iniciais PS hardcoded como placeholder — integracao com sessao Supabase e fase 14
+- [Phase 13-ui-ux-polish]: loading.tsx nao usa use client — server component puro, shellStyle replicado do page.tsx para evitar layout shift
 
 ### Pending Todos
 
@@ -171,6 +173,6 @@ Progress: [████░░░░░░] 43%
 
 ## Session Continuity
 
-Last session: 2026-03-18T11:16:02.670Z
-Stopped at: Completed 13-ui-ux-polish 13-02-PLAN.md
+Last session: 2026-03-18T11:16:23.014Z
+Stopped at: Completed 13-ui-ux-polish 13-03-PLAN.md
 Resume: Plan or execute Phase 10 — /gsd:plan-phase 10
