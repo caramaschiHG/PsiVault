@@ -1,9 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+
+/* ─── Design tokens ──────────────────────────────────────────────────────────── */
+
 :root {
   color-scheme: light;
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
-  background: #f5f0e8;
-  color: #1c1917;
+
+  /* Colors */
+  --color-bg:           #f7f3ed;
+  --color-surface-0:    #ffffff;
+  --color-surface-1:    #fffcf7;
+  --color-surface-2:    rgba(255, 252, 247, 0.95);
+  --color-border:       rgba(146, 64, 14, 0.12);
+  --color-border-med:   rgba(146, 64, 14, 0.2);
+  --color-text-1:       #1c1917;
+  --color-text-2:       #57534e;
+  --color-text-3:       #78716c;
+  --color-text-4:       #a8a29e;
+  --color-accent:       #9a3412;
+  --color-accent-light: rgba(154, 52, 18, 0.08);
+  --color-brown-mid:    #b45309;
+  --color-sidebar-bg:   #f0ebe2;
+  --color-sidebar-active: rgba(154, 52, 18, 0.1);
+
+  /* Radii */
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(120, 53, 15, 0.08);
+  --shadow-lg: 0 12px 40px rgba(120, 53, 15, 0.12);
+
+  /* Tipografia — escala fase 13 */
+  --font-serif: "IBM Plex Serif", Georgia, serif;
+  --font-sans:  "IBM Plex Sans", "Segoe UI", sans-serif;
+
+  --font-size-page-title:    1.5rem;    /* 24px — h1 de página */
+  --font-size-section-title: 1rem;      /* 16px — h2 de seção */
+  --font-size-body:          0.9375rem; /* 15px — texto corrido */
+  --font-size-meta:          0.8125rem; /* 13px — metadados, datas, status */
+  --font-size-label:         0.75rem;   /* 12px — eyebrow uppercase */
+
+  /* Espaçamento */
+  --space-page-padding-x: 2.5rem;
+  --space-page-padding-y: 2rem;
+  --space-section-gap:    1.5rem;
+  --space-row-height:     3.5rem; /* 56px mínimo */
 }
+
+/* ─── Reset ──────────────────────────────────────────────────────────────────── */
 
 * {
   box-sizing: border-box;
@@ -12,13 +61,272 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(180, 151, 90, 0.16), transparent 40%),
-    linear-gradient(180deg, #f8f5ef 0%, #efe6d6 100%);
-  color: inherit;
+  background: var(--color-bg);
+  color: var(--color-text-1);
 }
 
 a {
   color: inherit;
 }
 
+::selection {
+  background: rgba(154, 52, 18, 0.15);
+  color: var(--color-text-1);
+}
+
+/* ─── Utility: Navigation links ──────────────────────────────────────────────── */
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-2);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+.nav-link:hover {
+  background: rgba(146, 64, 14, 0.06);
+  color: var(--color-text-1);
+}
+
+.nav-link.active {
+  background: var(--color-sidebar-active);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ─── Utility: Buttons ───────────────────────────────────────────────────────── */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-accent);
+  color: #fff7ed;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s, transform 0.08s;
+}
+
+.btn-primary:hover {
+  background: #7c2a0e;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-med);
+  background: #fff7ed;
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 247, 237, 0.7);
+  border-color: rgba(146, 64, 14, 0.3);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+.btn-ghost:hover {
+  background: rgba(146, 64, 14, 0.05);
+  color: var(--color-text-1);
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(153, 27, 27, 0.2);
+  background: transparent;
+  color: #991b1b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(153, 27, 27, 0.35);
+}
+
+/* ─── Utility: Cards with hover ──────────────────────────────────────────────── */
+
+.card-hover {
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* ─── Utility: Inputs ────────────────────────────────────────────────────────── */
+
+.input-field {
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+  color: var(--color-text-1);
+  background: var(--color-surface-0);
+  border: 1px solid var(--color-border-med);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.input-field:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(154, 52, 18, 0.1);
+}
+
+.input-field::placeholder {
+  color: var(--color-text-4);
+}
+
+/* ─── Utility: Subtle links ──────────────────────────────────────────────────── */
+
+.link-subtle {
+  color: var(--color-text-2);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.12s;
+}
+
+.link-subtle:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─── Animação skeleton ──────────────────────────────────────────────────────── */
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ─── Sidebar dark context ───────────────────────────────────────────────────── */
+
+.vault-sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.vault-sidebar .nav-link:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.vault-sidebar .nav-link.active {
+  color: rgba(255, 255, 255, 0.98);
+  background-color: rgba(255, 255, 255, 0.12);
+  font-weight: 500;
+}
+
+/* ─── Responsividade vault ───────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .vault-sidebar {
+    display: none !important;
+  }
+  .vault-bottom-nav {
+    display: flex !important;
+  }
+  .vault-content {
+    padding-bottom: 5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .vault-bottom-nav {
+    display: none !important;
+  }
+}
+
+/* ─── Bottom nav mobile ──────────────────────────────────────────────────────── */
+
+.vault-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4rem;
+  background-color: var(--color-surface-0);
+  border-top: 1px solid var(--color-border);
+  display: none; /* oculto por padrão em desktop */
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  padding: 0 0.5rem;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--font-size-label);
+  color: var(--color-text-2);
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  min-width: 3rem;
+  transition: color 0.15s;
+}
+
+.bottom-nav-item.active {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.bottom-nav-item svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
