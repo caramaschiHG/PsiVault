@@ -56,101 +56,109 @@ export async function createAppointmentAction(formData: FormData) {
   const isRecurring = formData.get("isRecurring") === "true";
   const recurrenceCount = Number(formData.get("recurrenceCount") ?? 1);
 
-  // Guard: patient must be active
-  const patient = await patientRepo.findById(patientId, DEFAULT_WORKSPACE_ID);
-  if (!patient) return;
-  assertPatientSchedulable(patient);
+  let redirectPath: string | null = null;
 
-  if (isRecurring && recurrenceCount > 1) {
-    // Generate weekly series
-    const occurrences = generateWeeklySeries(
-      {
-        workspaceId: DEFAULT_WORKSPACE_ID,
-        patientId,
-        startsAt,
-        durationMinutes,
-        careMode,
-      },
-      { count: recurrenceCount },
-      {
-        now,
-        createId: generateId,
-        createSeriesId: generateSeriesId,
-      },
-    );
+  try {
+    // Guard: patient must be active
+    const patient = await patientRepo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    if (!patient) return;
+    assertPatientSchedulable(patient);
 
-    // Check conflicts for each occurrence before saving any
-    const allExisting = await repo.listByDateRange(
-      DEFAULT_WORKSPACE_ID,
-      occurrences[0].startsAt,
-      occurrences[occurrences.length - 1].endsAt,
-    );
+    if (isRecurring && recurrenceCount > 1) {
+      // Generate weekly series
+      const occurrences = generateWeeklySeries(
+        {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          patientId,
+          startsAt,
+          durationMinutes,
+          careMode,
+        },
+        { count: recurrenceCount },
+        {
+          now,
+          createId: generateId,
+          createSeriesId: generateSeriesId,
+        },
+      );
 
-    for (const occurrence of occurrences) {
-      const conflictResult = checkConflicts(occurrence, allExisting);
-      if (conflictResult.hasConflict) {
-        // In a production action this would return an error; here we throw
-        throw new Error(
-          `Scheduling conflict detected for ${occurrence.startsAt.toISOString()}.`,
+      // Check conflicts for each occurrence before saving any
+      const allExisting = await repo.listByDateRange(
+        DEFAULT_WORKSPACE_ID,
+        occurrences[0].startsAt,
+        occurrences[occurrences.length - 1].endsAt,
+      );
+
+      for (const occurrence of occurrences) {
+        const conflictResult = checkConflicts(occurrence, allExisting);
+        if (conflictResult.hasConflict) {
+          // In a production action this would return an error; here we throw
+          throw new Error(
+            `Scheduling conflict detected for ${occurrence.startsAt.toISOString()}.`,
+          );
+        }
+      }
+
+      for (const occurrence of occurrences) {
+        await repo.save(occurrence);
+        audit.append(
+          createAppointmentAuditEvent(
+            {
+              type: "appointment.created",
+              appointment: occurrence,
+              actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            },
+            { now, createId: generateId },
+          ),
         );
       }
-    }
 
-    for (const occurrence of occurrences) {
-      await repo.save(occurrence);
+      redirectPath = `/appointments`;
+    } else {
+      // Single appointment
+      const existing = await repo.listByDateRange(
+        DEFAULT_WORKSPACE_ID,
+        startsAt,
+        new Date(startsAt.getTime() + durationMinutes * 60_000),
+      );
+
+      const appointment = createAppointment(
+        {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          patientId,
+          startsAt,
+          durationMinutes,
+          careMode,
+        },
+        { now, createId: generateId },
+      );
+
+      const conflictResult = checkConflicts(appointment, existing);
+      if (conflictResult.hasConflict) {
+        throw new Error("Scheduling conflict: the selected time overlaps an existing appointment.");
+      }
+
+      await repo.save(appointment);
+
       audit.append(
         createAppointmentAuditEvent(
           {
             type: "appointment.created",
-            appointment: occurrence,
+            appointment,
             actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
           },
           { now, createId: generateId },
         ),
       );
+
+      redirectPath = `/appointments/${appointment.id}`;
     }
-
-    redirect(`/appointments`);
-    return;
+  } catch (err) {
+    console.error("[createAppointmentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  // Single appointment
-  const existing = await repo.listByDateRange(
-    DEFAULT_WORKSPACE_ID,
-    startsAt,
-    new Date(startsAt.getTime() + durationMinutes * 60_000),
-  );
-
-  const appointment = createAppointment(
-    {
-      workspaceId: DEFAULT_WORKSPACE_ID,
-      patientId,
-      startsAt,
-      durationMinutes,
-      careMode,
-    },
-    { now, createId: generateId },
-  );
-
-  const conflictResult = checkConflicts(appointment, existing);
-  if (conflictResult.hasConflict) {
-    throw new Error("Scheduling conflict: the selected time overlaps an existing appointment.");
-  }
-
-  await repo.save(appointment);
-
-  audit.append(
-    createAppointmentAuditEvent(
-      {
-        type: "appointment.created",
-        appointment,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
-
-  redirect(`/appointments/${appointment.id}`);
+  if (redirectPath) redirect(redirectPath);
 }
 
 // ─── Reschedule appointment ────────────────────────────────────────────────────
@@ -165,53 +173,94 @@ export async function rescheduleAppointmentAction(formData: FormData) {
   const durationMinutes = Number(formData.get("durationMinutes") ?? 60);
   const scope = (formData.get("recurrenceScope") ?? "THIS") as RecurrenceEditScope;
 
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
+  let shouldRedirect = false;
 
-  if (existing.seriesId && scope !== "THIS") {
-    // Series reschedule — delegate to series edit for THIS_AND_FUTURE or ALL
-    // For time changes, each occurrence gets its time shifted; for simplicity
-    // this action only supports changing the time of the targeted scope
-    // by computing the delta and applying it.
-    const deltaMs = newStartsAt.getTime() - existing.startsAt.getTime();
-    const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-    let inScope =
-      scope === "ALL"
-        ? allInSeries
-        : allInSeries.filter(
-            (o) =>
-              (o.seriesIndex ?? o.startsAt.getTime()) >=
-              (existing.seriesIndex !== null
-                ? (existing.seriesIndex as number)
-                : existing.startsAt.getTime()),
-          );
+    if (existing.seriesId && scope !== "THIS") {
+      // Series reschedule — delegate to series edit for THIS_AND_FUTURE or ALL
+      const deltaMs = newStartsAt.getTime() - existing.startsAt.getTime();
+      const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
 
-    for (const occurrence of inScope) {
-      if (["COMPLETED", "CANCELED", "NO_SHOW"].includes(occurrence.status)) continue;
+      let inScope =
+        scope === "ALL"
+          ? allInSeries
+          : allInSeries.filter(
+              (o) =>
+                (o.seriesIndex ?? o.startsAt.getTime()) >=
+                (existing.seriesIndex !== null
+                  ? (existing.seriesIndex as number)
+                  : existing.startsAt.getTime()),
+            );
 
-      const newOccurrenceStart = new Date(occurrence.startsAt.getTime() + deltaMs);
+      for (const occurrence of inScope) {
+        if (["COMPLETED", "CANCELED", "NO_SHOW"].includes(occurrence.status)) continue;
 
+        const newOccurrenceStart = new Date(occurrence.startsAt.getTime() + deltaMs);
+
+        const conflictCheck = await repo.listByDateRange(
+          DEFAULT_WORKSPACE_ID,
+          newOccurrenceStart,
+          new Date(newOccurrenceStart.getTime() + durationMinutes * 60_000),
+        );
+
+        const conflictResult = checkConflicts(
+          {
+            id: occurrence.id,
+            startsAt: newOccurrenceStart,
+            endsAt: new Date(newOccurrenceStart.getTime() + durationMinutes * 60_000),
+          },
+          conflictCheck,
+        );
+
+        if (conflictResult.hasConflict) continue; // Skip conflicting occurrences in series reschedule
+
+        const rescheduled = rescheduleAppointment(
+          occurrence,
+          { startsAt: newOccurrenceStart, durationMinutes },
+          { now, createId: generateId },
+        );
+
+        await repo.save(rescheduled);
+
+        audit.append(
+          createAppointmentAuditEvent(
+            {
+              type: "appointment.rescheduled",
+              appointment: rescheduled,
+              actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+              metadata: { originalId: occurrence.id },
+            },
+            { now, createId: generateId },
+          ),
+        );
+      }
+    } else {
+      // Single occurrence reschedule
       const conflictCheck = await repo.listByDateRange(
         DEFAULT_WORKSPACE_ID,
-        newOccurrenceStart,
-        new Date(newOccurrenceStart.getTime() + durationMinutes * 60_000),
+        newStartsAt,
+        new Date(newStartsAt.getTime() + durationMinutes * 60_000),
       );
 
       const conflictResult = checkConflicts(
         {
-          id: occurrence.id,
-          startsAt: newOccurrenceStart,
-          endsAt: new Date(newOccurrenceStart.getTime() + durationMinutes * 60_000),
+          id: appointmentId,
+          startsAt: newStartsAt,
+          endsAt: new Date(newStartsAt.getTime() + durationMinutes * 60_000),
         },
         conflictCheck,
       );
 
-      if (conflictResult.hasConflict) continue; // Skip conflicting occurrences in series reschedule
+      if (conflictResult.hasConflict) {
+        throw new Error("Scheduling conflict: the new time overlaps an existing appointment.");
+      }
 
       const rescheduled = rescheduleAppointment(
-        occurrence,
-        { startsAt: newOccurrenceStart, durationMinutes },
+        existing,
+        { startsAt: newStartsAt, durationMinutes },
         { now, createId: generateId },
       );
 
@@ -223,55 +272,20 @@ export async function rescheduleAppointmentAction(formData: FormData) {
             type: "appointment.rescheduled",
             appointment: rescheduled,
             actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-            metadata: { originalId: occurrence.id },
+            metadata: { originalId: appointmentId },
           },
           { now, createId: generateId },
         ),
       );
     }
-  } else {
-    // Single occurrence reschedule
-    const conflictCheck = await repo.listByDateRange(
-      DEFAULT_WORKSPACE_ID,
-      newStartsAt,
-      new Date(newStartsAt.getTime() + durationMinutes * 60_000),
-    );
 
-    const conflictResult = checkConflicts(
-      {
-        id: appointmentId,
-        startsAt: newStartsAt,
-        endsAt: new Date(newStartsAt.getTime() + durationMinutes * 60_000),
-      },
-      conflictCheck,
-    );
-
-    if (conflictResult.hasConflict) {
-      throw new Error("Scheduling conflict: the new time overlaps an existing appointment.");
-    }
-
-    const rescheduled = rescheduleAppointment(
-      existing,
-      { startsAt: newStartsAt, durationMinutes },
-      { now, createId: generateId },
-    );
-
-    await repo.save(rescheduled);
-
-    audit.append(
-      createAppointmentAuditEvent(
-        {
-          type: "appointment.rescheduled",
-          appointment: rescheduled,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-          metadata: { originalId: appointmentId },
-        },
-        { now, createId: generateId },
-      ),
-    );
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[rescheduleAppointmentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
 }
 
 // ─── Cancel appointment ────────────────────────────────────────────────────────
@@ -284,27 +298,49 @@ export async function cancelAppointmentAction(formData: FormData) {
   const appointmentId = String(formData.get("appointmentId") ?? "");
   const scope = (formData.get("recurrenceScope") ?? "THIS") as RecurrenceEditScope;
 
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
+  let shouldRedirect = false;
 
-  if (existing.seriesId && scope !== "THIS") {
-    const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-    const inScope =
-      scope === "ALL"
-        ? allInSeries
-        : allInSeries.filter(
-            (o) =>
-              (o.seriesIndex ?? o.startsAt.getTime()) >=
-              (existing.seriesIndex !== null
-                ? (existing.seriesIndex as number)
-                : existing.startsAt.getTime()),
-          );
+    if (existing.seriesId && scope !== "THIS") {
+      const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
 
-    for (const occurrence of inScope) {
-      if (["COMPLETED", "CANCELED", "NO_SHOW"].includes(occurrence.status)) continue;
+      const inScope =
+        scope === "ALL"
+          ? allInSeries
+          : allInSeries.filter(
+              (o) =>
+                (o.seriesIndex ?? o.startsAt.getTime()) >=
+                (existing.seriesIndex !== null
+                  ? (existing.seriesIndex as number)
+                  : existing.startsAt.getTime()),
+            );
 
-      const canceled = cancelAppointment(occurrence, {
+      for (const occurrence of inScope) {
+        if (["COMPLETED", "CANCELED", "NO_SHOW"].includes(occurrence.status)) continue;
+
+        const canceled = cancelAppointment(occurrence, {
+          now,
+          canceledByAccountId: DEFAULT_ACCOUNT_ID,
+        });
+
+        await repo.save(canceled);
+
+        audit.append(
+          createAppointmentAuditEvent(
+            {
+              type: "appointment.canceled",
+              appointment: canceled,
+              actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            },
+            { now, createId: generateId },
+          ),
+        );
+      }
+    } else {
+      const canceled = cancelAppointment(existing, {
         now,
         canceledByAccountId: DEFAULT_ACCOUNT_ID,
       });
@@ -322,27 +358,14 @@ export async function cancelAppointmentAction(formData: FormData) {
         ),
       );
     }
-  } else {
-    const canceled = cancelAppointment(existing, {
-      now,
-      canceledByAccountId: DEFAULT_ACCOUNT_ID,
-    });
 
-    await repo.save(canceled);
-
-    audit.append(
-      createAppointmentAuditEvent(
-        {
-          type: "appointment.canceled",
-          appointment: canceled,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-        },
-        { now, createId: generateId },
-      ),
-    );
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[cancelAppointmentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  redirect(`/appointments`);
+  if (shouldRedirect) redirect(`/appointments`);
 }
 
 // ─── Confirm appointment ───────────────────────────────────────────────────────
@@ -353,24 +376,34 @@ export async function confirmAppointmentAction(formData: FormData) {
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
 
-  const confirmed = confirmAppointment(existing, { now });
-  await repo.save(confirmed);
+  let shouldRedirect = false;
 
-  audit.append(
-    createAppointmentAuditEvent(
-      {
-        type: "appointment.confirmed",
-        appointment: confirmed,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  redirect(`/appointments/${appointmentId}`);
+    const confirmed = confirmAppointment(existing, { now });
+    await repo.save(confirmed);
+
+    audit.append(
+      createAppointmentAuditEvent(
+        {
+          type: "appointment.confirmed",
+          appointment: confirmed,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[confirmAppointmentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
+
+  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
 }
 
 // ─── Complete appointment ──────────────────────────────────────────────────────
@@ -381,50 +414,60 @@ export async function completeAppointmentAction(formData: FormData) {
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
 
-  const completed = completeAppointment(existing, { now });
-  await repo.save(completed);
+  let shouldRedirect = false;
 
-  audit.append(
-    createAppointmentAuditEvent(
-      {
-        type: "appointment.completed",
-        appointment: completed,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  // Auto-create a SessionCharge (idempotent: skip if one already exists for this appointment)
-  const financeRepo = getFinanceRepository();
-  const existingCharge = await financeRepo.findByAppointmentId(completed.id);
-  if (!existingCharge) {
-    const charge = createSessionCharge(
-      {
-        workspaceId: DEFAULT_WORKSPACE_ID,
-        patientId: completed.patientId,
-        appointmentId: completed.id,
-        amountInCents: completed.priceInCents ?? null,
-      },
-      { now, createId: generateId },
-    );
-    await financeRepo.save(charge);
+    const completed = completeAppointment(existing, { now });
+    await repo.save(completed);
+
     audit.append(
-      createChargeAuditEvent(
+      createAppointmentAuditEvent(
         {
-          type: "charge.created",
-          charge,
+          type: "appointment.completed",
+          appointment: completed,
           actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
         },
         { now, createId: generateId },
       ),
     );
+
+    // Auto-create a SessionCharge (idempotent: skip if one already exists for this appointment)
+    const financeRepo = getFinanceRepository();
+    const existingCharge = await financeRepo.findByAppointmentId(completed.id);
+    if (!existingCharge) {
+      const charge = createSessionCharge(
+        {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          patientId: completed.patientId,
+          appointmentId: completed.id,
+          amountInCents: completed.priceInCents ?? null,
+        },
+        { now, createId: generateId },
+      );
+      await financeRepo.save(charge);
+      audit.append(
+        createChargeAuditEvent(
+          {
+            type: "charge.created",
+            charge,
+            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          },
+          { now, createId: generateId },
+        ),
+      );
+    }
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[completeAppointmentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
 }
 
 // ─── No-show ──────────────────────────────────────────────────────────────────
@@ -435,24 +478,34 @@ export async function noShowAppointmentAction(formData: FormData) {
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
 
-  const noShow = noShowAppointment(existing, { now });
-  await repo.save(noShow);
+  let shouldRedirect = false;
 
-  audit.append(
-    createAppointmentAuditEvent(
-      {
-        type: "appointment.no_show",
-        appointment: noShow,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  redirect(`/appointments/${appointmentId}`);
+    const noShow = noShowAppointment(existing, { now });
+    await repo.save(noShow);
+
+    audit.append(
+      createAppointmentAuditEvent(
+        {
+          type: "appointment.no_show",
+          appointment: noShow,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[noShowAppointmentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
+
+  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
 }
 
 // ─── Update charge ─────────────────────────────────────────────────────────────
@@ -475,25 +528,34 @@ export async function updateChargeAction(formData: FormData) {
   const amountInCents: number | null =
     amountStr.trim() !== "" ? Math.round(parseFloat(amountStr) * 100) : null;
 
-  const charge = await financeRepo.findById(chargeId);
-  if (!charge) return;
+  let patientIdForRevalidate: string | null = null;
 
-  const updated = updateSessionCharge(charge, { status, amountInCents, paymentMethod }, { now });
-  await financeRepo.save(updated);
+  try {
+    const charge = await financeRepo.findById(chargeId);
+    if (!charge) return;
 
-  audit.append(
-    createChargeAuditEvent(
-      {
-        type: "charge.updated",
-        charge: updated,
-        newStatus: updated.status,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
+    const updated = updateSessionCharge(charge, { status, amountInCents, paymentMethod }, { now });
+    await financeRepo.save(updated);
 
-  revalidatePath(`/patients/${charge.patientId}`);
+    audit.append(
+      createChargeAuditEvent(
+        {
+          type: "charge.updated",
+          charge: updated,
+          newStatus: updated.status,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    patientIdForRevalidate = charge.patientId;
+  } catch (err) {
+    console.error("[updateChargeAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
+
+  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
 }
 
 // ─── Edit meeting link (ONLN-01) ──────────────────────────────────────────────
@@ -507,27 +569,36 @@ export async function editMeetingLinkAction(formData: FormData) {
   const meetingLinkRaw = String(formData.get("meetingLink") ?? "");
   const meetingLink = meetingLinkRaw.trim() || null;
 
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
-  if (existing.careMode !== "ONLINE") return;
+  let patientIdForRevalidate: string | null = null;
 
-  const updated = updateAppointmentOnlineCare(existing, { meetingLink }, { now });
-  await repo.save(updated);
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
+    if (existing.careMode !== "ONLINE") return;
 
-  audit.append(
-    createAppointmentAuditEvent(
-      {
-        type: "appointment.updated",
-        appointment: updated,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-        metadata: { summary: "Link da sessão online atualizado." },
-      },
-      { now, createId: generateId },
-    ),
-  );
+    const updated = updateAppointmentOnlineCare(existing, { meetingLink }, { now });
+    await repo.save(updated);
+
+    audit.append(
+      createAppointmentAuditEvent(
+        {
+          type: "appointment.updated",
+          appointment: updated,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          metadata: { summary: "Link da sessão online atualizado." },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    patientIdForRevalidate = existing.patientId;
+  } catch (err) {
+    console.error("[editMeetingLinkAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
 
   revalidatePath("/agenda");
-  revalidatePath(`/patients/${existing.patientId}`);
+  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
 }
 
 // ─── Add remote issue note (ONLN-03) ──────────────────────────────────────────
@@ -541,27 +612,36 @@ export async function addRemoteIssueNoteAction(formData: FormData) {
   const remoteIssueNoteRaw = String(formData.get("remoteIssueNote") ?? "");
   const remoteIssueNote = remoteIssueNoteRaw.trim() || null;
 
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
+  let patientIdForRevalidate: string | null = null;
 
-  // Domain function guards against non-ONLINE appointments — let error propagate to Next.js error boundary
-  const updated = updateAppointmentOnlineCare(existing, { remoteIssueNote }, { now });
-  await repo.save(updated);
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  audit.append(
-    createAppointmentAuditEvent(
-      {
-        type: "appointment.updated",
-        appointment: updated,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-        metadata: { summary: "Registro de problema de conexão adicionado." },
-      },
-      { now, createId: generateId },
-    ),
-  );
+    // Domain function guards against non-ONLINE appointments — let error propagate to Next.js error boundary
+    const updated = updateAppointmentOnlineCare(existing, { remoteIssueNote }, { now });
+    await repo.save(updated);
+
+    audit.append(
+      createAppointmentAuditEvent(
+        {
+          type: "appointment.updated",
+          appointment: updated,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          metadata: { summary: "Registro de problema de conexão adicionado." },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    patientIdForRevalidate = existing.patientId;
+  } catch (err) {
+    console.error("[addRemoteIssueNoteAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
 
   revalidatePath("/agenda");
-  revalidatePath(`/patients/${existing.patientId}`);
+  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
 }
 
 // ─── Edit recurrence series ────────────────────────────────────────────────────
@@ -580,35 +660,44 @@ export async function editSeriesAction(formData: FormData) {
     ? (String(formData.get("careMode")) as AppointmentCareMode)
     : undefined;
 
-  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
+  let shouldRedirect = false;
 
-  const mutated = await applySeriesEdit(
-    {
-      scope,
-      targetId: appointmentId,
-      changes: {
-        ...(durationMinutes !== undefined ? { durationMinutes } : {}),
-        ...(careMode !== undefined ? { careMode } : {}),
-      },
-    },
-    repo,
-    { workspaceId: DEFAULT_WORKSPACE_ID, now, createId: generateId },
-  );
+  try {
+    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  for (const occurrence of mutated) {
-    audit.append(
-      createAppointmentAuditEvent(
-        {
-          type: "appointment.series_edited",
-          appointment: occurrence,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-          metadata: { scope, targetId: appointmentId },
+    const mutated = await applySeriesEdit(
+      {
+        scope,
+        targetId: appointmentId,
+        changes: {
+          ...(durationMinutes !== undefined ? { durationMinutes } : {}),
+          ...(careMode !== undefined ? { careMode } : {}),
         },
-        { now, createId: generateId },
-      ),
+      },
+      repo,
+      { workspaceId: DEFAULT_WORKSPACE_ID, now, createId: generateId },
     );
+
+    for (const occurrence of mutated) {
+      audit.append(
+        createAppointmentAuditEvent(
+          {
+            type: "appointment.series_edited",
+            appointment: occurrence,
+            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            metadata: { scope, targetId: appointmentId },
+          },
+          { now, createId: generateId },
+        ),
+      );
+    }
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[editSeriesAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
 }

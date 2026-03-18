@@ -20,26 +20,37 @@ export async function updateDocumentAction(formData: FormData) {
   const patientId = String(formData.get("patientId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
 
-  const repo = getDocumentRepository();
-  const doc = await repo.findById(documentId, WORKSPACE_ID);
-  if (!doc || doc.patientId !== patientId || doc.archivedAt !== null) {
-    redirect(`/patients/${patientId}`);
+  let shouldRedirect = false;
+  let guardRedirect = false;
+
+  try {
+    const repo = getDocumentRepository();
+    const doc = await repo.findById(documentId, WORKSPACE_ID);
+    if (!doc || doc.patientId !== patientId || doc.archivedAt !== null) {
+      guardRedirect = true;
+    } else {
+      const now = new Date();
+      const updated = updatePracticeDocument(doc, { content }, { now });
+      await repo.save(updated);
+
+      const auditRepo = getAuditRepository();
+      const auditEvent = createDocumentAuditEvent(
+        {
+          type: "document.updated",
+          document: updated,
+          actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      );
+      auditRepo.append(auditEvent);
+
+      shouldRedirect = true;
+    }
+  } catch (err) {
+    console.error("[updateDocumentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  const now = new Date();
-  const updated = updatePracticeDocument(doc, { content }, { now });
-  await repo.save(updated);
-
-  const auditRepo = getAuditRepository();
-  const auditEvent = createDocumentAuditEvent(
-    {
-      type: "document.updated",
-      document: updated,
-      actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
-    },
-    { now, createId: generateId },
-  );
-  auditRepo.append(auditEvent);
-
-  redirect(`/patients/${patientId}/documents/${documentId}`);
+  if (guardRedirect) redirect(`/patients/${patientId}`);
+  if (shouldRedirect) redirect(`/patients/${patientId}/documents/${documentId}`);
 }

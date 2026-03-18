@@ -19,27 +19,37 @@ export async function archiveDocumentAction(formData: FormData) {
   const documentId = String(formData.get("documentId") ?? "");
   const patientId = String(formData.get("patientId") ?? "");
 
-  const repo = getDocumentRepository();
-  const doc = await repo.findById(documentId, WORKSPACE_ID);
-  if (!doc || doc.patientId !== patientId) {
-    // Already archived or not found — redirect silently
-    redirect(`/patients/${patientId}`);
+  let shouldRedirect = false;
+  let notFoundRedirect = false;
+
+  try {
+    const repo = getDocumentRepository();
+    const doc = await repo.findById(documentId, WORKSPACE_ID);
+    if (!doc || doc.patientId !== patientId) {
+      // Already archived or not found — redirect silently
+      notFoundRedirect = true;
+    } else {
+      const now = new Date();
+      const archived = archivePracticeDocument(doc, ACCOUNT_ID, { now });
+      await repo.save(archived);
+
+      const auditRepo = getAuditRepository();
+      const auditEvent = createDocumentAuditEvent(
+        {
+          type: "document.archived",
+          document: archived,
+          actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      );
+      auditRepo.append(auditEvent);
+
+      shouldRedirect = true;
+    }
+  } catch (err) {
+    console.error("[archiveDocumentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  const now = new Date();
-  const archived = archivePracticeDocument(doc, ACCOUNT_ID, { now });
-  await repo.save(archived);
-
-  const auditRepo = getAuditRepository();
-  const auditEvent = createDocumentAuditEvent(
-    {
-      type: "document.archived",
-      document: archived,
-      actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
-    },
-    { now, createId: generateId },
-  );
-  auditRepo.append(auditEvent);
-
-  redirect(`/patients/${patientId}`);
+  if (notFoundRedirect || shouldRedirect) redirect(`/patients/${patientId}`);
 }

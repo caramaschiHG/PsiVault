@@ -54,42 +54,51 @@ export async function createDocumentAction(formData: FormData) {
   const rawType = String(formData.get("documentType") ?? "");
   const content = nullCoerce(formData.get("content")) ?? "";
 
-  // Validate type
-  if (!VALID_TYPES.has(rawType as DocumentType)) {
-    throw new Error("Invalid document type");
+  let shouldRedirect = false;
+
+  try {
+    // Validate type
+    if (!VALID_TYPES.has(rawType as DocumentType)) {
+      throw new Error("Invalid document type");
+    }
+    const type = rawType as DocumentType;
+
+    // Get professional name for provenance snapshot
+    const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
+
+    const now = new Date();
+    const doc = createPracticeDocument(
+      {
+        workspaceId: WORKSPACE_ID,
+        patientId,
+        type,
+        content,
+        createdByAccountId: ACCOUNT_ID,
+        createdByName: profile.fullName ?? "",
+      },
+      { now, createId: generateId },
+    );
+
+    const repo = getDocumentRepository();
+    await repo.save(doc);
+
+    // Fire-and-forget audit (SECU-05: metadata contains only documentType)
+    const auditRepo = getAuditRepository();
+    const auditEvent = createDocumentAuditEvent(
+      {
+        type: "document.created",
+        document: doc,
+        actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
+      },
+      { now, createId: generateId },
+    );
+    auditRepo.append(auditEvent);
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[createDocumentAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
-  const type = rawType as DocumentType;
 
-  // Get professional name for provenance snapshot
-  const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
-
-  const now = new Date();
-  const doc = createPracticeDocument(
-    {
-      workspaceId: WORKSPACE_ID,
-      patientId,
-      type,
-      content,
-      createdByAccountId: ACCOUNT_ID,
-      createdByName: profile.fullName ?? "",
-    },
-    { now, createId: generateId },
-  );
-
-  const repo = getDocumentRepository();
-  await repo.save(doc);
-
-  // Fire-and-forget audit (SECU-05: metadata contains only documentType)
-  const auditRepo = getAuditRepository();
-  const auditEvent = createDocumentAuditEvent(
-    {
-      type: "document.created",
-      document: doc,
-      actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
-    },
-    { now, createId: generateId },
-  );
-  auditRepo.append(auditEvent);
-
-  redirect(`/patients/${patientId}`);
+  if (shouldRedirect) redirect(`/patients/${patientId}`);
 }
