@@ -48,45 +48,54 @@ export async function createNoteAction(formData: FormData) {
   const clinicalEvolution = nullCoerce(formData.get("clinicalEvolution"));
   const nextSteps = nullCoerce(formData.get("nextSteps"));
 
-  // Guard: appointment must exist and be COMPLETED
-  const appointment = await appointmentRepo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (!appointment || appointment.status !== "COMPLETED") return;
+  let redirectPath: string | null = null;
 
-  // Guard: do not create duplicate — if note exists, redirect to patient profile
-  const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, DEFAULT_WORKSPACE_ID);
-  if (existingNote) {
-    redirect(`/patients/${patientId}`);
+  try {
+    // Guard: appointment must exist and be COMPLETED
+    const appointment = await appointmentRepo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (!appointment || appointment.status !== "COMPLETED") return;
+
+    // Guard: do not create duplicate — if note exists, redirect to patient profile
+    const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, DEFAULT_WORKSPACE_ID);
+    if (existingNote) {
+      redirectPath = `/patients/${patientId}`;
+    } else {
+      const note = createClinicalNote(
+        {
+          workspaceId: DEFAULT_WORKSPACE_ID,
+          patientId,
+          appointmentId,
+          freeText,
+          demand,
+          observedMood,
+          themes,
+          clinicalEvolution,
+          nextSteps,
+        },
+        { now, createId: generateId },
+      );
+
+      await clinicalRepo.save(note);
+
+      audit.append(
+        createClinicalNoteAuditEvent(
+          {
+            type: "clinical.note.created",
+            note,
+            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          },
+          { now, createId: generateId },
+        ),
+      );
+
+      redirectPath = `/patients/${patientId}`;
+    }
+  } catch (err) {
+    console.error("[createNoteAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
-  const note = createClinicalNote(
-    {
-      workspaceId: DEFAULT_WORKSPACE_ID,
-      patientId,
-      appointmentId,
-      freeText,
-      demand,
-      observedMood,
-      themes,
-      clinicalEvolution,
-      nextSteps,
-    },
-    { now, createId: generateId },
-  );
-
-  await clinicalRepo.save(note);
-
-  audit.append(
-    createClinicalNoteAuditEvent(
-      {
-        type: "clinical.note.created",
-        note,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
-
-  redirect(`/patients/${patientId}`);
+  if (redirectPath) redirect(redirectPath);
 }
 
 // ─── Update note action ────────────────────────────────────────────────────────
@@ -105,35 +114,44 @@ export async function updateNoteAction(formData: FormData) {
   const clinicalEvolution = nullCoerce(formData.get("clinicalEvolution"));
   const nextSteps = nullCoerce(formData.get("nextSteps"));
 
-  // Guard: note must exist
-  const existingNote = await clinicalRepo.findById(noteId, DEFAULT_WORKSPACE_ID);
-  if (!existingNote) return;
+  let shouldRedirect = false;
 
-  const updatedNote = updateClinicalNote(
-    existingNote,
-    {
-      freeText,
-      demand,
-      observedMood,
-      themes,
-      clinicalEvolution,
-      nextSteps,
-    },
-    { now },
-  );
+  try {
+    // Guard: note must exist
+    const existingNote = await clinicalRepo.findById(noteId, DEFAULT_WORKSPACE_ID);
+    if (!existingNote) return;
 
-  await clinicalRepo.save(updatedNote);
-
-  audit.append(
-    createClinicalNoteAuditEvent(
+    const updatedNote = updateClinicalNote(
+      existingNote,
       {
-        type: "clinical.note.updated",
-        note: updatedNote,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        freeText,
+        demand,
+        observedMood,
+        themes,
+        clinicalEvolution,
+        nextSteps,
       },
-      { now, createId: generateId },
-    ),
-  );
+      { now },
+    );
 
-  redirect(`/patients/${patientId}`);
+    await clinicalRepo.save(updatedNote);
+
+    audit.append(
+      createClinicalNoteAuditEvent(
+        {
+          type: "clinical.note.updated",
+          note: updatedNote,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[updateNoteAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
+
+  if (shouldRedirect) redirect(`/patients/${patientId}`);
 }

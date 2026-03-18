@@ -26,42 +26,51 @@ export async function createPatientAction(formData: FormData) {
   const audit = getAuditRepository();
   const now = new Date();
 
-  const patient = createPatient(
-    {
-      workspaceId: DEFAULT_WORKSPACE_ID,
-      fullName: String(formData.get("fullName") ?? ""),
-      socialName: formData.get("socialName") ? String(formData.get("socialName")) : null,
-      email: formData.get("email") ? String(formData.get("email")) : null,
-      phone: formData.get("phone") ? String(formData.get("phone")) : null,
-      guardianName: formData.get("guardianName") ? String(formData.get("guardianName")) : null,
-      guardianPhone: formData.get("guardianPhone") ? String(formData.get("guardianPhone")) : null,
-      emergencyContactName: formData.get("emergencyContactName")
-        ? String(formData.get("emergencyContactName"))
-        : null,
-      emergencyContactPhone: formData.get("emergencyContactPhone")
-        ? String(formData.get("emergencyContactPhone"))
-        : null,
-      importantObservations: formData.get("importantObservations")
-        ? String(formData.get("importantObservations"))
-        : null,
-    },
-    { now, createId: generateId },
-  );
+  let createdPatientId: string | null = null;
 
-  await repo.save(patient);
-
-  audit.append(
-    createPatientAuditEvent(
+  try {
+    const patient = createPatient(
       {
-        type: "patient.created",
-        patient,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        workspaceId: DEFAULT_WORKSPACE_ID,
+        fullName: String(formData.get("fullName") ?? ""),
+        socialName: formData.get("socialName") ? String(formData.get("socialName")) : null,
+        email: formData.get("email") ? String(formData.get("email")) : null,
+        phone: formData.get("phone") ? String(formData.get("phone")) : null,
+        guardianName: formData.get("guardianName") ? String(formData.get("guardianName")) : null,
+        guardianPhone: formData.get("guardianPhone") ? String(formData.get("guardianPhone")) : null,
+        emergencyContactName: formData.get("emergencyContactName")
+          ? String(formData.get("emergencyContactName"))
+          : null,
+        emergencyContactPhone: formData.get("emergencyContactPhone")
+          ? String(formData.get("emergencyContactPhone"))
+          : null,
+        importantObservations: formData.get("importantObservations")
+          ? String(formData.get("importantObservations"))
+          : null,
       },
       { now, createId: generateId },
-    ),
-  );
+    );
 
-  redirect(`/patients/${patient.id}`);
+    await repo.save(patient);
+
+    audit.append(
+      createPatientAuditEvent(
+        {
+          type: "patient.created",
+          patient,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    createdPatientId = patient.id;
+  } catch (err) {
+    console.error("[createPatientAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
+
+  if (createdPatientId) redirect(`/patients/${createdPatientId}`);
 }
 
 export async function updatePatientAction(formData: FormData) {
@@ -70,45 +79,54 @@ export async function updatePatientAction(formData: FormData) {
   const now = new Date();
   const patientId = String(formData.get("patientId") ?? "");
 
-  const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
+  let redirectPath: string | null = null;
 
-  const updated = updatePatient(
-    existing,
-    {
-      fullName: String(formData.get("fullName") ?? ""),
-      socialName: formData.get("socialName") ? String(formData.get("socialName")) : null,
-      email: formData.get("email") ? String(formData.get("email")) : null,
-      phone: formData.get("phone") ? String(formData.get("phone")) : null,
-      guardianName: formData.get("guardianName") ? String(formData.get("guardianName")) : null,
-      guardianPhone: formData.get("guardianPhone") ? String(formData.get("guardianPhone")) : null,
-      emergencyContactName: formData.get("emergencyContactName")
-        ? String(formData.get("emergencyContactName"))
-        : null,
-      emergencyContactPhone: formData.get("emergencyContactPhone")
-        ? String(formData.get("emergencyContactPhone"))
-        : null,
-      importantObservations: formData.get("importantObservations")
-        ? String(formData.get("importantObservations"))
-        : null,
-    },
-    { now },
-  );
+  try {
+    const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  await repo.save(updated);
-
-  audit.append(
-    createPatientAuditEvent(
+    const updated = updatePatient(
+      existing,
       {
-        type: "patient.updated",
-        patient: updated,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        fullName: String(formData.get("fullName") ?? ""),
+        socialName: formData.get("socialName") ? String(formData.get("socialName")) : null,
+        email: formData.get("email") ? String(formData.get("email")) : null,
+        phone: formData.get("phone") ? String(formData.get("phone")) : null,
+        guardianName: formData.get("guardianName") ? String(formData.get("guardianName")) : null,
+        guardianPhone: formData.get("guardianPhone") ? String(formData.get("guardianPhone")) : null,
+        emergencyContactName: formData.get("emergencyContactName")
+          ? String(formData.get("emergencyContactName"))
+          : null,
+        emergencyContactPhone: formData.get("emergencyContactPhone")
+          ? String(formData.get("emergencyContactPhone"))
+          : null,
+        importantObservations: formData.get("importantObservations")
+          ? String(formData.get("importantObservations"))
+          : null,
       },
-      { now, createId: generateId },
-    ),
-  );
+      { now },
+    );
 
-  redirect(`/patients/${patientId}`);
+    await repo.save(updated);
+
+    audit.append(
+      createPatientAuditEvent(
+        {
+          type: "patient.updated",
+          patient: updated,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    redirectPath = `/patients/${patientId}`;
+  } catch (err) {
+    console.error("[updatePatientAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
+
+  if (redirectPath) redirect(redirectPath);
 }
 
 export async function archivePatientAction(formData: FormData) {
@@ -117,28 +135,37 @@ export async function archivePatientAction(formData: FormData) {
   const now = new Date();
   const patientId = String(formData.get("patientId") ?? "");
 
-  const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
+  let shouldRedirect = false;
 
-  const archived = archivePatient(existing, {
-    now,
-    archivedByAccountId: DEFAULT_ACCOUNT_ID,
-  });
+  try {
+    const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  await repo.save(archived);
+    const archived = archivePatient(existing, {
+      now,
+      archivedByAccountId: DEFAULT_ACCOUNT_ID,
+    });
 
-  audit.append(
-    createPatientAuditEvent(
-      {
-        type: "patient.archived",
-        patient: archived,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
+    await repo.save(archived);
 
-  redirect("/patients");
+    audit.append(
+      createPatientAuditEvent(
+        {
+          type: "patient.archived",
+          patient: archived,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[archivePatientAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
+
+  if (shouldRedirect) redirect("/patients");
 }
 
 export async function recoverPatientAction(formData: FormData) {
@@ -147,23 +174,32 @@ export async function recoverPatientAction(formData: FormData) {
   const now = new Date();
   const patientId = String(formData.get("patientId") ?? "");
 
-  const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
-  if (!existing) return;
+  let shouldRedirect = false;
 
-  const recovered = recoverPatient(existing, { now });
-  await repo.save(recovered);
+  try {
+    const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    if (!existing) return;
 
-  audit.append(
-    createPatientAuditEvent(
-      {
-        type: "patient.recovered",
-        patient: recovered,
-        actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
-      },
-      { now, createId: generateId },
-    ),
-  );
+    const recovered = recoverPatient(existing, { now });
+    await repo.save(recovered);
+
+    audit.append(
+      createPatientAuditEvent(
+        {
+          type: "patient.recovered",
+          patient: recovered,
+          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+        },
+        { now, createId: generateId },
+      ),
+    );
+
+    shouldRedirect = true;
+  } catch (err) {
+    console.error("[recoverPatientAction]", err);
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
+  }
 
   // Return user directly to recovered patient profile (not a generic list)
-  redirect(`/patients/${patientId}`);
+  if (shouldRedirect) redirect(`/patients/${patientId}`);
 }
