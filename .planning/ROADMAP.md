@@ -147,3 +147,81 @@ Plans:
 6. All domain tests pass against Prisma implementations with zero in-memory repository usage
 7. `next build` completes without errors and the app starts cleanly in production mode
 8. Production environment variables are documented and configured for Supabase and Next.js
+
+---
+
+## Phase 15: Planning Metadata Realignment
+**Goal:** Normalize milestone metadata and phase locations so GSD can audit, plan, and archive the current launch scope consistently.
+**Requirements:** —
+**Gap Closure:** Closes audit integration gap "Planning metadata -> Milestone completion workflow" and flow "Milestone closure / archive"
+
+**Success Criteria:**
+1. The active milestone version is consistent across `PROJECT.md`, `STATE.md`, and `ROADMAP.md`
+2. Phase artifacts 07 and 08 are available in the active `.planning/phases/` tree or a documented equivalent recognized by GSD
+3. GSD phase discovery and next-phase resolution no longer conflict with roadmap reality
+4. The milestone boundary for the current launch scope is documented unambiguously
+
+---
+
+## Phase 16: Infrastructure Verification Closure
+**Goal:** Convert Phase 07 infrastructure work from summary-only evidence into verified milestone closure.
+**Requirements:** INFRA-01, INFRA-02, INFRA-03
+**Gap Closure:** Closes audit requirement gaps `INFRA-01`, `INFRA-02`, `INFRA-03`
+
+**Success Criteria:**
+1. Supabase project and local environment configuration are re-verified with current evidence
+2. Prisma schema and migration state are verified against the real database state
+3. Connection pooling and connectivity checks are captured in compliant validation/verification artifacts
+4. Requirements traceability can mark all infrastructure requirements complete with structured evidence
+
+---
+
+## Phase 17: Authentication Verification Closure
+**Goal:** Convert Phase 08 authentication implementation from summary-only evidence into verified milestone closure.
+**Requirements:** AUTH-01, AUTH-02, AUTH-03
+**Gap Closure:** Closes audit requirement gaps `AUTH-01`, `AUTH-02`, `AUTH-03`
+
+**Success Criteria:**
+1. Cookie-based Supabase session management is re-verified in the live app
+2. `middleware.ts` route protection and session refresh behavior are verified end-to-end
+3. Sign-in and sign-up flows are verified against current Supabase Auth behavior
+4. Compliant validation/verification artifacts exist for Phase 08 and requirements can be closed structurally
+
+---
+
+## Phase 18: Workspace Identity & Persistence Integrity
+**Goal:** Remove hardcoded workspace identity from the live app and verify patient/agenda persistence under authenticated workspace scope.
+**Requirements:** AUTH-04, REPO-01, REPO-02
+**Gap Closure:** Closes audit requirement gaps `AUTH-04`, `REPO-01`, `REPO-02`; closes integration gap "Supabase Auth -> Workspace-scoped vault data access"; closes flow "Authenticated professional sees only their own workspace data"
+
+**Success Criteria:**
+1. Vault routes, server actions, search, backup, and export resolve workspace/account from the authenticated Supabase user instead of `ws_1`
+2. Workspace/account binding is enforced consistently across repository entry points
+3. Patient and agenda persistence are verified under the real workspace-scoped access model
+4. Structured verification artifacts prove end-to-end multi-user-safe behavior for auth plus persistence flows
+
+---
+
+## Phase 19: UI Launch Verification
+**Goal:** Produce independent verification for the production UI/UX layer so launch polish requirements are auditable.
+**Requirements:** UIUX-01, UIUX-02, UIUX-03, UIUX-04, UIUX-05, UIUX-06
+**Gap Closure:** Closes audit requirement gaps `UIUX-01`–`UIUX-06`; closes flow "UI/UX launch sign-off"
+
+**Success Criteria:**
+1. Phase 13 has compliant validation and verification artifacts covering all six UIUX requirements
+2. Responsive behavior is verified across mobile and desktop launch breakpoints
+3. Accessibility and contrast checks are documented with requirement-level evidence
+4. Loading, error, empty-state, and navigation polish are verified on the primary vault surfaces
+
+---
+
+## Phase 20: Production Readiness Sign-off
+**Goal:** Close the remaining human-needed runtime and deployment confidence checks before milestone archival.
+**Requirements:** DEPLOY-02
+**Gap Closure:** Closes audit requirement gap `DEPLOY-02`; closes flow "Production readiness sign-off"
+
+**Success Criteria:**
+1. Build and production-start verification are rerun and captured with current evidence
+2. Remaining runtime auth/error-boundary checks from Phase 14 are completed or replaced with executable verification
+3. Phase 14 verification no longer depends on unresolved human-needed launch gates
+4. Requirements traceability can mark `DEPLOY-02` complete with structured supporting evidence

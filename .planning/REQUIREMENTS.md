@@ -43,12 +43,12 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 ### UI/UX Polish
 
-- [x] **UIUX-01**: Establish a consistent design system — typography scale, color palette, spacing tokens, and border-radius applied throughout
-- [x] **UIUX-02**: Apply professional visual design to all primary views (inicio, agenda, patients list, patient profile, financeiro)
-- [x] **UIUX-03**: Ensure all pages are fully responsive across mobile, tablet, and desktop viewports
-- [x] **UIUX-04**: Achieve WCAG 2.1 AA color contrast ratios on all interactive elements and body text
-- [x] **UIUX-05**: Add proper empty states, loading states, and error states to all data-dependent pages
-- [x] **UIUX-06**: Polish navigation — clear active states, breadcrumbs where helpful, smooth transitions
+- [ ] **UIUX-01**: Establish a consistent design system — typography scale, color palette, spacing tokens, and border-radius applied throughout
+- [ ] **UIUX-02**: Apply professional visual design to all primary views (inicio, agenda, patients list, patient profile, financeiro)
+- [ ] **UIUX-03**: Ensure all pages are fully responsive across mobile, tablet, and desktop viewports
+- [ ] **UIUX-04**: Achieve WCAG 2.1 AA color contrast ratios on all interactive elements and body text
+- [ ] **UIUX-05**: Add proper empty states, loading states, and error states to all data-dependent pages
+- [ ] **UIUX-06**: Polish navigation — clear active states, breadcrumbs where helpful, smooth transitions
 
 ### Quality & Production Hardening
 
@@ -62,7 +62,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 ### Deployment Readiness
 
 - [x] **DEPLOY-01**: Configure production environment variables for Supabase, Prisma, and Next.js
-- [x] **DEPLOY-02**: Verify the application builds and starts cleanly in production mode (`next build`)
+- [ ] **DEPLOY-02**: Verify the application builds and starts cleanly in production mode (`next build`)
 - [x] **DEPLOY-03**: Confirm Prisma migrations are applied and the production database schema is correct
 
 ## v2 Requirements
@@ -84,15 +84,15 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 7 | Pending |
-| INFRA-02 | Phase 7 | Pending |
-| INFRA-03 | Phase 7 | Pending |
-| AUTH-01 | Phase 8 | Pending |
-| AUTH-02 | Phase 8 | Pending |
-| AUTH-03 | Phase 8 | Pending |
-| AUTH-04 | Phase 8 | Pending |
-| REPO-01 | Phase 9 | Pending |
-| REPO-02 | Phase 9 | Pending |
+| INFRA-01 | Phase 16 | Pending |
+| INFRA-02 | Phase 16 | Pending |
+| INFRA-03 | Phase 16 | Pending |
+| AUTH-01 | Phase 17 | Pending |
+| AUTH-02 | Phase 17 | Pending |
+| AUTH-03 | Phase 17 | Pending |
+| AUTH-04 | Phase 18 | Pending |
+| REPO-01 | Phase 18 | Pending |
+| REPO-02 | Phase 18 | Pending |
 | REPO-03 | Phase 10 | Complete |
 | REPO-04 | Phase 10 | Complete |
 | REPO-05 | Phase 11 | Complete |
@@ -102,12 +102,12 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | AUTHUX-03 | Phase 12 | Complete |
 | AUTHUX-04 | Phase 12 | Complete |
 | AUTHUX-05 | Phase 12 | Complete |
-| UIUX-01 | Phase 13 | Complete |
-| UIUX-02 | Phase 13 | Complete |
-| UIUX-03 | Phase 13 | Complete |
-| UIUX-04 | Phase 13 | Complete |
-| UIUX-05 | Phase 13 | Complete |
-| UIUX-06 | Phase 13 | Complete |
+| UIUX-01 | Phase 19 | Pending |
+| UIUX-02 | Phase 19 | Pending |
+| UIUX-03 | Phase 19 | Pending |
+| UIUX-04 | Phase 19 | Pending |
+| UIUX-05 | Phase 19 | Pending |
+| UIUX-06 | Phase 19 | Pending |
 | QUAL-01 | Phase 14 | Complete |
 | QUAL-02 | Phase 14 | Complete |
 | QUAL-03 | Phase 14 | Complete |
@@ -115,7 +115,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | QUAL-05 | Phase 14 | Complete |
 | QUAL-06 | Phase 14 | Complete |
 | DEPLOY-01 | Phase 14 | Complete |
-| DEPLOY-02 | Phase 14 | Complete |
+| DEPLOY-02 | Phase 20 | Pending |
 | DEPLOY-03 | Phase 14 | Complete |
 
 **Coverage:**
@@ -126,4 +126,4 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-17 after v1.2 milestone requirements added*
+*Last updated: 2026-03-18 after v1.1 audit gap-closure phases added*
