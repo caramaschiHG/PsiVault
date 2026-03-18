@@ -54,7 +54,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 - [x] **QUAL-01**: Replace the re-auth gate stub in export/backup routes with the real `evaluateSensitiveAction` flow
 - [x] **QUAL-02**: Add structured error boundaries to all route segments to prevent white-screen crashes
-- [ ] **QUAL-03**: Harden all server actions — validate inputs, handle Prisma errors, return typed error responses
+- [x] **QUAL-03**: Harden all server actions — validate inputs, handle Prisma errors, return typed error responses
 - [x] **QUAL-04**: Ensure workspace audit trail is complete — remove the `auditEvents: never[]` stub from backup
 - [x] **QUAL-05**: Security review — confirm no sensitive data leaks in search, audit, or dashboard surfaces (SECU-05 audit)
 - [x] **QUAL-06**: Ensure all domain tests pass against Prisma implementations (no in-memory repository leakage)
@@ -110,7 +110,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | UIUX-06 | Phase 13 | Complete |
 | QUAL-01 | Phase 14 | Complete |
 | QUAL-02 | Phase 14 | Complete |
-| QUAL-03 | Phase 14 | Pending |
+| QUAL-03 | Phase 14 | Complete |
 | QUAL-04 | Phase 14 | Complete |
 | QUAL-05 | Phase 14 | Complete |
 | QUAL-06 | Phase 14 | Complete |
