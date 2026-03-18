@@ -55,15 +55,15 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 - [x] **QUAL-01**: Replace the re-auth gate stub in export/backup routes with the real `evaluateSensitiveAction` flow
 - [x] **QUAL-02**: Add structured error boundaries to all route segments to prevent white-screen crashes
 - [ ] **QUAL-03**: Harden all server actions — validate inputs, handle Prisma errors, return typed error responses
-- [ ] **QUAL-04**: Ensure workspace audit trail is complete — remove the `auditEvents: never[]` stub from backup
-- [ ] **QUAL-05**: Security review — confirm no sensitive data leaks in search, audit, or dashboard surfaces (SECU-05 audit)
-- [ ] **QUAL-06**: Ensure all domain tests pass against Prisma implementations (no in-memory repository leakage)
+- [x] **QUAL-04**: Ensure workspace audit trail is complete — remove the `auditEvents: never[]` stub from backup
+- [x] **QUAL-05**: Security review — confirm no sensitive data leaks in search, audit, or dashboard surfaces (SECU-05 audit)
+- [x] **QUAL-06**: Ensure all domain tests pass against Prisma implementations (no in-memory repository leakage)
 
 ### Deployment Readiness
 
 - [ ] **DEPLOY-01**: Configure production environment variables for Supabase, Prisma, and Next.js
 - [ ] **DEPLOY-02**: Verify the application builds and starts cleanly in production mode (`next build`)
-- [ ] **DEPLOY-03**: Confirm Prisma migrations are applied and the production database schema is correct
+- [x] **DEPLOY-03**: Confirm Prisma migrations are applied and the production database schema is correct
 
 ## v2 Requirements
 
@@ -111,12 +111,12 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | QUAL-01 | Phase 14 | Complete |
 | QUAL-02 | Phase 14 | Complete |
 | QUAL-03 | Phase 14 | Pending |
-| QUAL-04 | Phase 14 | Pending |
-| QUAL-05 | Phase 14 | Pending |
-| QUAL-06 | Phase 14 | Pending |
+| QUAL-04 | Phase 14 | Complete |
+| QUAL-05 | Phase 14 | Complete |
+| QUAL-06 | Phase 14 | Complete |
 | DEPLOY-01 | Phase 14 | Pending |
 | DEPLOY-02 | Phase 14 | Pending |
-| DEPLOY-03 | Phase 14 | Pending |
+| DEPLOY-03 | Phase 14 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 13 total

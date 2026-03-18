@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: Ready to start Phase 10
-stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-03-18T15:22:23.336Z"
+stopped_at: Completed 14-04-PLAN.md
+last_updated: "2026-03-18T15:22:35.356Z"
 last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 progress:
   total_phases: 8
@@ -65,6 +65,7 @@ Progress: [████░░░░░░] 43%
 | Phase 13-ui-ux-polish P04 | 10 | 2 tasks | 13 files |
 | Phase 14-quality-production-hardening P02 | 5 | 1 tasks | 2 files |
 | Phase 14-quality-production-hardening P01 | 2 | 2 tasks | 3 files |
+| Phase 14-quality-production-hardening P04 | 2 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -165,6 +166,8 @@ Progress: [████░░░░░░] 43%
 - [Phase 13-ui-ux-polish]: .form-grid CSS class substitui fieldGridStyle inline para colapsar 2 colunas para 1 em mobile (767px)
 - [Phase 14-quality-production-hardening]: [14-01-01]: Email de verificação vem exclusivamente de supabase.auth.getUser() — nunca de input do usuário
 - [Phase 14-quality-production-hardening]: [14-01-02]: Verificação de timestamp manual removida das routes — cookie Max-Age=600s garante expiração via browser
+- [Phase 14-04]: postinstall mantém prisma:generate por compatibilidade — ambos coexistem no package.json
+- [Phase 14-04]: Testes com datas hardcoded devem usar datas 2+ anos no futuro para evitar regressão por passagem de tempo
 
 ### Pending Todos
 
@@ -181,6 +184,6 @@ Progress: [████░░░░░░] 43%
 
 ## Session Continuity
 
-Last session: 2026-03-18T15:22:12.285Z
-Stopped at: Completed 14-01-PLAN.md
+Last session: 2026-03-18T15:22:35.353Z
+Stopped at: Completed 14-04-PLAN.md
 Resume: Plan or execute Phase 10 — /gsd:plan-phase 10
