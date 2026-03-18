@@ -1,12 +1,4 @@
-/**
- * Module-level in-memory finance store.
- *
- * Mirrors the document/patient/appointment store pattern so the
- * session charge repository is available across server actions
- * without requiring a DB connection in this phase.
- */
-
-import { createInMemorySessionChargeRepository } from "./repository";
+import { createPrismaFinanceRepository } from "./repository.prisma";
 import type { SessionChargeRepository } from "./repository";
 
 declare global {
@@ -15,6 +7,6 @@ declare global {
 }
 
 export function getFinanceRepository(): SessionChargeRepository {
-  globalThis.__psivaultFinance__ ??= createInMemorySessionChargeRepository();
+  globalThis.__psivaultFinance__ ??= createPrismaFinanceRepository();
   return globalThis.__psivaultFinance__;
 }
