@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: Ready to start Phase 10
-stopped_at: Completed 11-01-PLAN.md
-last_updated: "2026-03-18T03:04:52.182Z"
+stopped_at: Completed 11-02-PLAN.md
+last_updated: "2026-03-18T03:07:36.798Z"
 last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 progress:
   total_phases: 8
   completed_phases: 2
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 43
 ---
 
@@ -53,6 +53,7 @@ Progress: [████░░░░░░] 43%
 | Phase 10-clinical-document-persistence P03 | 3 | 2 tasks | 11 files |
 | Phase 10-clinical-document-persistence P02 | 15 | 2 tasks | 10 files |
 | Phase 11-finance-ops-persistence P01 | 357 | 2 tasks | 16 files |
+| Phase 11-finance-ops-persistence P02 | 15 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -130,6 +131,8 @@ Progress: [████░░░░░░] 43%
 - [Phase Phase 11-01]: Migration SQL created manually (DIRECT_URL is a placeholder) — apply with npx prisma migrate deploy after configuring Supabase password
 - [Phase Phase 11-01]: AuditEvent.append() stays sync; only listForWorkspace is async — consistent with append-only immutable audit trail semantics
 - [Phase Phase 11-01]: SecuritySettingsPage converted to async Server Component to support await on listForWorkspace
+- [Phase Phase 11-02]: findById on SessionCharge uses findUnique by id (PK) — no workspaceId needed at DB level
+- [Phase Phase 11-02]: Reminder.link reconstructed from linkType/linkId nullable columns — null check on both before building ReminderLink
 
 ### Pending Todos
 
@@ -146,6 +149,6 @@ Progress: [████░░░░░░] 43%
 
 ## Session Continuity
 
-Last session: 2026-03-18T03:04:52.179Z
-Stopped at: Completed 11-01-PLAN.md
+Last session: 2026-03-18T03:07:36.795Z
+Stopped at: Completed 11-02-PLAN.md
 Resume: Plan or execute Phase 10 — /gsd:plan-phase 10
