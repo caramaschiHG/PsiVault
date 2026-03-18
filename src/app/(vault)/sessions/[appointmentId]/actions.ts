@@ -5,19 +5,7 @@ import { createClinicalNote, updateClinicalNote } from "../../../../lib/clinical
 import { getClinicalNoteRepository } from "../../../../lib/clinical/store";
 import { getAppointmentRepository } from "../../../../lib/appointments/store";
 import { createClinicalNoteAuditEvent } from "../../../../lib/clinical/audit";
-import { createInMemoryAuditRepository } from "../../../../lib/audit/repository";
-
-// ─── Module-level audit repository ────────────────────────────────────────────
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultClinicalAudit__: ReturnType<typeof createInMemoryAuditRepository> | undefined;
-}
-
-function getAuditRepository() {
-  globalThis.__psivaultClinicalAudit__ ??= createInMemoryAuditRepository();
-  return globalThis.__psivaultClinicalAudit__;
-}
+import { getAuditRepository } from "../../../../lib/audit/store";
 
 // ─── Stub identity (real resolution comes from session in production) ──────────
 

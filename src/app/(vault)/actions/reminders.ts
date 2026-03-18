@@ -17,19 +17,7 @@ import { revalidatePath } from "next/cache";
 import { createReminder, completeReminder } from "../../../lib/reminders/model";
 import { getReminderRepository } from "../../../lib/reminders/store";
 import { createReminderAuditEvent } from "../../../lib/reminders/audit";
-import { createInMemoryAuditRepository } from "../../../lib/audit/repository";
-
-// ─── Module-level audit repository ────────────────────────────────────────────
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultReminderAudit__: ReturnType<typeof createInMemoryAuditRepository> | undefined;
-}
-
-function getAuditRepository() {
-  globalThis.__psivaultReminderAudit__ ??= createInMemoryAuditRepository();
-  return globalThis.__psivaultReminderAudit__;
-}
+import { getAuditRepository } from "../../../lib/audit/store";
 
 // ─── Stub identity (real resolution comes from session in production) ──────────
 

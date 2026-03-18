@@ -16,6 +16,7 @@ import { getAppointmentRepository } from "../../../lib/appointments/store";
 import { getClinicalNoteRepository } from "../../../lib/clinical/store";
 import { getDocumentRepository } from "../../../lib/documents/store";
 import { getFinanceRepository } from "../../../lib/finance/store";
+import { getAuditRepository } from "../../../lib/audit/store";
 import { buildWorkspaceBackup } from "../../../lib/export/serializer";
 
 const WORKSPACE_ID = "ws_1";
@@ -75,9 +76,8 @@ export async function GET(
   const chargesResults = await Promise.all(patients.map((p) => financeRepo.listByPatient(p.id, WORKSPACE_ID)));
   const charges = chargesResults.flat();
 
-  // Audit events: in-memory v1 does not maintain a global singleton audit store.
-  // Production: replace with getAuditRepository().listForWorkspace(WORKSPACE_ID).
-  const auditEvents: never[] = [];
+  const auditRepo = getAuditRepository();
+  const auditEvents = await auditRepo.listForWorkspace(WORKSPACE_ID);
 
   // ── Build and return backup ─────────────────────────────────────────────
   const backupData = buildWorkspaceBackup({

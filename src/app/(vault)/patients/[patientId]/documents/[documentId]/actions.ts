@@ -4,17 +4,7 @@ import { redirect } from "next/navigation";
 import { archivePracticeDocument } from "../../../../../../lib/documents/model";
 import { getDocumentRepository } from "../../../../../../lib/documents/store";
 import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
-import { createInMemoryAuditRepository } from "../../../../../../lib/audit/repository";
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultDocumentAudit__: ReturnType<typeof createInMemoryAuditRepository> | undefined;
-}
-
-function getAuditRepository() {
-  globalThis.__psivaultDocumentAudit__ ??= createInMemoryAuditRepository();
-  return globalThis.__psivaultDocumentAudit__;
-}
+import { getAuditRepository } from "../../../../../../lib/audit/store";
 
 const WORKSPACE_ID = "ws_1";
 const ACCOUNT_ID = "acct_1";

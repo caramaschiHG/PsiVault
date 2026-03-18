@@ -4,23 +4,9 @@ import { redirect } from "next/navigation";
 import { createPracticeDocument } from "../../../../../../lib/documents/model";
 import { getDocumentRepository } from "../../../../../../lib/documents/store";
 import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
-import { createInMemoryAuditRepository } from "../../../../../../lib/audit/repository";
+import { getAuditRepository } from "../../../../../../lib/audit/store";
 import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
 import type { DocumentType } from "../../../../../../lib/documents/model";
-
-// ─── Module-level audit repository ────────────────────────────────────────────
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultDocumentAudit__:
-    | ReturnType<typeof createInMemoryAuditRepository>
-    | undefined;
-}
-
-function getAuditRepository() {
-  globalThis.__psivaultDocumentAudit__ ??= createInMemoryAuditRepository();
-  return globalThis.__psivaultDocumentAudit__;
-}
 
 // ─── Stub identity (real resolution comes from session in production) ──────────
 

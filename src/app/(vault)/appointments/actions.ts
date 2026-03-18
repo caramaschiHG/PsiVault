@@ -18,23 +18,11 @@ import type { RecurrenceEditScope } from "../../../lib/appointments/recurrence";
 import { getAppointmentRepository } from "../../../lib/appointments/store";
 import { getPatientRepository } from "../../../lib/patients/store";
 import { createAppointmentAuditEvent } from "../../../lib/appointments/audit";
-import { createInMemoryAuditRepository } from "../../../lib/audit/repository";
+import { getAuditRepository } from "../../../lib/audit/store";
 import { getFinanceRepository } from "../../../lib/finance/store";
 import { createSessionCharge, updateSessionCharge } from "../../../lib/finance/model";
 import type { ChargeStatus, PaymentMethod } from "../../../lib/finance/model";
 import { createChargeAuditEvent } from "../../../lib/finance/audit";
-
-// ─── Module-level audit repository ────────────────────────────────────────────
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultAppointmentAudit__: ReturnType<typeof createInMemoryAuditRepository> | undefined;
-}
-
-function getAuditRepository() {
-  globalThis.__psivaultAppointmentAudit__ ??= createInMemoryAuditRepository();
-  return globalThis.__psivaultAppointmentAudit__;
-}
 
 // ─── Stub identity (real resolution comes from session in production) ──────────
 

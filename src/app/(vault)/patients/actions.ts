@@ -9,18 +9,7 @@ import {
 } from "../../../lib/patients/model";
 import { getPatientRepository } from "../../../lib/patients/store";
 import { createPatientAuditEvent } from "../../../lib/patients/audit";
-import { createInMemoryAuditRepository } from "../../../lib/audit/repository";
-
-// Module-level audit repository (Phase 1 pattern)
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultPatientAudit__: ReturnType<typeof createInMemoryAuditRepository> | undefined;
-}
-
-function getAuditRepository() {
-  globalThis.__psivaultPatientAudit__ ??= createInMemoryAuditRepository();
-  return globalThis.__psivaultPatientAudit__;
-}
+import { getAuditRepository } from "../../../lib/audit/store";
 
 // Stub — real workspace resolution comes from session in production
 const DEFAULT_WORKSPACE_ID = "ws_1";
@@ -59,7 +48,7 @@ export async function createPatientAction(formData: FormData) {
     { now, createId: generateId },
   );
 
-  repo.save(patient);
+  await repo.save(patient);
 
   audit.append(
     createPatientAuditEvent(
@@ -81,7 +70,7 @@ export async function updatePatientAction(formData: FormData) {
   const now = new Date();
   const patientId = String(formData.get("patientId") ?? "");
 
-  const existing = repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   const updated = updatePatient(
@@ -106,7 +95,7 @@ export async function updatePatientAction(formData: FormData) {
     { now },
   );
 
-  repo.save(updated);
+  await repo.save(updated);
 
   audit.append(
     createPatientAuditEvent(
@@ -128,7 +117,7 @@ export async function archivePatientAction(formData: FormData) {
   const now = new Date();
   const patientId = String(formData.get("patientId") ?? "");
 
-  const existing = repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   const archived = archivePatient(existing, {
@@ -136,7 +125,7 @@ export async function archivePatientAction(formData: FormData) {
     archivedByAccountId: DEFAULT_ACCOUNT_ID,
   });
 
-  repo.save(archived);
+  await repo.save(archived);
 
   audit.append(
     createPatientAuditEvent(
@@ -158,11 +147,11 @@ export async function recoverPatientAction(formData: FormData) {
   const now = new Date();
   const patientId = String(formData.get("patientId") ?? "");
 
-  const existing = repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   const recovered = recoverPatient(existing, { now });
-  repo.save(recovered);
+  await repo.save(recovered);
 
   audit.append(
     createPatientAuditEvent(
