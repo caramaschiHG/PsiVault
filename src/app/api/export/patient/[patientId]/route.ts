@@ -4,9 +4,9 @@
  * Per-patient JSON export (SECU-03).
  * Returns all records for the specified patient as a downloadable JSON file.
  *
- * Re-auth gate (v1 stub): Checks for "psivault_export_auth" cookie set by
- * exportPatientAuthAction. If absent or older than 10 minutes, returns 401.
- * Production: replace cookie check with evaluateSensitiveAction from real session.
+ * Re-auth gate: Checks for "psivault_export_auth" cookie set by
+ * exportPatientAuthAction. Cookie carries Max-Age of 10 minutes (httpOnly).
+ * If absent (expired or never set), returns 401.
  */
 
 import { type NextRequest } from "next/server";
@@ -19,28 +19,18 @@ import { getFinanceRepository } from "../../../../../lib/finance/store";
 import { buildPatientExport } from "../../../../../lib/export/serializer";
 
 const WORKSPACE_ID = "ws_1";
-const REAUTH_WINDOW_MS = 1000 * 60 * 10; // 10 minutes
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ patientId: string }> },
 ) {
-  // ── Re-auth gate (v1 stub) ──────────────────────────────────────────────
-  // Production: replace with evaluateSensitiveAction from real session.
+  // ── Re-auth gate ────────────────────────────────────────────────────────
   const cookieStore = await cookies();
   const authCookie = cookieStore.get("psivault_export_auth");
 
   if (!authCookie?.value) {
     return Response.json(
-      { error: "Re-autenticação necessária" },
-      { status: 401 },
-    );
-  }
-
-  const issuedAt = parseInt(authCookie.value, 10);
-  if (isNaN(issuedAt) || Date.now() - issuedAt > REAUTH_WINDOW_MS) {
-    return Response.json(
-      { error: "Re-autenticação necessária" },
+      { error: "Não autorizado." },
       { status: 401 },
     );
   }
