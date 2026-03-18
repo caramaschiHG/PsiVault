@@ -65,3 +65,55 @@ export async function signUp(formData: FormData): Promise<void> {
 
   redirect(AUTH_ROUTE_PATHS.verifyEmail);
 }
+
+export async function requestPasswordReset(formData: FormData): Promise<void> {
+  const email = formData.get("email") as string;
+  const supabase = await createClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/reset-password`,
+  });
+
+  redirect(
+    `${AUTH_ROUTE_PATHS.resetPassword}?success=${encodeURIComponent(
+      "Link de recuperação enviado. Verifique seu e-mail."
+    )}`
+  );
+}
+
+export async function updatePassword(formData: FormData): Promise<void> {
+  const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+  const code = formData.get("code") as string;
+
+  if (password !== confirmPassword) {
+    redirect(
+      `${AUTH_ROUTE_PATHS.resetPassword}?code=${encodeURIComponent(code)}&field=confirmPassword&error=${encodeURIComponent(
+        "As senhas não coincidem."
+      )}`
+    );
+  }
+
+  const supabase = await createClient();
+
+  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+  if (exchangeError) {
+    redirect(
+      `${AUTH_ROUTE_PATHS.resetPassword}?error=${encodeURIComponent(exchangeError.message)}`
+    );
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    redirect(
+      `${AUTH_ROUTE_PATHS.resetPassword}?code=${encodeURIComponent(code)}&error=${encodeURIComponent(error.message)}`
+    );
+  }
+
+  redirect(
+    `${AUTH_ROUTE_PATHS.signIn}?success=${encodeURIComponent(
+      "Senha atualizada. Faça login com a nova senha."
+    )}`
+  );
+}
