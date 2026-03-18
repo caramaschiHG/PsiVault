@@ -26,8 +26,8 @@ Requirements for the Supabase backend migration. Each maps to roadmap phases.
 - [ ] **REPO-02**: Implement `PrismaAgendaRepository` and replace in-memory stub
 - [x] **REPO-03**: Implement `PrismaClinicalRepository` and replace in-memory stub
 - [x] **REPO-04**: Implement `PrismaDocumentRepository` and replace in-memory stub
-- [ ] **REPO-05**: Implement `PrismaFinanceRepository` and replace in-memory stub
-- [ ] **REPO-06**: Implement `PrismaAuditRepository` and replace in-memory stub
+- [x] **REPO-05**: Implement `PrismaFinanceRepository` and replace in-memory stub
+- [x] **REPO-06**: Implement `PrismaAuditRepository` and replace in-memory stub
 
 ## v1.2 Requirements
 
@@ -95,8 +95,8 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | REPO-02 | Phase 9 | Pending |
 | REPO-03 | Phase 10 | Complete |
 | REPO-04 | Phase 10 | Complete |
-| REPO-05 | Phase 11 | Pending |
-| REPO-06 | Phase 11 | Pending |
+| REPO-05 | Phase 11 | Complete |
+| REPO-06 | Phase 11 | Complete |
 | AUTHUX-01 | Phase 12 | Pending |
 | AUTHUX-02 | Phase 12 | Pending |
 | AUTHUX-03 | Phase 12 | Pending |
