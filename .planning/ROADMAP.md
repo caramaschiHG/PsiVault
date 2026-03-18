@@ -101,6 +101,14 @@ Plans:
 **Goal:** Apply a professional, consistent design system across all views so the product feels production-ready.
 **Requirements:** UIUX-01, UIUX-02, UIUX-03, UIUX-04, UIUX-05, UIUX-06
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 13-01-PLAN.md — Tokens tipográficos, espaçamento, skeleton-pulse e classes responsivas em globals.css
+- [ ] 13-02-PLAN.md — Sidebar dark redesign, BottomNav mobile, atualização de layout.tsx
+- [ ] 13-03-PLAN.md — loading.tsx e error.tsx para 5 rotas vault (inicio, agenda, patients, patients/[patientId], financeiro)
+- [ ] 13-04-PLAN.md — EmptyState component e polish visual das 5 views primárias + checkpoint de verificação
+
 **Success Criteria:**
 1. A design system document (tokens: typography, color, spacing, radius) is defined and applied consistently across all pages
 2. All primary views (inicio, agenda, patients list, patient profile, financeiro) have professional, polished layouts
