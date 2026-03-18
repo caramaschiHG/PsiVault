@@ -49,7 +49,7 @@ function generateId(): string {
 
 // ─── Create document action ────────────────────────────────────────────────────
 
-export async function createDocumentAction(formData: FormData) {
+export async function createDocumentAction(formData: FormData): Promise<void> {
   const patientId = String(formData.get("patientId") ?? "");
   const rawType = String(formData.get("documentType") ?? "");
   const content = nullCoerce(formData.get("content")) ?? "";
@@ -97,7 +97,7 @@ export async function createDocumentAction(formData: FormData) {
     shouldRedirect = true;
   } catch (err) {
     console.error("[createDocumentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/patients/${patientId}`);

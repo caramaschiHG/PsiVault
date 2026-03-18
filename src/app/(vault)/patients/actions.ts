@@ -21,7 +21,7 @@ function generateId() {
   return "pat_" + Array.from(buffer, (v) => v.toString(16).padStart(2, "0")).join("");
 }
 
-export async function createPatientAction(formData: FormData) {
+export async function createPatientAction(formData: FormData): Promise<void> {
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -67,13 +67,13 @@ export async function createPatientAction(formData: FormData) {
     createdPatientId = patient.id;
   } catch (err) {
     console.error("[createPatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (createdPatientId) redirect(`/patients/${createdPatientId}`);
 }
 
-export async function updatePatientAction(formData: FormData) {
+export async function updatePatientAction(formData: FormData): Promise<void> {
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -123,13 +123,13 @@ export async function updatePatientAction(formData: FormData) {
     redirectPath = `/patients/${patientId}`;
   } catch (err) {
     console.error("[updatePatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (redirectPath) redirect(redirectPath);
 }
 
-export async function archivePatientAction(formData: FormData) {
+export async function archivePatientAction(formData: FormData): Promise<void> {
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -162,13 +162,13 @@ export async function archivePatientAction(formData: FormData) {
     shouldRedirect = true;
   } catch (err) {
     console.error("[archivePatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect("/patients");
 }
 
-export async function recoverPatientAction(formData: FormData) {
+export async function recoverPatientAction(formData: FormData): Promise<void> {
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -197,7 +197,7 @@ export async function recoverPatientAction(formData: FormData) {
     shouldRedirect = true;
   } catch (err) {
     console.error("[recoverPatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   // Return user directly to recovered patient profile (not a generic list)
