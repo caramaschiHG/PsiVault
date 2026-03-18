@@ -38,7 +38,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 - [ ] **AUTHUX-01**: Implement a professional sign-in page (email/password) with proper form validation and error messages
 - [ ] **AUTHUX-02**: Implement a sign-up page with user-friendly onboarding flow using Supabase Auth
 - [ ] **AUTHUX-03**: Implement a password reset flow (request reset email + update password page)
-- [ ] **AUTHUX-04**: Handle Supabase Auth errors gracefully with user-facing Portuguese messages
+- [x] **AUTHUX-04**: Handle Supabase Auth errors gracefully with user-facing Portuguese messages
 - [ ] **AUTHUX-05**: Protect auth pages from authenticated users (redirect logged-in users away from login/signup)
 
 ### UI/UX Polish
@@ -100,7 +100,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | AUTHUX-01 | Phase 12 | Pending |
 | AUTHUX-02 | Phase 12 | Pending |
 | AUTHUX-03 | Phase 12 | Pending |
-| AUTHUX-04 | Phase 12 | Pending |
+| AUTHUX-04 | Phase 12 | Complete |
 | AUTHUX-05 | Phase 12 | Pending |
 | UIUX-01 | Phase 13 | Pending |
 | UIUX-02 | Phase 13 | Pending |

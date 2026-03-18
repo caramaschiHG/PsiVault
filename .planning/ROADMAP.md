@@ -80,7 +80,7 @@ Plans:
 **Goal:** Replace stub/minimal auth pages with a professional, user-friendly authentication experience using Supabase Auth.
 **Requirements:** AUTHUX-01, AUTHUX-02, AUTHUX-03, AUTHUX-04, AUTHUX-05
 
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 - [ ] 12-01-PLAN.md — Fundamentos: auth-errors.ts, SubmitButton, updateSession com user

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: Ready to start Phase 10
-stopped_at: Phase 12 context gathered
-last_updated: "2026-03-18T03:27:23.484Z"
+stopped_at: Completed 12-01-PLAN.md
+last_updated: "2026-03-18T03:49:06.111Z"
 last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 progress:
   total_phases: 8
   completed_phases: 3
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 11
+  completed_plans: 8
   percent: 43
 ---
 
@@ -55,6 +55,7 @@ Progress: [████░░░░░░] 43%
 | Phase 11-finance-ops-persistence P01 | 357 | 2 tasks | 16 files |
 | Phase 11-finance-ops-persistence P02 | 15 | 2 tasks | 4 files |
 | Phase 11-finance-ops-persistence P03 | 15 | 2 tasks | 10 files |
+| Phase 12-authentication-ux P01 | 8 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,9 @@ Progress: [████░░░░░░] 43%
 - [Phase Phase 11-02]: Reminder.link reconstructed from linkType/linkId nullable columns — null check on both before building ReminderLink
 - [Phase Phase 11-03]: append() uses void db.auditEvent.create() fire-and-forget to stay sync per interface contract — audit failures never block primary operations (SECU-05)
 - [Phase Phase 11-03]: Single __psivaultAudit__ globalThis key replaces 5+ siloed per-domain audit globals, enabling unified audit trail
+- [Phase 12-01]: vitest.config.ts necessitou resolve.alias para @/ funcionar em testes — corrigido como blocker (Rule 3)
+- [Phase 12-01]: AuthForm usa fieldset disabled ao invés de controlar cada input individualmente — padrão HTML nativo
+- [Phase 12-01]: updateSession retorna user do getUser() já executado — evita segundo round-trip de auth no middleware
 
 ### Pending Todos
 
@@ -152,6 +156,6 @@ Progress: [████░░░░░░] 43%
 
 ## Session Continuity
 
-Last session: 2026-03-18T03:27:23.482Z
-Stopped at: Phase 12 context gathered
+Last session: 2026-03-18T03:49:06.109Z
+Stopped at: Completed 12-01-PLAN.md
 Resume: Plan or execute Phase 10 — /gsd:plan-phase 10
