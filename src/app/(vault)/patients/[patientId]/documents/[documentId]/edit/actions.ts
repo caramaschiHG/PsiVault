@@ -15,7 +15,7 @@ function generateId() {
   return "doc_" + Array.from(buffer, (v) => v.toString(16).padStart(2, "0")).join("");
 }
 
-export async function updateDocumentAction(formData: FormData): Promise<void> {
+export async function updateDocumentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const documentId = String(formData.get("documentId") ?? "");
   const patientId = String(formData.get("patientId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
@@ -48,7 +48,7 @@ export async function updateDocumentAction(formData: FormData): Promise<void> {
     }
   } catch (err) {
     console.error("[updateDocumentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (guardRedirect) redirect(`/patients/${patientId}`);

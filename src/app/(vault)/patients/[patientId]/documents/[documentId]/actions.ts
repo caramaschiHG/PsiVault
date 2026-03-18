@@ -15,7 +15,7 @@ function generateId() {
   return "doc_" + Array.from(buffer, (v) => v.toString(16).padStart(2, "0")).join("");
 }
 
-export async function archiveDocumentAction(formData: FormData): Promise<void> {
+export async function archiveDocumentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const documentId = String(formData.get("documentId") ?? "");
   const patientId = String(formData.get("patientId") ?? "");
 
@@ -48,7 +48,7 @@ export async function archiveDocumentAction(formData: FormData): Promise<void> {
     }
   } catch (err) {
     console.error("[archiveDocumentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (notFoundRedirect || shouldRedirect) redirect(`/patients/${patientId}`);

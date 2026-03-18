@@ -43,7 +43,7 @@ function generateSeriesId() {
 
 // ─── Create appointment ────────────────────────────────────────────────────────
 
-export async function createAppointmentAction(formData: FormData): Promise<void> {
+export async function createAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const patientRepo = getPatientRepository();
   const audit = getAuditRepository();
@@ -155,7 +155,7 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
     }
   } catch (err) {
     console.error("[createAppointmentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (redirectPath) redirect(redirectPath);
@@ -163,7 +163,7 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
 
 // ─── Reschedule appointment ────────────────────────────────────────────────────
 
-export async function rescheduleAppointmentAction(formData: FormData): Promise<void> {
+export async function rescheduleAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -282,7 +282,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
     shouldRedirect = true;
   } catch (err) {
     console.error("[rescheduleAppointmentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -290,7 +290,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
 
 // ─── Cancel appointment ────────────────────────────────────────────────────────
 
-export async function cancelAppointmentAction(formData: FormData): Promise<void> {
+export async function cancelAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -362,7 +362,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
     shouldRedirect = true;
   } catch (err) {
     console.error("[cancelAppointmentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (shouldRedirect) redirect(`/appointments`);
@@ -370,7 +370,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
 
 // ─── Confirm appointment ───────────────────────────────────────────────────────
 
-export async function confirmAppointmentAction(formData: FormData): Promise<void> {
+export async function confirmAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -400,7 +400,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<void
     shouldRedirect = true;
   } catch (err) {
     console.error("[confirmAppointmentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -408,7 +408,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<void
 
 // ─── Complete appointment ──────────────────────────────────────────────────────
 
-export async function completeAppointmentAction(formData: FormData): Promise<void> {
+export async function completeAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -464,7 +464,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<voi
     shouldRedirect = true;
   } catch (err) {
     console.error("[completeAppointmentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -472,7 +472,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<voi
 
 // ─── No-show ──────────────────────────────────────────────────────────────────
 
-export async function noShowAppointmentAction(formData: FormData): Promise<void> {
+export async function noShowAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -502,7 +502,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<void>
     shouldRedirect = true;
   } catch (err) {
     console.error("[noShowAppointmentAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -510,7 +510,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<void>
 
 // ─── Update charge ─────────────────────────────────────────────────────────────
 
-export async function updateChargeAction(formData: FormData): Promise<void> {
+export async function updateChargeAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const financeRepo = getFinanceRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -552,7 +552,7 @@ export async function updateChargeAction(formData: FormData): Promise<void> {
     patientIdForRevalidate = charge.patientId;
   } catch (err) {
     console.error("[updateChargeAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
@@ -560,7 +560,7 @@ export async function updateChargeAction(formData: FormData): Promise<void> {
 
 // ─── Edit meeting link (ONLN-01) ──────────────────────────────────────────────
 
-export async function editMeetingLinkAction(formData: FormData): Promise<void> {
+export async function editMeetingLinkAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -594,7 +594,7 @@ export async function editMeetingLinkAction(formData: FormData): Promise<void> {
     patientIdForRevalidate = existing.patientId;
   } catch (err) {
     console.error("[editMeetingLinkAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   revalidatePath("/agenda");
@@ -603,7 +603,7 @@ export async function editMeetingLinkAction(formData: FormData): Promise<void> {
 
 // ─── Add remote issue note (ONLN-03) ──────────────────────────────────────────
 
-export async function addRemoteIssueNoteAction(formData: FormData): Promise<void> {
+export async function addRemoteIssueNoteAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -637,7 +637,7 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<void
     patientIdForRevalidate = existing.patientId;
   } catch (err) {
     console.error("[addRemoteIssueNoteAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   revalidatePath("/agenda");
@@ -646,7 +646,7 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<void
 
 // ─── Edit recurrence series ────────────────────────────────────────────────────
 
-export async function editSeriesAction(formData: FormData): Promise<void> {
+export async function editSeriesAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -696,7 +696,7 @@ export async function editSeriesAction(formData: FormData): Promise<void> {
     shouldRedirect = true;
   } catch (err) {
     console.error("[editSeriesAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
