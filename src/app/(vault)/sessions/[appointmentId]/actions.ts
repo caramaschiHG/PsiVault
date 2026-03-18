@@ -33,7 +33,7 @@ function nullCoerce(value: FormDataEntryValue | null): string | null {
 
 // ─── Create note action ────────────────────────────────────────────────────────
 
-export async function createNoteAction(formData: FormData): Promise<void> {
+export async function createNoteAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const appointmentRepo = getAppointmentRepository();
   const clinicalRepo = getClinicalNoteRepository();
   const audit = getAuditRepository();
@@ -92,7 +92,7 @@ export async function createNoteAction(formData: FormData): Promise<void> {
     }
   } catch (err) {
     console.error("[createNoteAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (redirectPath) redirect(redirectPath);
@@ -100,7 +100,7 @@ export async function createNoteAction(formData: FormData): Promise<void> {
 
 // ─── Update note action ────────────────────────────────────────────────────────
 
-export async function updateNoteAction(formData: FormData): Promise<void> {
+export async function updateNoteAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
   const clinicalRepo = getClinicalNoteRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -150,7 +150,7 @@ export async function updateNoteAction(formData: FormData): Promise<void> {
     shouldRedirect = true;
   } catch (err) {
     console.error("[updateNoteAction]", err);
-    return;
+    return { ok: false, error: "Algo deu errado. Tente novamente." };
   }
 
   if (shouldRedirect) redirect(`/patients/${patientId}`);
