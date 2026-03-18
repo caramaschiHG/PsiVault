@@ -45,10 +45,10 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 - [x] **UIUX-01**: Establish a consistent design system — typography scale, color palette, spacing tokens, and border-radius applied throughout
 - [ ] **UIUX-02**: Apply professional visual design to all primary views (inicio, agenda, patients list, patient profile, financeiro)
-- [ ] **UIUX-03**: Ensure all pages are fully responsive across mobile, tablet, and desktop viewports
+- [x] **UIUX-03**: Ensure all pages are fully responsive across mobile, tablet, and desktop viewports
 - [x] **UIUX-04**: Achieve WCAG 2.1 AA color contrast ratios on all interactive elements and body text
 - [ ] **UIUX-05**: Add proper empty states, loading states, and error states to all data-dependent pages
-- [ ] **UIUX-06**: Polish navigation — clear active states, breadcrumbs where helpful, smooth transitions
+- [x] **UIUX-06**: Polish navigation — clear active states, breadcrumbs where helpful, smooth transitions
 
 ### Quality & Production Hardening
 
@@ -104,10 +104,10 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | AUTHUX-05 | Phase 12 | Complete |
 | UIUX-01 | Phase 13 | Complete |
 | UIUX-02 | Phase 13 | Pending |
-| UIUX-03 | Phase 13 | Pending |
+| UIUX-03 | Phase 13 | Complete |
 | UIUX-04 | Phase 13 | Complete |
 | UIUX-05 | Phase 13 | Pending |
-| UIUX-06 | Phase 13 | Pending |
+| UIUX-06 | Phase 13 | Complete |
 | QUAL-01 | Phase 14 | Pending |
 | QUAL-02 | Phase 14 | Pending |
 | QUAL-03 | Phase 14 | Pending |
