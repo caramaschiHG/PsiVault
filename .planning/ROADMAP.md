@@ -58,6 +58,13 @@ Plans:
 **Goal:** Replace in-memory finance and audit repositories with Prisma implementations.
 **Requirements:** REPO-05, REPO-06
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Extend schema.prisma with SessionCharge, AuditEvent, Reminder models; migrate interfaces to async
+- [ ] 11-02-PLAN.md — Implement PrismaFinanceRepository and PrismaReminderRepository; swap store.ts files
+- [ ] 11-03-PLAN.md — Implement PrismaAuditRepository; create centralized audit store; consolidate action file stubs; wire backup route
+
 **Success Criteria:**
 1. `PrismaFinanceRepository` implements all methods of `FinanceRepository`
 2. `PrismaAuditRepository` implements all methods of `AuditRepository`
