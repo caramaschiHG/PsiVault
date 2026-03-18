@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: Ready to start Phase 10
-stopped_at: Completed 12-01-PLAN.md
-last_updated: "2026-03-18T03:49:06.111Z"
+stopped_at: Completed 12-04-PLAN.md
+last_updated: "2026-03-18T03:51:57.548Z"
 last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 11
-  completed_plans: 8
+  completed_plans: 9
   percent: 43
 ---
 
@@ -56,6 +56,7 @@ Progress: [████░░░░░░] 43%
 | Phase 11-finance-ops-persistence P02 | 15 | 2 tasks | 4 files |
 | Phase 11-finance-ops-persistence P03 | 15 | 2 tasks | 10 files |
 | Phase 12-authentication-ux P01 | 8 | 2 tasks | 6 files |
+| Phase 12-authentication-ux P04 | 5 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -140,6 +141,8 @@ Progress: [████░░░░░░] 43%
 - [Phase 12-01]: vitest.config.ts necessitou resolve.alias para @/ funcionar em testes — corrigido como blocker (Rule 3)
 - [Phase 12-01]: AuthForm usa fieldset disabled ao invés de controlar cada input individualmente — padrão HTML nativo
 - [Phase 12-01]: updateSession retorna user do getUser() já executado — evita segundo round-trip de auth no middleware
+- [Phase 12-04]: enforceVaultAccess removido — era wrapper com session=null hardcoded; substituído por updateSession Supabase SSR real
+- [Phase 12-04]: Parâmetro f em listFactors tipado explicitamente como { status: string } para satisfazer TypeScript strict mode
 
 ### Pending Todos
 
@@ -156,6 +159,6 @@ Progress: [████░░░░░░] 43%
 
 ## Session Continuity
 
-Last session: 2026-03-18T03:49:06.109Z
-Stopped at: Completed 12-01-PLAN.md
+Last session: 2026-03-18T03:51:57.545Z
+Stopped at: Completed 12-04-PLAN.md
 Resume: Plan or execute Phase 10 — /gsd:plan-phase 10
