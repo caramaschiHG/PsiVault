@@ -123,6 +123,15 @@ Plans:
 **Goal:** Harden the application for real-world use — secure routes, robust error handling, complete audit trail, and verified deployment readiness.
 **Requirements:** QUAL-01, QUAL-02, QUAL-03, QUAL-04, QUAL-05, QUAL-06, DEPLOY-01, DEPLOY-02, DEPLOY-03
 
+**Plans:** 5 plans
+
+Plans:
+- [ ] 14-01-PLAN.md — Re-auth gate real: substituir stub por signInWithPassword em confirmBackupAuthAction e exportPatientAuthAction
+- [ ] 14-02-PLAN.md — Error boundaries: criar error.tsx em sessions/[appointmentId] e patients/[patientId]/documents
+- [ ] 14-03-PLAN.md — Try/catch em todas as server actions de mutação (7 arquivos)
+- [ ] 14-04-PLAN.md — Auditoria QUAL-04/05/06 + postinstall para migrations Vercel
+- [ ] 14-05-PLAN.md — Build verification, .env.example, e checkpoint de lançamento
+
 **Success Criteria:**
 1. The export/backup re-auth gate uses the real `evaluateSensitiveAction` flow (no cookie stub)
 2. All route segments have error boundaries preventing white-screen crashes
