@@ -1,34 +1,38 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { decideVaultAccess, type VaultAccountState, type SessionRecord } from "./lib/auth/session";
+import { updateSession } from "@/lib/supabase/middleware";
 
-export function enforceVaultAccess(input: {
-  pathname: string;
-  session: Pick<SessionRecord, "accountId" | "workspaceId" | "expiresAt" | "revokedAt"> | null;
-  account: VaultAccountState | null;
-  now: Date;
-}) {
-  return decideVaultAccess(input);
-}
+const AUTH_ROUTES = ["/sign-in", "/sign-up", "/verify-email", "/reset-password"];
 
-export function middleware(request: NextRequest) {
-  const decision = enforceVaultAccess({
-    pathname: request.nextUrl.pathname,
-    session: null,
-    account: null,
-    now: new Date(),
-  });
+export async function middleware(request: NextRequest) {
+  const { supabase, supabaseResponse, user } = await updateSession(request);
 
-  if (!decision.allowed && decision.redirectTo) {
-    const redirectUrl = new URL(decision.redirectTo, request.url);
+  const pathname = request.nextUrl.pathname;
+  const isAuthRoute = AUTH_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"));
 
-    return NextResponse.redirect(redirectUrl);
+  if (isAuthRoute && user) {
+    const { data: mfaData } = await supabase.auth.mfa.listFactors();
+    const hasMfa = mfaData?.totp?.some((f: { status: string }) => f.status === "verified") ?? false;
+    const redirectTo = hasMfa ? "/inicio" : "/mfa-setup";
+    return NextResponse.redirect(new URL(redirectTo, request.url));
   }
 
-  return NextResponse.next();
+  return supabaseResponse;
 }
 
 export const config = {
-  matcher: ["/vault/:path*", "/setup/:path*"],
+  matcher: [
+    "/vault/:path*",
+    "/setup/:path*",
+    "/sign-in",
+    "/sign-up",
+    "/verify-email",
+    "/reset-password",
+    "/inicio",
+    "/patients/:path*",
+    "/agenda/:path*",
+    "/sessions/:path*",
+    "/financeiro/:path*",
+    "/settings/:path*",
+  ],
 };
-
