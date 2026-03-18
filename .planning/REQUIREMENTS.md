@@ -61,8 +61,8 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 ### Deployment Readiness
 
-- [ ] **DEPLOY-01**: Configure production environment variables for Supabase, Prisma, and Next.js
-- [ ] **DEPLOY-02**: Verify the application builds and starts cleanly in production mode (`next build`)
+- [x] **DEPLOY-01**: Configure production environment variables for Supabase, Prisma, and Next.js
+- [x] **DEPLOY-02**: Verify the application builds and starts cleanly in production mode (`next build`)
 - [x] **DEPLOY-03**: Confirm Prisma migrations are applied and the production database schema is correct
 
 ## v2 Requirements
@@ -114,8 +114,8 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | QUAL-04 | Phase 14 | Complete |
 | QUAL-05 | Phase 14 | Complete |
 | QUAL-06 | Phase 14 | Complete |
-| DEPLOY-01 | Phase 14 | Pending |
-| DEPLOY-02 | Phase 14 | Pending |
+| DEPLOY-01 | Phase 14 | Complete |
+| DEPLOY-02 | Phase 14 | Complete |
 | DEPLOY-03 | Phase 14 | Complete |
 
 **Coverage:**
