@@ -45,12 +45,12 @@ export default async function InicioPage() {
   const financeRepo = getFinanceRepository();
 
   // Today's appointments (load a window and filter)
-  const rawAppointments = appointmentRepo.listByDateRange(WORKSPACE_ID, from, to);
+  const rawAppointments = await appointmentRepo.listByDateRange(WORKSPACE_ID, from, to);
   const todayAppointments = filterTodayAppointments(rawAppointments, from);
 
   // All patients for snapshot and name resolution
-  const activePatients = patientRepo.listActive(WORKSPACE_ID);
-  const archivedPatients = patientRepo.listArchived(WORKSPACE_ID);
+  const activePatients = await patientRepo.listActive(WORKSPACE_ID);
+  const archivedPatients = await patientRepo.listArchived(WORKSPACE_ID);
   const allPatients = [...activePatients, ...archivedPatients];
 
   // Build patient name map for session cards
@@ -59,20 +59,21 @@ export default async function InicioPage() {
     patientMap.set(p.id, p.socialName ? `${p.fullName} (${p.socialName})` : p.fullName);
   }
 
-  // Active reminders
-  const activeReminders = reminderRepo.listActive(WORKSPACE_ID);
-
   // Monthly charge aggregation (SECU-05: count only, never display amounts)
   const year = now.getUTCFullYear();
   const month = now.getUTCMonth() + 1;
-  const monthlyCharges = financeRepo.listByWorkspaceAndMonth(WORKSPACE_ID, year, month);
+
+  // Active reminders and monthly charges loaded concurrently
+  const [activeReminders, monthlyCharges] = await Promise.all([
+    reminderRepo.listActive(WORKSPACE_ID),
+    financeRepo.listByWorkspaceAndMonth(WORKSPACE_ID, year, month),
+  ]);
   const pendingChargeCount = countPendingCharges(monthlyCharges);
 
   // Monthly snapshot for summary section
-  // Load all appointments this month for session count
   const monthFrom = new Date(Date.UTC(year, month - 1, 1));
   const monthTo = new Date(Date.UTC(year, month, 1));
-  const monthlyAppointments = appointmentRepo.listByDateRange(WORKSPACE_ID, monthFrom, monthTo);
+  const monthlyAppointments = await appointmentRepo.listByDateRange(WORKSPACE_ID, monthFrom, monthTo);
   const snapshot = deriveMonthlySnapshot({
     activePatients,
     monthlyCharges,
@@ -110,22 +111,22 @@ export default async function InicioPage() {
       <section style={sectionStyle}>
         <div style={sectionHeadingRowStyle}>
           <h2 style={sectionTitleStyle}>Hoje</h2>
-          <a href="/agenda" style={sectionActionLinkStyle}>
+          <a href="/agenda" className="link-subtle" style={sectionActionLinkStyle}>
             Ver agenda completa
           </a>
         </div>
 
         {todayAppointments.length === 0 ? (
           <div style={emptyStateStyle}>
-            <p style={emptyStateTextStyle}>Nenhuma sessão hoje</p>
-            <a href="/appointments/new" style={emptyStateActionStyle}>
+            <p style={emptyStateTextStyle}>Nenhuma sessão agendada para hoje.</p>
+            <a href="/appointments/new" className="btn-secondary" style={emptyStateActionStyle}>
               Agendar consulta
             </a>
           </div>
         ) : (
           <ul style={cardListStyle}>
             {todayAppointments.map((appt) => (
-              <li key={appt.id} style={sessionCardStyle}>
+              <li key={appt.id} className="card-hover" style={sessionCardStyle}>
                 <span style={sessionTimeStyle}>
                   {timeFormatter.format(appt.startsAt)}
                 </span>
@@ -149,7 +150,7 @@ export default async function InicioPage() {
 
         {activeReminders.length === 0 ? (
           <div style={emptyStateStyle}>
-            <p style={emptyStateTextStyle}>Nenhum lembrete ativo</p>
+            <p style={emptyStateTextStyle}>Nenhum lembrete ativo.</p>
           </div>
         ) : (
           <ul style={cardListStyle}>
@@ -165,7 +166,7 @@ export default async function InicioPage() {
                 </div>
                 {/* Completion form — uses server action */}
                 <form action={completeReminderAction.bind(null, reminder.id)}>
-                  <button type="submit" style={completeButtonStyle}>
+                  <button type="submit" className="btn-ghost" style={completeButtonStyle}>
                     Concluir
                   </button>
                 </form>
@@ -184,14 +185,16 @@ export default async function InicioPage() {
               name="title"
               placeholder="Título do lembrete"
               required
+              className="input-field"
               style={reminderTitleInputStyle}
             />
             <input
               type="date"
               name="dueAt"
+              className="input-field"
               style={reminderDateInputStyle}
             />
-            <button type="submit" style={submitButtonStyle}>
+            <button type="submit" className="btn-primary">
               Adicionar
             </button>
           </form>
@@ -235,12 +238,12 @@ export default async function InicioPage() {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
-  maxWidth: "900px",
 } satisfies React.CSSProperties;
 
 const headingRowStyle = {
@@ -258,23 +261,26 @@ const headingTextStyle = {
 const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   margin: 0,
   fontSize: "2rem",
   fontWeight: 700,
-  color: "#1c1917",
+  fontFamily: "'IBM Plex Serif', serif",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const sectionStyle = {
   padding: "1.5rem",
-  borderRadius: "20px",
-  background: "rgba(255, 252, 247, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-sm)",
   display: "grid",
   gap: "1rem",
 } satisfies React.CSSProperties;
@@ -288,16 +294,13 @@ const sectionHeadingRowStyle = {
 
 const sectionTitleStyle = {
   margin: 0,
-  fontSize: "1.1rem",
+  fontSize: "1rem",
   fontWeight: 600,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const sectionActionLinkStyle = {
   fontSize: "0.82rem",
-  color: "#9a3412",
-  textDecoration: "none",
-  fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const emptyStateStyle = {
@@ -305,25 +308,20 @@ const emptyStateStyle = {
   alignItems: "center",
   gap: "0.75rem",
   padding: "1rem",
-  borderRadius: "12px",
-  background: "rgba(245, 245, 244, 0.6)",
+  borderRadius: "var(--radius-md)",
+  background: "rgba(245, 245, 244, 0.5)",
 } satisfies React.CSSProperties;
 
 const emptyStateTextStyle = {
   margin: 0,
-  fontSize: "0.9rem",
-  color: "#78716c",
+  fontSize: "0.88rem",
+  color: "var(--color-text-3)",
+  flex: 1,
 } satisfies React.CSSProperties;
 
 const emptyStateActionStyle = {
   fontSize: "0.85rem",
-  color: "#9a3412",
-  textDecoration: "none",
-  fontWeight: 500,
-  padding: "0.3rem 0.75rem",
-  borderRadius: "8px",
-  background: "rgba(254, 243, 199, 0.5)",
-  border: "1px solid rgba(146, 64, 14, 0.15)",
+  padding: "0.35rem 0.875rem",
 } satisfies React.CSSProperties;
 
 const cardListStyle = {
@@ -339,31 +337,34 @@ const sessionCardStyle = {
   alignItems: "center",
   gap: "0.75rem",
   padding: "0.75rem 1rem",
-  borderRadius: "12px",
-  background: "rgba(255, 247, 237, 0.7)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  borderRadius: "var(--radius-md)",
+  background: "rgba(255, 247, 237, 0.6)",
+  border: "1px solid var(--color-border)",
+  cursor: "default",
 } satisfies React.CSSProperties;
 
 const sessionTimeStyle = {
-  fontSize: "0.9rem",
-  fontWeight: 600,
-  color: "#9a3412",
+  fontSize: "1rem",
+  fontWeight: 700,
+  color: "var(--color-accent)",
   minWidth: "3.5rem",
+  fontVariantNumeric: "tabular-nums",
 } satisfies React.CSSProperties;
 
 const sessionPatientStyle = {
   fontSize: "0.9rem",
   fontWeight: 500,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
   flex: 1,
 } satisfies React.CSSProperties;
 
 const sessionCareModeStyle = {
-  fontSize: "0.78rem",
-  color: "#78716c",
-  padding: "0.15rem 0.5rem",
-  borderRadius: "6px",
+  fontSize: "0.75rem",
+  color: "var(--color-text-3)",
+  padding: "0.2rem 0.55rem",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(245, 245, 244, 0.8)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const reminderCardStyle = {
@@ -372,9 +373,9 @@ const reminderCardStyle = {
   justifyContent: "space-between",
   gap: "0.75rem",
   padding: "0.75rem 1rem",
-  borderRadius: "12px",
-  background: "rgba(255, 247, 237, 0.7)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  borderRadius: "var(--radius-md)",
+  background: "rgba(255, 247, 237, 0.6)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const reminderInfoStyle = {
@@ -386,40 +387,34 @@ const reminderInfoStyle = {
 const reminderTitleStyle = {
   fontSize: "0.9rem",
   fontWeight: 500,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const reminderDueDateStyle = {
   fontSize: "0.78rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const completeButtonStyle = {
-  padding: "0.3rem 0.75rem",
-  borderRadius: "8px",
-  border: "1px solid rgba(16, 185, 129, 0.3)",
-  background: "rgba(236, 253, 245, 0.8)",
-  color: "#065f46",
   fontSize: "0.8rem",
-  fontWeight: 500,
-  cursor: "pointer",
+  padding: "0.3rem 0.75rem",
   whiteSpace: "nowrap" as const,
 } satisfies React.CSSProperties;
 
 const newReminderFormContainerStyle = {
   paddingTop: "0.75rem",
-  borderTop: "1px solid rgba(146, 64, 14, 0.08)",
+  borderTop: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.5rem",
 } satisfies React.CSSProperties;
 
 const newReminderFormLabelStyle = {
   margin: 0,
-  fontSize: "0.78rem",
+  fontSize: "0.72rem",
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.08em",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const newReminderFormStyle = {
@@ -432,30 +427,10 @@ const newReminderFormStyle = {
 const reminderTitleInputStyle = {
   flex: 1,
   minWidth: "12rem",
-  padding: "0.4rem 0.6rem",
-  fontSize: "0.88rem",
-  borderRadius: "8px",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "#fff",
 } satisfies React.CSSProperties;
 
 const reminderDateInputStyle = {
-  padding: "0.4rem 0.6rem",
-  fontSize: "0.88rem",
-  borderRadius: "8px",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "#fff",
-} satisfies React.CSSProperties;
-
-const submitButtonStyle = {
-  padding: "0.4rem 0.9rem",
-  borderRadius: "8px",
-  border: "none",
-  background: "#9a3412",
-  color: "#fff7ed",
-  fontSize: "0.88rem",
-  fontWeight: 600,
-  cursor: "pointer",
+  minWidth: "9rem",
 } satisfies React.CSSProperties;
 
 const snapshotGridStyle = {
@@ -465,23 +440,26 @@ const snapshotGridStyle = {
 } satisfies React.CSSProperties;
 
 const snapshotCardStyle = {
-  padding: "1rem",
-  borderRadius: "14px",
-  background: "rgba(245, 245, 244, 0.7)",
-  border: "1px solid rgba(146, 64, 14, 0.08)",
+  padding: "1.1rem 1.2rem",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-sm)",
   display: "grid",
   gap: "0.25rem",
 } satisfies React.CSSProperties;
 
 const snapshotNumberStyle = {
-  fontSize: "1.75rem",
+  fontSize: "1.875rem",
   fontWeight: 700,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
+  fontFamily: "'IBM Plex Serif', serif",
+  lineHeight: 1,
 } satisfies React.CSSProperties;
 
 const snapshotLabelStyle = {
-  fontSize: "0.82rem",
-  color: "#78716c",
+  fontSize: "0.8rem",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const pendingBadgeLinkStyle = {
@@ -491,14 +469,16 @@ const pendingBadgeLinkStyle = {
 } satisfies React.CSSProperties;
 
 const pendingBadgeNumberStyle = {
-  fontSize: "1.75rem",
+  fontSize: "1.875rem",
   fontWeight: 700,
-  color: "#9a3412",
+  color: "var(--color-accent)",
+  fontFamily: "'IBM Plex Serif', serif",
+  lineHeight: 1,
 } satisfies React.CSSProperties;
 
 const pendingBadgeLabelStyle = {
-  fontSize: "0.82rem",
-  color: "#9a3412",
+  fontSize: "0.8rem",
+  color: "var(--color-accent)",
   textDecoration: "underline",
   textDecorationColor: "rgba(154, 52, 18, 0.3)",
 } satisfies React.CSSProperties;

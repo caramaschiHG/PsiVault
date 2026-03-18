@@ -48,10 +48,11 @@ export async function searchAllAction(query: string): Promise<SearchResultItem[]
   );
   const documents = documentsResults.flat();
 
-  // Load all charges by iterating over all patients (Synchronous)
-  const charges = allPatients.flatMap((p) =>
-    chargeRepo.listByPatient(p.id, WORKSPACE_ID),
+  // Load all charges by iterating over all patients (Asynchronous)
+  const chargesResults = await Promise.all(
+    allPatients.map((p) => chargeRepo.listByPatient(p.id, WORKSPACE_ID)),
   );
+  const charges = chargesResults.flat();
 
   return searchAll({
     query,

@@ -10,8 +10,8 @@ import { redactForLogs } from "../../../../lib/logging/redaction";
 import { ActivityFeed } from "./components/activity-feed";
 import { SessionList } from "./components/session-list";
 
-export default function SecuritySettingsPage() {
-  const model = buildSecurityPageModel();
+export default async function SecuritySettingsPage() {
+  const model = await buildSecurityPageModel();
 
   return (
     <main style={shellStyle}>
@@ -32,7 +32,7 @@ export default function SecuritySettingsPage() {
   );
 }
 
-function buildSecurityPageModel() {
+async function buildSecurityPageModel() {
   const now = new Date("2026-03-13T14:30:00.000Z");
   const currentSession = {
     ...createSession(
@@ -126,7 +126,7 @@ function buildSecurityPageModel() {
       currentSessionId: "sess_current",
       now,
     }),
-    activity: buildSecurityActivityItems(repository.listForWorkspace("ws_1")),
+    activity: buildSecurityActivityItems(await repository.listForWorkspace("ws_1")),
   };
 }
 

@@ -69,7 +69,7 @@ export async function createAppointmentAction(formData: FormData) {
   const recurrenceCount = Number(formData.get("recurrenceCount") ?? 1);
 
   // Guard: patient must be active
-  const patient = patientRepo.findById(patientId, DEFAULT_WORKSPACE_ID);
+  const patient = await patientRepo.findById(patientId, DEFAULT_WORKSPACE_ID);
   if (!patient) return;
   assertPatientSchedulable(patient);
 
@@ -92,7 +92,7 @@ export async function createAppointmentAction(formData: FormData) {
     );
 
     // Check conflicts for each occurrence before saving any
-    const allExisting = repo.listByDateRange(
+    const allExisting = await repo.listByDateRange(
       DEFAULT_WORKSPACE_ID,
       occurrences[0].startsAt,
       occurrences[occurrences.length - 1].endsAt,
@@ -109,7 +109,7 @@ export async function createAppointmentAction(formData: FormData) {
     }
 
     for (const occurrence of occurrences) {
-      repo.save(occurrence);
+      await repo.save(occurrence);
       audit.append(
         createAppointmentAuditEvent(
           {
@@ -127,7 +127,7 @@ export async function createAppointmentAction(formData: FormData) {
   }
 
   // Single appointment
-  const existing = repo.listByDateRange(
+  const existing = await repo.listByDateRange(
     DEFAULT_WORKSPACE_ID,
     startsAt,
     new Date(startsAt.getTime() + durationMinutes * 60_000),
@@ -149,7 +149,7 @@ export async function createAppointmentAction(formData: FormData) {
     throw new Error("Scheduling conflict: the selected time overlaps an existing appointment.");
   }
 
-  repo.save(appointment);
+  await repo.save(appointment);
 
   audit.append(
     createAppointmentAuditEvent(
@@ -177,7 +177,7 @@ export async function rescheduleAppointmentAction(formData: FormData) {
   const durationMinutes = Number(formData.get("durationMinutes") ?? 60);
   const scope = (formData.get("recurrenceScope") ?? "THIS") as RecurrenceEditScope;
 
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   if (existing.seriesId && scope !== "THIS") {
@@ -186,7 +186,7 @@ export async function rescheduleAppointmentAction(formData: FormData) {
     // this action only supports changing the time of the targeted scope
     // by computing the delta and applying it.
     const deltaMs = newStartsAt.getTime() - existing.startsAt.getTime();
-    const allInSeries = repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
+    const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
 
     let inScope =
       scope === "ALL"
@@ -204,7 +204,7 @@ export async function rescheduleAppointmentAction(formData: FormData) {
 
       const newOccurrenceStart = new Date(occurrence.startsAt.getTime() + deltaMs);
 
-      const conflictCheck = repo.listByDateRange(
+      const conflictCheck = await repo.listByDateRange(
         DEFAULT_WORKSPACE_ID,
         newOccurrenceStart,
         new Date(newOccurrenceStart.getTime() + durationMinutes * 60_000),
@@ -227,7 +227,7 @@ export async function rescheduleAppointmentAction(formData: FormData) {
         { now, createId: generateId },
       );
 
-      repo.save(rescheduled);
+      await repo.save(rescheduled);
 
       audit.append(
         createAppointmentAuditEvent(
@@ -243,7 +243,7 @@ export async function rescheduleAppointmentAction(formData: FormData) {
     }
   } else {
     // Single occurrence reschedule
-    const conflictCheck = repo.listByDateRange(
+    const conflictCheck = await repo.listByDateRange(
       DEFAULT_WORKSPACE_ID,
       newStartsAt,
       new Date(newStartsAt.getTime() + durationMinutes * 60_000),
@@ -268,7 +268,7 @@ export async function rescheduleAppointmentAction(formData: FormData) {
       { now, createId: generateId },
     );
 
-    repo.save(rescheduled);
+    await repo.save(rescheduled);
 
     audit.append(
       createAppointmentAuditEvent(
@@ -296,11 +296,11 @@ export async function cancelAppointmentAction(formData: FormData) {
   const appointmentId = String(formData.get("appointmentId") ?? "");
   const scope = (formData.get("recurrenceScope") ?? "THIS") as RecurrenceEditScope;
 
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   if (existing.seriesId && scope !== "THIS") {
-    const allInSeries = repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
+    const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
 
     const inScope =
       scope === "ALL"
@@ -321,7 +321,7 @@ export async function cancelAppointmentAction(formData: FormData) {
         canceledByAccountId: DEFAULT_ACCOUNT_ID,
       });
 
-      repo.save(canceled);
+      await repo.save(canceled);
 
       audit.append(
         createAppointmentAuditEvent(
@@ -340,7 +340,7 @@ export async function cancelAppointmentAction(formData: FormData) {
       canceledByAccountId: DEFAULT_ACCOUNT_ID,
     });
 
-    repo.save(canceled);
+    await repo.save(canceled);
 
     audit.append(
       createAppointmentAuditEvent(
@@ -365,11 +365,11 @@ export async function confirmAppointmentAction(formData: FormData) {
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   const confirmed = confirmAppointment(existing, { now });
-  repo.save(confirmed);
+  await repo.save(confirmed);
 
   audit.append(
     createAppointmentAuditEvent(
@@ -393,11 +393,11 @@ export async function completeAppointmentAction(formData: FormData) {
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   const completed = completeAppointment(existing, { now });
-  repo.save(completed);
+  await repo.save(completed);
 
   audit.append(
     createAppointmentAuditEvent(
@@ -412,7 +412,7 @@ export async function completeAppointmentAction(formData: FormData) {
 
   // Auto-create a SessionCharge (idempotent: skip if one already exists for this appointment)
   const financeRepo = getFinanceRepository();
-  const existingCharge = financeRepo.findByAppointmentId(completed.id);
+  const existingCharge = await financeRepo.findByAppointmentId(completed.id);
   if (!existingCharge) {
     const charge = createSessionCharge(
       {
@@ -423,7 +423,7 @@ export async function completeAppointmentAction(formData: FormData) {
       },
       { now, createId: generateId },
     );
-    financeRepo.save(charge);
+    await financeRepo.save(charge);
     audit.append(
       createChargeAuditEvent(
         {
@@ -447,11 +447,11 @@ export async function noShowAppointmentAction(formData: FormData) {
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   const noShow = noShowAppointment(existing, { now });
-  repo.save(noShow);
+  await repo.save(noShow);
 
   audit.append(
     createAppointmentAuditEvent(
@@ -487,11 +487,11 @@ export async function updateChargeAction(formData: FormData) {
   const amountInCents: number | null =
     amountStr.trim() !== "" ? Math.round(parseFloat(amountStr) * 100) : null;
 
-  const charge = financeRepo.findById(chargeId);
+  const charge = await financeRepo.findById(chargeId);
   if (!charge) return;
 
   const updated = updateSessionCharge(charge, { status, amountInCents, paymentMethod }, { now });
-  financeRepo.save(updated);
+  await financeRepo.save(updated);
 
   audit.append(
     createChargeAuditEvent(
@@ -519,12 +519,12 @@ export async function editMeetingLinkAction(formData: FormData) {
   const meetingLinkRaw = String(formData.get("meetingLink") ?? "");
   const meetingLink = meetingLinkRaw.trim() || null;
 
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
   if (existing.careMode !== "ONLINE") return;
 
   const updated = updateAppointmentOnlineCare(existing, { meetingLink }, { now });
-  repo.save(updated);
+  await repo.save(updated);
 
   audit.append(
     createAppointmentAuditEvent(
@@ -553,12 +553,12 @@ export async function addRemoteIssueNoteAction(formData: FormData) {
   const remoteIssueNoteRaw = String(formData.get("remoteIssueNote") ?? "");
   const remoteIssueNote = remoteIssueNoteRaw.trim() || null;
 
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   // Domain function guards against non-ONLINE appointments — let error propagate to Next.js error boundary
   const updated = updateAppointmentOnlineCare(existing, { remoteIssueNote }, { now });
-  repo.save(updated);
+  await repo.save(updated);
 
   audit.append(
     createAppointmentAuditEvent(
@@ -592,10 +592,10 @@ export async function editSeriesAction(formData: FormData) {
     ? (String(formData.get("careMode")) as AppointmentCareMode)
     : undefined;
 
-  const existing = repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
-  const mutated = applySeriesEdit(
+  const mutated = await applySeriesEdit(
     {
       scope,
       targetId: appointmentId,

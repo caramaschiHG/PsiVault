@@ -12,46 +12,47 @@
 import type { SessionCharge } from "./model";
 
 export interface SessionChargeRepository {
-  save(charge: SessionCharge): void;
-  findById(id: string): SessionCharge | null;
-  findByAppointmentId(appointmentId: string): SessionCharge | null;
-  listByPatient(patientId: string, workspaceId: string): SessionCharge[];
-  listByMonth(workspaceId: string, patientId: string, year: number, month: number): SessionCharge[];
-  listByWorkspaceAndMonth(workspaceId: string, year: number, month: number): SessionCharge[];
+  save(charge: SessionCharge): Promise<SessionCharge>;
+  findById(id: string): Promise<SessionCharge | null>;
+  findByAppointmentId(appointmentId: string): Promise<SessionCharge | null>;
+  listByPatient(patientId: string, workspaceId: string): Promise<SessionCharge[]>;
+  listByMonth(workspaceId: string, patientId: string, year: number, month: number): Promise<SessionCharge[]>;
+  listByWorkspaceAndMonth(workspaceId: string, year: number, month: number): Promise<SessionCharge[]>;
 }
 
 export function createInMemorySessionChargeRepository(): SessionChargeRepository {
   const store = new Map<string, SessionCharge>();
 
   return {
-    save(charge: SessionCharge): void {
+    save(charge: SessionCharge): Promise<SessionCharge> {
       store.set(charge.id, charge);
+      return Promise.resolve(charge);
     },
 
-    findById(id: string): SessionCharge | null {
-      return store.get(id) ?? null;
+    findById(id: string): Promise<SessionCharge | null> {
+      return Promise.resolve(store.get(id) ?? null);
     },
 
-    findByAppointmentId(appointmentId: string): SessionCharge | null {
+    findByAppointmentId(appointmentId: string): Promise<SessionCharge | null> {
       for (const charge of store.values()) {
         if (charge.appointmentId === appointmentId) {
-          return charge;
+          return Promise.resolve(charge);
         }
       }
-      return null;
+      return Promise.resolve(null);
     },
 
-    listByPatient(patientId: string, workspaceId: string): SessionCharge[] {
+    listByPatient(patientId: string, workspaceId: string): Promise<SessionCharge[]> {
       const result: SessionCharge[] = [];
       for (const charge of store.values()) {
         if (charge.patientId === patientId && charge.workspaceId === workspaceId) {
           result.push(charge);
         }
       }
-      return result;
+      return Promise.resolve(result);
     },
 
-    listByMonth(workspaceId: string, patientId: string, year: number, month: number): SessionCharge[] {
+    listByMonth(workspaceId: string, patientId: string, year: number, month: number): Promise<SessionCharge[]> {
       const from = Date.UTC(year, month - 1, 1);
       const to = Date.UTC(year, month, 1);
       const result: SessionCharge[] = [];
@@ -64,10 +65,10 @@ export function createInMemorySessionChargeRepository(): SessionChargeRepository
           result.push(charge);
         }
       }
-      return result;
+      return Promise.resolve(result);
     },
 
-    listByWorkspaceAndMonth(workspaceId: string, year: number, month: number): SessionCharge[] {
+    listByWorkspaceAndMonth(workspaceId: string, year: number, month: number): Promise<SessionCharge[]> {
       const from = Date.UTC(year, month - 1, 1);
       const to = Date.UTC(year, month, 1);
       const result: SessionCharge[] = [];
@@ -80,7 +81,7 @@ export function createInMemorySessionChargeRepository(): SessionChargeRepository
           result.push(charge);
         }
       }
-      return result;
+      return Promise.resolve(result);
     },
   };
 }

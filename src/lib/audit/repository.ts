@@ -2,7 +2,7 @@ import type { AuditEvent } from "./events";
 
 export interface AuditEventRepository {
   append(event: AuditEvent): AuditEvent;
-  listForWorkspace(workspaceId: string): AuditEvent[];
+  listForWorkspace(workspaceId: string): Promise<AuditEvent[]>;
 }
 
 export function createInMemoryAuditRepository(seed: AuditEvent[] = []): AuditEventRepository {
@@ -15,7 +15,7 @@ export function createInMemoryAuditRepository(seed: AuditEvent[] = []): AuditEve
       return event;
     },
     listForWorkspace(workspaceId) {
-      return events.filter((event) => event.actor.workspaceId === workspaceId);
+      return Promise.resolve(events.filter((event) => event.actor.workspaceId === workspaceId));
     },
   };
 }

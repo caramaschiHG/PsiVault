@@ -72,9 +72,8 @@ export async function GET(
     docRepo.listByPatient(p.id, WORKSPACE_ID),
   ));
   const documents = documentsResults.flat();
-  const charges = patients.flatMap((p) =>
-    financeRepo.listByPatient(p.id, WORKSPACE_ID),
-  );
+  const chargesResults = await Promise.all(patients.map((p) => financeRepo.listByPatient(p.id, WORKSPACE_ID)));
+  const charges = chargesResults.flat();
 
   // Audit events: in-memory v1 does not maintain a global singleton audit store.
   // Production: replace with getAuditRepository().listForWorkspace(WORKSPACE_ID).

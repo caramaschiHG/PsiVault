@@ -204,42 +204,42 @@ describe("finance domain", () => {
   });
 
   describe("SessionChargeRepository", () => {
-    it("save + findById returns the saved charge", () => {
+    it("save + findById returns the saved charge", async () => {
       const repo = createInMemorySessionChargeRepository();
       const charge = createSessionCharge(BASE_INPUT, { now: NOW, createId: makeId });
-      repo.save(charge);
-      const found = repo.findById(charge.id);
+      await repo.save(charge);
+      const found = await repo.findById(charge.id);
       expect(found).not.toBeNull();
       expect(found?.id).toBe(charge.id);
     });
 
-    it("findByAppointmentId returns null when no charge exists for that appointmentId", () => {
+    it("findByAppointmentId returns null when no charge exists for that appointmentId", async () => {
       const repo = createInMemorySessionChargeRepository();
-      const result = repo.findByAppointmentId("appt_nonexistent");
+      const result = await repo.findByAppointmentId("appt_nonexistent");
       expect(result).toBeNull();
     });
 
-    it("findByAppointmentId returns charge when one exists", () => {
+    it("findByAppointmentId returns charge when one exists", async () => {
       const repo = createInMemorySessionChargeRepository();
       const charge = createSessionCharge(BASE_INPUT, { now: NOW, createId: makeId });
-      repo.save(charge);
-      const found = repo.findByAppointmentId("appt_1");
+      await repo.save(charge);
+      const found = await repo.findByAppointmentId("appt_1");
       expect(found?.id).toBe(charge.id);
     });
 
-    it("listByPatient returns all charges for a patient", () => {
+    it("listByPatient returns all charges for a patient", async () => {
       const repo = createInMemorySessionChargeRepository();
       const c1 = createSessionCharge({ ...BASE_INPUT, patientId: "pat_10" }, { now: NOW, createId: makeId });
       const c2 = createSessionCharge({ ...BASE_INPUT, patientId: "pat_10" }, { now: NOW, createId: makeId });
       const c3 = createSessionCharge({ ...BASE_INPUT, patientId: "pat_99" }, { now: NOW, createId: makeId });
-      repo.save(c1);
-      repo.save(c2);
-      repo.save(c3);
-      const list = repo.listByPatient("pat_10", "ws_1");
+      await repo.save(c1);
+      await repo.save(c2);
+      await repo.save(c3);
+      const list = await repo.listByPatient("pat_10", "ws_1");
       expect(list).toHaveLength(2);
     });
 
-    it("listByMonth uses UTC boundaries — charge at midnight on first of next month is excluded", () => {
+    it("listByMonth uses UTC boundaries — charge at midnight on first of next month is excluded", async () => {
       const repo = createInMemorySessionChargeRepository();
       // January 2026 charge
       const janCharge = createSessionCharge(
@@ -251,22 +251,22 @@ describe("finance domain", () => {
         { ...BASE_INPUT, appointmentId: "appt_feb" },
         { now: new Date("2026-02-01T00:00:00Z"), createId: makeId },
       );
-      repo.save(janCharge);
-      repo.save(febBoundaryCharge);
+      await repo.save(janCharge);
+      await repo.save(febBoundaryCharge);
 
-      const janList = repo.listByMonth("ws_1", "pat_1", 2026, 1);
+      const janList = await repo.listByMonth("ws_1", "pat_1", 2026, 1);
       expect(janList).toHaveLength(1);
       expect(janList[0].id).toBe(janCharge.id);
     });
 
-    it("listByMonth includes charge at midnight on first of the month", () => {
+    it("listByMonth includes charge at midnight on first of the month", async () => {
       const repo = createInMemorySessionChargeRepository();
       const firstDayCharge = createSessionCharge(
         BASE_INPUT,
         { now: new Date("2026-01-01T00:00:00Z"), createId: makeId },
       );
-      repo.save(firstDayCharge);
-      const list = repo.listByMonth("ws_1", "pat_1", 2026, 1);
+      await repo.save(firstDayCharge);
+      const list = await repo.listByMonth("ws_1", "pat_1", 2026, 1);
       expect(list).toHaveLength(1);
     });
   });

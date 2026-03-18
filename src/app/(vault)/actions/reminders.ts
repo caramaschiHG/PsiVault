@@ -68,7 +68,7 @@ export async function createReminderAction(formData: FormData): Promise<void> {
     { now, createId: generateId },
   );
 
-  repo.save(reminder);
+  await repo.save(reminder);
 
   audit.append(
     createReminderAuditEvent({
@@ -96,11 +96,11 @@ export async function completeReminderAction(reminderId: string): Promise<void> 
   const audit = getAuditRepository();
   const now = new Date();
 
-  const existing = repo.findById(reminderId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(reminderId, DEFAULT_WORKSPACE_ID);
   if (!existing) return;
 
   const completed = completeReminder(existing, { now });
-  repo.save(completed);
+  await repo.save(completed);
 
   audit.append(
     createReminderAuditEvent({

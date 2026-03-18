@@ -1,3 +1,5 @@
+import { describe, it, expect } from "vitest";
+
 describe("audit contract baseline", () => {
   const now = new Date("2026-03-13T14:30:00.000Z");
 
@@ -134,7 +136,7 @@ describe("audit contract baseline", () => {
     expect(result.status).toBe("revoked");
     expect(result.auditEvent?.type).toBe("security.session.revoked");
     expect(result.sessions.find((session) => session.id === "sess_mobile")?.revokedAt).toEqual(now);
-    expect(repository.listForWorkspace("ws_1")).toHaveLength(1);
+    expect(await repository.listForWorkspace("ws_1")).toHaveLength(1);
     expect(
       buildVisibleSessionList({
         sessions: result.sessions,

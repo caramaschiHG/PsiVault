@@ -104,18 +104,17 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
     },
   });
 
-  // Load reminders for this patient (active + completed history) - Synchronous
+  // Load reminders for this patient (active + completed history)
   const reminderRepo = getReminderRepository();
-  const activeReminders = reminderRepo.listActiveByPatient(patient.id, WORKSPACE_ID);
-  const completedReminders = reminderRepo.listCompletedByPatient(patient.id, WORKSPACE_ID);
-
-  // Load active documents for this patient - Asynchronous
   const docRepo = getDocumentRepository();
-  const activeDocuments = await docRepo.listActiveByPatient(patient.id, WORKSPACE_ID);
-
-  // Load charges for financial status derivation - Synchronous
   const financeRepo = getFinanceRepository();
-  const charges = financeRepo.listByPatient(patient.id, WORKSPACE_ID);
+
+  const [activeReminders, completedReminders, activeDocuments, charges] = await Promise.all([
+    reminderRepo.listActiveByPatient(patient.id, WORKSPACE_ID),
+    reminderRepo.listCompletedByPatient(patient.id, WORKSPACE_ID),
+    docRepo.listActiveByPatient(patient.id, WORKSPACE_ID),
+    financeRepo.listByPatient(patient.id, WORKSPACE_ID),
+  ]);
   const financialStatus = deriveFinancialStatus(charges);
 
   // Derive scheduling-backed summary with real financial status
@@ -163,7 +162,7 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
         <Link href="/patients" style={navLinkStyle}>
           Pacientes
         </Link>
-        <span style={navSepStyle}>/</span>
+        <span style={navSepStyle}>›</span>
         <span style={navCurrentStyle}>{patient.fullName}</span>
       </nav>
 
@@ -235,43 +234,46 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
 }
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.25rem",
   alignContent: "start",
-  maxWidth: "900px",
 } satisfies React.CSSProperties;
 
 const navStyle = {
   display: "flex",
   alignItems: "center",
-  gap: "0.5rem",
-  fontSize: "0.9rem",
-  color: "#78716c",
+  gap: "0.4rem",
+  fontSize: "0.82rem",
+  marginBottom: "0.25rem",
 } satisfies React.CSSProperties;
 
 const navLinkStyle = {
-  color: "#9a3412",
+  color: "var(--color-text-2)",
   textDecoration: "none",
   fontWeight: 500,
+  transition: "color 0.12s",
 } satisfies React.CSSProperties;
 
 const navSepStyle = {
-  color: "#d4c5b5",
+  color: "var(--color-text-4)",
+  fontSize: "0.75rem",
 } satisfies React.CSSProperties;
 
 const navCurrentStyle = {
-  color: "#57534e",
+  color: "var(--color-text-3)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const editSectionStyle = {

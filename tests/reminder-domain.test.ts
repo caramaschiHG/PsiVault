@@ -135,79 +135,79 @@ describe("reminder domain", () => {
   });
 
   describe("ReminderRepository", () => {
-    it("save + findById returns the saved reminder", () => {
+    it("save + findById returns the saved reminder", async () => {
       const repo = createInMemoryReminderRepository();
       const reminder = createReminder(BASE_INPUT, { now: NOW, createId: makeId });
-      repo.save(reminder);
-      const found = repo.findById(reminder.id, "ws_1");
+      await repo.save(reminder);
+      const found = await repo.findById(reminder.id, "ws_1");
       expect(found).not.toBeNull();
       expect(found?.id).toBe(reminder.id);
     });
 
-    it("findById returns null for wrong workspaceId", () => {
+    it("findById returns null for wrong workspaceId", async () => {
       const repo = createInMemoryReminderRepository();
       const reminder = createReminder(BASE_INPUT, { now: NOW, createId: makeId });
-      repo.save(reminder);
-      const found = repo.findById(reminder.id, "ws_other");
+      await repo.save(reminder);
+      const found = await repo.findById(reminder.id, "ws_other");
       expect(found).toBeNull();
     });
 
-    it("findById returns null when id not in store", () => {
+    it("findById returns null when id not in store", async () => {
       const repo = createInMemoryReminderRepository();
-      const found = repo.findById("nonexistent_id", "ws_1");
+      const found = await repo.findById("nonexistent_id", "ws_1");
       expect(found).toBeNull();
     });
 
-    it("save with same id overwrites existing entry", () => {
+    it("save with same id overwrites existing entry", async () => {
       const repo = createInMemoryReminderRepository();
       const reminder = createReminder(BASE_INPUT, { now: NOW, createId: makeId });
-      repo.save(reminder);
+      await repo.save(reminder);
       const updatedReminder = { ...reminder, title: "Titulo atualizado" };
-      repo.save(updatedReminder);
-      const found = repo.findById(reminder.id, "ws_1");
+      await repo.save(updatedReminder);
+      const found = await repo.findById(reminder.id, "ws_1");
       expect(found?.title).toBe("Titulo atualizado");
     });
 
-    it("listActive returns only reminders with completedAt === null for workspace", () => {
+    it("listActive returns only reminders with completedAt === null for workspace", async () => {
       const repo = createInMemoryReminderRepository();
       const active = createReminder(BASE_INPUT, { now: NOW, createId: makeId });
       const completed = completeReminder(
         createReminder(BASE_INPUT, { now: NOW, createId: makeId }),
         { now: new Date("2026-01-16T10:00:00Z") },
       );
-      repo.save(active);
-      repo.save(completed);
-      const result = repo.listActive("ws_1");
+      await repo.save(active);
+      await repo.save(completed);
+      const result = await repo.listActive("ws_1");
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(active.id);
     });
 
-    it("listActive excludes reminders from other workspaces", () => {
+    it("listActive excludes reminders from other workspaces", async () => {
       const repo = createInMemoryReminderRepository();
       const ws1Reminder = createReminder({ ...BASE_INPUT, workspaceId: "ws_1" }, { now: NOW, createId: makeId });
       const ws2Reminder = createReminder({ ...BASE_INPUT, workspaceId: "ws_2" }, { now: NOW, createId: makeId });
-      repo.save(ws1Reminder);
-      repo.save(ws2Reminder);
-      const result = repo.listActive("ws_1");
+      await repo.save(ws1Reminder);
+      await repo.save(ws2Reminder);
+      const result = await repo.listActive("ws_1");
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(ws1Reminder.id);
     });
 
-    it("listCompleted returns only reminders with completedAt !== null for workspace", () => {
+    it("listCompleted returns only reminders with completedAt !== null for workspace", async () => {
       const repo = createInMemoryReminderRepository();
       const active = createReminder(BASE_INPUT, { now: NOW, createId: makeId });
       const completed = completeReminder(
         createReminder(BASE_INPUT, { now: NOW, createId: makeId }),
         { now: new Date("2026-01-16T10:00:00Z") },
       );
-      repo.save(active);
-      repo.save(completed);
-      const result = repo.listCompleted("ws_1");
+      await repo.save(active);
+      await repo.save(completed);
+      const result = await repo.listCompleted("ws_1");
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(completed.id);
     });
 
-    it("listCompleted excludes reminders from other workspaces", () => {
+    it("listCompleted excludes reminders from other workspaces", async () => {
       const repo = createInMemoryReminderRepository();
       const ws1 = completeReminder(
         createReminder({ ...BASE_INPUT, workspaceId: "ws_1" }, { now: NOW, createId: makeId }),
@@ -217,14 +217,14 @@ describe("reminder domain", () => {
         createReminder({ ...BASE_INPUT, workspaceId: "ws_2" }, { now: NOW, createId: makeId }),
         { now: new Date("2026-01-16T10:00:00Z") },
       );
-      repo.save(ws1);
-      repo.save(ws2);
-      const result = repo.listCompleted("ws_1");
+      await repo.save(ws1);
+      await repo.save(ws2);
+      const result = await repo.listCompleted("ws_1");
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(ws1.id);
     });
 
-    it("listActiveByPatient returns active reminders where link.type === 'patient' and link.id === patientId", () => {
+    it("listActiveByPatient returns active reminders where link.type === 'patient' and link.id === patientId", async () => {
       const repo = createInMemoryReminderRepository();
       const patientReminder = createReminder(
         { ...BASE_INPUT, link: { type: "patient", id: "pat_1" } },
@@ -239,16 +239,16 @@ describe("reminder domain", () => {
         { now: NOW, createId: makeId },
       );
       const freeStandingReminder = createReminder(BASE_INPUT, { now: NOW, createId: makeId });
-      repo.save(patientReminder);
-      repo.save(otherPatientReminder);
-      repo.save(appointmentReminder);
-      repo.save(freeStandingReminder);
-      const result = repo.listActiveByPatient("pat_1", "ws_1");
+      await repo.save(patientReminder);
+      await repo.save(otherPatientReminder);
+      await repo.save(appointmentReminder);
+      await repo.save(freeStandingReminder);
+      const result = await repo.listActiveByPatient("pat_1", "ws_1");
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(patientReminder.id);
     });
 
-    it("listActiveByPatient excludes completed reminders", () => {
+    it("listActiveByPatient excludes completed reminders", async () => {
       const repo = createInMemoryReminderRepository();
       const completed = completeReminder(
         createReminder(
@@ -257,12 +257,12 @@ describe("reminder domain", () => {
         ),
         { now: new Date("2026-01-16T10:00:00Z") },
       );
-      repo.save(completed);
-      const result = repo.listActiveByPatient("pat_1", "ws_1");
+      await repo.save(completed);
+      const result = await repo.listActiveByPatient("pat_1", "ws_1");
       expect(result).toHaveLength(0);
     });
 
-    it("listCompletedByPatient returns completed reminders for patient", () => {
+    it("listCompletedByPatient returns completed reminders for patient", async () => {
       const repo = createInMemoryReminderRepository();
       const completed = completeReminder(
         createReminder(
@@ -275,14 +275,14 @@ describe("reminder domain", () => {
         { ...BASE_INPUT, link: { type: "patient", id: "pat_1" } },
         { now: NOW, createId: makeId },
       );
-      repo.save(completed);
-      repo.save(active);
-      const result = repo.listCompletedByPatient("pat_1", "ws_1");
+      await repo.save(completed);
+      await repo.save(active);
+      const result = await repo.listCompletedByPatient("pat_1", "ws_1");
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(completed.id);
     });
 
-    it("listCompletedByPatient excludes reminders from other workspaces", () => {
+    it("listCompletedByPatient excludes reminders from other workspaces", async () => {
       const repo = createInMemoryReminderRepository();
       const ws1 = completeReminder(
         createReminder(
@@ -298,9 +298,9 @@ describe("reminder domain", () => {
         ),
         { now: new Date("2026-01-16T10:00:00Z") },
       );
-      repo.save(ws1);
-      repo.save(ws2);
-      const result = repo.listCompletedByPatient("pat_1", "ws_1");
+      await repo.save(ws1);
+      await repo.save(ws2);
+      const result = await repo.listCompletedByPatient("pat_1", "ws_1");
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe(ws1.id);
     });

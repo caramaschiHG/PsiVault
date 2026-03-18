@@ -63,7 +63,7 @@ export async function GET(
   const appointments = await appointmentRepo.listByPatient(patientId, WORKSPACE_ID);
   const clinicalNotes = await clinicalRepo.listByPatient(patientId, WORKSPACE_ID);
   const documents = await docRepo.listActiveByPatient(patientId, WORKSPACE_ID);
-  const charges = financeRepo.listByPatient(patientId, WORKSPACE_ID);
+  const charges = await financeRepo.listByPatient(patientId, WORKSPACE_ID);
 
   // ── Build and return export ─────────────────────────────────────────────
   const exportData = buildPatientExport({

@@ -41,9 +41,9 @@ const CHARGE_STATUS_LABELS: Record<string, string> = {
 };
 
 const CHARGE_STATUS_COLORS: Record<string, { background: string; color: string }> = {
-  pago: { background: "rgba(20, 83, 45, 0.1)", color: "#14532d" },
-  pendente: { background: "rgba(120, 53, 15, 0.1)", color: "#78350f" },
-  atrasado: { background: "rgba(153, 27, 27, 0.1)", color: "#991b1b" },
+  pago: { background: "rgba(34, 197, 94, 0.1)", color: "#166534" },
+  pendente: { background: "rgba(245, 158, 11, 0.1)", color: "#92400e" },
+  atrasado: { background: "rgba(239, 68, 68, 0.1)", color: "#991b1b" },
 };
 
 function prevMonthHref(year: number, month: number): string {
@@ -80,27 +80,24 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   const financeRepo = getFinanceRepository();
   const patientRepo = getPatientRepository();
 
-  // Resolve patient names from the patient repo (active + archived covers all patients)
-  const allPatients = [
-    ...patientRepo.listActive(DEFAULT_WORKSPACE_ID),
-    ...patientRepo.listArchived(DEFAULT_WORKSPACE_ID),
-  ];
+  const [activePatients, archivedPatients] = await Promise.all([
+    patientRepo.listActive(DEFAULT_WORKSPACE_ID),
+    patientRepo.listArchived(DEFAULT_WORKSPACE_ID),
+  ]);
+  const allPatients = [...activePatients, ...archivedPatients];
+
   const patientNameMap = new Map<string, string>(
     allPatients.map((p) => [p.id, p.socialName ?? p.fullName]),
   );
 
-  // Aggregate charges across all patients for this month
-  const allCharges: SessionCharge[] = [];
-  for (const patient of allPatients) {
-    const patientCharges = financeRepo.listByMonth(DEFAULT_WORKSPACE_ID, patient.id, year, month);
-    allCharges.push(...patientCharges);
-  }
+  const chargesResults = await Promise.all(
+    allPatients.map((p) => financeRepo.listByMonth(DEFAULT_WORKSPACE_ID, p.id, year, month)),
+  );
+  const allCharges: SessionCharge[] = chargesResults.flat();
 
-  // Sort by createdAt descending (most recent first)
   allCharges.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   const summary = deriveMonthlyFinancialSummary(allCharges);
-
   const monthLabel = `${MONTH_LABELS[month - 1]} ${year}`;
 
   return (
@@ -113,11 +110,11 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
 
       {/* Month navigation bar */}
       <div style={monthNavStyle}>
-        <a href={prevMonthHref(year, month)} style={navArrowStyle}>
+        <a href={prevMonthHref(year, month)} className="btn-ghost" style={navArrowStyle}>
           ← Anterior
         </a>
         <span style={monthLabelStyle}>{monthLabel}</span>
-        <a href={nextMonthHref(year, month)} style={navArrowStyle}>
+        <a href={nextMonthHref(year, month)} className="btn-ghost" style={navArrowStyle}>
           Próximo →
         </a>
       </div>
@@ -130,13 +127,13 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
         </div>
         <div style={summaryCardStyle}>
           <p style={cardLabelStyle}>Recebido</p>
-          <p style={{ ...cardValueStyle, color: "#14532d" }}>
+          <p style={{ ...cardValueStyle, color: "#166534" }}>
             {currency.format(summary.totalReceivedCents / 100)}
           </p>
         </div>
         <div style={summaryCardStyle}>
           <p style={cardLabelStyle}>Pendente / Atrasado</p>
-          <p style={{ ...cardValueStyle, color: "#78350f" }}>
+          <p style={{ ...cardValueStyle, color: "#92400e" }}>
             {currency.format(summary.totalPendingCents / 100)}
           </p>
         </div>
@@ -186,12 +183,12 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
 // --- Style objects ---
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
-  maxWidth: "900px",
 } satisfies React.CSSProperties;
 
 const headingBlockStyle = {
@@ -202,32 +199,33 @@ const headingBlockStyle = {
 const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   margin: 0,
   fontSize: "2rem",
   fontWeight: 700,
+  fontFamily: "'IBM Plex Serif', serif",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const monthNavStyle = {
   display: "flex",
   alignItems: "center",
   gap: "1rem",
-  padding: "0.875rem 1.25rem",
-  borderRadius: "14px",
-  background: "rgba(255, 247, 237, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.16)",
+  padding: "0.75rem 1.25rem",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const navArrowStyle = {
   fontSize: "0.875rem",
-  fontWeight: 500,
-  color: "#9a3412",
-  textDecoration: "none",
+  padding: "0.375rem 0.75rem",
 } satisfies React.CSSProperties;
 
 const monthLabelStyle = {
@@ -235,7 +233,7 @@ const monthLabelStyle = {
   textAlign: "center" as const,
   fontWeight: 600,
   fontSize: "1rem",
-  color: "#292524",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const summaryCardsStyle = {
@@ -245,33 +243,37 @@ const summaryCardsStyle = {
 } satisfies React.CSSProperties;
 
 const summaryCardStyle = {
-  padding: "1.1rem 1.25rem",
-  borderRadius: "16px",
-  background: "rgba(255, 247, 237, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.16)",
+  padding: "1.25rem 1.5rem",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-md)",
   display: "grid",
-  gap: "0.35rem",
+  gap: "0.4rem",
 } satisfies React.CSSProperties;
 
 const cardLabelStyle = {
   margin: 0,
-  fontSize: "0.75rem",
+  fontSize: "0.72rem",
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
-  color: "#78716c",
+  color: "var(--color-text-4)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const cardValueStyle = {
   margin: 0,
-  fontSize: "1.5rem",
+  fontSize: "1.625rem",
   fontWeight: 700,
-  color: "#292524",
+  color: "var(--color-text-1)",
+  fontFamily: "'IBM Plex Serif', serif",
+  lineHeight: 1,
 } satisfies React.CSSProperties;
 
 const emptyStateStyle = {
   margin: 0,
-  color: "#78716c",
-  fontSize: "0.95rem",
+  color: "var(--color-text-3)",
+  fontSize: "0.9rem",
   padding: "0.5rem 0",
 } satisfies React.CSSProperties;
 
@@ -284,10 +286,10 @@ const rowStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "0.875rem 1.1rem",
-  borderRadius: "14px",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  padding: "0.875rem 1.25rem",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   gap: "0.5rem",
   flexWrap: "wrap" as const,
 } satisfies React.CSSProperties;
@@ -301,12 +303,12 @@ const rowInfoStyle = {
 const patientNameStyle = {
   fontWeight: 500,
   fontSize: "0.9rem",
-  color: "#292524",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const dateLabelStyle = {
   fontSize: "0.8rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const rowRightStyle = {
@@ -317,14 +319,14 @@ const rowRightStyle = {
 
 const statusBadgeStyle = {
   display: "inline-block",
-  fontSize: "0.75rem",
+  fontSize: "0.72rem",
   fontWeight: 600,
-  padding: "0.15rem 0.55rem",
-  borderRadius: "999px",
+  padding: "0.2rem 0.625rem",
+  borderRadius: "var(--radius-pill)",
 } satisfies React.CSSProperties;
 
 const amountLabelStyle = {
-  fontSize: "0.875rem",
-  color: "#44403c",
-  fontWeight: 500,
+  fontSize: "0.9rem",
+  color: "var(--color-text-2)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
