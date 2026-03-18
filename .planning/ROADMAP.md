@@ -4,6 +4,12 @@
 **Goal:** Establish the production database and ORM layer connected to Supabase.
 **Requirements:** INFRA-01, INFRA-02, INFRA-03
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Provisionar Supabase e preencher .env com credenciais reais (checkpoint humano)
+- [ ] 07-02-PLAN.md — Aplicar migrações Prisma ao banco real e verificar conectividade (smoke test)
+
 **Success Criteria:**
 1. Supabase project is provisioned and connection strings are in local `.env`
 2. `schema.prisma` is fully defined and successfully migrated to the Supabase database
