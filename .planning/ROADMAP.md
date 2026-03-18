@@ -123,7 +123,7 @@ Plans:
 **Goal:** Harden the application for real-world use — secure routes, robust error handling, complete audit trail, and verified deployment readiness.
 **Requirements:** QUAL-01, QUAL-02, QUAL-03, QUAL-04, QUAL-05, QUAL-06, DEPLOY-01, DEPLOY-02, DEPLOY-03
 
-**Plans:** 1/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 - [ ] 14-01-PLAN.md — Re-auth gate real: substituir stub por signInWithPassword em confirmBackupAuthAction e exportPatientAuthAction

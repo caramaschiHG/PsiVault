@@ -52,7 +52,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 ### Quality & Production Hardening
 
-- [ ] **QUAL-01**: Replace the re-auth gate stub in export/backup routes with the real `evaluateSensitiveAction` flow
+- [x] **QUAL-01**: Replace the re-auth gate stub in export/backup routes with the real `evaluateSensitiveAction` flow
 - [x] **QUAL-02**: Add structured error boundaries to all route segments to prevent white-screen crashes
 - [ ] **QUAL-03**: Harden all server actions — validate inputs, handle Prisma errors, return typed error responses
 - [ ] **QUAL-04**: Ensure workspace audit trail is complete — remove the `auditEvents: never[]` stub from backup
@@ -108,7 +108,7 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | UIUX-04 | Phase 13 | Complete |
 | UIUX-05 | Phase 13 | Complete |
 | UIUX-06 | Phase 13 | Complete |
-| QUAL-01 | Phase 14 | Pending |
+| QUAL-01 | Phase 14 | Complete |
 | QUAL-02 | Phase 14 | Complete |
 | QUAL-03 | Phase 14 | Pending |
 | QUAL-04 | Phase 14 | Pending |
