@@ -80,6 +80,14 @@ Plans:
 **Goal:** Replace stub/minimal auth pages with a professional, user-friendly authentication experience using Supabase Auth.
 **Requirements:** AUTHUX-01, AUTHUX-02, AUTHUX-03, AUTHUX-04, AUTHUX-05
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Fundamentos: auth-errors.ts, SubmitButton, updateSession com user
+- [ ] 12-02-PLAN.md — Sign-in e sign-up com erros inline, erros por campo, SubmitButton
+- [ ] 12-03-PLAN.md — Reset-password dual-state + server actions requestPasswordReset/updatePassword
+- [ ] 12-04-PLAN.md — Middleware AUTHUX-05: redirect de autenticados em rotas de auth
+
 **Success Criteria:**
 1. A polished sign-in page with email/password form, validation, and Portuguese error messages is live at `/login`
 2. A sign-up page guides new users through account creation with clear feedback
