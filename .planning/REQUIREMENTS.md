@@ -35,18 +35,18 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 
 ### Authentication UX
 
-- [ ] **AUTHUX-01**: Implement a professional sign-in page (email/password) with proper form validation and error messages
-- [ ] **AUTHUX-02**: Implement a sign-up page with user-friendly onboarding flow using Supabase Auth
-- [ ] **AUTHUX-03**: Implement a password reset flow (request reset email + update password page)
+- [x] **AUTHUX-01**: Implement a professional sign-in page (email/password) with proper form validation and error messages
+- [x] **AUTHUX-02**: Implement a sign-up page with user-friendly onboarding flow using Supabase Auth
+- [x] **AUTHUX-03**: Implement a password reset flow (request reset email + update password page)
 - [x] **AUTHUX-04**: Handle Supabase Auth errors gracefully with user-facing Portuguese messages
 - [x] **AUTHUX-05**: Protect auth pages from authenticated users (redirect logged-in users away from login/signup)
 
 ### UI/UX Polish
 
-- [ ] **UIUX-01**: Establish a consistent design system — typography scale, color palette, spacing tokens, and border-radius applied throughout
+- [x] **UIUX-01**: Establish a consistent design system — typography scale, color palette, spacing tokens, and border-radius applied throughout
 - [ ] **UIUX-02**: Apply professional visual design to all primary views (inicio, agenda, patients list, patient profile, financeiro)
 - [ ] **UIUX-03**: Ensure all pages are fully responsive across mobile, tablet, and desktop viewports
-- [ ] **UIUX-04**: Achieve WCAG 2.1 AA color contrast ratios on all interactive elements and body text
+- [x] **UIUX-04**: Achieve WCAG 2.1 AA color contrast ratios on all interactive elements and body text
 - [ ] **UIUX-05**: Add proper empty states, loading states, and error states to all data-dependent pages
 - [ ] **UIUX-06**: Polish navigation — clear active states, breadcrumbs where helpful, smooth transitions
 
@@ -97,15 +97,15 @@ Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
 | REPO-04 | Phase 10 | Complete |
 | REPO-05 | Phase 11 | Complete |
 | REPO-06 | Phase 11 | Complete |
-| AUTHUX-01 | Phase 12 | Pending |
-| AUTHUX-02 | Phase 12 | Pending |
-| AUTHUX-03 | Phase 12 | Pending |
+| AUTHUX-01 | Phase 12 | Complete |
+| AUTHUX-02 | Phase 12 | Complete |
+| AUTHUX-03 | Phase 12 | Complete |
 | AUTHUX-04 | Phase 12 | Complete |
 | AUTHUX-05 | Phase 12 | Complete |
-| UIUX-01 | Phase 13 | Pending |
+| UIUX-01 | Phase 13 | Complete |
 | UIUX-02 | Phase 13 | Pending |
 | UIUX-03 | Phase 13 | Pending |
-| UIUX-04 | Phase 13 | Pending |
+| UIUX-04 | Phase 13 | Complete |
 | UIUX-05 | Phase 13 | Pending |
 | UIUX-06 | Phase 13 | Pending |
 | QUAL-01 | Phase 14 | Pending |
