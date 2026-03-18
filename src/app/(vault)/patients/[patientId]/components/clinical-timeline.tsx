@@ -16,6 +16,7 @@ import {
   buildReminderMailtoUrl,
   buildRescheduleMailtoUrl,
 } from "../../../../../lib/communication/templates";
+import { EmptyState } from "../../../components/empty-state";
 
 interface TimelineEntry {
   appointmentId: string;
@@ -231,7 +232,15 @@ export function ClinicalTimeline({ entries, patientName, patientPhone }: Clinica
       </div>
 
       {entries.length === 0 ? (
-        <p style={emptyStateStyle}>Nenhuma consulta registrada ainda.</p>
+        <EmptyState
+          icon={
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+          }
+          title="Nenhuma sessão registrada ainda"
+          description="As consultas aparecerão aqui conforme forem agendadas."
+        />
       ) : (
         <div style={entriesListStyle}>
           {entries.map((entry) => {
@@ -273,13 +282,6 @@ const eyebrowStyle = {
 const titleStyle = {
   margin: 0,
   fontSize: "1.4rem",
-} satisfies React.CSSProperties;
-
-const emptyStateStyle = {
-  margin: 0,
-  color: "#78716c",
-  fontSize: "0.95rem",
-  padding: "1rem 0",
 } satisfies React.CSSProperties;
 
 const entriesListStyle = {
@@ -376,8 +378,8 @@ const careModeChipStyle = {
 
 const completedChipStyle = {
   ...baseChipStyle,
-  background: "rgba(239,246,255,0.9)",
-  color: "#1e3a8a",
+  background: "rgba(245, 235, 220, 0.9)",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const noNoteChipStyle = {
@@ -430,8 +432,8 @@ const comunicacaoGroupStyle = {
   marginTop: "0.5rem",
   padding: "0.625rem 0.75rem",
   borderRadius: "10px",
-  background: "rgba(240, 253, 244, 0.7)",
-  border: "1px solid rgba(16, 185, 129, 0.15)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.3rem",
 } satisfies React.CSSProperties;
@@ -442,7 +444,7 @@ const comunicacaoGroupLabelStyle = {
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
-  color: "#065f46",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const comunicacaoRowStyle = {

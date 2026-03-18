@@ -342,3 +342,17 @@ a {
     display: flex !important;
   }
 }
+
+/* ─── Form grid responsivo — 2 colunas em desktop, 1 em mobile ───────────────── */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 767px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -94,7 +94,7 @@ export function AppointmentForm({
           <h2 style={sectionTitleStyle}>Detalhes</h2>
         </div>
 
-        <div style={fieldGridStyle}>
+        <div className="form-grid">
           <label style={labelStyle}>
             Duração (minutos)
             <input
@@ -133,7 +133,7 @@ export function AppointmentForm({
             </p>
           </div>
 
-          <div style={fieldGridStyle}>
+          <div className="form-grid">
             <label style={labelStyle}>
               <input
                 name="isRecurring"
@@ -208,12 +208,6 @@ const sectionCopyStyle = {
   fontSize: "0.9rem",
   lineHeight: 1.6,
   color: "#78716c",
-} satisfies React.CSSProperties;
-
-const fieldGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: "1rem",
 } satisfies React.CSSProperties;
 
 const labelStyle = {

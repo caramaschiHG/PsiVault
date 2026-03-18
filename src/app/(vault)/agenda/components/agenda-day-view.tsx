@@ -10,6 +10,7 @@
 
 import type { DayAgendaResult } from "../../../../lib/appointments/agenda";
 import { AppointmentCard } from "./appointment-card";
+import { EmptyState } from "../../components/empty-state";
 
 interface AgendaDayViewProps {
   day: DayAgendaResult;
@@ -22,10 +23,18 @@ interface AgendaDayViewProps {
 export function AgendaDayView({ day, patientNames, nextSessionActions = {} }: AgendaDayViewProps) {
   if (day.cards.length === 0) {
     return (
-      <div style={emptyStateStyle}>
-        <p style={emptyIconStyle}>📅</p>
-        <p style={emptyTitleStyle}>Sem consultas</p>
-        <p style={emptyCopyStyle}>Nenhuma consulta agendada para este dia.</p>
+      <div style={emptyStateContainerStyle}>
+        <EmptyState
+          icon={
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+          }
+          title="Sua agenda está livre hoje"
+          description="Nenhuma sessão agendada para este dia."
+          actionLabel="Agendar sessão"
+          actionHref="/appointments/new"
+        />
       </div>
     );
   }
@@ -58,30 +67,8 @@ const cardsListStyle = {
   gap: "0.65rem",
 } satisfies React.CSSProperties;
 
-const emptyStateStyle = {
-  padding: "3rem 2rem",
-  borderRadius: "24px",
-  background: "rgba(255, 252, 247, 0.7)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
-  textAlign: "center" as const,
-  display: "grid",
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const emptyIconStyle = {
-  margin: 0,
-  fontSize: "2.2rem",
-} satisfies React.CSSProperties;
-
-const emptyTitleStyle = {
-  margin: 0,
-  fontWeight: 600,
-  fontSize: "1.05rem",
-  color: "#57534e",
-} satisfies React.CSSProperties;
-
-const emptyCopyStyle = {
-  margin: 0,
-  fontSize: "0.9rem",
-  color: "#a8a29e",
+const emptyStateContainerStyle = {
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;

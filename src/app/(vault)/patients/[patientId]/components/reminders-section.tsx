@@ -56,7 +56,7 @@ export function RemindersSection({
 
       {/* Active reminders list */}
       {activeReminders.length === 0 ? (
-        <p style={emptyStateTextStyle}>Nenhum lembrete para este paciente</p>
+        <p style={emptyStateTextStyle}>Tudo em dia! Nenhum lembrete ativo para este paciente.</p>
       ) : (
         <ul style={cardListStyle}>
           {activeReminders.map((reminder) => (
@@ -158,20 +158,20 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const sectionTitleStyle = {
   margin: 0,
   fontSize: "1.15rem",
   fontWeight: 600,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const emptyStateTextStyle = {
   margin: 0,
   fontSize: "0.9rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const cardListStyle = {
@@ -202,24 +202,25 @@ const reminderInfoStyle = {
 const reminderTitleStyle = {
   fontSize: "0.9rem",
   fontWeight: 500,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const reminderDueDateStyle = {
   fontSize: "0.78rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const completeButtonStyle = {
   padding: "0.3rem 0.75rem",
   borderRadius: "8px",
-  border: "1px solid rgba(16, 185, 129, 0.3)",
-  background: "rgba(236, 253, 245, 0.8)",
-  color: "#065f46",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-accent-light)",
+  color: "var(--color-accent)",
   fontSize: "0.8rem",
   fontWeight: 500,
   cursor: "pointer",
   whiteSpace: "nowrap" as const,
+  fontFamily: "inherit",
 } satisfies React.CSSProperties;
 
 const newReminderFormContainerStyle = {
@@ -235,7 +236,7 @@ const newReminderFormLabelStyle = {
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.08em",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const newReminderFormStyle = {
@@ -267,11 +268,12 @@ const submitButtonStyle = {
   padding: "0.4rem 0.9rem",
   borderRadius: "8px",
   border: "none",
-  background: "#9a3412",
+  background: "var(--color-accent)",
   color: "#fff7ed",
   fontSize: "0.88rem",
   fontWeight: 600,
   cursor: "pointer",
+  fontFamily: "inherit",
 } satisfies React.CSSProperties;
 
 const completedSectionStyle = {
@@ -288,7 +290,7 @@ const completedToggleButtonStyle = {
   cursor: "pointer",
   fontSize: "0.85rem",
   fontWeight: 500,
-  color: "#78716c",
+  color: "var(--color-text-3)",
   padding: "0.2rem 0",
   textAlign: "left" as const,
 } satisfies React.CSSProperties;
@@ -314,7 +316,7 @@ const completedCardStyle = {
 
 const completedTitleStyle = {
   fontSize: "0.88rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
   flex: 1,
   textDecoration: "line-through",
   textDecorationColor: "rgba(120, 113, 108, 0.4)",
@@ -322,6 +324,6 @@ const completedTitleStyle = {
 
 const completedAtStyle = {
   fontSize: "0.75rem",
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   whiteSpace: "nowrap" as const,
 } satisfies React.CSSProperties;

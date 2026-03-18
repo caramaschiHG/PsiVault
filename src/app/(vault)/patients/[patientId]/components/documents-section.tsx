@@ -11,6 +11,7 @@ import {
   buildDocumentDeliveryWhatsAppUrl,
   buildDocumentDeliveryMailtoUrl,
 } from "../../../../../lib/communication/templates";
+import { EmptyState } from "../../../components/empty-state";
 
 const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   declaration_of_attendance: "Declaração de Comparecimento",
@@ -48,7 +49,17 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
       </div>
 
       {documents.length === 0 ? (
-        <p style={emptyStateStyle}>Nenhum documento registrado.</p>
+        <EmptyState
+          icon={
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+            </svg>
+          }
+          title="Nenhum documento gerado ainda"
+          description="Crie declarações, recibos e laudos para este paciente."
+          actionLabel="Novo documento"
+          actionHref={`/patients/${patientId}/documents/new?type=declaration_of_attendance`}
+        />
       ) : (
         <div style={listStyle}>
           {documents.map((doc) => {
@@ -129,7 +140,7 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -140,19 +151,12 @@ const titleStyle = {
 const newDocLinkStyle = {
   fontSize: "0.875rem",
   fontWeight: 500,
-  color: "#9a3412",
+  color: "var(--color-accent)",
   textDecoration: "none",
   padding: "0.35rem 0.85rem",
   borderRadius: "999px",
   border: "1px solid rgba(146, 64, 14, 0.3)",
   background: "rgba(255, 247, 237, 0.6)",
-} satisfies React.CSSProperties;
-
-const emptyStateStyle = {
-  margin: 0,
-  color: "#78716c",
-  fontSize: "0.95rem",
-  padding: "0.5rem 0",
 } satisfies React.CSSProperties;
 
 const listStyle = {
@@ -180,18 +184,18 @@ const rowInfoStyle = {
 const typeLabelStyle = {
   fontWeight: 500,
   fontSize: "0.9rem",
-  color: "#292524",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const dateLabelStyle = {
   fontSize: "0.8rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const viewLinkStyle = {
   fontSize: "0.875rem",
   fontWeight: 500,
-  color: "#9a3412",
+  color: "var(--color-accent)",
   textDecoration: "none",
   whiteSpace: "nowrap" as const,
 } satisfies React.CSSProperties;
@@ -211,11 +215,11 @@ const enviarSummaryStyle = {
   cursor: "pointer",
   fontSize: "0.82rem",
   fontWeight: 500,
-  color: "#065f46",
+  color: "var(--color-accent)",
   padding: "0.15rem 0.5rem",
   borderRadius: "6px",
-  background: "rgba(240, 253, 244, 0.8)",
-  border: "1px solid rgba(16, 185, 129, 0.2)",
+  background: "var(--color-accent-light)",
+  border: "1px solid var(--color-border-med)",
   listStyle: "none" as const,
 } satisfies React.CSSProperties;
 
@@ -236,7 +240,7 @@ const enviarLinksStyle = {
 
 const commLinkStyle = {
   fontSize: "0.8rem",
-  color: "#9a3412",
+  color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 500,
   padding: "0.15rem 0.5rem",

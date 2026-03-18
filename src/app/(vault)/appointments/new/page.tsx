@@ -38,7 +38,7 @@ export default async function NewAppointmentPage({
 
   // Load data
   const patientRepo = getPatientRepository();
-  const patients = patientRepo.listActive(WORKSPACE_ID);
+  const patients = await patientRepo.listActive(WORKSPACE_ID);
   const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
 
   // Resolve defaultCareMode: use param if valid, otherwise derive from profile
@@ -73,7 +73,7 @@ export default async function NewAppointmentPage({
         <Link href="/agenda" style={navLinkStyle}>
           Agenda
         </Link>
-        <span style={navSepStyle}>/</span>
+        <span style={navSepStyle}>›</span>
         <span style={navCurrentStyle}>Nova consulta</span>
       </nav>
 
@@ -99,34 +99,34 @@ export default async function NewAppointmentPage({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
-  maxWidth: "1100px",
 } satisfies React.CSSProperties;
 
 const navStyle = {
   display: "flex",
   alignItems: "center",
-  gap: "0.5rem",
-  fontSize: "0.9rem",
-  color: "#78716c",
+  gap: "0.4rem",
+  fontSize: "0.82rem",
 } satisfies React.CSSProperties;
 
 const navLinkStyle = {
-  color: "#9a3412",
+  color: "var(--color-text-2)",
   textDecoration: "none",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const navSepStyle = {
-  color: "#d4c5b5",
+  color: "var(--color-text-4)",
+  fontSize: "0.75rem",
 } satisfies React.CSSProperties;
 
 const navCurrentStyle = {
-  color: "#57534e",
+  color: "var(--color-text-3)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -146,14 +146,16 @@ const headingTextStyle = {
 const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   margin: 0,
-  fontSize: "2rem",
+  fontSize: "var(--font-size-page-title)",
   fontWeight: 700,
-  color: "#1c1917",
+  fontFamily: "var(--font-serif)",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;

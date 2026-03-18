@@ -37,7 +37,7 @@ export function PatientForm({ patient }: PatientFormProps) {
           <h2 style={sectionTitleStyle}>Identidade</h2>
         </div>
 
-        <div style={fieldGridStyle}>
+        <div className="form-grid">
           <label style={labelStyle}>
             Nome completo <span style={requiredMarkStyle}>*</span>
             <input
@@ -104,7 +104,7 @@ export function PatientForm({ patient }: PatientFormProps) {
           </p>
         </div>
 
-        <div style={fieldGridStyle}>
+        <div className="form-grid">
           <label style={labelStyle}>
             Nome do responsável
             <input
@@ -134,7 +134,7 @@ export function PatientForm({ patient }: PatientFormProps) {
           <h2 style={sectionTitleStyle}>Contato de emergência</h2>
         </div>
 
-        <div style={fieldGridStyle}>
+        <div className="form-grid">
           <label style={labelStyle}>
             Nome
             <input
@@ -227,12 +227,6 @@ const sectionCopyStyle = {
   fontSize: "0.9rem",
   lineHeight: 1.6,
   color: "#78716c",
-} satisfies React.CSSProperties;
-
-const fieldGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: "1rem",
 } satisfies React.CSSProperties;
 
 const labelStyle = {

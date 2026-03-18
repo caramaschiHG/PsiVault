@@ -55,11 +55,11 @@ export function PatientProfileHeader({ patient }: PatientProfileHeaderProps) {
 }
 
 const headerStyle = {
-  padding: "1.7rem 1.8rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
+  padding: "1.75rem 2rem",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-md)",
   display: "grid",
   gap: "1rem",
 } satisfies React.CSSProperties;
@@ -73,19 +73,22 @@ const identityStyle = {
 
 const nameStyle = {
   margin: 0,
-  fontSize: "2rem",
+  fontSize: "var(--font-size-page-title)",
   lineHeight: 1.1,
+  fontFamily: "var(--font-serif)",
+  fontWeight: 700,
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const socialNameStyle = {
   margin: "0.4rem 0 0",
   fontSize: "0.95rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const socialNameLabelStyle = {
   fontWeight: 600,
-  color: "#57534e",
+  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const actionsStyle = {
@@ -96,21 +99,22 @@ const archivedBadgeStyle = {
   display: "inline-block",
   padding: "0.4rem 0.85rem",
   borderRadius: "10px",
-  background: "rgba(146, 64, 14, 0.08)",
-  color: "#9a3412",
+  background: "var(--color-accent-light)",
+  color: "var(--color-accent)",
   fontWeight: 600,
   fontSize: "0.85rem",
 } satisfies React.CSSProperties;
 
 const archiveButtonStyle = {
-  border: "1px solid rgba(146, 64, 14, 0.2)",
+  border: "1px solid var(--color-border-med)",
   borderRadius: "12px",
   padding: "0.55rem 1rem",
-  background: "#fff7ed",
-  color: "#9a3412",
+  background: "var(--color-surface-0)",
+  color: "var(--color-accent)",
   fontWeight: 600,
   fontSize: "0.9rem",
   cursor: "pointer",
+  fontFamily: "inherit",
 } satisfies React.CSSProperties;
 
 const contactRowStyle = {
@@ -123,8 +127,8 @@ const contactChipStyle = {
   display: "inline-block",
   padding: "0.3rem 0.75rem",
   borderRadius: "8px",
-  background: "rgba(255, 255, 255, 0.78)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
   fontSize: "0.87rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;

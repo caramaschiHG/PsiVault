@@ -323,6 +323,32 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       ) : (
         <AgendaWeekView week={weekResult} patientNames={patientNames} nextSessionActions={nextSessionActions} />
       )}
+
+      {/* FAB mobile — visible only on mobile via CSS class */}
+      <a
+        href="/appointments/new"
+        className="fab-mobile"
+        style={{
+          position: "fixed",
+          bottom: "5.5rem",
+          right: "1.5rem",
+          width: "3.5rem",
+          height: "3.5rem",
+          borderRadius: "50%",
+          backgroundColor: "var(--color-accent)",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "var(--shadow-lg)",
+          fontSize: "1.5rem",
+          textDecoration: "none",
+          zIndex: 90,
+        } satisfies React.CSSProperties}
+        aria-label="Agendar sessão"
+      >
+        +
+      </a>
     </main>
   );
 }
@@ -383,12 +409,12 @@ function formatWeekLabel(start: Date, end: Date): string {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
-  maxWidth: "1100px",
 } satisfies React.CSSProperties;
 
 const headingRowStyle = {
@@ -407,26 +433,28 @@ const headingTextStyle = {
 const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   margin: 0,
-  fontSize: "2rem",
+  fontSize: "var(--font-size-page-title)",
   fontWeight: 700,
-  color: "#1c1917",
+  fontFamily: "var(--font-serif)",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const newApptButtonStyle = {
-  padding: "0.75rem 1.4rem",
-  borderRadius: "16px",
-  background: "#9a3412",
+  padding: "0.625rem 1.25rem",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-accent)",
   color: "#fff7ed",
   textDecoration: "none",
   fontWeight: 700,
-  fontSize: "0.95rem",
+  fontSize: "0.9rem",
 } satisfies React.CSSProperties;
 
 const registerNoteStyle = {
@@ -435,9 +463,9 @@ const registerNoteStyle = {
   marginTop: "0.5rem",
   padding: "0.38rem 0.875rem",
   borderRadius: "10px",
-  background: "rgba(239, 246, 255, 0.85)",
-  border: "1px solid rgba(59, 130, 246, 0.2)",
-  color: "#1e3a8a",
+  background: "var(--color-accent-light)",
+  border: "1px solid var(--color-border-med)",
+  color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "0.82rem",
@@ -449,9 +477,9 @@ const viewNoteStyle = {
   marginTop: "0.5rem",
   padding: "0.38rem 0.875rem",
   borderRadius: "10px",
-  background: "rgba(236, 253, 245, 0.85)",
-  border: "1px solid rgba(16, 185, 129, 0.2)",
-  color: "#065f46",
+  background: "rgba(245, 235, 220, 0.6)",
+  border: "1px solid rgba(146, 64, 14, 0.15)",
+  color: "var(--color-brown-mid)",
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "0.82rem",
@@ -463,8 +491,8 @@ const comunicacaoSectionStyle = {
   marginTop: "0.75rem",
   padding: "0.75rem",
   borderRadius: "12px",
-  background: "rgba(240, 253, 244, 0.7)",
-  border: "1px solid rgba(16, 185, 129, 0.15)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.375rem",
 } satisfies React.CSSProperties;
@@ -475,7 +503,7 @@ const comunicacaoLabelStyle = {
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
-  color: "#065f46",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const comunicacaoRowStyle = {
@@ -486,7 +514,7 @@ const comunicacaoRowStyle = {
 
 const comunicacaoItemLabelStyle = {
   fontSize: "0.8rem",
-  color: "#44403c",
+  color: "var(--color-text-2)",
   minWidth: "7rem",
 } satisfies React.CSSProperties;
 
@@ -505,8 +533,8 @@ const onlineSectionStyle = {
   marginTop: "0.75rem",
   padding: "0.75rem",
   borderRadius: "12px",
-  background: "rgba(239, 246, 255, 0.7)",
-  border: "1px solid rgba(130, 160, 246, 0.15)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.5rem",
 } satisfies React.CSSProperties;
@@ -517,12 +545,12 @@ const onlineSectionLabelStyle = {
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
-  color: "#1e3a8a",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const openLinkStyle = {
   fontSize: "0.85rem",
-  color: "#1e3a8a",
+  color: "var(--color-accent)",
   fontWeight: 500,
   textDecoration: "none",
 } satisfies React.CSSProperties;
@@ -540,8 +568,10 @@ const urlInputStyle = {
   padding: "0.3rem 0.5rem",
   fontSize: "0.82rem",
   borderRadius: "6px",
-  border: "1px solid rgba(59, 130, 246, 0.3)",
-  background: "#fff",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-0)",
+  fontFamily: "inherit",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const textareaStyle = {
@@ -550,8 +580,10 @@ const textareaStyle = {
   padding: "0.3rem 0.5rem",
   fontSize: "0.82rem",
   borderRadius: "6px",
-  border: "1px solid rgba(59, 130, 246, 0.3)",
-  background: "#fff",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-0)",
+  fontFamily: "inherit",
+  color: "var(--color-text-1)",
   resize: "vertical" as const,
   minHeight: "4rem",
 } satisfies React.CSSProperties;
@@ -560,11 +592,12 @@ const submitButtonStyle = {
   padding: "0.3rem 0.75rem",
   borderRadius: "6px",
   border: "none",
-  background: "#1e3a8a",
-  color: "#fff",
+  background: "var(--color-accent)",
+  color: "#fff7ed",
   fontSize: "0.82rem",
   fontWeight: 600,
   cursor: "pointer",
+  fontFamily: "inherit",
 } satisfies React.CSSProperties;
 
 const detailsStyle = {
@@ -574,15 +607,15 @@ const detailsStyle = {
 const detailsSummaryStyle = {
   cursor: "pointer",
   fontSize: "0.82rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const remoteIssueNoteStyle = {
   margin: "0.5rem 0",
   fontSize: "0.82rem",
-  color: "#44403c",
-  background: "rgba(255, 247, 237, 0.8)",
+  color: "var(--color-text-2)",
+  background: "var(--color-accent-light)",
   padding: "0.4rem 0.6rem",
   borderRadius: "6px",
   whiteSpace: "pre-wrap" as const,
