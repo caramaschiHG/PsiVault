@@ -269,9 +269,9 @@ const eyebrowStyle = {
 
 const titleStyle = {
   margin: 0,
-  fontSize: "2rem",
+  fontSize: "var(--font-size-page-title)",
   fontWeight: 700,
-  fontFamily: "'IBM Plex Serif', serif",
+  fontFamily: "var(--font-serif)",
   color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
@@ -294,9 +294,11 @@ const sectionHeadingRowStyle = {
 
 const sectionTitleStyle = {
   margin: 0,
-  fontSize: "1rem",
+  fontSize: "var(--font-size-label)",
   fontWeight: 600,
-  color: "var(--color-text-1)",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.06em",
+  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const sectionActionLinkStyle = {
