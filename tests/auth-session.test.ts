@@ -12,7 +12,7 @@ describe("auth/session migration", () => {
   });
 
   it("pruned unnecessary models handled by Supabase", () => {
-    expect(schema).not.toContain("model Session");
+    expect(schema).not.toMatch(/^model Session\s*\{/m);
     expect(schema).not.toContain("model VerificationToken");
     expect(schema).not.toContain("model PasswordResetToken");
   });

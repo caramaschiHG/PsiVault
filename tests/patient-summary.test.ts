@@ -174,8 +174,8 @@ describe("patient operational summary", () => {
         "../src/lib/patients/summary"
       );
 
-      const sooner = new Date("2026-03-17T09:00:00.000Z");
-      const later = new Date("2026-03-24T09:00:00.000Z");
+      const sooner = new Date("2027-01-10T09:00:00.000Z");
+      const later = new Date("2027-01-17T09:00:00.000Z");
 
       const appointments = [
         {
