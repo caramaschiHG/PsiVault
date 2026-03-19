@@ -173,7 +173,7 @@ const formStyle = {
 
 const fieldGroupStyle = {
   display: "grid",
-  gap: "0.4rem",
+  gap: "0.5rem",
 } satisfies React.CSSProperties;
 
 const labelRowStyle = {
@@ -191,48 +191,53 @@ const labelStyle = {
 } satisfies React.CSSProperties;
 
 const wordCountStyle = {
-  fontSize: "0.75rem",
+  fontSize: "0.74rem",
   color: "#78716c",
+  letterSpacing: "0.03em",
+  textTransform: "uppercase" as const,
 } satisfies React.CSSProperties;
 
 const toolbarStyle = {
   display: "flex",
+  flexWrap: "wrap" as const,
   gap: "0.35rem",
-  padding: "0.4rem 0.5rem",
-  borderRadius: "8px 8px 0 0",
-  background: "rgba(255, 247, 237, 0.7)",
-  border: "1px solid rgba(146, 64, 14, 0.15)",
-  borderBottom: "none",
+  padding: "0.55rem 0.6rem",
+  borderRadius: "14px",
+  background: "rgba(248, 245, 241, 0.96)",
+  border: "1px solid rgba(120, 53, 15, 0.1)",
 } satisfies React.CSSProperties;
 
 const toolbarBtnStyle = {
-  padding: "0.25rem 0.6rem",
-  borderRadius: "5px",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "rgba(255, 252, 247, 0.9)",
-  color: "#78350f",
-  fontSize: "0.78rem",
+  padding: "0.32rem 0.62rem",
+  borderRadius: "999px",
+  border: "1px solid rgba(120, 53, 15, 0.12)",
+  background: "rgba(255, 253, 250, 0.98)",
+  color: "#57534e",
+  fontSize: "0.75rem",
   fontWeight: 600,
   cursor: "pointer",
-  fontFamily: "ui-monospace, monospace",
+  fontFamily: "inherit",
   lineHeight: 1.4,
+  letterSpacing: "0.01em",
 } satisfies React.CSSProperties;
 
 const composerTextareaStyle = {
   width: "100%",
-  padding: "1rem 1.25rem",
-  borderRadius: "0 0 12px 12px",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "rgba(255, 252, 247, 0.95)",
+  minHeight: "32rem",
+  padding: "1.2rem 1.3rem",
+  borderRadius: "18px",
+  border: "1px solid rgba(120, 53, 15, 0.12)",
+  background: "linear-gradient(180deg, rgba(255, 253, 250, 0.99) 0%, rgba(252, 249, 246, 0.99) 100%)",
   fontSize: "0.95rem",
   color: "#1c1917",
   resize: "vertical" as const,
   fontFamily: "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace",
-  lineHeight: "1.7",
+  lineHeight: "1.75",
   outline: "none",
   boxSizing: "border-box" as const,
   whiteSpace: "pre-wrap" as const,
   overflowY: "auto" as const,
+  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.65)",
 } satisfies React.CSSProperties;
 
 const formActionsStyle = {

@@ -29,6 +29,7 @@ const VALID_TYPES = new Set<DocumentType>([
   "psychological_report",
   "consent_and_service_contract",
   "session_note",
+  "case_study_psychoanalytic",
   "referral_letter",
 ]);
 
@@ -39,47 +40,53 @@ const TYPE_LABELS: Record<DocumentType, string> = {
   psychological_report: "Laudo Psicológico",
   consent_and_service_contract: "Contrato de Prestação de Serviços",
   session_note: "Evolução de Sessão",
+  case_study_psychoanalytic: "Estudo de Caso Psicanalítico",
   referral_letter: "Carta de Encaminhamento",
 };
 
 const TYPE_METADATA: Array<{
   type: DocumentType;
-  icon: string;
+  category: string;
   description: string;
 }> = [
   {
     type: "anamnesis",
-    icon: "📋",
+    category: "Clínico",
     description: "Histórico clínico inicial do paciente",
   },
   {
     type: "session_note",
-    icon: "📝",
+    category: "Clínico",
     description: "Registro de progresso e intervenções da sessão",
   },
   {
+    type: "case_study_psychoanalytic",
+    category: "Clínico",
+    description: "Registro narrativo para formulação e supervisão clínica psicanalítica",
+  },
+  {
     type: "psychological_report",
-    icon: "📑",
+    category: "Formal",
     description: "Avaliação psicológica formal para fins específicos",
   },
   {
     type: "referral_letter",
-    icon: "✉️",
+    category: "Formal",
     description: "Encaminhamento para outro especialista",
   },
   {
     type: "declaration_of_attendance",
-    icon: "🗓️",
+    category: "Administrativo",
     description: "Atesta o comparecimento do paciente a consultas",
   },
   {
     type: "receipt",
-    icon: "💳",
+    category: "Administrativo",
     description: "Comprova o pagamento de sessões de psicologia",
   },
   {
     type: "consent_and_service_contract",
-    icon: "📜",
+    category: "Administrativo",
     description: "Contrato e consentimento informado",
   },
 ];
@@ -124,15 +131,19 @@ export default async function DocumentComposerPage({
         </div>
 
         <div style={typeGridStyle}>
-          {TYPE_METADATA.map(({ type, icon, description }) => (
+          {TYPE_METADATA.map(({ type, category, description }) => (
             <Link
               key={type}
               href={`/patients/${patientId}/documents/new?type=${type}`}
               style={typeCardStyle}
             >
-              <span style={typeCardIconStyle}>{icon}</span>
+              <div style={typeCardHeaderStyle}>
+                <span style={typeCardAccentStyle} aria-hidden="true" />
+                <span style={typeCardCategoryStyle}>{category}</span>
+              </div>
               <strong style={typeCardNameStyle}>{TYPE_LABELS[type]}</strong>
               <span style={typeCardDescStyle}>{description}</span>
+              <span style={typeCardActionStyle}>Selecionar modelo</span>
             </Link>
           ))}
         </div>
@@ -331,38 +342,64 @@ const titleStyle = {
 
 const typeGridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-  gap: "0.875rem",
+  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+  gap: "1rem",
 } satisfies React.CSSProperties;
 
 const typeCardStyle = {
   display: "grid",
-  gap: "0.4rem",
-  padding: "1.25rem 1.35rem",
-  borderRadius: "16px",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  gap: "0.75rem",
+  padding: "1.2rem 1.25rem",
+  borderRadius: "18px",
+  background: "linear-gradient(180deg, rgba(255, 253, 250, 0.98) 0%, rgba(250, 247, 243, 0.96) 100%)",
+  border: "1px solid rgba(146, 64, 14, 0.1)",
   textDecoration: "none",
-  boxShadow: "0 2px 6px rgba(120, 53, 15, 0.04)",
-  transition: "box-shadow 0.15s",
+  boxShadow: "0 10px 24px rgba(28, 25, 23, 0.04)",
+  minHeight: "196px",
+  alignContent: "start",
 } satisfies React.CSSProperties;
 
-const typeCardIconStyle = {
-  fontSize: "1.75rem",
-  lineHeight: 1,
+const typeCardHeaderStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.6rem",
+} satisfies React.CSSProperties;
+
+const typeCardAccentStyle = {
+  width: "2.1rem",
+  height: "1px",
+  background: "rgba(120, 53, 15, 0.55)",
+  flexShrink: 0,
+} satisfies React.CSSProperties;
+
+const typeCardCategoryStyle = {
+  fontSize: "0.7rem",
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.14em",
+  color: "var(--color-brown-mid)",
+  fontWeight: 700,
 } satisfies React.CSSProperties;
 
 const typeCardNameStyle = {
-  fontSize: "0.9rem",
+  fontSize: "1rem",
   color: "var(--color-text-1)",
   fontWeight: 700,
-  lineHeight: 1.3,
+  lineHeight: 1.35,
+  fontFamily: "'IBM Plex Serif', serif",
 } satisfies React.CSSProperties;
 
 const typeCardDescStyle = {
-  fontSize: "0.78rem",
+  fontSize: "0.82rem",
   color: "var(--color-text-3)",
-  lineHeight: 1.4,
+  lineHeight: 1.55,
+} satisfies React.CSSProperties;
+
+const typeCardActionStyle = {
+  marginTop: "auto",
+  fontSize: "0.77rem",
+  color: "var(--color-accent)",
+  fontWeight: 600,
+  letterSpacing: "0.04em",
 } satisfies React.CSSProperties;
 
 const gateNoticeStyle = {
