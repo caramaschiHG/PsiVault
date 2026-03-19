@@ -42,7 +42,7 @@ async function buildSecurityPageModel() {
     ...createSession(
       { accountId, workspaceId, userAgent },
       {
-        now: session?.created_at ? new Date(session.created_at) : now,
+        now: session?.expires_at ? new Date((session.expires_at - session.expires_in) * 1000) : now,
         createId: () => session?.access_token?.slice(-8) ?? "sess_current",
         createToken: () => session?.access_token ?? "current",
       },
