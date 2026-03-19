@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AUTH_ROUTE_PATHS } from "@/lib/supabase/constants";
 import { db } from "@/lib/db";
+import { savePracticeProfile } from "@/lib/setup/profile";
 
 export async function signIn(formData: FormData): Promise<void> {
   const email = formData.get("email") as string;
@@ -27,14 +28,23 @@ export async function signIn(formData: FormData): Promise<void> {
 export async function signUp(formData: FormData): Promise<void> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
   const displayName = formData.get("displayName") as string;
+  const crp = formData.get("crp") as string;
+
+  if (password !== confirmPassword) {
+    redirect(`${AUTH_ROUTE_PATHS.signUp}?field=confirmPassword&error=${encodeURIComponent("As senhas não coincidem.")}`);
+  }
 
   const supabase = await createClient();
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: `${siteUrl}/auth/confirm`,
       data: {
         display_name: displayName,
       },
@@ -67,7 +77,7 @@ export async function signUp(formData: FormData): Promise<void> {
       select: { id: true },
     });
 
-    await db.workspace.upsert({
+    const workspace = await db.workspace.upsert({
       where: { ownerAccountId: account.id },
       update: {
         displayName: `Consultório de ${safeDisplayName}`,
@@ -77,6 +87,13 @@ export async function signUp(formData: FormData): Promise<void> {
         slug: `ws_${account.id.substring(0, 8)}`,
         displayName: `Consultório de ${safeDisplayName}`,
       },
+      select: { id: true },
+    });
+
+    await savePracticeProfile({
+      workspaceId: workspace.id,
+      fullName: safeDisplayName,
+      crp: crp?.trim() || null,
     });
   }
 

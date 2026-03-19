@@ -174,7 +174,7 @@ export default async function DocumentComposerPage({
           <p style={gateNoticeTextStyle}>
             Documentos requerem assinatura configurada.
           </p>
-          <Link href="/setup/profile" style={gateNoticeLinkStyle}>
+          <Link href="/settings/profile" style={gateNoticeLinkStyle}>
             Configurar em Perfil
           </Link>
         </div>

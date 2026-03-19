@@ -22,10 +22,9 @@ export default async function SignUpPage({
       <p className="auth-brand">PsiVault</p>
       <section className="auth-card">
         <p className="auth-eyebrow">Criar conta</p>
-        <h1 className="auth-title">Abra sua conta com e-mail e senha.</h1>
+        <h1 className="auth-title">Configure sua conta profissional.</h1>
         <p className="auth-copy">
-          O acesso completo ao vault só é liberado depois da verificação de
-          e-mail e da configuração do segundo fator.
+          Após verificar o e-mail, você configura o segundo fator e já pode usar o vault.
         </p>
 
         <form className="auth-form" action={signUp}>
@@ -39,6 +38,19 @@ export default async function SignUpPage({
                 required
               />
               {errorField === "displayName" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
+            </label>
+
+            <label className="auth-label">
+              CRP
+              <input
+                className="auth-input"
+                name="crp"
+                placeholder="CRP 06/000000"
+                required
+              />
+              {errorField === "crp" && errorMessage && (
                 <span className="auth-field-error">{errorMessage}</span>
               )}
             </label>
@@ -76,6 +88,18 @@ export default async function SignUpPage({
                 Use pelo menos 8 caracteres.
               </p>
               {errorField === "password" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
+            </label>
+
+            <label className="auth-label">
+              Confirmar senha
+              <PasswordInput
+                name="confirmPassword"
+                placeholder="Repita a senha"
+                required
+              />
+              {errorField === "confirmPassword" && errorMessage && (
                 <span className="auth-field-error">{errorMessage}</span>
               )}
             </label>
