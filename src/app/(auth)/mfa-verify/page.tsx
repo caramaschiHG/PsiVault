@@ -4,29 +4,40 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { OtpInput } from "../components/otp-input";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export default function MfaVerifyPage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [factorId, setFactorId] = useState<string>("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const loaded = useRef(false);
 
   useEffect(() => {
+    setSupabase(createClient());
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
     if (loaded.current) return;
     loaded.current = true;
+    const client = supabase;
 
-    supabase.auth.mfa.listFactors().then(({ data }) => {
+    client.auth.mfa.listFactors().then(({ data }) => {
       const totp = data?.totp?.find((f) => f.status === "verified");
       if (totp) setFactorId(totp.id);
     });
-  }, []);
+  }, [supabase]);
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
+    if (!supabase) {
+      setError("Verificação indisponível no momento. Recarregue a página.");
+      return;
+    }
     setError(null);
     setLoading(true);
 

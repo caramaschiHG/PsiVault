@@ -5,6 +5,8 @@ import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
 import { SERVICE_MODE_OPTIONS } from "@/lib/setup/constants";
 import { completeProfileAction } from "./actions";
 
+export const dynamic = "force-dynamic";
+
 const serviceModeLabels: Record<string, string> = {
   [SERVICE_MODE_OPTIONS.inPerson]: "Presencial",
   [SERVICE_MODE_OPTIONS.online]: "Online",

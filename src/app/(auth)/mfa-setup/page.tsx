@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { OtpInput } from "../components/otp-input";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Step = "install" | "qr" | "verify" | "success";
 
@@ -16,7 +17,6 @@ const STEPS: { key: Step; label: string }[] = [
 
 export default function MfaSetupPage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [step, setStep] = useState<Step>("install");
   const [qrCode, setQrCode] = useState<string>("");
@@ -25,22 +25,29 @@ export default function MfaSetupPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const enrolled = useRef(false);
 
   useEffect(() => {
+    setSupabase(createClient());
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
     if (step !== "qr") return;
     if (enrolled.current) return;
     enrolled.current = true;
+    const client = supabase;
 
     async function enroll() {
-      const { data: factorsData } = await supabase.auth.mfa.listFactors();
+      const { data: factorsData } = await client.auth.mfa.listFactors();
       if (factorsData) {
         for (const factor of factorsData.totp) {
-          await supabase.auth.mfa.unenroll({ factorId: factor.id });
+          await client.auth.mfa.unenroll({ factorId: factor.id });
         }
       }
 
-      const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+      const { data, error } = await client.auth.mfa.enroll({ factorType: "totp" });
       if (error || !data) {
         console.error("MFA enroll error:", JSON.stringify(error));
         setError(`Erro ao iniciar configuração MFA: ${error?.message ?? "erro desconhecido"}`);
@@ -52,10 +59,14 @@ export default function MfaSetupPage() {
     }
 
     enroll();
-  }, [step]);
+  }, [step, supabase]);
 
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
+    if (!supabase) {
+      setError("Configuração indisponível no momento. Recarregue a página.");
+      return;
+    }
     setError(null);
     setLoading(true);
 
