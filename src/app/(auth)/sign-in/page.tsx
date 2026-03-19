@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { signIn } from "../actions";
 import { translateAuthError } from "../auth-errors";
 import { AuthForm } from "../components/auth-form";
