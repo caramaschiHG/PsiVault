@@ -27,7 +27,7 @@ export async function signUp(formData: FormData): Promise<void> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const displayName = formData.get("displayName") as string;
-  
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signUp({
@@ -46,20 +46,38 @@ export async function signUp(formData: FormData): Promise<void> {
 
   if (data.user) {
     const { db } = await import("@/lib/db");
-    
-    // Provision Account and Workspace locally
-    await db.account.create({
-      data: {
+
+    // Supabase can return a user object even when the e-mail is already registered.
+    // Local provisioning must therefore be idempotent instead of assuming a fresh account.
+    const safeEmail = data.user.email ?? email;
+    const safeDisplayName =
+      displayName.trim() ||
+      (data.user.user_metadata?.display_name as string | undefined) ||
+      safeEmail;
+
+    const account = await db.account.upsert({
+      where: { email: safeEmail },
+      update: {
+        displayName: safeDisplayName,
+      },
+      create: {
         id: data.user.id,
-        email: data.user.email!,
-        displayName: displayName,
-        workspace: {
-          create: {
-            slug: `ws_${data.user.id.substring(0, 8)}`,
-            displayName: `Consultório de ${displayName}`,
-          }
-        }
-      }
+        email: safeEmail,
+        displayName: safeDisplayName,
+      },
+      select: { id: true },
+    });
+
+    await db.workspace.upsert({
+      where: { ownerAccountId: account.id },
+      update: {
+        displayName: `Consultório de ${safeDisplayName}`,
+      },
+      create: {
+        ownerAccountId: account.id,
+        slug: `ws_${account.id.substring(0, 8)}`,
+        displayName: `Consultório de ${safeDisplayName}`,
+      },
     });
   }
 
