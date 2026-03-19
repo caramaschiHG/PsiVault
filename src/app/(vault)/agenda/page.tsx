@@ -40,6 +40,7 @@ import { AgendaToolbar } from "./components/agenda-toolbar";
 import { AgendaDayView } from "./components/agenda-day-view";
 import { AgendaWeekView } from "./components/agenda-week-view";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
+import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 
 const TIMEZONE = "America/Sao_Paulo";
@@ -51,7 +52,8 @@ interface AgendaPageProps {
 }
 
 export default async function AgendaPage({ searchParams }: AgendaPageProps) {
-  const { accountId, workspaceId } = await resolveSession();
+  const route = "vault.agenda";
+  const { accountId, workspaceId } = await observeServerStage(route, "resolveSession", () => resolveSession());
   const params = await searchParams;
   const activeView = params.view === "week" ? "week" : "day";
 
@@ -71,17 +73,37 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     ? new Date(anchorDate.getTime() + 2 * DAY_MS)
     : new Date(anchorDate.getTime() + WEEK_MS + DAY_MS);
 
-  const appointments = await appointmentRepo.listByDateRange(workspaceId, rangeFrom, rangeTo);
+  const appointments = await observeServerStage(
+    route,
+    "loadAppointments",
+    () => appointmentRepo.listByDateRange(workspaceId, rangeFrom, rangeTo),
+    {
+      workspaceId,
+      activeView,
+      rangeFrom: rangeFrom.toISOString(),
+      rangeTo: rangeTo.toISOString(),
+    },
+  );
 
   // Build patient name lookup from the patient repository
-  const allPatients = await patientRepo.listActive(workspaceId);
+  const allPatients = await observeServerStage(
+    route,
+    "loadPatients",
+    () => patientRepo.listActive(workspaceId),
+    { workspaceId },
+  );
   const patientNames: Record<string, string> = {};
   for (const p of allPatients) {
     patientNames[p.id] = p.socialName ? `${p.fullName} (${p.socialName})` : p.fullName;
   }
 
   // Load practice profile for next-session defaults
-  const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
+  const profile = await observeServerStage(
+    route,
+    "loadPracticeProfile",
+    () => getPracticeProfileSnapshot(accountId, workspaceId),
+    { accountId, workspaceId },
+  );
 
   // Resolve default care mode from practice profile (HYBRID is not a booking value)
   const profileCareMode =
@@ -95,8 +117,17 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   // Build set of appointment IDs that already have a note
   const notedAppointmentIds = new Set<string>();
   const completedAppts = appointments.filter((a) => a.status === "COMPLETED");
-  const agendaNoteResults = await Promise.all(
-    completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, workspaceId)),
+  const agendaNoteResults = await observeServerStage(
+    route,
+    "loadClinicalNotesForCompletedAppointments",
+    () =>
+      Promise.all(
+        completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, workspaceId)),
+      ),
+    {
+      workspaceId,
+      completedAppointmentCount: completedAppts.length,
+    },
   );
   completedAppts.forEach((a, i) => {
     if (agendaNoteResults[i]) notedAppointmentIds.add(a.id);
@@ -290,6 +321,19 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       : formatWeekLabel(weekStart, new Date(weekStart.getTime() + 6 * DAY_MS));
 
   const todayDate = getTodayUTCMidnight();
+
+  await observeServerStage(
+    route,
+    "renderPreparation",
+    async () => undefined,
+    {
+      workspaceId,
+      activeView,
+      appointmentCount: appointments.length,
+      patientCount: allPatients.length,
+      completedAppointmentCount: completedAppts.length,
+    },
+  );
 
   return (
     <main style={shellStyle}>

@@ -27,10 +27,12 @@ import {
   deriveMonthlySnapshot,
 } from "../../../lib/dashboard/aggregation";
 import { createReminderAction, completeReminderAction } from "../actions/reminders";
+import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 
 export default async function InicioPage() {
-  const { workspaceId } = await resolveSession();
+  const route = "vault.inicio";
+  const { workspaceId } = await observeServerStage(route, "resolveSession", () => resolveSession());
   const now = new Date();
 
   // UTC today boundaries
@@ -44,12 +46,29 @@ export default async function InicioPage() {
   const financeRepo = getFinanceRepository();
 
   // Today's appointments (load a window and filter)
-  const rawAppointments = await appointmentRepo.listByDateRange(workspaceId, from, to);
+  const rawAppointments = await observeServerStage(
+    route,
+    "loadTodayAppointments",
+    () => appointmentRepo.listByDateRange(workspaceId, from, to),
+    {
+      workspaceId,
+      from: from.toISOString(),
+      to: to.toISOString(),
+    },
+  );
   const todayAppointments = filterTodayAppointments(rawAppointments, from);
 
   // All patients for snapshot and name resolution
-  const activePatients = await patientRepo.listActive(workspaceId);
-  const archivedPatients = await patientRepo.listArchived(workspaceId);
+  const [activePatients, archivedPatients] = await observeServerStage(
+    route,
+    "loadPatients",
+    () =>
+      Promise.all([
+        patientRepo.listActive(workspaceId),
+        patientRepo.listArchived(workspaceId),
+      ]),
+    { workspaceId },
+  );
   const allPatients = [...activePatients, ...archivedPatients];
 
   // Build patient name map for session cards
@@ -63,21 +82,50 @@ export default async function InicioPage() {
   const month = now.getUTCMonth() + 1;
 
   // Active reminders and monthly charges loaded concurrently
-  const [activeReminders, monthlyCharges] = await Promise.all([
-    reminderRepo.listActive(workspaceId),
-    financeRepo.listByWorkspaceAndMonth(workspaceId, year, month),
-  ]);
+  const [activeReminders, monthlyCharges] = await observeServerStage(
+    route,
+    "loadRemindersAndCharges",
+    () =>
+      Promise.all([
+        reminderRepo.listActive(workspaceId),
+        financeRepo.listByWorkspaceAndMonth(workspaceId, year, month),
+      ]),
+    { workspaceId, year, month },
+  );
   const pendingChargeCount = countPendingCharges(monthlyCharges);
 
   // Monthly snapshot for summary section
   const monthFrom = new Date(Date.UTC(year, month - 1, 1));
   const monthTo = new Date(Date.UTC(year, month, 1));
-  const monthlyAppointments = await appointmentRepo.listByDateRange(workspaceId, monthFrom, monthTo);
+  const monthlyAppointments = await observeServerStage(
+    route,
+    "loadMonthlyAppointments",
+    () => appointmentRepo.listByDateRange(workspaceId, monthFrom, monthTo),
+    {
+      workspaceId,
+      monthFrom: monthFrom.toISOString(),
+      monthTo: monthTo.toISOString(),
+    },
+  );
   const snapshot = deriveMonthlySnapshot({
     activePatients,
     monthlyCharges,
     monthlyAppointments,
   });
+
+  await observeServerStage(
+    route,
+    "renderPreparation",
+    async () => undefined,
+    {
+      workspaceId,
+      todayAppointmentCount: todayAppointments.length,
+      activePatientCount: activePatients.length,
+      archivedPatientCount: archivedPatients.length,
+      reminderCount: activeReminders.length,
+      monthlyChargeCount: monthlyCharges.length,
+    },
+  );
 
   // Format helpers
   const timeFormatter = new Intl.DateTimeFormat("pt-BR", {

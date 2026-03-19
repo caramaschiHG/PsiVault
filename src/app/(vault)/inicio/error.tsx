@@ -17,7 +17,7 @@ const containerStyle = {
 } satisfies React.CSSProperties;
 
 export default function InicioError({
-  error: _error,
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -32,6 +32,11 @@ export default function InicioError({
         <p style={{ fontSize: "var(--font-size-meta)", color: "var(--color-text-2)" }}>
           Não foi possível carregar esta página. Tente novamente ou volte mais tarde.
         </p>
+        {error.digest ? (
+          <p style={{ fontSize: "0.75rem", color: "var(--color-text-3)", margin: 0 }}>
+            Cód. de rastreio: {error.digest}
+          </p>
+        ) : null}
         <button onClick={reset} className="btn-secondary">
           Tentar novamente
         </button>
