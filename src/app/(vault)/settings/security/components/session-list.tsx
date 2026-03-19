@@ -48,8 +48,8 @@ const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase",
   letterSpacing: "0.16em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  fontSize: "var(--font-size-label)",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -59,7 +59,7 @@ const titleStyle = {
 
 const copyStyle = {
   margin: 0,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
@@ -72,16 +72,16 @@ const cardStyle = {
   display: "grid",
   gap: "1rem",
   padding: "1.1rem",
-  borderRadius: "20px",
-  background: "rgba(255, 255, 255, 0.82)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const pillStyle = {
   padding: "0.3rem 0.65rem",
-  borderRadius: "999px",
-  background: "rgba(217, 119, 6, 0.08)",
-  color: "#9a3412",
+  borderRadius: "var(--radius-pill)",
+  background: "var(--color-accent-light)",
+  color: "var(--color-accent)",
   fontSize: "0.75rem",
 } satisfies React.CSSProperties;
 
@@ -93,23 +93,23 @@ const currentPillStyle = {
 
 const detailStyle = {
   margin: 0,
-  color: "#292524",
+  color: "var(--color-text-1)",
   lineHeight: 1.5,
 } satisfies React.CSSProperties;
 
 const metaStyle = {
   margin: 0,
-  color: "#78716c",
+  color: "var(--color-text-3)",
   fontSize: "0.92rem",
 } satisfies React.CSSProperties;
 
 const buttonStyle = {
   justifySelf: "start",
   padding: "0.7rem 1rem",
-  borderRadius: "999px",
-  border: "1px solid rgba(146, 64, 14, 0.18)",
-  background: "#fff7ed",
-  color: "#9a3412",
+  borderRadius: "var(--radius-pill)",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-1)",
+  color: "var(--color-accent)",
   cursor: "pointer",
 } satisfies React.CSSProperties;
 

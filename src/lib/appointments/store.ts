@@ -1,12 +1,10 @@
 /**
- * Module-level in-memory appointment store.
+ * Module-level appointment store.
  *
- * Mirrors the Phase 1 profile and patient store pattern so the appointment
- * repository is available across server actions without requiring a DB
- * connection in this phase.
+ * Provides access to the Prisma appointment repository.
  */
 
-import { createInMemoryAppointmentRepository } from "./repository";
+import { createPrismaAppointmentRepository } from "./repository.prisma";
 import type { AppointmentRepository } from "./repository";
 
 declare global {
@@ -15,6 +13,6 @@ declare global {
 }
 
 export function getAppointmentRepository(): AppointmentRepository {
-  globalThis.__psivaultAppointmentRepository__ ??= createInMemoryAppointmentRepository();
+  globalThis.__psivaultAppointmentRepository__ ??= createPrismaAppointmentRepository();
   return globalThis.__psivaultAppointmentRepository__;
 }

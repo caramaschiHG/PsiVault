@@ -7,11 +7,7 @@ import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit"
 import { getAuditRepository } from "../../../../../../lib/audit/store";
 import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
 import type { DocumentType } from "../../../../../../lib/documents/model";
-
-// ─── Stub identity (real resolution comes from session in production) ──────────
-
-const WORKSPACE_ID = "ws_1";
-const ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../../../../lib/supabase/session";
 
 const VALID_TYPES = new Set<DocumentType>([
   "declaration_of_attendance",
@@ -49,7 +45,8 @@ function generateId(): string {
 
 // ─── Create document action ────────────────────────────────────────────────────
 
-export async function createDocumentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function createDocumentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const patientId = String(formData.get("patientId") ?? "");
   const rawType = String(formData.get("documentType") ?? "");
   const content = nullCoerce(formData.get("content")) ?? "";
@@ -64,16 +61,16 @@ export async function createDocumentAction(formData: FormData): Promise<{ ok: bo
     const type = rawType as DocumentType;
 
     // Get professional name for provenance snapshot
-    const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
+    const profile = getPracticeProfileSnapshot(accountId, workspaceId);
 
     const now = new Date();
     const doc = createPracticeDocument(
       {
-        workspaceId: WORKSPACE_ID,
+        workspaceId: workspaceId,
         patientId,
         type,
         content,
-        createdByAccountId: ACCOUNT_ID,
+        createdByAccountId: accountId,
         createdByName: profile.fullName ?? "",
       },
       { now, createId: generateId },
@@ -88,7 +85,7 @@ export async function createDocumentAction(formData: FormData): Promise<{ ok: bo
       {
         type: "document.created",
         document: doc,
-        actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
+        actor: { accountId: accountId, workspaceId: workspaceId },
       },
       { now, createId: generateId },
     );
@@ -97,7 +94,7 @@ export async function createDocumentAction(formData: FormData): Promise<{ ok: bo
     shouldRedirect = true;
   } catch (err) {
     console.error("[createDocumentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/patients/${patientId}`);

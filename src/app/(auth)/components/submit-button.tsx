@@ -37,20 +37,13 @@ export function SubmitButton({ label }: { label: string }) {
       type="submit"
       disabled={pending}
       aria-busy={pending}
+      className="btn-primary"
       style={
         {
-          borderRadius: "16px",
-          padding: "1rem 1.2rem",
-          background: "#9a3412",
-          color: "#fff",
-          fontWeight: 700,
-          border: 0,
-          cursor: pending ? "not-allowed" : "pointer",
-          opacity: pending ? 0.7 : 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
           width: "100%",
+          padding: "0.9rem 1.2rem",
+          opacity: pending ? 0.7 : undefined,
+          cursor: pending ? "not-allowed" : undefined,
         } satisfies React.CSSProperties
       }
     >

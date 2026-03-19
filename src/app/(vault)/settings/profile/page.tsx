@@ -10,6 +10,7 @@ import {
   savePracticeProfileAction,
   saveSignatureAssetAction,
 } from "../../setup/actions";
+import { SignatureUpload } from "./components/signature-upload";
 
 const serviceModeLabels: Record<string, string> = {
   [SERVICE_MODE_OPTIONS.inPerson]: "Presencial",
@@ -27,9 +28,7 @@ export default function ProfileSettingsPage() {
         <p style={eyebrowStyle}>Perfil profissional</p>
         <h1 style={titleStyle}>Identidade, padrões do consultório e assinatura em um só lugar.</h1>
         <p style={copyStyle}>
-          Este formulário reúne os dados que o setup hub usa para decidir a
-          prontidão do vault e que as próximas fases vão reutilizar em agenda,
-          documentos e histórico operacional.
+          Seu perfil profissional, padrões do consultório e assinatura digital.
         </p>
       </section>
 
@@ -129,60 +128,16 @@ export default function ProfileSettingsPage() {
             </p>
             <h2 style={sectionTitleStyle}>Assinatura profissional</h2>
             <p style={sideCopyStyle}>
-              Opcional agora, mas pronta para reaproveitamento quando os fluxos
-              de documentos entrarem no produto.
+              Aparece no rodapé dos documentos clínicos gerados.
             </p>
 
-            <form action={saveSignatureAssetAction} style={miniFormStyle}>
-              <label style={labelStyle}>
-                Nome do arquivo
-                <input
-                  defaultValue={profile.signatureAsset?.fileName ?? "assinatura-helena.png"}
-                  name="fileName"
-                  style={inputStyle}
-                />
-              </label>
-              <label style={labelStyle}>
-                MIME type
-                <input
-                  defaultValue={profile.signatureAsset?.mimeType ?? "image/png"}
-                  name="mimeType"
-                  style={inputStyle}
-                />
-              </label>
-              <label style={labelStyle}>
-                Tamanho em bytes
-                <input
-                  defaultValue={profile.signatureAsset?.fileSize ?? 4200}
-                  min={1}
-                  name="fileSize"
-                  style={inputStyle}
-                  type="number"
-                />
-              </label>
-              <button style={buttonStyle} type="submit">
-                {profile.signatureAsset ? "Substituir assinatura" : "Salvar assinatura"}
-              </button>
-            </form>
-
-            <form action={removeSignatureAssetAction}>
-              <button style={secondaryButtonStyle} type="submit">
-                Remover assinatura salva
-              </button>
-            </form>
-
-            <div style={signatureSummaryStyle}>
-              <strong>
-                {profile.signatureAsset
-                  ? profile.signatureAsset.fileName
-                  : "Nenhuma assinatura armazenada ainda"}
-              </strong>
-              <p style={metaCopyStyle}>
-                {profile.signatureAsset
-                  ? `${profile.signatureAsset.mimeType} • ${profile.signatureAsset.storageKey}`
-                  : "O vault continua funcional sem esse ativo nesta fase."}
-              </p>
-            </div>
+            <SignatureUpload
+              saveAction={saveSignatureAssetAction}
+              removeAction={removeSignatureAssetAction}
+              currentFileName={profile.signatureAsset?.fileName ?? null}
+              professionalName={profile.fullName ?? ""}
+              crp={profile.crp ?? ""}
+            />
           </section>
 
           <section style={sideCardStyle}>
@@ -194,8 +149,9 @@ export default function ProfileSettingsPage() {
             </p>
             <ul style={statusListStyle}>
               {readiness.steps.map((step) => (
-                <li key={step.id}>
-                  {step.title}: {step.status}
+                <li key={step.id} style={statusItemStyle}>
+                  <span>{step.status === "complete" ? "✓" : "✗"}</span>
+                  <span>{step.title}</span>
                 </li>
               ))}
             </ul>
@@ -208,7 +164,7 @@ export default function ProfileSettingsPage() {
 
 const shellStyle = {
   minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
   display: "grid",
   gap: "1.25rem",
   alignContent: "start",
@@ -217,9 +173,9 @@ const shellStyle = {
 const heroStyle = {
   maxWidth: "980px",
   padding: "1.7rem 1.8rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-2)",
+  border: "1px solid var(--color-border-med)",
   boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
 } satisfies React.CSSProperties;
 
@@ -231,10 +187,10 @@ const gridStyle = {
 } satisfies React.CSSProperties;
 
 const formCardStyle = {
-  padding: "1.5rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  padding: "2rem 2.5rem",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-2)",
+  border: "1px solid var(--color-border-med)",
   boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
   display: "grid",
   gap: "1.25rem",
@@ -247,9 +203,9 @@ const sidebarStyle = {
 
 const sideCardStyle = {
   padding: "1.35rem",
-  borderRadius: "24px",
-  background: "rgba(255, 252, 247, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border-med)",
   display: "grid",
   gap: "0.9rem",
 } satisfies React.CSSProperties;
@@ -258,21 +214,21 @@ const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase",
   letterSpacing: "0.16em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  fontSize: "var(--font-size-label)",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   marginBottom: "0.75rem",
-  fontSize: "2.2rem",
-  lineHeight: 1.05,
+  fontSize: "var(--font-size-page-title)",
+  lineHeight: 1.2,
 } satisfies React.CSSProperties;
 
 const copyStyle = {
   marginTop: 0,
   maxWidth: "68ch",
   lineHeight: 1.6,
-  color: "#57534e",
+  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const sectionHeadingStyle = {
@@ -284,8 +240,8 @@ const sectionEyebrowStyle = {
   margin: 0,
   textTransform: "uppercase",
   letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  fontSize: "var(--font-size-label)",
+  color: "var(--color-accent)",
 } satisfies React.CSSProperties;
 
 const sectionTitleStyle = {
@@ -306,10 +262,10 @@ const labelStyle = {
 } satisfies React.CSSProperties;
 
 const inputStyle = {
-  borderRadius: "16px",
-  border: "1px solid rgba(120, 53, 15, 0.16)",
+  borderRadius: "var(--radius-md)",
+  border: "1px solid var(--color-border-med)",
   padding: "0.9rem 1rem",
-  background: "#fffdfa",
+  background: "var(--color-surface-0)",
 } satisfies React.CSSProperties;
 
 const modesSectionStyle = {
@@ -332,31 +288,31 @@ const checkboxCardStyle = {
   gap: "0.55rem",
   alignItems: "center",
   padding: "0.85rem 0.95rem",
-  borderRadius: "16px",
-  background: "rgba(255, 255, 255, 0.74)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const buttonStyle = {
   border: 0,
-  borderRadius: "16px",
+  borderRadius: "var(--radius-md)",
   padding: "0.95rem 1.1rem",
-  background: "#9a3412",
+  background: "var(--color-accent)",
   color: "#fff7ed",
   fontWeight: 700,
 } satisfies React.CSSProperties;
 
 const secondaryButtonStyle = {
   ...buttonStyle,
-  background: "#fff7ed",
-  color: "#9a3412",
-  border: "1px solid rgba(146, 64, 14, 0.18)",
+  background: "var(--color-surface-1)",
+  color: "var(--color-accent)",
+  border: "1px solid var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const sideCopyStyle = {
   margin: 0,
   lineHeight: 1.6,
-  color: "#57534e",
+  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const miniFormStyle = {
@@ -366,20 +322,28 @@ const miniFormStyle = {
 
 const signatureSummaryStyle = {
   padding: "0.9rem 1rem",
-  borderRadius: "18px",
-  background: "rgba(255, 255, 255, 0.78)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const metaCopyStyle = {
   marginBottom: 0,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
 const statusListStyle = {
   margin: 0,
-  paddingLeft: "1.15rem",
-  color: "#57534e",
-  lineHeight: 1.6,
+  padding: 0,
+  listStyle: "none",
+  display: "grid",
+  gap: "0.45rem",
+} satisfies React.CSSProperties;
+
+const statusItemStyle = {
+  display: "flex",
+  gap: "0.5rem",
+  color: "var(--color-text-2)",
+  lineHeight: 1.5,
 } satisfies React.CSSProperties;

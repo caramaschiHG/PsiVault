@@ -23,11 +23,7 @@ import { getFinanceRepository } from "../../../lib/finance/store";
 import { createSessionCharge, updateSessionCharge } from "../../../lib/finance/model";
 import type { ChargeStatus, PaymentMethod } from "../../../lib/finance/model";
 import { createChargeAuditEvent } from "../../../lib/finance/audit";
-
-// ─── Stub identity (real resolution comes from session in production) ──────────
-
-const DEFAULT_WORKSPACE_ID = "ws_1";
-const DEFAULT_ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -43,7 +39,8 @@ function generateSeriesId() {
 
 // ─── Create appointment ────────────────────────────────────────────────────────
 
-export async function createAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function createAppointmentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const patientRepo = getPatientRepository();
   const audit = getAuditRepository();
@@ -60,7 +57,7 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
 
   try {
     // Guard: patient must be active
-    const patient = await patientRepo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    const patient = await patientRepo.findById(patientId, workspaceId);
     if (!patient) return;
     assertPatientSchedulable(patient);
 
@@ -68,7 +65,7 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
       // Generate weekly series
       const occurrences = generateWeeklySeries(
         {
-          workspaceId: DEFAULT_WORKSPACE_ID,
+          workspaceId: workspaceId,
           patientId,
           startsAt,
           durationMinutes,
@@ -84,7 +81,7 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
 
       // Check conflicts for each occurrence before saving any
       const allExisting = await repo.listByDateRange(
-        DEFAULT_WORKSPACE_ID,
+        workspaceId,
         occurrences[0].startsAt,
         occurrences[occurrences.length - 1].endsAt,
       );
@@ -106,7 +103,7 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
             {
               type: "appointment.created",
               appointment: occurrence,
-              actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+              actor: { accountId: accountId, workspaceId: workspaceId },
             },
             { now, createId: generateId },
           ),
@@ -117,14 +114,14 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
     } else {
       // Single appointment
       const existing = await repo.listByDateRange(
-        DEFAULT_WORKSPACE_ID,
+        workspaceId,
         startsAt,
         new Date(startsAt.getTime() + durationMinutes * 60_000),
       );
 
       const appointment = createAppointment(
         {
-          workspaceId: DEFAULT_WORKSPACE_ID,
+          workspaceId: workspaceId,
           patientId,
           startsAt,
           durationMinutes,
@@ -145,7 +142,7 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
           {
             type: "appointment.created",
             appointment,
-            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            actor: { accountId: accountId, workspaceId: workspaceId },
           },
           { now, createId: generateId },
         ),
@@ -155,7 +152,7 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
     }
   } catch (err) {
     console.error("[createAppointmentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (redirectPath) redirect(redirectPath);
@@ -163,7 +160,8 @@ export async function createAppointmentAction(formData: FormData): Promise<{ ok:
 
 // ─── Reschedule appointment ────────────────────────────────────────────────────
 
-export async function rescheduleAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function rescheduleAppointmentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -176,13 +174,13 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
 
     if (existing.seriesId && scope !== "THIS") {
       // Series reschedule — delegate to series edit for THIS_AND_FUTURE or ALL
       const deltaMs = newStartsAt.getTime() - existing.startsAt.getTime();
-      const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
+      const allInSeries = await repo.listBySeries(existing.seriesId, workspaceId);
 
       let inScope =
         scope === "ALL"
@@ -201,7 +199,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
         const newOccurrenceStart = new Date(occurrence.startsAt.getTime() + deltaMs);
 
         const conflictCheck = await repo.listByDateRange(
-          DEFAULT_WORKSPACE_ID,
+          workspaceId,
           newOccurrenceStart,
           new Date(newOccurrenceStart.getTime() + durationMinutes * 60_000),
         );
@@ -230,7 +228,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
             {
               type: "appointment.rescheduled",
               appointment: rescheduled,
-              actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+              actor: { accountId: accountId, workspaceId: workspaceId },
               metadata: { originalId: occurrence.id },
             },
             { now, createId: generateId },
@@ -240,7 +238,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
     } else {
       // Single occurrence reschedule
       const conflictCheck = await repo.listByDateRange(
-        DEFAULT_WORKSPACE_ID,
+        workspaceId,
         newStartsAt,
         new Date(newStartsAt.getTime() + durationMinutes * 60_000),
       );
@@ -271,7 +269,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
           {
             type: "appointment.rescheduled",
             appointment: rescheduled,
-            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            actor: { accountId: accountId, workspaceId: workspaceId },
             metadata: { originalId: appointmentId },
           },
           { now, createId: generateId },
@@ -282,7 +280,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
     shouldRedirect = true;
   } catch (err) {
     console.error("[rescheduleAppointmentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -290,7 +288,8 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
 
 // ─── Cancel appointment ────────────────────────────────────────────────────────
 
-export async function cancelAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function cancelAppointmentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -301,11 +300,11 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ ok:
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
 
     if (existing.seriesId && scope !== "THIS") {
-      const allInSeries = await repo.listBySeries(existing.seriesId, DEFAULT_WORKSPACE_ID);
+      const allInSeries = await repo.listBySeries(existing.seriesId, workspaceId);
 
       const inScope =
         scope === "ALL"
@@ -323,7 +322,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ ok:
 
         const canceled = cancelAppointment(occurrence, {
           now,
-          canceledByAccountId: DEFAULT_ACCOUNT_ID,
+          canceledByAccountId: accountId,
         });
 
         await repo.save(canceled);
@@ -333,7 +332,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ ok:
             {
               type: "appointment.canceled",
               appointment: canceled,
-              actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+              actor: { accountId: accountId, workspaceId: workspaceId },
             },
             { now, createId: generateId },
           ),
@@ -342,7 +341,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ ok:
     } else {
       const canceled = cancelAppointment(existing, {
         now,
-        canceledByAccountId: DEFAULT_ACCOUNT_ID,
+        canceledByAccountId: accountId,
       });
 
       await repo.save(canceled);
@@ -352,7 +351,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ ok:
           {
             type: "appointment.canceled",
             appointment: canceled,
-            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            actor: { accountId: accountId, workspaceId: workspaceId },
           },
           { now, createId: generateId },
         ),
@@ -362,7 +361,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ ok:
     shouldRedirect = true;
   } catch (err) {
     console.error("[cancelAppointmentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/appointments`);
@@ -370,7 +369,8 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ ok:
 
 // ─── Confirm appointment ───────────────────────────────────────────────────────
 
-export async function confirmAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function confirmAppointmentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -380,7 +380,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ ok
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
 
     const confirmed = confirmAppointment(existing, { now });
@@ -391,7 +391,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ ok
         {
           type: "appointment.confirmed",
           appointment: confirmed,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -400,7 +400,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ ok
     shouldRedirect = true;
   } catch (err) {
     console.error("[confirmAppointmentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -408,7 +408,8 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ ok
 
 // ─── Complete appointment ──────────────────────────────────────────────────────
 
-export async function completeAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function completeAppointmentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -418,7 +419,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ o
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
 
     const completed = completeAppointment(existing, { now });
@@ -429,7 +430,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ o
         {
           type: "appointment.completed",
           appointment: completed,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -441,7 +442,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ o
     if (!existingCharge) {
       const charge = createSessionCharge(
         {
-          workspaceId: DEFAULT_WORKSPACE_ID,
+          workspaceId: workspaceId,
           patientId: completed.patientId,
           appointmentId: completed.id,
           amountInCents: completed.priceInCents ?? null,
@@ -454,7 +455,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ o
           {
             type: "charge.created",
             charge,
-            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            actor: { accountId: accountId, workspaceId: workspaceId },
           },
           { now, createId: generateId },
         ),
@@ -464,7 +465,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ o
     shouldRedirect = true;
   } catch (err) {
     console.error("[completeAppointmentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -472,7 +473,8 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ o
 
 // ─── No-show ──────────────────────────────────────────────────────────────────
 
-export async function noShowAppointmentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function noShowAppointmentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -482,7 +484,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ ok:
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
 
     const noShow = noShowAppointment(existing, { now });
@@ -493,7 +495,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ ok:
         {
           type: "appointment.no_show",
           appointment: noShow,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -502,7 +504,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ ok:
     shouldRedirect = true;
   } catch (err) {
     console.error("[noShowAppointmentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
@@ -510,7 +512,8 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ ok:
 
 // ─── Update charge ─────────────────────────────────────────────────────────────
 
-export async function updateChargeAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function updateChargeAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const financeRepo = getFinanceRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -543,7 +546,7 @@ export async function updateChargeAction(formData: FormData): Promise<{ ok: bool
           type: "charge.updated",
           charge: updated,
           newStatus: updated.status,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -552,7 +555,7 @@ export async function updateChargeAction(formData: FormData): Promise<{ ok: bool
     patientIdForRevalidate = charge.patientId;
   } catch (err) {
     console.error("[updateChargeAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
@@ -560,7 +563,8 @@ export async function updateChargeAction(formData: FormData): Promise<{ ok: bool
 
 // ─── Edit meeting link (ONLN-01) ──────────────────────────────────────────────
 
-export async function editMeetingLinkAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function editMeetingLinkAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -572,7 +576,7 @@ export async function editMeetingLinkAction(formData: FormData): Promise<{ ok: b
   let patientIdForRevalidate: string | null = null;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
     if (existing.careMode !== "ONLINE") return;
 
@@ -584,7 +588,7 @@ export async function editMeetingLinkAction(formData: FormData): Promise<{ ok: b
         {
           type: "appointment.updated",
           appointment: updated,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
           metadata: { summary: "Link da sessão online atualizado." },
         },
         { now, createId: generateId },
@@ -594,7 +598,7 @@ export async function editMeetingLinkAction(formData: FormData): Promise<{ ok: b
     patientIdForRevalidate = existing.patientId;
   } catch (err) {
     console.error("[editMeetingLinkAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   revalidatePath("/agenda");
@@ -603,7 +607,8 @@ export async function editMeetingLinkAction(formData: FormData): Promise<{ ok: b
 
 // ─── Add remote issue note (ONLN-03) ──────────────────────────────────────────
 
-export async function addRemoteIssueNoteAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function addRemoteIssueNoteAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -615,7 +620,7 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<{ ok
   let patientIdForRevalidate: string | null = null;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
 
     // Domain function guards against non-ONLINE appointments — let error propagate to Next.js error boundary
@@ -627,7 +632,7 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<{ ok
         {
           type: "appointment.updated",
           appointment: updated,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
           metadata: { summary: "Registro de problema de conexão adicionado." },
         },
         { now, createId: generateId },
@@ -637,7 +642,7 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<{ ok
     patientIdForRevalidate = existing.patientId;
   } catch (err) {
     console.error("[addRemoteIssueNoteAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   revalidatePath("/agenda");
@@ -646,7 +651,8 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<{ ok
 
 // ─── Edit recurrence series ────────────────────────────────────────────────────
 
-export async function editSeriesAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function editSeriesAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -663,7 +669,7 @@ export async function editSeriesAction(formData: FormData): Promise<{ ok: boolea
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return;
 
     const mutated = await applySeriesEdit(
@@ -676,7 +682,7 @@ export async function editSeriesAction(formData: FormData): Promise<{ ok: boolea
         },
       },
       repo,
-      { workspaceId: DEFAULT_WORKSPACE_ID, now, createId: generateId },
+      { workspaceId: workspaceId, now, createId: generateId },
     );
 
     for (const occurrence of mutated) {
@@ -685,7 +691,7 @@ export async function editSeriesAction(formData: FormData): Promise<{ ok: boolea
           {
             type: "appointment.series_edited",
             appointment: occurrence,
-            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            actor: { accountId: accountId, workspaceId: workspaceId },
             metadata: { scope, targetId: appointmentId },
           },
           { now, createId: generateId },
@@ -696,7 +702,7 @@ export async function editSeriesAction(formData: FormData): Promise<{ ok: boolea
     shouldRedirect = true;
   } catch (err) {
     console.error("[editSeriesAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/appointments/${appointmentId}`);

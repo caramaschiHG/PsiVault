@@ -4,6 +4,7 @@ export const AUTH_ROUTE_PATHS = {
   verifyEmail: "/verify-email",
   resetPassword: "/reset-password",
   mfaSetup: "/mfa-setup",
+  mfaVerify: "/mfa-verify",
 };
 
 export function isVaultRoute(pathname: string): boolean {

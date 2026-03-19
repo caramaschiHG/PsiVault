@@ -1,12 +1,10 @@
 /**
- * Module-level in-memory patient store.
+ * Module-level patient store.
  *
- * Mirrors the Phase 1 profile store pattern so the patient repository
- * is available across server actions without requiring a DB connection
- * in this phase.
+ * Provides access to the Prisma patient repository.
  */
 
-import { createInMemoryPatientRepository } from "./repository";
+import { createPrismaPatientRepository } from "./repository.prisma";
 import type { PatientRepository } from "./repository";
 
 declare global {
@@ -15,6 +13,6 @@ declare global {
 }
 
 export function getPatientRepository(): PatientRepository {
-  globalThis.__psivaultPatientRepository__ ??= createInMemoryPatientRepository();
+  globalThis.__psivaultPatientRepository__ ??= createPrismaPatientRepository();
   return globalThis.__psivaultPatientRepository__;
 }

@@ -92,7 +92,7 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.16em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const cardsGridStyle = {
@@ -103,9 +103,10 @@ const cardsGridStyle = {
 
 const cardStyle = {
   padding: "1.1rem 1.2rem",
-  borderRadius: "18px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-md)",
   display: "grid",
   gap: "0.35rem",
 } satisfies React.CSSProperties;
@@ -118,17 +119,17 @@ const cardLabelStyle = {
   fontSize: "0.78rem",
   textTransform: "uppercase" as const,
   letterSpacing: "0.12em",
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const cardValueStyle = {
   fontSize: "0.97rem",
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const emptyValueStyle = {
   ...cardValueStyle,
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   fontWeight: 400,
 } satisfies React.CSSProperties;

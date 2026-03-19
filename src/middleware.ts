@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const AUTH_ROUTES = ["/sign-in", "/sign-up", "/verify-email", "/reset-password"];
+const AUTH_ROUTES = ["/sign-in", "/sign-up", "/verify-email", "/reset-password", "/mfa-setup", "/mfa-verify"];
 
 export async function middleware(request: NextRequest) {
   const { supabase, supabaseResponse, user } = await updateSession(request);
@@ -10,11 +10,37 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"));
 
-  if (isAuthRoute && user) {
-    const { data: mfaData } = await supabase.auth.mfa.listFactors();
-    const hasMfa = mfaData?.totp?.some((f: { status: string }) => f.status === "verified") ?? false;
-    const redirectTo = hasMfa ? "/inicio" : "/mfa-setup";
-    return NextResponse.redirect(new URL(redirectTo, request.url));
+  if (isAuthRoute) {
+    if (user) {
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      const mfaComplete = aal?.currentLevel === "aal2";
+
+      if (mfaComplete) {
+        return NextResponse.redirect(new URL("/inicio", request.url));
+      }
+
+      const { data: mfaData } = await supabase.auth.mfa.listFactors();
+      const hasMfa = mfaData?.totp?.some((f: { status: string }) => f.status === "verified") ?? false;
+
+      // Already on the correct MFA page — let through
+      if (pathname === "/mfa-verify" && hasMfa) return supabaseResponse;
+      if (pathname === "/mfa-setup" && !hasMfa) return supabaseResponse;
+
+      return NextResponse.redirect(
+        new URL(hasMfa ? "/mfa-verify" : "/mfa-setup", request.url)
+      );
+    }
+    return supabaseResponse;
+  }
+
+  // Vault routes
+  if (!user) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
+
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.nextLevel === "aal2" && aal?.currentLevel !== "aal2") {
+    return NextResponse.redirect(new URL("/mfa-verify", request.url));
   }
 
   return supabaseResponse;
@@ -28,6 +54,8 @@ export const config = {
     "/sign-up",
     "/verify-email",
     "/reset-password",
+    "/mfa-setup",
+    "/mfa-verify",
     "/inicio",
     "/patients/:path*",
     "/agenda/:path*",

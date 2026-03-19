@@ -10,8 +10,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPatientRepository } from "../../../../../../lib/patients/store";
 import { getDocumentRepository } from "../../../../../../lib/documents/store";
+import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
+import { createClient } from "../../../../../../lib/supabase/server";
 import { archiveDocumentAction } from "./actions";
 import type { DocumentType } from "../../../../../../lib/documents/model";
+import { resolveSession } from "../../../../../../lib/supabase/session";
 
 const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   declaration_of_attendance: "Declaração de Comparecimento",
@@ -19,6 +22,8 @@ const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   anamnesis: "Anamnese",
   psychological_report: "Laudo Psicológico",
   consent_and_service_contract: "Contrato de Prestação de Serviços",
+  session_note: "Evolução de Sessão",
+  referral_letter: "Carta de Encaminhamento",
 };
 
 const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -30,22 +35,21 @@ const longDateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeStyle: "short",
 });
 
-const WORKSPACE_ID = "ws_1";
-
 interface DocumentViewPageProps {
   params: Promise<{ patientId: string; documentId: string }>;
 }
 
 export default async function DocumentViewPage({ params }: DocumentViewPageProps) {
+  const { workspaceId } = await resolveSession();
   const { patientId, documentId } = await params;
 
   const patientRepo = getPatientRepository();
   const docRepo = getDocumentRepository();
 
-  const patient = patientRepo.findById(patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(patientId, workspaceId);
   if (!patient) notFound();
 
-  const doc = docRepo.findById(documentId, WORKSPACE_ID);
+  const doc = await docRepo.findById(documentId, workspaceId);
   if (!doc) notFound();
 
   // Cross-patient guard (SECU-05)
@@ -55,6 +59,17 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
   const dataUri = `data:text/plain;charset=utf-8,${encodeURIComponent(doc.content)}`;
   const isActive = doc.archivedAt === null;
 
+  // Signature image — generate a short-lived signed URL if asset exists
+  const profile = getPracticeProfileSnapshot();
+  let signatureImageUrl: string | null = null;
+  if (profile.signatureAsset?.storageKey) {
+    const supabase = await createClient();
+    const { data } = await supabase.storage
+      .from("signatures")
+      .createSignedUrl(profile.signatureAsset.storageKey, 3600);
+    signatureImageUrl = data?.signedUrl ?? null;
+  }
+
   return (
     <main style={shellStyle}>
       {/* Breadcrumb */}
@@ -62,11 +77,11 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
         <Link href="/patients" style={navLinkStyle}>
           Pacientes
         </Link>
-        <span style={navSepStyle}>/</span>
+        <span style={navSepStyle}>›</span>
         <Link href={`/patients/${patientId}`} style={navLinkStyle}>
           {patient.fullName}
         </Link>
-        <span style={navSepStyle}>/</span>
+        <span style={navSepStyle}>›</span>
         <span style={navCurrentStyle}>{typeLabel}</span>
       </nav>
 
@@ -107,6 +122,17 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
       {/* Document content */}
       <section style={contentSectionStyle}>
         <pre style={contentPreStyle}>{doc.content}</pre>
+
+        {signatureImageUrl && (
+          <div style={signatureBlockStyle}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={signatureImageUrl}
+              alt="Assinatura profissional"
+              style={signatureImgStyle}
+            />
+          </div>
+        )}
       </section>
 
       {/* Actions */}
@@ -138,34 +164,34 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
 // --- Style objects ---
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.25rem",
   alignContent: "start",
-  maxWidth: "800px",
 } satisfies React.CSSProperties;
 
 const navStyle = {
   display: "flex",
   alignItems: "center",
-  gap: "0.5rem",
-  fontSize: "0.9rem",
-  color: "#78716c",
+  gap: "0.4rem",
+  fontSize: "0.82rem",
 } satisfies React.CSSProperties;
 
 const navLinkStyle = {
-  color: "#9a3412",
+  color: "var(--color-text-2)",
   textDecoration: "none",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const navSepStyle = {
-  color: "#d4c5b5",
+  color: "var(--color-text-4)",
+  fontSize: "0.75rem",
 } satisfies React.CSSProperties;
 
 const navCurrentStyle = {
-  color: "#57534e",
+  color: "var(--color-text-3)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -252,16 +278,27 @@ const downloadLinkStyle = {
 const editLinkStyle = {
   fontSize: "0.875rem",
   fontWeight: 500,
-  color: "#1e40af",
+  color: "var(--color-accent)",
   textDecoration: "none",
   padding: "0.45rem 1rem",
   borderRadius: "999px",
-  border: "1px solid rgba(30, 64, 175, 0.25)",
-  background: "rgba(239, 246, 255, 0.7)",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-accent-light)",
 } satisfies React.CSSProperties;
 
 const archiveFormStyle = {
   display: "inline",
+} satisfies React.CSSProperties;
+
+const signatureBlockStyle = {
+  marginTop: "1.5rem",
+  paddingTop: "1rem",
+  borderTop: "1px solid rgba(146, 64, 14, 0.1)",
+} satisfies React.CSSProperties;
+
+const signatureImgStyle = {
+  maxHeight: "80px",
+  objectFit: "contain" as const,
 } satisfies React.CSSProperties;
 
 const archiveButtonStyle = {

@@ -21,14 +21,14 @@ const STATUS_COLORS: Record<string, { background: string; color: string; border:
     border: "rgba(146, 64, 14, 0.22)",
   },
   CONFIRMED: {
-    background: "rgba(236, 253, 245, 0.9)",
-    color: "#065f46",
-    border: "rgba(16, 185, 129, 0.22)",
+    background: "rgba(245, 250, 246, 0.9)",
+    color: "#2d6a4f",
+    border: "rgba(45, 106, 79, 0.2)",
   },
   COMPLETED: {
-    background: "rgba(239, 246, 255, 0.9)",
-    color: "#1e3a8a",
-    border: "rgba(59, 130, 246, 0.22)",
+    background: "rgba(245, 235, 220, 0.9)",
+    color: "#92400e",
+    border: "rgba(146, 64, 14, 0.2)",
   },
   CANCELED: {
     background: "rgba(248, 250, 252, 0.9)",
@@ -43,8 +43,8 @@ const STATUS_COLORS: Record<string, { background: string; color: string; border:
 };
 
 const CARE_MODE_ICONS: Record<string, string> = {
-  IN_PERSON: "🏠",
-  ONLINE: "💻",
+  IN_PERSON: "○",
+  ONLINE: "◎",
 };
 
 interface AppointmentCardProps {
@@ -119,12 +119,13 @@ export function AppointmentCard({
 
 const cardStyle = {
   padding: "1.1rem 1.25rem",
-  borderRadius: "20px",
-  background: "rgba(255, 252, 247, 0.95)",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
   border: "1px solid",
   display: "grid",
   gap: "0.55rem",
-  boxShadow: "0 4px 16px rgba(120, 53, 15, 0.05)",
+  boxShadow: "var(--shadow-sm)",
+  transition: "box-shadow 0.15s",
 } satisfies React.CSSProperties;
 
 const timeRowStyle = {
@@ -136,13 +137,13 @@ const timeRowStyle = {
 const timeStyle = {
   fontWeight: 700,
   fontSize: "1rem",
-  color: "#1c1917",
+  color: "var(--color-text-1)",
   fontVariantNumeric: "tabular-nums",
 } satisfies React.CSSProperties;
 
 const durationStyle = {
   fontSize: "0.8rem",
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -150,7 +151,7 @@ const patientNameStyle = {
   margin: 0,
   fontWeight: 600,
   fontSize: "0.97rem",
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const chipsRowStyle = {
@@ -172,9 +173,9 @@ const chipStyle = {
 
 const careModeChipStyle = {
   ...chipStyle,
-  background: "rgba(241, 245, 249, 0.9)",
-  color: "#475569",
-  borderColor: "rgba(71, 85, 105, 0.18)",
+  background: "rgba(245, 241, 235, 0.9)",
+  color: "var(--color-text-2)",
+  borderColor: "var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const careModeIconStyle = {

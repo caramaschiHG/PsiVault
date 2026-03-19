@@ -47,29 +47,28 @@ import { ExportSection } from "./components/export-section";
 import { getReminderRepository } from "../../../../lib/reminders/store";
 import { RemindersSection } from "./components/reminders-section";
 import { createReminderAction, completeReminderAction } from "../../actions/reminders";
-
-const WORKSPACE_ID = "ws_1";
-const ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../../lib/supabase/session";
 
 interface PatientProfilePageProps {
   params: Promise<{ patientId: string }>;
 }
 
 export default async function PatientProfilePage({ params }: PatientProfilePageProps) {
+  const { accountId, workspaceId } = await resolveSession();
   const { patientId } = await params;
 
   const patientRepo = getPatientRepository();
   const appointmentRepo = getAppointmentRepository();
-  const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
+  const profile = getPracticeProfileSnapshot(accountId, workspaceId);
 
-  const patient = await patientRepo.findById(patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(patientId, workspaceId);
 
   if (!patient) {
     notFound();
   }
 
   // Load all appointments for this patient to hydrate the summary and defaults
-  const appointments = await appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
+  const appointments = await appointmentRepo.listByPatient(patient.id, workspaceId);
 
   // Derive scheduling-backed summary (financialStatus populated after charges are loaded below)
   // Note: charges loaded after appointments, so we compute summary after loading charges
@@ -110,10 +109,10 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   const financeRepo = getFinanceRepository();
 
   const [activeReminders, completedReminders, activeDocuments, charges] = await Promise.all([
-    reminderRepo.listActiveByPatient(patient.id, WORKSPACE_ID),
-    reminderRepo.listCompletedByPatient(patient.id, WORKSPACE_ID),
-    docRepo.listActiveByPatient(patient.id, WORKSPACE_ID),
-    financeRepo.listByPatient(patient.id, WORKSPACE_ID),
+    reminderRepo.listActiveByPatient(patient.id, workspaceId),
+    reminderRepo.listCompletedByPatient(patient.id, workspaceId),
+    docRepo.listActiveByPatient(patient.id, workspaceId),
+    financeRepo.listByPatient(patient.id, workspaceId),
   ]);
   const financialStatus = deriveFinancialStatus(charges);
 
@@ -130,7 +129,7 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   // Build a map of appointmentId -> noteId for COMPLETED appointments that have a note
   const completedAppointments = appointments.filter((appt) => appt.status === "COMPLETED");
   const noteResults = await Promise.all(
-    completedAppointments.map((appt) => clinicalRepo.findByAppointmentId(appt.id, WORKSPACE_ID)),
+    completedAppointments.map((appt) => clinicalRepo.findByAppointmentId(appt.id, workspaceId)),
   );
   const notesByAppointment = new Map<string, string>();
   completedAppointments.forEach((appt, i) => {

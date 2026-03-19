@@ -35,8 +35,8 @@ const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase",
   letterSpacing: "0.16em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  fontSize: "var(--font-size-label)",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -46,7 +46,7 @@ const titleStyle = {
 
 const copyStyle = {
   margin: 0,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
@@ -61,18 +61,18 @@ const cardStyle = {
   gap: "1rem",
   flexWrap: "wrap",
   padding: "1.1rem",
-  borderRadius: "20px",
-  background: "rgba(255, 255, 255, 0.82)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const detailStyle = {
   margin: 0,
-  color: "#292524",
+  color: "var(--color-text-1)",
   lineHeight: 1.5,
 } satisfies React.CSSProperties;
 
 const metaStyle = {
-  color: "#78716c",
+  color: "var(--color-text-3)",
   fontSize: "0.92rem",
 } satisfies React.CSSProperties;

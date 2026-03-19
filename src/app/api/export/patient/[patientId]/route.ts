@@ -17,8 +17,7 @@ import { getClinicalNoteRepository } from "../../../../../lib/clinical/store";
 import { getDocumentRepository } from "../../../../../lib/documents/store";
 import { getFinanceRepository } from "../../../../../lib/finance/store";
 import { buildPatientExport } from "../../../../../lib/export/serializer";
-
-const WORKSPACE_ID = "ws_1";
+import { resolveSession } from "../../../../../lib/supabase/session";
 
 export async function GET(
   _request: NextRequest,
@@ -35,10 +34,12 @@ export async function GET(
     );
   }
 
+  const { workspaceId } = await resolveSession();
+
   // ── Load patient ────────────────────────────────────────────────────────
   const { patientId } = await params;
   const patientRepo = getPatientRepository();
-  const patient = await patientRepo.findById(patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(patientId, workspaceId);
 
   if (!patient) {
     return Response.json({ error: "Paciente não encontrado" }, { status: 404 });
@@ -50,10 +51,10 @@ export async function GET(
   const docRepo = getDocumentRepository();
   const financeRepo = getFinanceRepository();
 
-  const appointments = await appointmentRepo.listByPatient(patientId, WORKSPACE_ID);
-  const clinicalNotes = await clinicalRepo.listByPatient(patientId, WORKSPACE_ID);
-  const documents = await docRepo.listActiveByPatient(patientId, WORKSPACE_ID);
-  const charges = await financeRepo.listByPatient(patientId, WORKSPACE_ID);
+  const appointments = await appointmentRepo.listByPatient(patientId, workspaceId);
+  const clinicalNotes = await clinicalRepo.listByPatient(patientId, workspaceId);
+  const documents = await docRepo.listActiveByPatient(patientId, workspaceId);
+  const charges = await financeRepo.listByPatient(patientId, workspaceId);
 
   // ── Build and return export ─────────────────────────────────────────────
   const exportData = buildPatientExport({

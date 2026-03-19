@@ -2,6 +2,26 @@ import { requestPasswordReset, updatePassword } from "../actions";
 import { translateAuthError } from "../auth-errors";
 import { AuthForm } from "../components/auth-form";
 import { SubmitButton } from "../components/submit-button";
+import { PasswordInput } from "../components/password-input";
+
+function LockIcon() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="var(--color-accent)"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect width="11" height="11" x="3" y="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+}
 
 export default async function ResetPasswordPage({
   searchParams,
@@ -28,53 +48,71 @@ export default async function ResetPasswordPage({
 
   if (code) {
     return (
-      <main style={shellStyle}>
-        <section style={cardStyle}>
-          <p style={eyebrowStyle}>Nova senha</p>
-          <h1 style={titleStyle}>Crie uma nova senha para o vault.</h1>
-          <p style={copyStyle}>
+      <main className="auth-shell">
+        <p className="auth-brand">PsiVault</p>
+        <section className="auth-card">
+          <div
+            style={
+              {
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "1.25rem",
+              } satisfies React.CSSProperties
+            }
+          >
+            <LockIcon />
+          </div>
+
+          <p className="auth-eyebrow">Nova senha</p>
+          <h1 className="auth-title">Crie uma nova senha para o vault.</h1>
+          <p className="auth-copy">
             Escolha uma senha forte. Ela será sua única credencial de acesso.
           </p>
 
-          <form style={formStyle} action={updatePassword}>
+          <form className="auth-form" action={updatePassword}>
             <AuthForm>
               <input type="hidden" name="code" value={code} />
 
-              <label style={labelStyle}>
+              <label className="auth-label">
                 Nova senha
-                <input
-                  style={inputStyle}
-                  type="password"
+                <PasswordInput
                   name="password"
                   placeholder="Nova senha segura"
                   required
                 />
               </label>
 
-              <label style={labelStyle}>
+              <label className="auth-label">
                 Confirmar nova senha
-                <input
-                  style={inputStyle}
-                  type="password"
+                <PasswordInput
                   name="confirmPassword"
                   placeholder="Repita a nova senha"
                   required
                 />
                 {errorField === "confirmPassword" && errorMessage && (
-                  <span style={fieldErrorStyle}>{errorMessage}</span>
+                  <span className="auth-field-error">{errorMessage}</span>
                 )}
               </label>
 
               <SubmitButton label="Atualizar senha" />
 
               {errorMessage && !errorField && !isTokenExpired && (
-                <div style={errorBlockStyle}>{errorMessage}</div>
+                <div className="auth-alert auth-alert--error">{errorMessage}</div>
               )}
 
               {isTokenExpired && (
-                <div style={expiredBlockStyle}>
+                <div className="auth-alert auth-alert--error">
                   {errorMessage}{" "}
-                  <a href="/reset-password" style={expiredLinkStyle}>
+                  <a
+                    href="/reset-password"
+                    style={
+                      {
+                        color: "var(--color-accent)",
+                        fontWeight: 600,
+                        textDecoration: "underline",
+                      } satisfies React.CSSProperties
+                    }
+                  >
                     Solicitar novo link
                   </a>
                 </div>
@@ -87,24 +125,42 @@ export default async function ResetPasswordPage({
   }
 
   return (
-    <main style={shellStyle}>
-      <section style={cardStyle}>
-        <p style={eyebrowStyle}>Recuperar acesso</p>
-        <h1 style={titleStyle}>Recupere o acesso ao seu vault.</h1>
-        <p style={copyStyle}>
+    <main className="auth-shell">
+      <p className="auth-brand">PsiVault</p>
+      <section className="auth-card">
+        <div
+          style={
+            {
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "1.25rem",
+            } satisfies React.CSSProperties
+          }
+        >
+          <LockIcon />
+        </div>
+
+        <p className="auth-eyebrow">Recuperar acesso</p>
+        <h1 className="auth-title">Recupere o acesso ao seu vault.</h1>
+        <p className="auth-copy">
           Enviaremos um link de recuperação para o seu e-mail.
         </p>
 
         {successMessage && (
-          <div style={successBlockStyle}>{successMessage}</div>
+          <div
+            className="auth-alert auth-alert--success"
+            style={{ marginBottom: "1rem" } satisfies React.CSSProperties}
+          >
+            {successMessage}
+          </div>
         )}
 
-        <form style={formStyle} action={requestPasswordReset}>
+        <form className="auth-form" action={requestPasswordReset}>
           <AuthForm>
-            <label style={labelStyle}>
+            <label className="auth-label">
               E-mail
               <input
-                style={inputStyle}
+                className="auth-input"
                 type="email"
                 name="email"
                 placeholder="voce@consultorio.com.br"
@@ -115,124 +171,16 @@ export default async function ResetPasswordPage({
             <SubmitButton label="Enviar link de recuperação" />
 
             {errorMessage && !errorField && (
-              <div style={errorBlockStyle}>{errorMessage}</div>
+              <div className="auth-alert auth-alert--error">{errorMessage}</div>
             )}
           </AuthForm>
         </form>
 
-        <p style={footerTextStyle}>
+        <p className="auth-footer">
           Lembrou a senha?{" "}
-          <a href="/sign-in" style={footerLinkStyle}>
-            Entrar
-          </a>
+          <a href="/sign-in">Entrar</a>
         </p>
       </section>
     </main>
   );
 }
-
-const shellStyle = {
-  minHeight: "100vh",
-  display: "grid",
-  placeItems: "center",
-  padding: "2rem",
-} satisfies React.CSSProperties;
-
-const cardStyle = {
-  width: "min(500px, 100%)",
-  padding: "2rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
-  boxShadow: "0 28px 90px rgba(120, 53, 15, 0.14)",
-} satisfies React.CSSProperties;
-
-const eyebrowStyle = {
-  margin: 0,
-  textTransform: "uppercase",
-  letterSpacing: "0.18em",
-  fontSize: "0.75rem",
-  color: "#b45309",
-} satisfies React.CSSProperties;
-
-const titleStyle = {
-  marginBottom: "0.75rem",
-  fontSize: "2rem",
-} satisfies React.CSSProperties;
-
-const copyStyle = {
-  marginTop: 0,
-  marginBottom: "1.5rem",
-  lineHeight: 1.6,
-  color: "#57534e",
-} satisfies React.CSSProperties;
-
-const formStyle = {
-  display: "grid",
-  gap: "1rem",
-} satisfies React.CSSProperties;
-
-const labelStyle = {
-  display: "grid",
-  gap: "0.4rem",
-  fontWeight: 600,
-} satisfies React.CSSProperties;
-
-const inputStyle = {
-  borderRadius: "16px",
-  border: "1px solid rgba(120, 53, 15, 0.16)",
-  padding: "0.9rem 1rem",
-  background: "#fffdfa",
-} satisfies React.CSSProperties;
-
-const successBlockStyle = {
-  background: "#dcfce7",
-  border: "1px solid #86efac",
-  borderRadius: "12px",
-  padding: "0.75rem 1rem",
-  color: "#166534",
-  fontSize: "0.875rem",
-  marginBottom: "1rem",
-} satisfies React.CSSProperties;
-
-const errorBlockStyle = {
-  background: "rgba(239, 68, 68, 0.08)",
-  border: "1px solid rgba(239, 68, 68, 0.3)",
-  borderRadius: "12px",
-  padding: "0.75rem 1rem",
-  color: "#dc2626",
-  fontSize: "0.875rem",
-} satisfies React.CSSProperties;
-
-const expiredBlockStyle = {
-  background: "rgba(239, 68, 68, 0.08)",
-  border: "1px solid rgba(239, 68, 68, 0.3)",
-  borderRadius: "12px",
-  padding: "0.75rem 1rem",
-  color: "#dc2626",
-  fontSize: "0.875rem",
-} satisfies React.CSSProperties;
-
-const expiredLinkStyle = {
-  color: "#9a3412",
-  fontWeight: 600,
-  textDecoration: "underline",
-} satisfies React.CSSProperties;
-
-const fieldErrorStyle = {
-  color: "#dc2626",
-  fontSize: "0.8rem",
-} satisfies React.CSSProperties;
-
-const footerTextStyle = {
-  marginTop: "1.25rem",
-  fontSize: "0.875rem",
-  color: "#78716c",
-  textAlign: "center",
-} satisfies React.CSSProperties;
-
-const footerLinkStyle = {
-  color: "#9a3412",
-  fontWeight: 600,
-  textDecoration: "none",
-} satisfies React.CSSProperties;

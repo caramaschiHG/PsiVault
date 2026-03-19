@@ -5,15 +5,17 @@
  * Recovery returns the professional directly to the restored patient profile.
  */
 
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { getPatientRepository } from "../../../../lib/patients/store";
 import { recoverPatientAction } from "../actions";
+import { resolveSession } from "../../../../lib/supabase/session";
 
-const WORKSPACE_ID = "ws_1";
-
-export default function PatientArchivePage() {
+export default async function PatientArchivePage() {
+  const { workspaceId } = await resolveSession();
   const repo = getPatientRepository();
-  const archived = repo.listArchived(WORKSPACE_ID);
+  const archived = await repo.listArchived(workspaceId);
 
   return (
     <main style={shellStyle}>
@@ -25,7 +27,7 @@ export default function PatientArchivePage() {
           intacto e pode ser acessado após a reativação.
         </p>
         <div style={headerActionsStyle}>
-          <Link href="/patients" style={backLinkStyle}>
+          <Link href="/patients" className="btn-secondary">
             Voltar aos pacientes ativos
           </Link>
         </div>
@@ -54,11 +56,12 @@ export default function PatientArchivePage() {
                         }).format(patient.archivedAt)}
                       </p>
                     )}
+                    <span style={archivedBadgeStyle}>Arquivado</span>
                   </div>
 
                   <form action={recoverPatientAction} style={recoverFormStyle}>
                     <input name="patientId" type="hidden" value={patient.id} />
-                    <button style={recoverButtonStyle} type="submit">
+                    <button className="btn-primary" type="submit">
                       Reativar paciente
                     </button>
                   </form>
@@ -73,73 +76,68 @@ export default function PatientArchivePage() {
 }
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
 } satisfies React.CSSProperties;
 
 const heroStyle = {
-  maxWidth: "980px",
-  padding: "1.7rem 1.8rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
+  padding: "1.75rem 2rem",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-md)",
+  display: "grid",
+  gap: "0.5rem",
 } satisfies React.CSSProperties;
 
 const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.16em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const titleStyle = {
-  margin: "0.25rem 0 0.5rem",
+  margin: "0.25rem 0 0",
   fontSize: "2rem",
+  fontWeight: 700,
+  fontFamily: "'IBM Plex Serif', serif",
+  color: "var(--color-text-1)",
   lineHeight: 1.1,
 } satisfies React.CSSProperties;
 
 const copyStyle = {
-  margin: 0,
+  margin: "0.25rem 0 0",
   lineHeight: 1.6,
-  color: "#57534e",
+  color: "var(--color-text-2)",
+  fontSize: "0.9rem",
 } satisfies React.CSSProperties;
 
 const headerActionsStyle = {
-  marginTop: "0.75rem",
-} satisfies React.CSSProperties;
-
-const backLinkStyle = {
-  display: "inline-block",
-  padding: "0.55rem 1rem",
-  borderRadius: "12px",
-  background: "#fff7ed",
-  color: "#9a3412",
-  border: "1px solid rgba(146, 64, 14, 0.18)",
-  fontWeight: 600,
-  fontSize: "0.9rem",
-  textDecoration: "none",
+  marginTop: "0.5rem",
 } satisfies React.CSSProperties;
 
 const emptyStateStyle = {
   padding: "1.5rem",
-  borderRadius: "20px",
-  background: "rgba(255, 252, 247, 0.7)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
-  maxWidth: "980px",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const emptyTextStyle = {
   margin: 0,
-  color: "#78716c",
+  color: "var(--color-text-3)",
+  fontSize: "0.9rem",
 } satisfies React.CSSProperties;
 
 const listSectionStyle = {
-  maxWidth: "980px",
+  maxWidth: "100%",
 } satisfies React.CSSProperties;
 
 const listStyle = {
@@ -152,9 +150,10 @@ const listStyle = {
 
 const listItemStyle = {
   padding: "1rem 1.25rem",
-  borderRadius: "20px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-sm)",
 } satisfies React.CSSProperties;
 
 const patientRowStyle = {
@@ -166,35 +165,38 @@ const patientRowStyle = {
 
 const patientInfoStyle = {
   flex: 1,
+  display: "grid",
+  gap: "0.25rem",
 } satisfies React.CSSProperties;
 
 const patientNameStyle = {
-  fontSize: "1.05rem",
+  fontSize: "1rem",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const socialNameStyle = {
   fontWeight: 400,
-  color: "#78716c",
-  fontSize: "0.95rem",
+  color: "var(--color-text-3)",
+  fontSize: "0.92rem",
 } satisfies React.CSSProperties;
 
 const archivedMetaStyle = {
-  margin: "0.25rem 0 0",
-  fontSize: "0.85rem",
-  color: "#a8a29e",
+  margin: 0,
+  fontSize: "0.82rem",
+  color: "var(--color-text-4)",
+} satisfies React.CSSProperties;
+
+const archivedBadgeStyle = {
+  display: "inline-block",
+  padding: "0.2rem 0.55rem",
+  borderRadius: "var(--radius-pill)",
+  background: "rgba(168, 162, 158, 0.12)",
+  color: "var(--color-text-3)",
+  fontSize: "0.72rem",
+  fontWeight: 600,
+  width: "fit-content",
 } satisfies React.CSSProperties;
 
 const recoverFormStyle = {
   flexShrink: 0,
-} satisfies React.CSSProperties;
-
-const recoverButtonStyle = {
-  border: 0,
-  borderRadius: "12px",
-  padding: "0.6rem 1rem",
-  background: "#9a3412",
-  color: "#fff7ed",
-  fontWeight: 600,
-  fontSize: "0.9rem",
-  cursor: "pointer",
 } satisfies React.CSSProperties;

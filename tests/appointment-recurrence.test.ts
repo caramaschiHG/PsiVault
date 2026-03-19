@@ -113,7 +113,7 @@ describe("appointment recurrence", () => {
       const repo = createInMemoryAppointmentRepository(occurrences);
 
       const target = occurrences[1]; // second occurrence
-      const updated = applySeriesEdit(
+      const updated = await applySeriesEdit(
         {
           scope: "THIS",
           targetId: target.id,
@@ -134,7 +134,7 @@ describe("appointment recurrence", () => {
       expect(updated[0].careMode).toBe("ONLINE");
 
       // Other occurrences remain untouched in the repo
-      const first = repo.findById(occurrences[0].id, "ws_1");
+      const first = await repo.findById(occurrences[0].id, "ws_1");
       expect(first?.durationMinutes).toBe(60);
       expect(first?.careMode).toBe("IN_PERSON");
     });
@@ -166,7 +166,7 @@ describe("appointment recurrence", () => {
       const repo = createInMemoryAppointmentRepository(occurrences);
 
       const target = occurrences[2]; // third occurrence (index 2)
-      const updated = applySeriesEdit(
+      const updated = await applySeriesEdit(
         {
           scope: "THIS_AND_FUTURE",
           targetId: target.id,
@@ -185,8 +185,8 @@ describe("appointment recurrence", () => {
       expect(updated.every((o) => o.durationMinutes === 45)).toBe(true);
 
       // Occurrences at index 0 and 1 remain untouched
-      const first = repo.findById(occurrences[0].id, "ws_1");
-      const second = repo.findById(occurrences[1].id, "ws_1");
+      const first = await repo.findById(occurrences[0].id, "ws_1");
+      const second = await repo.findById(occurrences[1].id, "ws_1");
       expect(first?.durationMinutes).toBe(60);
       expect(second?.durationMinutes).toBe(60);
     });
@@ -217,7 +217,7 @@ describe("appointment recurrence", () => {
 
       const repo = createInMemoryAppointmentRepository(occurrences);
 
-      const updated = applySeriesEdit(
+      const updated = await applySeriesEdit(
         {
           scope: "ALL",
           targetId: occurrences[0].id,
@@ -273,7 +273,7 @@ describe("appointment recurrence", () => {
         occurrences[2],
       ]);
 
-      const updated = applySeriesEdit(
+      const updated = await applySeriesEdit(
         {
           scope: "ALL",
           targetId: occurrences[0].id,
@@ -292,7 +292,7 @@ describe("appointment recurrence", () => {
       expect(updated.every((o) => o.careMode === "ONLINE")).toBe(true);
 
       // The completed occurrence retains its original care mode
-      const first = repo.findById(occurrences[0].id, "ws_1");
+      const first = await repo.findById(occurrences[0].id, "ws_1");
       expect(first?.careMode).toBe("IN_PERSON");
     });
 
@@ -334,7 +334,7 @@ describe("appointment recurrence", () => {
         occurrences[3],
       ]);
 
-      const updated = applySeriesEdit(
+      const updated = await applySeriesEdit(
         {
           scope: "THIS_AND_FUTURE",
           targetId: occurrences[1].id, // from index 1 onwards
@@ -351,7 +351,7 @@ describe("appointment recurrence", () => {
       // index 1 and 3 are updated; index 2 (canceled) is preserved
       expect(updated).toHaveLength(2);
 
-      const canceledInRepo = repo.findById(occurrences[2].id, "ws_1");
+      const canceledInRepo = await repo.findById(occurrences[2].id, "ws_1");
       expect(canceledInRepo?.status).toBe("CANCELED");
       expect(canceledInRepo?.durationMinutes).toBe(60);
     });

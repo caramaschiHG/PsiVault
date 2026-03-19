@@ -135,13 +135,14 @@ export function savePracticeProfile(input: {
 export function saveSignatureAsset(input: {
   accountId?: string;
   workspaceId?: string;
+  storageKey?: string;
   fileName: string;
   mimeType: string;
   fileSize: string | number;
 }) {
   const current = getPracticeProfileSnapshot(input.accountId, input.workspaceId);
   const nextAsset: SignatureAssetSnapshot = {
-    storageKey: `signatures/${current.accountId}/${input.fileName}`,
+    storageKey: input.storageKey ?? `signatures/${current.accountId}/${input.fileName}`,
     fileName: input.fileName.trim(),
     mimeType: input.mimeType.trim() || "application/octet-stream",
     fileSize: parsePositiveInteger(input.fileSize) ?? 0,

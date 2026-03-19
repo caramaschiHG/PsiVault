@@ -1,50 +1,85 @@
 export default function VerifyEmailPage() {
   return (
-    <main style={shellStyle}>
-      <section style={cardStyle}>
-        <p style={eyebrowStyle}>Verificação</p>
-        <h1 style={titleStyle}>Confirme seu e-mail antes de entrar no vault.</h1>
-        <p style={copyStyle}>
-          Assim que o endereço for confirmado, a próxima etapa é registrar o
-          segundo fator e preparar o ambiente seguro do consultório.
+    <main className="auth-shell">
+      <p className="auth-brand">PsiVault</p>
+      <section className="auth-card auth-card--wide">
+        <div
+          style={
+            {
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "1.25rem",
+            } satisfies React.CSSProperties
+          }
+        >
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--color-accent)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        </div>
+
+        <p className="auth-eyebrow">Verificação</p>
+        <h1 className="auth-title">Verifique seu e-mail.</h1>
+        <p className="auth-copy">
+          Enviamos um link de confirmação. Clique nele para prosseguir.
+        </p>
+
+        <div className="auth-progress">
+          <div className="auth-progress-item">
+            <span className="auth-progress-num auth-progress-num--done">✓</span>
+            <div className="auth-progress-text">
+              <p>Criar conta</p>
+            </div>
+          </div>
+          <div className="auth-progress-connector" />
+
+          <div className="auth-progress-item">
+            <span className="auth-progress-num auth-progress-num--active">●</span>
+            <div className="auth-progress-text">
+              <p>Confirmar e-mail</p>
+              <p>Aguardando confirmação</p>
+            </div>
+          </div>
+          <div className="auth-progress-connector" />
+
+          <div className="auth-progress-item">
+            <span className="auth-progress-num auth-progress-num--pending">3</span>
+            <div className="auth-progress-text">
+              <p>Verificação em 2 etapas</p>
+            </div>
+          </div>
+          <div className="auth-progress-connector" />
+
+          <div className="auth-progress-item">
+            <span className="auth-progress-num auth-progress-num--pending">4</span>
+            <div className="auth-progress-text">
+              <p>Acesso ao vault</p>
+            </div>
+          </div>
+        </div>
+
+        <p
+          style={
+            {
+              fontSize: "0.8rem",
+              color: "var(--color-text-3)",
+              marginTop: "0.5rem",
+            } satisfies React.CSSProperties
+          }
+        >
+          Não recebeu? Verifique a caixa de spam.
         </p>
       </section>
     </main>
   );
 }
-
-const shellStyle = {
-  minHeight: "100vh",
-  display: "grid",
-  placeItems: "center",
-  padding: "2rem",
-} satisfies React.CSSProperties;
-
-const cardStyle = {
-  width: "min(540px, 100%)",
-  padding: "2rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
-  boxShadow: "0 28px 90px rgba(120, 53, 15, 0.14)",
-} satisfies React.CSSProperties;
-
-const eyebrowStyle = {
-  margin: 0,
-  textTransform: "uppercase",
-  letterSpacing: "0.18em",
-  fontSize: "0.75rem",
-  color: "#b45309",
-} satisfies React.CSSProperties;
-
-const titleStyle = {
-  marginBottom: "0.75rem",
-  fontSize: "2rem",
-} satisfies React.CSSProperties;
-
-const copyStyle = {
-  marginTop: 0,
-  lineHeight: 1.6,
-  color: "#57534e",
-} satisfies React.CSSProperties;
-

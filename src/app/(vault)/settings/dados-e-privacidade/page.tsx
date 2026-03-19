@@ -26,7 +26,7 @@ export default function DadosEPrivacidadePage() {
         {/* Section 1 — Per-patient export */}
         <section style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <p style={cardEyebrowStyle}>SECU-03</p>
+            <p style={cardEyebrowStyle}>Exportação</p>
             <h2 style={cardTitleStyle}>Exportar dados do paciente</h2>
           </div>
           <p style={cardDescStyle}>
@@ -46,7 +46,7 @@ export default function DadosEPrivacidadePage() {
         {/* Section 2 — Full workspace backup */}
         <section style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <p style={cardEyebrowStyle}>SECU-04</p>
+            <p style={cardEyebrowStyle}>Backup</p>
             <h2 style={cardTitleStyle}>Backup do consultório</h2>
           </div>
           <p style={cardDescStyle}>
@@ -63,7 +63,7 @@ export default function DadosEPrivacidadePage() {
         {/* Section 3 — Verify backup */}
         <section style={cardStyle}>
           <div style={cardHeaderStyle}>
-            <p style={cardEyebrowStyle}>SECU-04</p>
+            <p style={cardEyebrowStyle}>Verificação</p>
             <h2 style={cardTitleStyle}>Verificar backup</h2>
           </div>
           <p style={cardDescStyle}>
@@ -82,7 +82,7 @@ export default function DadosEPrivacidadePage() {
 
 const shellStyle = {
   minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
@@ -91,9 +91,9 @@ const shellStyle = {
 const heroStyle = {
   width: "min(880px, 100%)",
   padding: "1.6rem 1.7rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-2)",
+  border: "1px solid var(--color-border-med)",
   boxShadow: "0 28px 90px rgba(120, 53, 15, 0.12)",
 } satisfies React.CSSProperties;
 
@@ -101,19 +101,19 @@ const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
   letterSpacing: "0.16em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  fontSize: "var(--font-size-label)",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   marginBottom: "0.75rem",
-  fontSize: "2rem",
+  fontSize: "var(--font-size-page-title)",
 } satisfies React.CSSProperties;
 
 const copyStyle = {
   marginTop: 0,
   lineHeight: 1.7,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   maxWidth: "65ch",
 } satisfies React.CSSProperties;
 
@@ -126,9 +126,9 @@ const sectionsStyle = {
 
 const cardStyle = {
   padding: "1.5rem",
-  borderRadius: "20px",
-  background: "rgba(255, 252, 247, 0.88)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  borderRadius: "var(--radius-lg)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.75rem",
 } satisfies React.CSSProperties;
@@ -142,8 +142,8 @@ const cardEyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
-  fontSize: "0.68rem",
-  color: "#b45309",
+  fontSize: "var(--font-size-label)",
+  color: "var(--color-accent)",
 } satisfies React.CSSProperties;
 
 const cardTitleStyle = {
@@ -155,21 +155,21 @@ const cardTitleStyle = {
 const cardDescStyle = {
   margin: 0,
   fontSize: "0.9rem",
-  color: "#44403c",
+  color: "var(--color-text-2)",
   lineHeight: 1.65,
 } satisfies React.CSSProperties;
 
 const cardHintStyle = {
   margin: 0,
   fontSize: "0.82rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
 const linkStyle = {
   display: "inline-block",
   fontSize: "0.875rem",
-  color: "#9a3412",
+  color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 500,
 } satisfies React.CSSProperties;

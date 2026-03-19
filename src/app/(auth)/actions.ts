@@ -15,12 +15,12 @@ export async function signIn(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    // For now we just throw or redirect back with error in URL
-    // Proper error handling will be added in Phase 8 polish
     redirect(`${AUTH_ROUTE_PATHS.signIn}?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect(AUTH_ROUTE_PATHS.mfaSetup);
+  const { data: factors } = await supabase.auth.mfa.listFactors();
+  const hasVerifiedTotp = factors?.totp?.some((f: { status: string }) => f.status === "verified") ?? false;
+  redirect(hasVerifiedTotp ? AUTH_ROUTE_PATHS.mfaVerify : AUTH_ROUTE_PATHS.mfaSetup);
 }
 
 export async function signUp(formData: FormData): Promise<void> {

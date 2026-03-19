@@ -40,10 +40,8 @@ import { AgendaToolbar } from "./components/agenda-toolbar";
 import { AgendaDayView } from "./components/agenda-day-view";
 import { AgendaWeekView } from "./components/agenda-week-view";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
+import { resolveSession } from "../../../lib/supabase/session";
 
-// Stub — real workspace/account resolution comes from session in production
-const WORKSPACE_ID = "ws_1";
-const ACCOUNT_ID = "acct_1";
 const TIMEZONE = "America/Sao_Paulo";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
@@ -53,6 +51,7 @@ interface AgendaPageProps {
 }
 
 export default async function AgendaPage({ searchParams }: AgendaPageProps) {
+  const { accountId, workspaceId } = await resolveSession();
   const params = await searchParams;
   const activeView = params.view === "week" ? "week" : "day";
 
@@ -72,17 +71,17 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     ? new Date(anchorDate.getTime() + 2 * DAY_MS)
     : new Date(anchorDate.getTime() + WEEK_MS + DAY_MS);
 
-  const appointments = await appointmentRepo.listByDateRange(WORKSPACE_ID, rangeFrom, rangeTo);
+  const appointments = await appointmentRepo.listByDateRange(workspaceId, rangeFrom, rangeTo);
 
   // Build patient name lookup from the patient repository
-  const allPatients = await patientRepo.listActive(WORKSPACE_ID);
+  const allPatients = await patientRepo.listActive(workspaceId);
   const patientNames: Record<string, string> = {};
   for (const p of allPatients) {
     patientNames[p.id] = p.socialName ? `${p.fullName} (${p.socialName})` : p.fullName;
   }
 
   // Load practice profile for next-session defaults
-  const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
+  const profile = getPracticeProfileSnapshot(accountId, workspaceId);
 
   // Resolve default care mode from practice profile (HYBRID is not a booking value)
   const profileCareMode =
@@ -97,7 +96,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const notedAppointmentIds = new Set<string>();
   const completedAppts = appointments.filter((a) => a.status === "COMPLETED");
   const agendaNoteResults = await Promise.all(
-    completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, WORKSPACE_ID)),
+    completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, workspaceId)),
   );
   completedAppts.forEach((a, i) => {
     if (agendaNoteResults[i]) notedAppointmentIds.add(a.id);

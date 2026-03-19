@@ -189,17 +189,17 @@ describe("patient domain", () => {
         { now: new Date("2026-03-13T10:00:00.000Z"), createId: () => "pat_11" },
       );
 
-      repo.save(active1);
-      repo.save(toArchive);
+      await repo.save(active1);
+      await repo.save(toArchive);
 
       const archived = archivePatient(toArchive, {
         now: new Date("2026-03-13T15:00:00.000Z"),
         archivedByAccountId: "acct_1",
       });
-      repo.save(archived);
+      await repo.save(archived);
 
-      const activeList = repo.listActive("ws_1");
-      const archivedList = repo.listArchived("ws_1");
+      const activeList = await repo.listActive("ws_1");
+      const archivedList = await repo.listArchived("ws_1");
 
       expect(activeList).toHaveLength(1);
       expect(activeList[0].id).toBe("pat_10");
@@ -216,9 +216,9 @@ describe("patient domain", () => {
         { workspaceId: "ws_1", fullName: "Find Me" },
         { now: new Date("2026-03-13T10:00:00.000Z"), createId: () => "pat_12" },
       );
-      repo.save(patient);
+      await repo.save(patient);
 
-      const found = repo.findById("pat_12", "ws_1");
+      const found = await repo.findById("pat_12", "ws_1");
       expect(found).not.toBeNull();
       expect(found?.fullName).toBe("Find Me");
     });
@@ -236,10 +236,10 @@ describe("patient domain", () => {
         { workspaceId: "ws_2", fullName: "WS2 Patient" },
         { now: new Date("2026-03-13T10:00:00.000Z"), createId: () => "pat_14" },
       );
-      repo.save(ws1Patient);
-      repo.save(ws2Patient);
+      await repo.save(ws1Patient);
+      await repo.save(ws2Patient);
 
-      const ws1List = repo.listActive("ws_1");
+      const ws1List = await repo.listActive("ws_1");
       expect(ws1List).toHaveLength(1);
       expect(ws1List[0].id).toBe("pat_13");
     });

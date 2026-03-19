@@ -1,0 +1,14 @@
+[    2889ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/appointments/new:0
+[    3349ms] PrismaClientInitializationError: 
+Invalid `prisma.patient.findMany()` invocation:
+
+
+Error querying the database: FATAL: Tenant or user not found
+    at  Object.listActive (about://React/Server/webpack-internal:///(rsc)/./src/lib/patients/repository.prisma.ts?25:65:30)
+    at  NewAppointmentPage (about://React/Server/webpack-internal:///(rsc)/./src/app/(vault)/appointments/new/page.tsx?26:42:22)
+    at resolveErrorDev (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2396:46)
+    at processFullStringRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2882:23)
+    at processFullBinaryRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2825:7)
+    at processBinaryChunk (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3028:15)
+    at progress (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3294:13)
+[    6431ms] [WARNING] The resource http://localhost:3001/_next/static/css/app/layout.css?v=1773833572658 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3001/appointments/new:0

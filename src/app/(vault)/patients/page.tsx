@@ -9,13 +9,12 @@ import Link from "next/link";
 import { getPatientRepository } from "../../../lib/patients/store";
 import { PatientForm } from "./components/patient-form";
 import { EmptyState } from "../components/empty-state";
-
-// Stub workspace resolution — real session lookup in production
-const WORKSPACE_ID = "ws_1";
+import { resolveSession } from "../../../lib/supabase/session";
 
 export default async function PatientsPage() {
+  const { workspaceId } = await resolveSession();
   const repo = getPatientRepository();
-  const patients = await repo.listActive(WORKSPACE_ID);
+  const patients = await repo.listActive(workspaceId);
 
   return (
     <main style={shellStyle}>

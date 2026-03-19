@@ -12,6 +12,7 @@ import { getDocumentRepository } from "../../../../../../../lib/documents/store"
 import { updateDocumentAction } from "./actions";
 import type { DocumentType } from "../../../../../../../lib/documents/model";
 import Link from "next/link";
+import { resolveSession } from "../../../../../../../lib/supabase/session";
 
 const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   declaration_of_attendance: "Declaração de Comparecimento",
@@ -19,24 +20,25 @@ const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   anamnesis: "Anamnese",
   psychological_report: "Laudo Psicológico",
   consent_and_service_contract: "Contrato de Prestação de Serviços",
+  session_note: "Evolução de Sessão",
+  referral_letter: "Carta de Encaminhamento",
 };
-
-const WORKSPACE_ID = "ws_1";
 
 interface DocumentEditPageProps {
   params: Promise<{ patientId: string; documentId: string }>;
 }
 
 export default async function DocumentEditPage({ params }: DocumentEditPageProps) {
+  const { workspaceId } = await resolveSession();
   const { patientId, documentId } = await params;
 
   const patientRepo = getPatientRepository();
   const docRepo = getDocumentRepository();
 
-  const patient = patientRepo.findById(patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(patientId, workspaceId);
   if (!patient) notFound();
 
-  const doc = docRepo.findById(documentId, WORKSPACE_ID);
+  const doc = await docRepo.findById(documentId, workspaceId);
   if (!doc || doc.archivedAt !== null) notFound();
 
   // Cross-patient guard

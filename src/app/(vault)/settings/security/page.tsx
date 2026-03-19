@@ -9,6 +9,7 @@ import {
 import { redactForLogs } from "../../../../lib/logging/redaction";
 import { ActivityFeed } from "./components/activity-feed";
 import { SessionList } from "./components/session-list";
+import { resolveSession } from "../../../../lib/supabase/session";
 
 export default async function SecuritySettingsPage() {
   const model = await buildSecurityPageModel();
@@ -19,8 +20,7 @@ export default async function SecuritySettingsPage() {
         <p style={eyebrowStyle}>Segurança e confiança</p>
         <h1 style={titleStyle}>Controles calmos para manter o vault sob controle</h1>
         <p style={copyStyle}>
-          Este espaço mostra onde o acesso continua aberto, registra ações sensíveis em linguagem humana
-          e evita expor detalhes desnecessários em superfícies secundárias.
+          Veja onde o vault está aberto, encerre sessões antigas e acompanhe ações sensíveis em linguagem simples.
         </p>
       </section>
 
@@ -33,12 +33,13 @@ export default async function SecuritySettingsPage() {
 }
 
 async function buildSecurityPageModel() {
+  const { accountId, workspaceId } = await resolveSession();
   const now = new Date("2026-03-13T14:30:00.000Z");
   const currentSession = {
     ...createSession(
       {
-        accountId: "acct_1",
-        workspaceId: "ws_1",
+        accountId: accountId,
+        workspaceId: workspaceId,
         userAgent:
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/537.36 Chrome/123.0.0.0 Safari/537.36",
       },
@@ -53,8 +54,8 @@ async function buildSecurityPageModel() {
   const mobileSession = {
     ...createSession(
       {
-        accountId: "acct_1",
-        workspaceId: "ws_1",
+        accountId: accountId,
+        workspaceId: workspaceId,
         userAgent:
           "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 Version/17.4 Mobile/15E148 Safari/604.1",
       },
@@ -69,8 +70,8 @@ async function buildSecurityPageModel() {
   const desktopSession = {
     ...createSession(
       {
-        accountId: "acct_1",
-        workspaceId: "ws_1",
+        accountId: accountId,
+        workspaceId: workspaceId,
         userAgent:
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
       },
@@ -87,8 +88,8 @@ async function buildSecurityPageModel() {
       {
         type: "security.sensitive_action.reauth_confirmed",
         actor: {
-          accountId: "acct_1",
-          workspaceId: "ws_1",
+          accountId: accountId,
+          workspaceId: workspaceId,
           sessionId: "sess_current",
         },
         summary: "Uma confirmação reforçada foi concluída antes de alterar dados sensíveis.",
@@ -110,8 +111,8 @@ async function buildSecurityPageModel() {
       sessions: [currentSession, mobileSession, desktopSession],
       sessionId: "sess_windows",
       currentSessionId: "sess_current",
-      actingAccountId: "acct_1",
-      workspaceId: "ws_1",
+      actingAccountId: accountId,
+      workspaceId: workspaceId,
     },
     {
       now,
@@ -126,13 +127,13 @@ async function buildSecurityPageModel() {
       currentSessionId: "sess_current",
       now,
     }),
-    activity: buildSecurityActivityItems(await repository.listForWorkspace("ws_1")),
+    activity: buildSecurityActivityItems(await repository.listForWorkspace(workspaceId)),
   };
 }
 
 const shellStyle = {
   minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
@@ -141,9 +142,9 @@ const shellStyle = {
 const heroStyle = {
   width: "min(880px, 100%)",
   padding: "1.6rem 1.7rem",
-  borderRadius: "28px",
-  background: "rgba(255, 252, 247, 0.92)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-2)",
+  border: "1px solid var(--color-border-med)",
   boxShadow: "0 28px 90px rgba(120, 53, 15, 0.12)",
 } satisfies React.CSSProperties;
 
@@ -157,18 +158,18 @@ const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase",
   letterSpacing: "0.16em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  fontSize: "var(--font-size-label)",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   marginBottom: "0.75rem",
-  fontSize: "2rem",
+  fontSize: "var(--font-size-page-title)",
 } satisfies React.CSSProperties;
 
 const copyStyle = {
   marginTop: 0,
   lineHeight: 1.7,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   maxWidth: "65ch",
 } satisfies React.CSSProperties;

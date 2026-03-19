@@ -18,8 +18,7 @@ import { getDocumentRepository } from "../../../lib/documents/store";
 import { getFinanceRepository } from "../../../lib/finance/store";
 import { getAuditRepository } from "../../../lib/audit/store";
 import { buildWorkspaceBackup } from "../../../lib/export/serializer";
-
-const WORKSPACE_ID = "ws_1";
+import { resolveSession } from "../../../lib/supabase/session";
 
 export async function GET(
   _request: NextRequest,
@@ -35,6 +34,8 @@ export async function GET(
     );
   }
 
+  const { workspaceId } = await resolveSession();
+
   // ── Load all workspace data ─────────────────────────────────────────────
   const patientRepo = getPatientRepository();
   const appointmentRepo = getAppointmentRepository();
@@ -43,35 +44,35 @@ export async function GET(
   const financeRepo = getFinanceRepository();
 
   const [activePatients, archivedPatients] = await Promise.all([
-    patientRepo.listActive(WORKSPACE_ID),
-    patientRepo.listArchived(WORKSPACE_ID),
+    patientRepo.listActive(workspaceId),
+    patientRepo.listArchived(workspaceId),
   ]);
   const patients = [...activePatients, ...archivedPatients];
 
   // Load all appointments (Asynchronous)
   const appointmentsResults = await Promise.all(patients.map((p) =>
-    appointmentRepo.listByPatient(p.id, WORKSPACE_ID),
+    appointmentRepo.listByPatient(p.id, workspaceId),
   ));
   const appointments = appointmentsResults.flat();
 
   // Load clinical notes per patient (Asynchronous)
   const clinicalNotesResults = await Promise.all(patients.map((p) =>
-    clinicalRepo.listByPatient(p.id, WORKSPACE_ID),
+    clinicalRepo.listByPatient(p.id, workspaceId),
   ));
   const clinicalNotes = clinicalNotesResults.flat();
   const documentsResults = await Promise.all(patients.map((p) =>
-    docRepo.listByPatient(p.id, WORKSPACE_ID),
+    docRepo.listByPatient(p.id, workspaceId),
   ));
   const documents = documentsResults.flat();
-  const chargesResults = await Promise.all(patients.map((p) => financeRepo.listByPatient(p.id, WORKSPACE_ID)));
+  const chargesResults = await Promise.all(patients.map((p) => financeRepo.listByPatient(p.id, workspaceId)));
   const charges = chargesResults.flat();
 
   const auditRepo = getAuditRepository();
-  const auditEvents = await auditRepo.listForWorkspace(WORKSPACE_ID);
+  const auditEvents = await auditRepo.listForWorkspace(workspaceId);
 
   // ── Build and return backup ─────────────────────────────────────────────
   const backupData = buildWorkspaceBackup({
-    workspaceId: WORKSPACE_ID,
+    workspaceId: workspaceId,
     patients,
     appointments,
     clinicalNotes,

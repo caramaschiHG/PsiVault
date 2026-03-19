@@ -104,12 +104,12 @@ interface ApplySeriesEditDeps {
  *
  * Returns the list of occurrences that were actually mutated and persisted.
  */
-export function applySeriesEdit(
+export async function applySeriesEdit(
   input: SeriesEditInput,
   repository: AppointmentRepository,
   deps: ApplySeriesEditDeps,
-): Appointment[] {
-  const target = repository.findById(input.targetId, deps.workspaceId);
+): Promise<Appointment[]> {
+  const target = await repository.findById(input.targetId, deps.workspaceId);
   if (!target) {
     throw new Error(`Appointment "${input.targetId}" not found in workspace "${deps.workspaceId}".`);
   }
@@ -117,7 +117,7 @@ export function applySeriesEdit(
     throw new Error(`Appointment "${input.targetId}" does not belong to a series.`);
   }
 
-  const allInSeries = repository.listBySeries(target.seriesId, deps.workspaceId);
+  const allInSeries = await repository.listBySeries(target.seriesId, deps.workspaceId);
 
   // Determine which occurrences are in scope
   let inScope: Appointment[];
@@ -160,7 +160,7 @@ export function applySeriesEdit(
       updatedAt: deps.now,
     };
 
-    repository.save(updated);
+    await repository.save(updated);
     mutated.push(updated);
   }
 

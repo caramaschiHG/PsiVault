@@ -19,6 +19,8 @@ const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   anamnesis: "Anamnese",
   psychological_report: "Laudo Psicológico",
   consent_and_service_contract: "Contrato de Prestação de Serviços",
+  session_note: "Evolução de Sessão",
+  referral_letter: "Carta de Encaminhamento",
 };
 
 const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -41,7 +43,7 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
           <h2 style={titleStyle}>Documentos</h2>
         </div>
         <Link
-          href={`/patients/${patientId}/documents/new?type=declaration_of_attendance`}
+          href={`/patients/${patientId}/documents/new`}
           style={newDocLinkStyle}
         >
           Novo documento +
@@ -58,7 +60,7 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
           title="Nenhum documento gerado ainda"
           description="Crie declarações, recibos e laudos para este paciente."
           actionLabel="Novo documento"
-          actionHref={`/patients/${patientId}/documents/new?type=declaration_of_attendance`}
+          actionHref={`/patients/${patientId}/documents/new`}
         />
       ) : (
         <div style={listStyle}>

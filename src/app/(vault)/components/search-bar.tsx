@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * SearchBar — persistent global search island for the vault nav.
+ * SearchBar — persistent global search island for the vault sidebar.
  *
- * Rendered as a client component island inside the server layout nav.
+ * Rendered as a client component island inside the server layout.
  * Calls searchAllAction on debounced query changes (300ms debounce).
  * Displays grouped results in a dropdown: Pacientes, Sessões, Documentos, Cobranças.
  *
@@ -38,30 +38,10 @@ function SearchDropdown({ results, onClose }: SearchDropdownProps) {
         <p style={emptyStyle}>Nenhum resultado encontrado</p>
       ) : (
         <>
-          <ResultGroup
-            heading="Pacientes"
-            items={patients}
-            verTodosHref="/patients"
-            onClose={onClose}
-          />
-          <ResultGroup
-            heading="Sessões"
-            items={sessions}
-            verTodosHref="/agenda"
-            onClose={onClose}
-          />
-          <ResultGroup
-            heading="Documentos"
-            items={documents}
-            verTodosHref="/patients"
-            onClose={onClose}
-          />
-          <ResultGroup
-            heading="Cobranças"
-            items={charges}
-            verTodosHref="/financeiro"
-            onClose={onClose}
-          />
+          <ResultGroup heading="Pacientes" items={patients} verTodosHref="/patients" onClose={onClose} />
+          <ResultGroup heading="Sessões" items={sessions} verTodosHref="/agenda" onClose={onClose} />
+          <ResultGroup heading="Documentos" items={documents} verTodosHref="/patients" onClose={onClose} />
+          <ResultGroup heading="Cobranças" items={charges} verTodosHref="/financeiro" onClose={onClose} />
         </>
       )}
     </div>
@@ -85,12 +65,7 @@ function ResultGroup({ heading, items, verTodosHref, onClose }: ResultGroupProps
     <div style={groupStyle}>
       <p style={groupHeadingStyle}>{heading}</p>
       {visible.map((item) => (
-        <a
-          key={item.id}
-          href={item.href}
-          style={resultItemStyle}
-          onClick={onClose}
-        >
+        <a key={item.id} href={item.href} style={resultItemStyle} onClick={onClose}>
           {item.label}
           {item.patientName && item.label !== "Paciente" && (
             <span style={patientNameStyle}> · {item.patientName}</span>
@@ -129,19 +104,16 @@ export function SearchBar() {
   const handleChange = useCallback((value: string) => {
     setQuery(value);
 
-    // Clear previous debounce
     if (debounceRef.current !== null) {
       clearTimeout(debounceRef.current);
     }
 
-    // Empty query — collapse immediately without debounce
     if (!value.trim()) {
       setResults(null);
       setIsOpen(false);
       return;
     }
 
-    // Debounce the server action call (300ms)
     debounceRef.current = setTimeout(async () => {
       const items = await searchAllAction(value);
       setResults(groupSearchResults(items));
@@ -151,16 +123,23 @@ export function SearchBar() {
 
   return (
     <div ref={containerRef} style={containerStyle}>
-      <input
-        type="text"
-        placeholder="Buscar paciente, sessão, documento..."
-        value={query}
-        onChange={(e) => handleChange(e.target.value)}
-        style={searchInputStyle}
-        aria-label="Buscar"
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-      />
+      <div style={inputWrapperStyle}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={searchIconStyle} aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={query}
+          onChange={(e) => handleChange(e.target.value)}
+          className="input-field"
+          style={searchInputStyle}
+          aria-label="Buscar"
+          aria-expanded={isOpen}
+          aria-haspopup="listbox"
+        />
+      </div>
       {isOpen && results !== null && (
         <SearchDropdown results={results} onClose={() => setIsOpen(false)} />
       )}
@@ -172,36 +151,46 @@ export function SearchBar() {
 
 const containerStyle: React.CSSProperties = {
   position: "relative",
-  flex: 1,
-  maxWidth: "320px",
-  marginLeft: "auto",
+};
+
+const inputWrapperStyle: React.CSSProperties = {
+  position: "relative",
+  display: "flex",
+  alignItems: "center",
+};
+
+const searchIconStyle: React.CSSProperties = {
+  position: "absolute",
+  left: "0.625rem",
+  color: "var(--color-text-4)",
+  pointerEvents: "none",
+  flexShrink: 0,
 };
 
 const searchInputStyle: React.CSSProperties = {
   width: "100%",
-  padding: "0.3rem 0.75rem",
-  fontSize: "0.875rem",
-  borderRadius: "999px",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "rgba(255, 252, 247, 0.95)",
-  color: "#292524",
-  outline: "none",
-  boxSizing: "border-box",
+  paddingLeft: "2rem",
+  paddingRight: "0.625rem",
+  paddingTop: "0.4rem",
+  paddingBottom: "0.4rem",
+  fontSize: "0.8rem",
+  borderRadius: "var(--radius-sm)",
+  background: "rgba(255, 255, 255, 0.7)",
 };
 
 const dropdownStyle: React.CSSProperties = {
   position: "absolute",
-  top: "calc(100% + 0.25rem)",
+  bottom: "calc(100% + 0.375rem)",
   left: 0,
   right: 0,
   minWidth: "280px",
-  background: "#fffcf7",
-  border: "1px solid rgba(146, 64, 14, 0.15)",
-  borderRadius: "0.5rem",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  borderRadius: "var(--radius-md)",
+  boxShadow: "var(--shadow-lg)",
   zIndex: 50,
-  padding: "0.5rem 0",
-  maxHeight: "400px",
+  padding: "0.375rem 0",
+  maxHeight: "380px",
   overflowY: "auto",
 };
 
@@ -210,41 +199,42 @@ const groupStyle: React.CSSProperties = {
 };
 
 const groupHeadingStyle: React.CSSProperties = {
-  fontSize: "0.7rem",
+  fontSize: "0.68rem",
   fontWeight: 600,
-  color: "#9ca3af",
+  color: "var(--color-text-4)",
   textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  padding: "0.25rem 0.75rem",
+  letterSpacing: "0.08em",
+  padding: "0.25rem 0.875rem",
   margin: 0,
 };
 
 const resultItemStyle: React.CSSProperties = {
   display: "block",
-  padding: "0.375rem 0.75rem",
-  fontSize: "0.875rem",
-  color: "#292524",
+  padding: "0.4rem 0.875rem",
+  fontSize: "0.85rem",
+  color: "var(--color-text-1)",
   textDecoration: "none",
   cursor: "pointer",
+  transition: "background 0.1s",
 };
 
 const patientNameStyle: React.CSSProperties = {
-  color: "#78716c",
-  fontSize: "0.8rem",
+  color: "var(--color-text-3)",
+  fontSize: "0.78rem",
 };
 
 const verTodosStyle: React.CSSProperties = {
   display: "block",
-  padding: "0.25rem 0.75rem",
-  fontSize: "0.8rem",
-  color: "#92400e",
+  padding: "0.25rem 0.875rem",
+  fontSize: "0.78rem",
+  color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 500,
 };
 
 const emptyStyle: React.CSSProperties = {
-  fontSize: "0.875rem",
-  color: "#78716c",
-  padding: "0.5rem 0.75rem",
+  fontSize: "0.85rem",
+  color: "var(--color-text-3)",
+  padding: "0.5rem 0.875rem",
   margin: 0,
 };

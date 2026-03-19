@@ -14,8 +14,7 @@ import { getPatientRepository } from "../../../lib/patients/store";
 import { deriveMonthlyFinancialSummary } from "../../../lib/finance/model";
 import type { SessionCharge } from "../../../lib/finance/model";
 import { EmptyState } from "../components/empty-state";
-
-const DEFAULT_WORKSPACE_ID = "ws_1";
+import { resolveSession } from "../../../lib/supabase/session";
 
 const ptBRDate = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });
 const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -72,6 +71,7 @@ interface FinanceiroPageProps {
 }
 
 export default async function FinanceiroPage({ searchParams }: FinanceiroPageProps) {
+  const { workspaceId } = await resolveSession();
   const params = await searchParams;
   const now = new Date();
 
@@ -82,8 +82,8 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   const patientRepo = getPatientRepository();
 
   const [activePatients, archivedPatients] = await Promise.all([
-    patientRepo.listActive(DEFAULT_WORKSPACE_ID),
-    patientRepo.listArchived(DEFAULT_WORKSPACE_ID),
+    patientRepo.listActive(workspaceId),
+    patientRepo.listArchived(workspaceId),
   ]);
   const allPatients = [...activePatients, ...archivedPatients];
 
@@ -92,7 +92,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   );
 
   const chargesResults = await Promise.all(
-    allPatients.map((p) => financeRepo.listByMonth(DEFAULT_WORKSPACE_ID, p.id, year, month)),
+    allPatients.map((p) => financeRepo.listByMonth(workspaceId, p.id, year, month)),
   );
   const allCharges: SessionCharge[] = chargesResults.flat();
 

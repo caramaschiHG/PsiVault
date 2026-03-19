@@ -17,14 +17,14 @@ import { getClinicalNoteRepository } from "../../../../../lib/clinical/store";
 import { deriveSessionNumber } from "../../../../../lib/clinical/model";
 import { NoteComposerForm } from "./components/note-composer-form";
 import { createNoteAction, updateNoteAction } from "../actions";
-
-const WORKSPACE_ID = "ws_1";
+import { resolveSession } from "../../../../../lib/supabase/session";
 
 interface NotePageProps {
   params: Promise<{ appointmentId: string }>;
 }
 
 export default async function NotePage({ params }: NotePageProps) {
+  const { workspaceId } = await resolveSession();
   const { appointmentId } = await params;
 
   const appointmentRepo = getAppointmentRepository();
@@ -32,23 +32,23 @@ export default async function NotePage({ params }: NotePageProps) {
   const clinicalRepo = getClinicalNoteRepository();
 
   // Guard: appointment must exist and be COMPLETED
-  const appointment = await appointmentRepo.findById(appointmentId, WORKSPACE_ID);
+  const appointment = await appointmentRepo.findById(appointmentId, workspaceId);
   if (!appointment || appointment.status !== "COMPLETED") {
     notFound();
   }
 
   // Guard: patient must exist
-  const patient = await patientRepo.findById(appointment.patientId, WORKSPACE_ID);
+  const patient = await patientRepo.findById(appointment.patientId, workspaceId);
   if (!patient) {
     notFound();
   }
 
   // Compute session number
-  const allAppointments = await appointmentRepo.listByPatient(patient.id, WORKSPACE_ID);
+  const allAppointments = await appointmentRepo.listByPatient(patient.id, workspaceId);
   const sessionNumber = deriveSessionNumber(appointmentId, allAppointments);
 
   // Load existing note (null if first creation)
-  const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, WORKSPACE_ID);
+  const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, workspaceId);
 
   // Build read-only header labels
   const sessionLabel =
@@ -77,11 +77,11 @@ export default async function NotePage({ params }: NotePageProps) {
         <Link href="/patients" style={breadcrumbLinkStyle}>
           Pacientes
         </Link>
-        <span style={breadcrumbSepStyle}>/</span>
+        <span style={breadcrumbSepStyle}>›</span>
         <Link href={backHref} style={breadcrumbLinkStyle}>
           {patientDisplayName}
         </Link>
-        <span style={breadcrumbSepStyle}>/</span>
+        <span style={breadcrumbSepStyle}>›</span>
         <span style={breadcrumbCurrentStyle}>Registrar evolução</span>
       </nav>
 
@@ -123,12 +123,12 @@ export default async function NotePage({ params }: NotePageProps) {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const shellStyle = {
-  minHeight: "100vh",
-  padding: "2rem",
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",
-  maxWidth: "800px",
 } satisfies React.CSSProperties;
 
 const breadcrumbStyle = {
@@ -136,22 +136,21 @@ const breadcrumbStyle = {
   alignItems: "center",
   gap: "0.4rem",
   fontSize: "0.82rem",
-  color: "#78716c",
 } satisfies React.CSSProperties;
 
 const breadcrumbLinkStyle = {
-  color: "#b45309",
+  color: "var(--color-text-2)",
   textDecoration: "none",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const breadcrumbSepStyle = {
-  color: "#d6d3d1",
-  fontWeight: 400,
+  color: "var(--color-text-4)",
+  fontSize: "0.75rem",
 } satisfies React.CSSProperties;
 
 const breadcrumbCurrentStyle = {
-  color: "#78716c",
+  color: "var(--color-text-3)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -163,16 +162,18 @@ const headingStyle = {
 const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   margin: 0,
   fontSize: "2rem",
   fontWeight: 700,
-  color: "#1c1917",
+  fontFamily: "'IBM Plex Serif', serif",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const sessionHeaderStyle = {

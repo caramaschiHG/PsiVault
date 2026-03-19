@@ -1,0 +1,3 @@
+[      -5ms] [WARNING] Error with Permissions-Policy header: Unrecognized feature: 'bluetooth'. @ :0
+[     397ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://api.whatsapp.com/data/manifest.json:0
+[     448ms] [ERROR] Manifest fetch from https://api.whatsapp.com/data/manifest.json failed, code 404 @ https://api.whatsapp.com/send/?text=Ol%C3%A1%2C+Ana+Clara+Silva%21+Preciso+reagendar+a+nossa+consulta+prevista+para+18+de+mar%C3%A7o+de+2026+%C3%A0s+12%3A15.+Podemos+combinar+um+novo+hor%C3%A1rio%3F&type=custom_url&app_absent=0:0

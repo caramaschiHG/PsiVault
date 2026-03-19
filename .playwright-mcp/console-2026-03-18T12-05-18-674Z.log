@@ -1,0 +1,58 @@
+[    3158ms] [ERROR] %o
+
+%s PrismaClientInitializationError: 
+Invalid `prisma.appointment.findMany()` invocation:
+
+
+Error querying the database: FATAL: Tenant or user not found
+    at  Object.listByDateRange (about://React/Server/webpack-internal:///(rsc)/./src/lib/appointments/repository.prisma.ts?28:77:34)
+    at  InicioPage (about://React/Server/webpack-internal:///(rsc)/./src/app/(vault)/inicio/page.tsx?29:50:29)
+    at resolveErrorDev (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2396:46)
+    at processFullStringRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2882:23)
+    at processFullBinaryRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2825:7)
+    at processBinaryChunk (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3028:15)
+    at progress (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3294:13) The above error occurred in the <InicioPage> component. It was handled by the <ErrorBoundaryHandler> error boundary. @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/client/react-client-callbacks/error-boundary-callbacks.js:67
+[   45762ms] Error: Switched to client rendering because the server rendering errored:
+
+
+Invalid `prisma.appointment.findMany()` invocation:
+
+
+Error querying the database: FATAL: Tenant or user not found
+    at  Object.listByDateRange (about://React/Server/webpack-internal:///(rsc)/./src/lib/appointments/repository.prisma.ts?26:77:34)
+    at  InicioPage (about://React/Server/webpack-internal:///(rsc)/./src/app/(vault)/inicio/page.tsx?27:50:29)
+    at resolveErrorDev (/home/caramaschi/Área de trabalho/Projetos/PsiLock/node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:2:371780)
+    at processFullStringRow (/home/caramaschi/Área de trabalho/Projetos/PsiLock/node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:2:381627)
+    at /home/caramaschi/Área de trabalho/Projetos/PsiLock/node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:2:386875
+    at processBinaryChunk (/home/caramaschi/Área de trabalho/Projetos/PsiLock/node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:2:386947)
+    at progress (/home/caramaschi/Área de trabalho/Projetos/PsiLock/node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:2:388475)
+[   56387ms] [ERROR] %o
+
+%s PrismaClientInitializationError: 
+Invalid `prisma.appointment.findMany()` invocation:
+
+
+Error querying the database: FATAL: Tenant or user not found
+    at  Object.listByDateRange (about://React/Server/webpack-internal:///(rsc)/./src/lib/appointments/repository.prisma.ts?28:77:34)
+    at  InicioPage (about://React/Server/webpack-internal:///(rsc)/./src/app/(vault)/inicio/page.tsx?29:50:29)
+    at resolveErrorDev (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2396:46)
+    at processFullStringRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2882:23)
+    at processFullBinaryRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2825:7)
+    at processBinaryChunk (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3028:15)
+    at progress (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3294:13) The above error occurred in the <InicioPage> component. It was handled by the <ErrorBoundaryHandler> error boundary. @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/client/react-client-callbacks/error-boundary-callbacks.js:67
+[   56395ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/favicon.ico:0
+[  125049ms] [ERROR] %o
+
+%s PrismaClientKnownRequestError: 
+Invalid `prisma.appointment.findMany()` invocation:
+
+
+The table `public.appointments` does not exist in the current database.
+    at  Object.listByDateRange (about://React/Server/webpack-internal:///(rsc)/./src/lib/appointments/repository.prisma.ts?28:77:34)
+    at  InicioPage (about://React/Server/webpack-internal:///(rsc)/./src/app/(vault)/inicio/page.tsx?29:50:29)
+    at resolveErrorDev (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2396:46)
+    at processFullStringRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2882:23)
+    at processFullBinaryRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2825:7)
+    at processBinaryChunk (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3028:15)
+    at progress (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3294:13) The above error occurred in the <InicioPage> component. It was handled by the <ErrorBoundaryHandler> error boundary. @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/client/react-client-callbacks/error-boundary-callbacks.js:67
+[  125053ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/favicon.ico:0

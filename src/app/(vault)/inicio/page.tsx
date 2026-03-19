@@ -27,11 +27,10 @@ import {
   deriveMonthlySnapshot,
 } from "../../../lib/dashboard/aggregation";
 import { createReminderAction, completeReminderAction } from "../actions/reminders";
-
-// Stub — replace with real session resolution in production
-const WORKSPACE_ID = "ws_1";
+import { resolveSession } from "../../../lib/supabase/session";
 
 export default async function InicioPage() {
+  const { workspaceId } = await resolveSession();
   const now = new Date();
 
   // UTC today boundaries
@@ -45,12 +44,12 @@ export default async function InicioPage() {
   const financeRepo = getFinanceRepository();
 
   // Today's appointments (load a window and filter)
-  const rawAppointments = await appointmentRepo.listByDateRange(WORKSPACE_ID, from, to);
+  const rawAppointments = await appointmentRepo.listByDateRange(workspaceId, from, to);
   const todayAppointments = filterTodayAppointments(rawAppointments, from);
 
   // All patients for snapshot and name resolution
-  const activePatients = await patientRepo.listActive(WORKSPACE_ID);
-  const archivedPatients = await patientRepo.listArchived(WORKSPACE_ID);
+  const activePatients = await patientRepo.listActive(workspaceId);
+  const archivedPatients = await patientRepo.listArchived(workspaceId);
   const allPatients = [...activePatients, ...archivedPatients];
 
   // Build patient name map for session cards
@@ -65,15 +64,15 @@ export default async function InicioPage() {
 
   // Active reminders and monthly charges loaded concurrently
   const [activeReminders, monthlyCharges] = await Promise.all([
-    reminderRepo.listActive(WORKSPACE_ID),
-    financeRepo.listByWorkspaceAndMonth(WORKSPACE_ID, year, month),
+    reminderRepo.listActive(workspaceId),
+    financeRepo.listByWorkspaceAndMonth(workspaceId, year, month),
   ]);
   const pendingChargeCount = countPendingCharges(monthlyCharges);
 
   // Monthly snapshot for summary section
   const monthFrom = new Date(Date.UTC(year, month - 1, 1));
   const monthTo = new Date(Date.UTC(year, month, 1));
-  const monthlyAppointments = await appointmentRepo.listByDateRange(WORKSPACE_ID, monthFrom, monthTo);
+  const monthlyAppointments = await appointmentRepo.listByDateRange(workspaceId, monthFrom, monthTo);
   const snapshot = deriveMonthlySnapshot({
     activePatients,
     monthlyCharges,
@@ -179,7 +178,7 @@ export default async function InicioPage() {
         <div style={newReminderFormContainerStyle}>
           <p style={newReminderFormLabelStyle}>Novo lembrete</p>
           <form action={createReminderAction} style={newReminderFormStyle}>
-            <input type="hidden" name="workspaceId" value={WORKSPACE_ID} />
+            <input type="hidden" name="workspaceId" value={workspaceId} />
             <input
               type="text"
               name="title"

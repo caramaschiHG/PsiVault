@@ -1,0 +1,14 @@
+[    3448ms] [ERROR] %o
+
+%s PrismaClientInitializationError: 
+Invalid `prisma.patient.findMany()` invocation:
+
+
+Error querying the database: FATAL: Tenant or user not found
+    at  Object.listActive (about://React/Server/webpack-internal:///(rsc)/./src/lib/patients/repository.prisma.ts?30:65:30)
+    at  PatientsPage (about://React/Server/webpack-internal:///(rsc)/./src/app/(vault)/patients/page.tsx?31:26:22)
+    at resolveErrorDev (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2396:46)
+    at processFullStringRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2882:23)
+    at processFullBinaryRow (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:2825:7)
+    at processBinaryChunk (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3028:15)
+    at progress (webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/compiled/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js:3294:13) The above error occurred in the <PatientsPage> component. It was handled by the <ErrorBoundaryHandler> error boundary. @ webpack-internal:///(app-pages-browser)/./node_modules/.pnpm/next@15.5.12_react-dom@19.2.4_react@19.2.4/node_modules/next/dist/client/react-client-callbacks/error-boundary-callbacks.js:67

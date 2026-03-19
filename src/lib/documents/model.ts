@@ -15,7 +15,9 @@ export type DocumentType =
   | "receipt"
   | "anamnesis"
   | "psychological_report"
-  | "consent_and_service_contract";
+  | "consent_and_service_contract"
+  | "session_note"
+  | "referral_letter";
 
 export interface PracticeDocument {
   id: string;

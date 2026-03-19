@@ -5,9 +5,7 @@ import { archivePracticeDocument } from "../../../../../../lib/documents/model";
 import { getDocumentRepository } from "../../../../../../lib/documents/store";
 import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
 import { getAuditRepository } from "../../../../../../lib/audit/store";
-
-const WORKSPACE_ID = "ws_1";
-const ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../../../../lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -15,7 +13,8 @@ function generateId() {
   return "doc_" + Array.from(buffer, (v) => v.toString(16).padStart(2, "0")).join("");
 }
 
-export async function archiveDocumentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function archiveDocumentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const documentId = String(formData.get("documentId") ?? "");
   const patientId = String(formData.get("patientId") ?? "");
 
@@ -24,13 +23,13 @@ export async function archiveDocumentAction(formData: FormData): Promise<{ ok: b
 
   try {
     const repo = getDocumentRepository();
-    const doc = await repo.findById(documentId, WORKSPACE_ID);
+    const doc = await repo.findById(documentId, workspaceId);
     if (!doc || doc.patientId !== patientId) {
       // Already archived or not found — redirect silently
       notFoundRedirect = true;
     } else {
       const now = new Date();
-      const archived = archivePracticeDocument(doc, ACCOUNT_ID, { now });
+      const archived = archivePracticeDocument(doc, accountId, { now });
       await repo.save(archived);
 
       const auditRepo = getAuditRepository();
@@ -38,7 +37,7 @@ export async function archiveDocumentAction(formData: FormData): Promise<{ ok: b
         {
           type: "document.archived",
           document: archived,
-          actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       );
@@ -48,7 +47,7 @@ export async function archiveDocumentAction(formData: FormData): Promise<{ ok: b
     }
   } catch (err) {
     console.error("[archiveDocumentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (notFoundRedirect || shouldRedirect) redirect(`/patients/${patientId}`);

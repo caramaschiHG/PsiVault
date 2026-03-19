@@ -22,10 +22,7 @@ import Link from "next/link";
 import { getPatientRepository } from "../../../../lib/patients/store";
 import { getPracticeProfileSnapshot } from "../../../../lib/setup/profile";
 import { AppointmentForm } from "../components/appointment-form";
-
-// Stub — real workspace/account resolution comes from session in production
-const WORKSPACE_ID = "ws_1";
-const ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../../lib/supabase/session";
 
 interface NewAppointmentPageProps {
   searchParams: Promise<Record<string, string | undefined>>;
@@ -34,12 +31,13 @@ interface NewAppointmentPageProps {
 export default async function NewAppointmentPage({
   searchParams,
 }: NewAppointmentPageProps) {
+  const { accountId, workspaceId } = await resolveSession();
   const params = await searchParams;
 
   // Load data
   const patientRepo = getPatientRepository();
-  const patients = await patientRepo.listActive(WORKSPACE_ID);
-  const profile = getPracticeProfileSnapshot(ACCOUNT_ID, WORKSPACE_ID);
+  const patients = await patientRepo.listActive(workspaceId);
+  const profile = getPracticeProfileSnapshot(accountId, workspaceId);
 
   // Resolve defaultCareMode: use param if valid, otherwise derive from profile
   const rawCareMode = params.careMode;

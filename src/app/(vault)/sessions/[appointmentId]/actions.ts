@@ -6,11 +6,7 @@ import { getClinicalNoteRepository } from "../../../../lib/clinical/store";
 import { getAppointmentRepository } from "../../../../lib/appointments/store";
 import { createClinicalNoteAuditEvent } from "../../../../lib/clinical/audit";
 import { getAuditRepository } from "../../../../lib/audit/store";
-
-// ─── Stub identity (real resolution comes from session in production) ──────────
-
-const DEFAULT_WORKSPACE_ID = "ws_1";
-const DEFAULT_ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../../lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -33,7 +29,8 @@ function nullCoerce(value: FormDataEntryValue | null): string | null {
 
 // ─── Create note action ────────────────────────────────────────────────────────
 
-export async function createNoteAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function createNoteAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const appointmentRepo = getAppointmentRepository();
   const clinicalRepo = getClinicalNoteRepository();
   const audit = getAuditRepository();
@@ -52,17 +49,17 @@ export async function createNoteAction(formData: FormData): Promise<{ ok: boolea
 
   try {
     // Guard: appointment must exist and be COMPLETED
-    const appointment = await appointmentRepo.findById(appointmentId, DEFAULT_WORKSPACE_ID);
+    const appointment = await appointmentRepo.findById(appointmentId, workspaceId);
     if (!appointment || appointment.status !== "COMPLETED") return;
 
     // Guard: do not create duplicate — if note exists, redirect to patient profile
-    const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, DEFAULT_WORKSPACE_ID);
+    const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, workspaceId);
     if (existingNote) {
       redirectPath = `/patients/${patientId}`;
     } else {
       const note = createClinicalNote(
         {
-          workspaceId: DEFAULT_WORKSPACE_ID,
+          workspaceId: workspaceId,
           patientId,
           appointmentId,
           freeText,
@@ -82,7 +79,7 @@ export async function createNoteAction(formData: FormData): Promise<{ ok: boolea
           {
             type: "clinical.note.created",
             note,
-            actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+            actor: { accountId: accountId, workspaceId: workspaceId },
           },
           { now, createId: generateId },
         ),
@@ -92,7 +89,7 @@ export async function createNoteAction(formData: FormData): Promise<{ ok: boolea
     }
   } catch (err) {
     console.error("[createNoteAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (redirectPath) redirect(redirectPath);
@@ -100,7 +97,8 @@ export async function createNoteAction(formData: FormData): Promise<{ ok: boolea
 
 // ─── Update note action ────────────────────────────────────────────────────────
 
-export async function updateNoteAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function updateNoteAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const clinicalRepo = getClinicalNoteRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -118,7 +116,7 @@ export async function updateNoteAction(formData: FormData): Promise<{ ok: boolea
 
   try {
     // Guard: note must exist
-    const existingNote = await clinicalRepo.findById(noteId, DEFAULT_WORKSPACE_ID);
+    const existingNote = await clinicalRepo.findById(noteId, workspaceId);
     if (!existingNote) return;
 
     const updatedNote = updateClinicalNote(
@@ -141,7 +139,7 @@ export async function updateNoteAction(formData: FormData): Promise<{ ok: boolea
         {
           type: "clinical.note.updated",
           note: updatedNote,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -150,7 +148,7 @@ export async function updateNoteAction(formData: FormData): Promise<{ ok: boolea
     shouldRedirect = true;
   } catch (err) {
     console.error("[updateNoteAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect(`/patients/${patientId}`);

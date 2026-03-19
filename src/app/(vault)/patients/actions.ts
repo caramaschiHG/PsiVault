@@ -10,10 +10,7 @@ import {
 import { getPatientRepository } from "../../../lib/patients/store";
 import { createPatientAuditEvent } from "../../../lib/patients/audit";
 import { getAuditRepository } from "../../../lib/audit/store";
-
-// Stub — real workspace resolution comes from session in production
-const DEFAULT_WORKSPACE_ID = "ws_1";
-const DEFAULT_ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -21,7 +18,8 @@ function generateId() {
   return "pat_" + Array.from(buffer, (v) => v.toString(16).padStart(2, "0")).join("");
 }
 
-export async function createPatientAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function createPatientAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -31,7 +29,7 @@ export async function createPatientAction(formData: FormData): Promise<{ ok: boo
   try {
     const patient = createPatient(
       {
-        workspaceId: DEFAULT_WORKSPACE_ID,
+        workspaceId: workspaceId,
         fullName: String(formData.get("fullName") ?? ""),
         socialName: formData.get("socialName") ? String(formData.get("socialName")) : null,
         email: formData.get("email") ? String(formData.get("email")) : null,
@@ -58,7 +56,7 @@ export async function createPatientAction(formData: FormData): Promise<{ ok: boo
         {
           type: "patient.created",
           patient,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -67,13 +65,14 @@ export async function createPatientAction(formData: FormData): Promise<{ ok: boo
     createdPatientId = patient.id;
   } catch (err) {
     console.error("[createPatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (createdPatientId) redirect(`/patients/${createdPatientId}`);
 }
 
-export async function updatePatientAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function updatePatientAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -82,7 +81,7 @@ export async function updatePatientAction(formData: FormData): Promise<{ ok: boo
   let redirectPath: string | null = null;
 
   try {
-    const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(patientId, workspaceId);
     if (!existing) return;
 
     const updated = updatePatient(
@@ -114,7 +113,7 @@ export async function updatePatientAction(formData: FormData): Promise<{ ok: boo
         {
           type: "patient.updated",
           patient: updated,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -123,13 +122,14 @@ export async function updatePatientAction(formData: FormData): Promise<{ ok: boo
     redirectPath = `/patients/${patientId}`;
   } catch (err) {
     console.error("[updatePatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (redirectPath) redirect(redirectPath);
 }
 
-export async function archivePatientAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function archivePatientAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -138,12 +138,12 @@ export async function archivePatientAction(formData: FormData): Promise<{ ok: bo
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(patientId, workspaceId);
     if (!existing) return;
 
     const archived = archivePatient(existing, {
       now,
-      archivedByAccountId: DEFAULT_ACCOUNT_ID,
+      archivedByAccountId: accountId,
     });
 
     await repo.save(archived);
@@ -153,7 +153,7 @@ export async function archivePatientAction(formData: FormData): Promise<{ ok: bo
         {
           type: "patient.archived",
           patient: archived,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -162,13 +162,14 @@ export async function archivePatientAction(formData: FormData): Promise<{ ok: bo
     shouldRedirect = true;
   } catch (err) {
     console.error("[archivePatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (shouldRedirect) redirect("/patients");
 }
 
-export async function recoverPatientAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function recoverPatientAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getPatientRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -177,7 +178,7 @@ export async function recoverPatientAction(formData: FormData): Promise<{ ok: bo
   let shouldRedirect = false;
 
   try {
-    const existing = await repo.findById(patientId, DEFAULT_WORKSPACE_ID);
+    const existing = await repo.findById(patientId, workspaceId);
     if (!existing) return;
 
     const recovered = recoverPatient(existing, { now });
@@ -188,7 +189,7 @@ export async function recoverPatientAction(formData: FormData): Promise<{ ok: bo
         {
           type: "patient.recovered",
           patient: recovered,
-          actor: { accountId: DEFAULT_ACCOUNT_ID, workspaceId: DEFAULT_WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       ),
@@ -197,7 +198,7 @@ export async function recoverPatientAction(formData: FormData): Promise<{ ok: bo
     shouldRedirect = true;
   } catch (err) {
     console.error("[recoverPatientAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   // Return user directly to recovered patient profile (not a generic list)

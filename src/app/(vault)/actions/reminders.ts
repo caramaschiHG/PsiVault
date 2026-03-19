@@ -18,11 +18,7 @@ import { createReminder, completeReminder } from "../../../lib/reminders/model";
 import { getReminderRepository } from "../../../lib/reminders/store";
 import { createReminderAuditEvent } from "../../../lib/reminders/audit";
 import { getAuditRepository } from "../../../lib/audit/store";
-
-// ─── Stub identity (real resolution comes from session in production) ──────────
-
-const DEFAULT_WORKSPACE_ID = "ws_1";
-const DEFAULT_ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -33,6 +29,7 @@ function generateId() {
 // ─── createReminderAction ─────────────────────────────────────────────────────
 
 export async function createReminderAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getReminderRepository();
   const audit = getAuditRepository();
   const now = new Date();
@@ -48,7 +45,7 @@ export async function createReminderAction(formData: FormData): Promise<void> {
 
   const reminder = createReminder(
     {
-      workspaceId: DEFAULT_WORKSPACE_ID,
+      workspaceId: workspaceId,
       title,
       dueAt,
       link: patientId ? { type: "patient", id: patientId } : null,
@@ -62,8 +59,8 @@ export async function createReminderAction(formData: FormData): Promise<void> {
     createReminderAuditEvent({
       eventType: "reminder.created",
       reminderId: reminder.id,
-      workspaceId: DEFAULT_WORKSPACE_ID,
-      accountId: DEFAULT_ACCOUNT_ID,
+      workspaceId: workspaceId,
+      accountId: accountId,
       now,
     }),
   );
@@ -80,11 +77,12 @@ export async function createReminderAction(formData: FormData): Promise<void> {
 // ─── completeReminderAction ───────────────────────────────────────────────────
 
 export async function completeReminderAction(reminderId: string): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const repo = getReminderRepository();
   const audit = getAuditRepository();
   const now = new Date();
 
-  const existing = await repo.findById(reminderId, DEFAULT_WORKSPACE_ID);
+  const existing = await repo.findById(reminderId, workspaceId);
   if (!existing) return;
 
   const completed = completeReminder(existing, { now });
@@ -94,8 +92,8 @@ export async function completeReminderAction(reminderId: string): Promise<void> 
     createReminderAuditEvent({
       eventType: "reminder.completed",
       reminderId: completed.id,
-      workspaceId: DEFAULT_WORKSPACE_ID,
-      accountId: DEFAULT_ACCOUNT_ID,
+      workspaceId: workspaceId,
+      accountId: accountId,
       now,
     }),
   );

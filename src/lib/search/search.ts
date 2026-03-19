@@ -69,6 +69,8 @@ function translateDocumentType(type: DocumentType): string {
     anamnesis: "Anamnese",
     psychological_report: "Laudo psicológico",
     consent_and_service_contract: "Contrato e consentimento",
+    session_note: "Evolução de sessão",
+    referral_letter: "Carta de encaminhamento",
   };
   return labels[type] ?? type;
 }

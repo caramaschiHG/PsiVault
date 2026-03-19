@@ -50,6 +50,17 @@
   --space-page-padding-y: 2rem;
   --space-section-gap:    1.5rem;
   --space-row-height:     3.5rem; /* 56px mínimo */
+
+  /* Auth pages */
+  --auth-card-width: min(460px, 100%);
+  --auth-card-width-wide: min(520px, 100%);
+  --auth-card-padding: 2.5rem;
+  --color-success-bg: #dcfce7;
+  --color-success-border: #86efac;
+  --color-success-text: #166534;
+  --color-error-bg: rgba(239, 68, 68, 0.08);
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-error-text: #dc2626;
 }
 
 /* ─── Reset ──────────────────────────────────────────────────────────────────── */
@@ -280,7 +291,7 @@ a {
     display: flex !important;
   }
   .vault-content {
-    padding-bottom: 5rem;
+    padding-bottom: 6rem;
   }
 }
 
@@ -355,4 +366,385 @@ a {
   .form-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ─── Auth pages layout ──────────────────────────────────────────────────────── */
+
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  gap: 1.25rem;
+}
+
+.auth-brand {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.auth-card {
+  width: var(--auth-card-width);
+  padding: var(--auth-card-padding);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 252, 247, 0.92);
+  border: 1px solid rgba(146, 64, 14, 0.14);
+  box-shadow: 0 28px 90px rgba(120, 53, 15, 0.14);
+}
+
+.auth-card--wide {
+  width: var(--auth-card-width-wide);
+}
+
+.auth-eyebrow {
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: var(--font-size-label);
+  color: var(--color-brown-mid);
+}
+
+.auth-title {
+  margin: 0 0 0.75rem;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.auth-copy {
+  margin: 0 0 1.5rem;
+  line-height: 1.6;
+  color: var(--color-text-2);
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-label {
+  display: grid;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.auth-input {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--color-text-1);
+  background: #fffdfa;
+  border: 1px solid rgba(120, 53, 15, 0.16);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1rem;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.auth-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(154, 52, 18, 0.1);
+}
+
+.auth-input::placeholder {
+  color: var(--color-text-4);
+}
+
+.auth-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-wrap .auth-input {
+  padding-right: 2.75rem;
+}
+
+.auth-input-eye {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: var(--color-text-3);
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-eye:hover {
+  color: var(--color-text-1);
+}
+
+.auth-field-error {
+  color: var(--color-error-text);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.auth-alert {
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.auth-alert--error {
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  color: var(--color-error-text);
+}
+
+.auth-alert--success {
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success-text);
+}
+
+.auth-footer {
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--color-text-3);
+  text-align: center;
+}
+
+.auth-footer a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─── Auth steps (horizontal) ────────────────────────────────────────────────── */
+
+.auth-steps {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.auth-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text-4);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+}
+
+.auth-step--active {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.auth-step--done {
+  color: var(--color-text-3);
+}
+
+.auth-step-dot {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.auth-step--active .auth-step-dot {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.auth-step--done .auth-step-dot {
+  background: var(--color-text-3);
+  color: #fff;
+  border-color: var(--color-text-3);
+}
+
+.auth-step-sep {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-med);
+  min-width: 1rem;
+  margin: 0 0.375rem;
+  align-self: flex-start;
+  margin-top: 0.75rem;
+}
+
+/* ─── Auth progress (vertical) ───────────────────────────────────────────────── */
+
+.auth-progress {
+  display: grid;
+  gap: 0;
+  margin: 1.5rem 0;
+}
+
+.auth-progress-item {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0 0.75rem;
+  align-items: start;
+}
+
+.auth-progress-num {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.auth-progress-num--done {
+  background: #166534;
+  color: #fff;
+}
+
+.auth-progress-num--active {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.auth-progress-num--pending {
+  background: var(--color-border-med);
+  color: var(--color-text-3);
+}
+
+.auth-progress-text {
+  padding: 0.25rem 0 1.25rem;
+}
+
+.auth-progress-text p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.auth-progress-text p:first-child {
+  font-weight: 600;
+}
+
+.auth-progress-text p + p {
+  color: var(--color-text-3);
+  font-size: 0.8rem;
+  margin-top: 0.125rem;
+}
+
+.auth-progress-connector {
+  width: 1px;
+  background: var(--color-border-med);
+  margin: 0 auto;
+  height: 1.25rem;
+  grid-column: 1;
+}
+
+/* ─── Auth app grid ───────────────────────────────────────────────────────────── */
+
+.auth-app-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+@media (max-width: 480px) {
+  .auth-app-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-app-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  background: var(--color-surface-0);
+}
+
+.auth-app-card-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text-1);
+}
+
+.auth-app-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  border-radius: var(--radius-pill);
+  padding: 0.1rem 0.4rem;
+  width: fit-content;
+}
+
+.auth-app-link {
+  font-size: 0.75rem;
+  color: var(--color-text-3);
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+.auth-app-link:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ─── Auth OTP input ─────────────────────────────────────────────────────────── */
+
+.auth-otp-wrap {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.auth-otp-digit {
+  width: 3rem;
+  height: 3.5rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(120, 53, 15, 0.16);
+  background: #fffdfa;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  caret-color: var(--color-accent);
+  transition: border-color 0.12s, box-shadow 0.12s;
+  font-family: var(--font-sans);
+}
+
+.auth-otp-digit:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(154, 52, 18, 0.1);
+}
+
+.auth-otp-digit--error {
+  border-color: var(--color-error-text);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+@keyframes auth-progress-bar {
+  from { width: 0; }
+  to   { width: 100%; }
 }

@@ -10,40 +10,40 @@ import type { Patient } from "./model";
 
 export interface PatientRepository {
   /** Persist or update a patient record. */
-  save(patient: Patient): Patient;
+  save(patient: Patient): Promise<Patient>;
 
   /** Find a patient by id within a workspace. Returns null if not found. */
-  findById(id: string, workspaceId: string): Patient | null;
+  findById(id: string, workspaceId: string): Promise<Patient | null>;
 
   /** All non-archived patients scoped to a workspace, ordered by fullName. */
-  listActive(workspaceId: string): Patient[];
+  listActive(workspaceId: string): Promise<Patient[]>;
 
   /** All archived patients scoped to a workspace, ordered by archivedAt desc. */
-  listArchived(workspaceId: string): Patient[];
+  listArchived(workspaceId: string): Promise<Patient[]>;
 }
 
 export function createInMemoryPatientRepository(seed: Patient[] = []): PatientRepository {
   const store = new Map<string, Patient>(seed.map((p) => [p.id, p]));
 
   return {
-    save(patient) {
+    async save(patient) {
       store.set(patient.id, patient);
       return patient;
     },
 
-    findById(id, workspaceId) {
+    async findById(id, workspaceId) {
       const patient = store.get(id);
       if (!patient || patient.workspaceId !== workspaceId) return null;
       return patient;
     },
 
-    listActive(workspaceId) {
+    async listActive(workspaceId) {
       return [...store.values()]
         .filter((p) => p.workspaceId === workspaceId && p.archivedAt === null)
         .sort((a, b) => a.fullName.localeCompare(b.fullName, "pt-BR"));
     },
 
-    listArchived(workspaceId) {
+    async listArchived(workspaceId) {
       return [...store.values()]
         .filter((p) => p.workspaceId === workspaceId && p.archivedAt !== null)
         .sort((a, b) => {

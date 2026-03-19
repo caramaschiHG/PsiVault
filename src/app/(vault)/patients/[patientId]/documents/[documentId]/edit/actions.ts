@@ -5,9 +5,7 @@ import { updatePracticeDocument } from "../../../../../../../lib/documents/model
 import { getDocumentRepository } from "../../../../../../../lib/documents/store";
 import { createDocumentAuditEvent } from "../../../../../../../lib/documents/audit";
 import { getAuditRepository } from "../../../../../../../lib/audit/store";
-
-const WORKSPACE_ID = "ws_1";
-const ACCOUNT_ID = "acct_1";
+import { resolveSession } from "../../../../../../../lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -15,7 +13,8 @@ function generateId() {
   return "doc_" + Array.from(buffer, (v) => v.toString(16).padStart(2, "0")).join("");
 }
 
-export async function updateDocumentAction(formData: FormData): Promise<{ ok: boolean; error?: string } | void> {
+export async function updateDocumentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
   const documentId = String(formData.get("documentId") ?? "");
   const patientId = String(formData.get("patientId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
@@ -25,7 +24,7 @@ export async function updateDocumentAction(formData: FormData): Promise<{ ok: bo
 
   try {
     const repo = getDocumentRepository();
-    const doc = await repo.findById(documentId, WORKSPACE_ID);
+    const doc = await repo.findById(documentId, workspaceId);
     if (!doc || doc.patientId !== patientId || doc.archivedAt !== null) {
       guardRedirect = true;
     } else {
@@ -38,7 +37,7 @@ export async function updateDocumentAction(formData: FormData): Promise<{ ok: bo
         {
           type: "document.updated",
           document: updated,
-          actor: { accountId: ACCOUNT_ID, workspaceId: WORKSPACE_ID },
+          actor: { accountId: accountId, workspaceId: workspaceId },
         },
         { now, createId: generateId },
       );
@@ -48,7 +47,7 @@ export async function updateDocumentAction(formData: FormData): Promise<{ ok: bo
     }
   } catch (err) {
     console.error("[updateDocumentAction]", err);
-    return { ok: false, error: "Algo deu errado. Tente novamente." };
+    return;
   }
 
   if (guardRedirect) redirect(`/patients/${patientId}`);

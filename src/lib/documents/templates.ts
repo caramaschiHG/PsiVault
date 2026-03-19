@@ -153,6 +153,60 @@ Assinatura do(a) contratante: ________________________
 Assinatura do(a) profissional: ________________________${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
 }
 
+function buildSessionNote(ctx: DocumentPreFillContext): string {
+  return `EVOLUÇÃO DE SESSÃO
+
+Paciente: ${ctx.patientFullName}
+Profissional: ${ctx.professionalName} (${ctx.crp})
+Data da sessão: ${ctx.todayLabel}
+
+————————————————————
+
+I. OBJETIVOS DA SESSÃO
+[A ser preenchido pelo profissional]
+
+II. CONTEÚDO E INTERVENÇÕES
+[A ser preenchido pelo profissional]
+
+III. EVOLUÇÃO E OBSERVAÇÕES
+[A ser preenchido pelo profissional]
+
+IV. PRÓXIMA SESSÃO
+Data prevista: ________
+Objetivos para a próxima sessão: [A ser preenchido pelo profissional]${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
+function buildReferralLetter(ctx: DocumentPreFillContext): string {
+  return `CARTA DE ENCAMINHAMENTO
+
+${ctx.todayLabel}
+
+À(Ao) colega especialista,
+
+Encaminho para avaliação e acompanhamento o(a) paciente ${ctx.patientFullName}, que tem sido atendido(a) sob minha responsabilidade.
+
+I. MOTIVO DO ENCAMINHAMENTO
+[A ser preenchido pelo profissional]
+
+II. HISTÓRICO CLÍNICO RESUMIDO
+[A ser preenchido pelo profissional]
+
+III. HIPÓTESE DIAGNÓSTICA
+[A ser preenchido pelo profissional]
+
+IV. TRATAMENTO EM CURSO
+[A ser preenchido pelo profissional]
+
+V. OBSERVAÇÕES RELEVANTES
+[A ser preenchido pelo profissional]
+
+————————————————————
+
+Coloco-me à disposição para maiores informações por meio do contato profissional.
+
+Atenciosamente,${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
 export function buildDocumentContent(type: DocumentType, context: DocumentPreFillContext): string {
   switch (type) {
     case "declaration_of_attendance":
@@ -165,5 +219,9 @@ export function buildDocumentContent(type: DocumentType, context: DocumentPreFil
       return buildPsychologicalReport(context);
     case "consent_and_service_contract":
       return buildConsentAndServiceContract(context);
+    case "session_note":
+      return buildSessionNote(context);
+    case "referral_letter":
+      return buildReferralLetter(context);
   }
 }
