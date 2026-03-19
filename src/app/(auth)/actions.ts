@@ -97,7 +97,7 @@ export async function signUp(formData: FormData): Promise<void> {
     });
   }
 
-  redirect(AUTH_ROUTE_PATHS.verifyEmail);
+  redirect(AUTH_ROUTE_PATHS.mfaSetup);
 }
 
 export async function requestPasswordReset(formData: FormData): Promise<void> {
