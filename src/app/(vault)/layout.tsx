@@ -2,6 +2,8 @@ import { SearchBar } from "./components/search-bar";
 import { VaultSidebarNav } from "./components/vault-sidebar-nav";
 import { BottomNav } from "./components/bottom-nav";
 
+export const dynamic = "force-dynamic";
+
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={shellStyle}>
