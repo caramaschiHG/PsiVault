@@ -1,4 +1,12 @@
-# Execution Roadmap: PsiVault v1.1
+# Execution Roadmap: PsiVault Launch Scope
+
+**Active milestone:** `v1.2 Lançamento`
+**Current unarchived launch scope:** phases `07`–`20`
+**Current planning focus:** Phase 15: Planning Metadata Realignment
+
+The roadmap below keeps the original v1.1 and v1.2 phase history, but the live launch scope is the combined unarchived sequence from infrastructure through launch sign-off.
+
+## Archived foundation carried into the active launch scope
 
 ## Phase 7: Infrastructure Foundation
 **Goal:** Establish the production database and ORM layer connected to Supabase.
@@ -80,7 +88,7 @@ Plans:
 
 ---
 
-# Execution Roadmap: PsiVault v1.2 "Lançamento"
+## v1.2 Launch continuation
 
 ## Phase 12: Authentication UX
 **Goal:** Replace stub/minimal auth pages with a professional, user-friendly authentication experience using Supabase Auth.

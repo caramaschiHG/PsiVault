@@ -40,11 +40,11 @@ created: 2026-03-18
 |---------|------|------|-------------|-----------|-------------------|--------|
 | 15-01-T1 | 01 | 1 | metadata alignment | grep | `rg -n "Current Milestone: v1\\.2|v1\\.2 Lançamento" .planning/PROJECT.md .planning/ROADMAP.md` | ⬜ pending |
 | 15-01-T2 | 01 | 1 | metadata alignment | grep | `rg -n "milestone: v1\\.2|Ready to start Phase 15|Current focus:\\*\\* Phase 15" .planning/STATE.md` | ⬜ pending |
-| 15-02-T1 | 02 | 1 | artifact topology | file | `find .planning/phases -maxdepth 1 \\( -name '07-*' -o -name '08-*' \\) | sort` | ⬜ pending |
-| 15-02-T2 | 02 | 1 | artifact topology | grep | `rg -n "\\.planning/milestones/v1\\.1-phases/(07|08)-" .planning/phases` | ⬜ pending |
-| 15-03-T1 | 03 | 2 | GSD continuity | cli | `node "$HOME/.codex/get-shit-done/bin/gsd-tools.cjs" init plan-phase "15"` | ⬜ pending |
-| 15-03-T2 | 03 | 2 | GSD continuity | cli | `node "$HOME/.codex/get-shit-done/bin/gsd-tools.cjs" roadmap get-phase "16"` | ⬜ pending |
-| 15-03-T3 | 03 | 2 | launch-scope boundary | grep | `rg -n "current unarchived launch scope|launch scope|Phase 15" .planning/PROJECT.md .planning/ROADMAP.md .planning/STATE.md .planning/v1.1-MILESTONE-AUDIT.md` | ⬜ pending |
+| 15-02-T1 | 02 | 2 | artifact topology | file | `find .planning/phases -maxdepth 1 \\( -name '07-*' -o -name '08-*' \\) | sort` | ⬜ pending |
+| 15-02-T2 | 02 | 2 | artifact topology | grep | `rg -n "\\.planning/milestones/v1\\.1-phases/(07|08)-" .planning/phases` | ⬜ pending |
+| 15-03-T1 | 03 | 3 | GSD continuity | cli | `node "$HOME/.codex/get-shit-done/bin/gsd-tools.cjs" init plan-phase "15"` | ⬜ pending |
+| 15-03-T2 | 03 | 3 | GSD continuity | cli | `node "$HOME/.codex/get-shit-done/bin/gsd-tools.cjs" roadmap get-phase "16"` | ⬜ pending |
+| 15-03-T3 | 03 | 3 | launch-scope boundary | grep | `rg -n "current unarchived launch scope|launch scope|Phase 15" .planning/PROJECT.md .planning/ROADMAP.md .planning/STATE.md .planning/v1.1-MILESTONE-AUDIT.md` | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
