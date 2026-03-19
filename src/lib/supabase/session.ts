@@ -1,5 +1,3 @@
-"use server";
-
 import { createClient } from "./server";
 import { db } from "@/lib/db";
 import { logServerRenderError, logServerRenderInfo, observeServerStage } from "@/lib/observability/server-render";
