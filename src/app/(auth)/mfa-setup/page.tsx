@@ -47,7 +47,7 @@ export default function MfaSetupPage() {
         }
       }
 
-      const { data, error } = await client.auth.mfa.enroll({ factorType: "totp" });
+      const { data, error } = await client.auth.mfa.enroll({ factorType: "totp", friendlyName: "PsiVault", issuer: "PsiVault" });
       if (error || !data) {
         console.error("MFA enroll error:", JSON.stringify(error));
         setError(`Erro ao iniciar configuração MFA: ${error?.message ?? "erro desconhecido"}`);

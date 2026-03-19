@@ -11,13 +11,13 @@ import type {
 } from "./readiness";
 
 const DEFAULT_PROFILE_SNAPSHOT: SetupProfileSnapshot = {
-  fullName: "Dra. Helena Prado",
-  crp: "CRP 06/123456",
-  contactEmail: "contato@consultorio.com.br",
-  contactPhone: "",
-  defaultAppointmentDurationMinutes: 50,
-  defaultSessionPriceInCents: 18000,
-  serviceModes: [SERVICE_MODE_OPTIONS.inPerson, SERVICE_MODE_OPTIONS.online],
+  fullName: null,
+  crp: null,
+  contactEmail: null,
+  contactPhone: null,
+  defaultAppointmentDurationMinutes: null,
+  defaultSessionPriceInCents: null,
+  serviceModes: [],
   signatureAsset: null,
 };
 
