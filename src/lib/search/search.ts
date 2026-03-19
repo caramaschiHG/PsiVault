@@ -70,6 +70,7 @@ function translateDocumentType(type: DocumentType): string {
     psychological_report: "Laudo psicológico",
     consent_and_service_contract: "Contrato e consentimento",
     session_note: "Evolução de sessão",
+    case_study_psychoanalytic: "Estudo de caso psicanalítico",
     referral_letter: "Carta de encaminhamento",
   };
   return labels[type] ?? type;

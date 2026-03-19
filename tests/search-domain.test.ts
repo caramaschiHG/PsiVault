@@ -213,6 +213,24 @@ describe("searchAll", () => {
         expect(item).not.toHaveProperty("content");
       }
     });
+
+    it("returns document result when query matches psychoanalytic case study label", () => {
+      const result = searchAll({
+        ...DATA,
+        query: "psicanalítico",
+        documents: [
+          {
+            ...document,
+            id: "doc_case_1",
+            type: "case_study_psychoanalytic",
+          },
+        ],
+      });
+
+      const documentResults = result.filter((r: SearchResultItem) => r.type === "document");
+      expect(documentResults).toHaveLength(1);
+      expect(documentResults[0]?.label).toBe("Estudo de caso psicanalítico");
+    });
   });
 
   describe("charge search (SECU-05)", () => {

@@ -20,6 +20,7 @@ const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   psychological_report: "Laudo Psicológico",
   consent_and_service_contract: "Contrato de Prestação de Serviços",
   session_note: "Evolução de Sessão",
+  case_study_psychoanalytic: "Estudo de Caso Psicanalítico",
   referral_letter: "Carta de Encaminhamento",
 };
 
@@ -58,7 +59,7 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
             </svg>
           }
           title="Nenhum documento gerado ainda"
-          description="Crie declarações, recibos e laudos para este paciente."
+          description="Crie declarações, recibos, laudos e estudos de caso para este paciente."
           actionLabel="Novo documento"
           actionHref={`/patients/${patientId}/documents/new`}
         />

@@ -1,8 +1,8 @@
 /**
  * Document content template factory.
  *
- * buildDocumentContent returns pre-filled Portuguese prose for each of the 5
- * document types. Phase 5 (finance) will enrich the receipt template with
+ * buildDocumentContent returns pre-filled Portuguese prose for each supported
+ * document type. Phase 5 (finance) will enrich the receipt template with
  * real payment data; for now the amount field uses a placeholder.
  *
  * Security policy (SECU-05):
@@ -176,6 +176,41 @@ Data prevista: ________
 Objetivos para a próxima sessão: [A ser preenchido pelo profissional]${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
 }
 
+function buildPsychoanalyticCaseStudy(ctx: DocumentPreFillContext): string {
+  return `ESTUDO DE CASO PSICANALÍTICO
+
+Profissional: ${ctx.professionalName} (${ctx.crp})
+Data do registro: ${ctx.todayLabel}
+
+I. IDENTIFICAÇÃO DO CASO
+Caso (iniciais ou código): ________
+Período de acompanhamento considerado: ${ctx.sessionDateRange ?? "________"}
+
+II. MOTIVO DA ESCRITA / RECORTE DO CASO
+[Delimitar o motivo da formalização do caso, o ponto de impasse clínico ou o eixo de interesse para supervisão e elaboração]
+
+III. APRESENTAÇÃO DA DEMANDA
+[Descrever como a demanda comparece no discurso do paciente e na cena analítica]
+
+IV. HISTÓRIA E CONTEXTO
+[Registrar elementos biográficos, familiares e contextuais relevantes para a leitura do caso]
+
+V. DINÂMICA TRANSFERENCIAL E CONTRATRANSFERENCIAL
+[Anotar movimentos transferenciais, incidências no vínculo e efeitos clínicos percebidos pelo analista]
+
+VI. FORMAÇÕES DO INCONSCIENTE E ELEMENTOS RECORRENTES
+[Registrar sonhos, atos falhos, repetições, lapsos, fantasias, sintomas e significantes recorrentes]
+
+VII. HIPÓTESES CLÍNICAS
+[Elaborar hipóteses provisórias, conflitos centrais, defesas predominantes e organização psíquica]
+
+VIII. DIREÇÃO DO TRATAMENTO
+[Indicar manejo, orientação da escuta, intervenções possíveis e pontos de acompanhamento]
+
+IX. OBSERVAÇÕES ÉTICAS E DE SIGILO
+Este registro deve preservar o sigilo clínico e evitar identificação direta do paciente, privilegiando iniciais, código do caso e supressão de detalhes desnecessários.${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
 function buildReferralLetter(ctx: DocumentPreFillContext): string {
   return `CARTA DE ENCAMINHAMENTO
 
@@ -221,6 +256,8 @@ export function buildDocumentContent(type: DocumentType, context: DocumentPreFil
       return buildConsentAndServiceContract(context);
     case "session_note":
       return buildSessionNote(context);
+    case "case_study_psychoanalytic":
+      return buildPsychoanalyticCaseStudy(context);
     case "referral_letter":
       return buildReferralLetter(context);
   }

@@ -21,6 +21,7 @@ const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   psychological_report: "Laudo Psicológico",
   consent_and_service_contract: "Contrato de Prestação de Serviços",
   session_note: "Evolução de Sessão",
+  case_study_psychoanalytic: "Estudo de Caso Psicanalítico",
   referral_letter: "Carta de Encaminhamento",
 };
 

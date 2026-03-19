@@ -387,6 +387,18 @@ describe("document domain", () => {
       expect(content).toContain(ctx.professionalName);
       expect(content).toContain(ctx.crp);
     });
+
+    it("returns psychoanalytic case study template with pseudonymization placeholder and professional fields", () => {
+      const content = buildDocumentContent("case_study_psychoanalytic", ctx);
+      expect(content.length).toBeGreaterThan(0);
+      expect(content).toContain("ESTUDO DE CASO PSICANALÍTICO");
+      expect(content).toContain(ctx.professionalName);
+      expect(content).toContain(ctx.crp);
+      expect(content).toContain(ctx.todayLabel);
+      expect(content).toContain("Caso (iniciais ou código): ________");
+      expect(content).toContain("sigilo clínico");
+      expect(content).not.toContain(`Caso: ${ctx.patientFullName}`);
+    });
   });
 
   describe("createDocumentAuditEvent (SECU-05)", () => {
