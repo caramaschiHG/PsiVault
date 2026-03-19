@@ -1,13 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import type { User } from "@supabase/supabase-js";
-
 const AUTH_ROUTES = ["/sign-in", "/sign-up", "/verify-email", "/reset-password", "/mfa-setup", "/mfa-verify", "/complete-profile"];
-
-export function isEmailVerified(user: User | null): boolean {
-  return Boolean(user?.email_confirmed_at);
-}
 
 export async function middleware(request: NextRequest) {
   const { supabase, supabaseResponse, user } = await updateSession(request);
@@ -17,11 +11,6 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthRoute) {
     if (user) {
-      if (!isEmailVerified(user)) {
-        if (pathname === "/verify-email") return supabaseResponse;
-        return NextResponse.redirect(new URL("/verify-email", request.url));
-      }
-
       const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       const mfaComplete = aal?.currentLevel === "aal2";
 
@@ -48,10 +37,6 @@ export async function middleware(request: NextRequest) {
   // Vault routes
   if (!user) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
-  }
-
-  if (!isEmailVerified(user)) {
-    return NextResponse.redirect(new URL("/verify-email", request.url));
   }
 
   const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
