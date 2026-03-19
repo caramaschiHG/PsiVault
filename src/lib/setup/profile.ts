@@ -229,7 +229,7 @@ export async function saveSignatureAsset(input: {
     input.workspaceId,
   );
   const nextAsset: SignatureAssetSnapshot = {
-    storageKey: input.storageKey ?? `signatures/${input.workspaceId}/${input.fileName}`,
+    storageKey: input.storageKey ?? `${input.workspaceId}/${input.fileName}`,
     fileName: input.fileName.trim(),
     mimeType: input.mimeType.trim() || "application/octet-stream",
     fileSize: parsePositiveInteger(input.fileSize) ?? 0,

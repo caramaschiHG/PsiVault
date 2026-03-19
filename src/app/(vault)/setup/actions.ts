@@ -64,7 +64,7 @@ export async function saveSignatureAssetAction(
 
   const { accountId, workspaceId } = await resolveSession();
   const uuid = crypto.randomUUID();
-  const storageKey = `signatures/${accountId}/${uuid}-${file.name}`;
+  const storageKey = `${accountId}/${uuid}-${file.name}`;
 
   const buffer = await file.arrayBuffer();
   const supabase = await createClient();
