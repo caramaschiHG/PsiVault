@@ -11,9 +11,7 @@ export const db =
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalThis.__psivaultPrisma__ = db;
-}
+globalThis.__psivaultPrisma__ = db;
 
 export function buildOwnedWorkspaceSelector(accountId: string, workspaceId: string) {
   return {

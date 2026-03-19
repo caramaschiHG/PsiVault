@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AUTH_ROUTE_PATHS } from "@/lib/supabase/constants";
+import { db } from "@/lib/db";
 
 export async function signIn(formData: FormData): Promise<void> {
   const email = formData.get("email") as string;
@@ -45,8 +46,6 @@ export async function signUp(formData: FormData): Promise<void> {
   }
 
   if (data.user) {
-    const { db } = await import("@/lib/db");
-
     // Supabase can return a user object even when the e-mail is already registered.
     // Local provisioning must therefore be idempotent instead of assuming a fresh account.
     const safeEmail = data.user.email ?? email;
