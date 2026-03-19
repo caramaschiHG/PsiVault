@@ -1,3 +1,6 @@
+import { ServiceMode as PrismaServiceMode } from "@prisma/client";
+
+import { db } from "../db";
 import {
   SERVICE_MODE_OPTIONS,
   type ServiceMode,
@@ -7,67 +10,16 @@ import type {
   SignatureAssetSnapshot,
 } from "./readiness";
 
-export interface PracticeProfileRecord extends SetupProfileSnapshot {
-  accountId: string;
-  workspaceId: string;
-}
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultSetupProfiles__:
-    | Map<string, PracticeProfileRecord>
-    | undefined;
-}
-
-const DEFAULT_ACCOUNT_ID = "acct_1";
-const DEFAULT_WORKSPACE_ID = "ws_1";
-
-function getProfileStore() {
-  globalThis.__psivaultSetupProfiles__ ??= new Map<string, PracticeProfileRecord>();
-
-  return globalThis.__psivaultSetupProfiles__;
-}
-
-function createKey(accountId: string, workspaceId: string) {
-  return `${accountId}:${workspaceId}`;
-}
-
-export function getDefaultPracticeProfileSnapshot(): PracticeProfileRecord {
-  return {
-    accountId: DEFAULT_ACCOUNT_ID,
-    workspaceId: DEFAULT_WORKSPACE_ID,
-    fullName: "Dra. Helena Prado",
-    crp: "CRP 06/123456",
-    contactEmail: "contato@consultorio.com.br",
-    contactPhone: "",
-    defaultAppointmentDurationMinutes: 50,
-    defaultSessionPriceInCents: 18000,
-    serviceModes: [SERVICE_MODE_OPTIONS.inPerson, SERVICE_MODE_OPTIONS.online],
-    signatureAsset: null,
-  };
-}
-
-export function getPracticeProfileSnapshot(
-  accountId = DEFAULT_ACCOUNT_ID,
-  workspaceId = DEFAULT_WORKSPACE_ID,
-) {
-  const store = getProfileStore();
-  const key = createKey(accountId, workspaceId);
-  const profile = store.get(key);
-
-  if (profile) {
-    return profile;
-  }
-
-  const seeded = {
-    ...getDefaultPracticeProfileSnapshot(),
-    accountId,
-    workspaceId,
-  };
-  store.set(key, seeded);
-
-  return seeded;
-}
+const DEFAULT_PROFILE_SNAPSHOT: SetupProfileSnapshot = {
+  fullName: "Dra. Helena Prado",
+  crp: "CRP 06/123456",
+  contactEmail: "contato@consultorio.com.br",
+  contactPhone: "",
+  defaultAppointmentDurationMinutes: 50,
+  defaultSessionPriceInCents: 18000,
+  serviceModes: [SERVICE_MODE_OPTIONS.inPerson, SERVICE_MODE_OPTIONS.online],
+  signatureAsset: null,
+};
 
 function parsePositiveInteger(value: string | number | null | undefined) {
   const numericValue = typeof value === "number" ? value : Number(value ?? "");
@@ -83,6 +35,105 @@ function hasText(value: string | null | undefined) {
   return Boolean(value?.trim());
 }
 
+function mapPrismaServiceMode(mode: PrismaServiceMode): ServiceMode {
+  switch (mode) {
+    case PrismaServiceMode.IN_PERSON:
+      return SERVICE_MODE_OPTIONS.inPerson;
+    case PrismaServiceMode.ONLINE:
+      return SERVICE_MODE_OPTIONS.online;
+    case PrismaServiceMode.HYBRID:
+      return SERVICE_MODE_OPTIONS.hybrid;
+  }
+}
+
+function mapToPrismaServiceMode(mode: ServiceMode): PrismaServiceMode {
+  switch (mode) {
+    case SERVICE_MODE_OPTIONS.inPerson:
+      return PrismaServiceMode.IN_PERSON;
+    case SERVICE_MODE_OPTIONS.online:
+      return PrismaServiceMode.ONLINE;
+    case SERVICE_MODE_OPTIONS.hybrid:
+      return PrismaServiceMode.HYBRID;
+  }
+}
+
+function mapSignatureAsset(
+  asset:
+    | {
+        storageKey: string;
+        fileName: string;
+        mimeType: string;
+        fileSize: number;
+        uploadedAt: Date;
+      }
+    | null
+    | undefined,
+): SignatureAssetSnapshot | null {
+  if (!asset) {
+    return null;
+  }
+
+  return {
+    storageKey: asset.storageKey,
+    fileName: asset.fileName,
+    mimeType: asset.mimeType,
+    fileSize: asset.fileSize,
+    uploadedAt: asset.uploadedAt,
+  };
+}
+
+function mapProfileRowToSnapshot(
+  profile:
+    | {
+        fullName: string | null;
+        crp: string | null;
+        contactEmail: string | null;
+        contactPhone: string | null;
+        defaultAppointmentDurationMinutes: number | null;
+        defaultSessionPriceInCents: number | null;
+        serviceModes: PrismaServiceMode[];
+        signatureAsset?:
+          | {
+              storageKey: string;
+              fileName: string;
+              mimeType: string;
+              fileSize: number;
+              uploadedAt: Date;
+            }
+          | null;
+      }
+    | null,
+): SetupProfileSnapshot {
+  if (!profile) {
+    return { ...DEFAULT_PROFILE_SNAPSHOT };
+  }
+
+  return {
+    fullName: profile.fullName,
+    crp: profile.crp,
+    contactEmail: profile.contactEmail,
+    contactPhone: profile.contactPhone,
+    defaultAppointmentDurationMinutes:
+      profile.defaultAppointmentDurationMinutes,
+    defaultSessionPriceInCents: profile.defaultSessionPriceInCents,
+    serviceModes: profile.serviceModes.map(mapPrismaServiceMode),
+    signatureAsset: mapSignatureAsset(profile.signatureAsset),
+  };
+}
+
+function buildProfileWriteData(profile: SetupProfileSnapshot) {
+  return {
+    fullName: profile.fullName,
+    crp: profile.crp,
+    contactEmail: profile.contactEmail,
+    contactPhone: profile.contactPhone,
+    defaultAppointmentDurationMinutes:
+      profile.defaultAppointmentDurationMinutes,
+    defaultSessionPriceInCents: profile.defaultSessionPriceInCents,
+    serviceModes: profile.serviceModes.map(mapToPrismaServiceMode),
+  };
+}
+
 export function normalizeServiceModes(input: Iterable<string>) {
   const validModes = new Set<ServiceMode>(Object.values(SERVICE_MODE_OPTIONS));
   const nextModes = [...new Set([...input].filter((entry): entry is ServiceMode => validModes.has(entry as ServiceMode)))];
@@ -90,7 +141,23 @@ export function normalizeServiceModes(input: Iterable<string>) {
   return nextModes;
 }
 
-export function savePracticeProfile(input: {
+export async function getPracticeProfileSnapshot(
+  _accountId?: string,
+  workspaceId?: string,
+) {
+  if (!workspaceId) {
+    return { ...DEFAULT_PROFILE_SNAPSHOT };
+  }
+
+  const profile = await db.practiceProfile.findUnique({
+    where: { workspaceId },
+    include: { signatureAsset: true },
+  });
+
+  return mapProfileRowToSnapshot(profile);
+}
+
+export async function savePracticeProfile(input: {
   accountId?: string;
   workspaceId?: string;
   fullName?: string | null;
@@ -101,11 +168,15 @@ export function savePracticeProfile(input: {
   defaultSessionPriceInCents?: string | number | null;
   serviceModes?: Iterable<string>;
 }) {
-  const current = getPracticeProfileSnapshot(
+  if (!input.workspaceId) {
+    throw new Error("workspaceId is required to save the practice profile.");
+  }
+
+  const current = await getPracticeProfileSnapshot(
     input.accountId,
     input.workspaceId,
   );
-  const next: PracticeProfileRecord = {
+  const next: SetupProfileSnapshot = {
     ...current,
     fullName: hasText(input.fullName ?? null) ? input.fullName!.trim() : null,
     crp: hasText(input.crp ?? null) ? input.crp!.trim() : null,
@@ -116,7 +187,8 @@ export function savePracticeProfile(input: {
       ? input.contactPhone!.trim()
       : null,
     defaultAppointmentDurationMinutes: parsePositiveInteger(
-      input.defaultAppointmentDurationMinutes ?? current.defaultAppointmentDurationMinutes,
+      input.defaultAppointmentDurationMinutes ??
+        current.defaultAppointmentDurationMinutes,
     ),
     defaultSessionPriceInCents: parsePositiveInteger(
       input.defaultSessionPriceInCents ?? current.defaultSessionPriceInCents,
@@ -125,14 +197,22 @@ export function savePracticeProfile(input: {
       input.serviceModes !== undefined
         ? normalizeServiceModes(input.serviceModes)
         : current.serviceModes,
+    signatureAsset: current.signatureAsset,
   };
 
-  getProfileStore().set(createKey(next.accountId, next.workspaceId), next);
+  await db.practiceProfile.upsert({
+    where: { workspaceId: input.workspaceId },
+    create: {
+      workspaceId: input.workspaceId,
+      ...buildProfileWriteData(next),
+    },
+    update: buildProfileWriteData(next),
+  });
 
   return next;
 }
 
-export function saveSignatureAsset(input: {
+export async function saveSignatureAsset(input: {
   accountId?: string;
   workspaceId?: string;
   storageKey?: string;
@@ -140,36 +220,67 @@ export function saveSignatureAsset(input: {
   mimeType: string;
   fileSize: string | number;
 }) {
-  const current = getPracticeProfileSnapshot(input.accountId, input.workspaceId);
+  if (!input.workspaceId) {
+    throw new Error("workspaceId is required to save the signature asset.");
+  }
+
+  const current = await getPracticeProfileSnapshot(
+    input.accountId,
+    input.workspaceId,
+  );
   const nextAsset: SignatureAssetSnapshot = {
-    storageKey: input.storageKey ?? `signatures/${current.accountId}/${input.fileName}`,
+    storageKey: input.storageKey ?? `signatures/${input.workspaceId}/${input.fileName}`,
     fileName: input.fileName.trim(),
     mimeType: input.mimeType.trim() || "application/octet-stream",
     fileSize: parsePositiveInteger(input.fileSize) ?? 0,
     uploadedAt: new Date(),
   };
 
-  const next = {
+  await db.practiceProfile.upsert({
+    where: { workspaceId: input.workspaceId },
+    create: {
+      workspaceId: input.workspaceId,
+      ...buildProfileWriteData(current),
+      signatureAsset: {
+        create: nextAsset,
+      },
+    },
+    update: {
+      signatureAsset: {
+        upsert: {
+          create: nextAsset,
+          update: nextAsset,
+        },
+      },
+    },
+  });
+
+  return {
     ...current,
     signatureAsset: nextAsset,
   };
-
-  getProfileStore().set(createKey(next.accountId, next.workspaceId), next);
-
-  return next;
 }
 
-export function clearSignatureAsset(
-  accountId = DEFAULT_ACCOUNT_ID,
-  workspaceId = DEFAULT_WORKSPACE_ID,
+export async function clearSignatureAsset(
+  _accountId?: string,
+  workspaceId?: string,
 ) {
-  const current = getPracticeProfileSnapshot(accountId, workspaceId);
-  const next = {
+  if (!workspaceId) {
+    return { ...DEFAULT_PROFILE_SNAPSHOT };
+  }
+
+  await db.signatureAsset.deleteMany({
+    where: {
+      profile: {
+        workspaceId,
+      },
+    },
+  });
+
+  const current = await getPracticeProfileSnapshot(undefined, workspaceId);
+
+  return {
     ...current,
     signatureAsset: null,
   };
-
-  getProfileStore().set(createKey(next.accountId, next.workspaceId), next);
-
-  return next;
 }

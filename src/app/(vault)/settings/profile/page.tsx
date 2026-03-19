@@ -11,6 +11,7 @@ import {
   saveSignatureAssetAction,
 } from "../../setup/actions";
 import { SignatureUpload } from "./components/signature-upload";
+import { resolveSession } from "../../../../lib/supabase/session";
 
 const serviceModeLabels: Record<string, string> = {
   [SERVICE_MODE_OPTIONS.inPerson]: "Presencial",
@@ -18,8 +19,9 @@ const serviceModeLabels: Record<string, string> = {
   [SERVICE_MODE_OPTIONS.hybrid]: "Híbrido",
 };
 
-export default function ProfileSettingsPage() {
-  const profile = getPracticeProfileSnapshot();
+export default async function ProfileSettingsPage() {
+  const { accountId, workspaceId } = await resolveSession();
+  const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
   const readiness = buildSetupReadiness(profile);
 
   return (

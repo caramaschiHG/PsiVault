@@ -37,7 +37,7 @@ export default async function NewAppointmentPage({
   // Load data
   const patientRepo = getPatientRepository();
   const patients = await patientRepo.listActive(workspaceId);
-  const profile = getPracticeProfileSnapshot(accountId, workspaceId);
+  const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
 
   // Resolve defaultCareMode: use param if valid, otherwise derive from profile
   const rawCareMode = params.careMode;

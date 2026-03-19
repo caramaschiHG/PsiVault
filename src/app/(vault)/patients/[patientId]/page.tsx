@@ -59,7 +59,7 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
 
   const patientRepo = getPatientRepository();
   const appointmentRepo = getAppointmentRepository();
-  const profile = getPracticeProfileSnapshot(accountId, workspaceId);
+  const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
 
   const patient = await patientRepo.findById(patientId, workspaceId);
 

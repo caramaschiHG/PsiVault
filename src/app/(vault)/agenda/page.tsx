@@ -81,7 +81,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   }
 
   // Load practice profile for next-session defaults
-  const profile = getPracticeProfileSnapshot(accountId, workspaceId);
+  const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
 
   // Resolve default care mode from practice profile (HYBRID is not a booking value)
   const profileCareMode =

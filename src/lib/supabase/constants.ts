@@ -5,6 +5,7 @@ export const AUTH_ROUTE_PATHS = {
   resetPassword: "/reset-password",
   mfaSetup: "/mfa-setup",
   mfaVerify: "/mfa-verify",
+  completeProfile: "/complete-profile",
 };
 
 export function isVaultRoute(pathname: string): boolean {

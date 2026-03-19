@@ -38,7 +38,7 @@ export default function MfaVerifyPage() {
       return;
     }
 
-    router.push("/inicio");
+    router.push("/complete-profile");
   }
 
   return (

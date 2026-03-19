@@ -60,7 +60,7 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
   const isActive = doc.archivedAt === null;
 
   // Signature image — generate a short-lived signed URL if asset exists
-  const profile = getPracticeProfileSnapshot();
+  const profile = await getPracticeProfileSnapshot(undefined, workspaceId);
   let signatureImageUrl: string | null = null;
   if (profile.signatureAsset?.storageKey) {
     const supabase = await createClient();

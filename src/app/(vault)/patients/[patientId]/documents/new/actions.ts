@@ -61,7 +61,7 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
     const type = rawType as DocumentType;
 
     // Get professional name for provenance snapshot
-    const profile = getPracticeProfileSnapshot(accountId, workspaceId);
+    const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
 
     const now = new Date();
     const doc = createPracticeDocument(

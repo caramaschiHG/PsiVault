@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const AUTH_ROUTES = ["/sign-in", "/sign-up", "/verify-email", "/reset-password", "/mfa-setup", "/mfa-verify"];
+const AUTH_ROUTES = ["/sign-in", "/sign-up", "/verify-email", "/reset-password", "/mfa-setup", "/mfa-verify", "/complete-profile"];
 
 export async function middleware(request: NextRequest) {
   const { supabase, supabaseResponse, user } = await updateSession(request);
@@ -16,6 +16,8 @@ export async function middleware(request: NextRequest) {
       const mfaComplete = aal?.currentLevel === "aal2";
 
       if (mfaComplete) {
+        // Let /complete-profile through — page itself checks CRP and redirects
+        if (pathname === "/complete-profile") return supabaseResponse;
         return NextResponse.redirect(new URL("/inicio", request.url));
       }
 
@@ -56,6 +58,7 @@ export const config = {
     "/reset-password",
     "/mfa-setup",
     "/mfa-verify",
+    "/complete-profile",
     "/inicio",
     "/patients/:path*",
     "/agenda/:path*",

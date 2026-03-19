@@ -143,7 +143,7 @@ export default async function DocumentComposerPage({
   const documentType = rawType as DocumentType;
 
   // 3. Signature gate
-  const profile = getPracticeProfileSnapshot(accountId, workspaceId);
+  const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
   if (!profile.signatureAsset) {
     return (
       <main style={shellStyle}>

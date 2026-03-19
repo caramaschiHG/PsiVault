@@ -8,4 +8,8 @@ dist
 pnpm-lock.yaml
 npm-debug.log*
 .worktrees/
-
+/.playwright-mcp/*.log
+/app-signin.png
+/landing-final.png
+/landing-hero.png
+/landing-updated.png

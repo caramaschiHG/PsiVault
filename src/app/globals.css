@@ -61,6 +61,18 @@
   --color-error-bg: rgba(239, 68, 68, 0.08);
   --color-error-border: rgba(239, 68, 68, 0.3);
   --color-error-text: #dc2626;
+
+  /* Landing — mesma paleta do app */
+  --landing-bg: #f4f0ea;
+  --landing-surface: #fdfaf5;
+  --landing-surface-strong: #ede8de;
+  --landing-text: #1c1917;
+  --landing-muted: #57534e;
+  --landing-soft: #78716c;
+  --landing-accent: #9a3412;
+  --landing-accent-strong: #7c2910;
+  --landing-border: rgba(146, 64, 14, 0.1);
+  --landing-border-strong: rgba(146, 64, 14, 0.2);
 }
 
 /* ─── Reset ──────────────────────────────────────────────────────────────────── */
@@ -74,10 +86,17 @@ body {
   min-height: 100vh;
   background: var(--color-bg);
   color: var(--color-text-1);
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
   color: inherit;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 ::selection {

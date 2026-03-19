@@ -16,7 +16,11 @@ function readFormValue(formData: FormData, field: string) {
 }
 
 export async function savePracticeProfileAction(formData: FormData) {
-  savePracticeProfile({
+  const { accountId, workspaceId } = await resolveSession();
+
+  await savePracticeProfile({
+    accountId,
+    workspaceId,
     fullName: readFormValue(formData, "fullName"),
     crp: readFormValue(formData, "crp"),
     contactEmail: readFormValue(formData, "contactEmail"),
@@ -33,6 +37,8 @@ export async function savePracticeProfileAction(formData: FormData) {
       (value): value is string => typeof value === "string",
     ),
   });
+
+  revalidatePath("/settings/profile");
 }
 
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/svg+xml"];
@@ -56,7 +62,7 @@ export async function saveSignatureAssetAction(
     return { error: "Arquivo muito grande. Máximo: 2MB." };
   }
 
-  const { accountId } = await resolveSession();
+  const { accountId, workspaceId } = await resolveSession();
   const uuid = crypto.randomUUID();
   const storageKey = `signatures/${accountId}/${uuid}-${file.name}`;
 
@@ -71,7 +77,9 @@ export async function saveSignatureAssetAction(
     return { error: `Erro no upload: ${uploadError.message}` };
   }
 
-  saveSignatureAsset({
+  await saveSignatureAsset({
+    accountId,
+    workspaceId,
     storageKey,
     fileName: file.name,
     mimeType: file.type,
@@ -83,6 +91,8 @@ export async function saveSignatureAssetAction(
 }
 
 export async function removeSignatureAssetAction() {
-  clearSignatureAsset();
+  const { accountId, workspaceId } = await resolveSession();
+
+  await clearSignatureAsset(accountId, workspaceId);
   revalidatePath("/settings/profile");
 }

@@ -61,3 +61,45 @@
 - Respostas curtas e diretas, em português quando falando comigo
 - Usar Context7 para docs atualizadas de Next.js, Prisma, Supabase
 - Usar Serena para navegação semântica do código
+
+## Direção de Marca — Landing PsiVault
+
+### Tese
+- PsiVault deve parecer um produto sério para psicólogos brasileiros
+- A landing precisa transmitir calma, sigilo, organização e maturidade
+- O produto não é fintech, não é wellness influencer, não é AI gimmick
+
+### Sensação da marca
+- discreta
+- premium sem exibicionismo
+- clinicamente profissional sem frieza hospitalar
+- clara, estável e confiável
+- desenhada com ritmo editorial e muito espaço
+
+### Copy da landing
+- Todo o texto em **pt-BR**
+- Vocabulário concreto: `rotina clínica`, `prontuário`, `agenda`, `documentos`, `sigilo`, `recibos`, `declarações`, `atendimento online e presencial`, `acompanhamento`
+- Tom direto, maduro e específico
+- Evitar hype, slogans vazios e linguagem de startup
+- Não usar jargão burocrático ou jurídico como voz principal
+- Não soar como coach, wellness brand ou software genérico
+
+### Regras visuais da landing
+- Priorizar hierarquia tipográfica, grid limpo e respiro
+- Paleta principal: off-white quente, charcoal profundo, sage suave
+- Sombras contidas, raios discretos, contraste calmo
+- Mockups devem parecer interfaces plausíveis, nunca dashboards fantasiosos
+- Movimento só quando melhorar leitura, foco ou resposta de interação
+
+### Anti-padrões
+- nada de glow, glassmorphism chamativo ou gradientes espalhafatosos
+- nada de visual crypto/fintech/AI
+- nada de mockup flutuante fake
+- nada de blocos soltos sem narrativa
+- nada de ilustração genérica de marketing
+- nada de frases como “revolucione sua rotina”
+
+### Regras de confiança
+- Não prometer certificações ou garantias regulatórias sem base explícita no produto
+- Segurança deve ser comunicada com fatos do sistema: sessões, ações sensíveis, backup, exportação, organização de acesso
+- Sempre preferir linguagem de cuidado operacional a promessas vagas de “segurança de ponta”
