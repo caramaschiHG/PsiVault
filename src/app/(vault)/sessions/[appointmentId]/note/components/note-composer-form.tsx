@@ -13,6 +13,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { ClinicalNote } from "../../../../../../lib/clinical/model";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 interface NoteComposerFormProps {
   existingNote: ClinicalNote | null;
@@ -180,9 +181,7 @@ export function NoteComposerForm({
 
       {/* Form actions */}
       <div style={formActionsStyle}>
-        <button type="submit" style={submitButtonStyle}>
-          {submitLabel}
-        </button>
+        <SubmitButton label={submitLabel} style={submitButtonStyle} />
         <Link href={backHref} style={cancelLinkStyle} onClick={handleCancelClick}>
           Cancelar
         </Link>

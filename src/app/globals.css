@@ -767,3 +767,12 @@ html {
   from { width: 0; }
   to   { width: 100%; }
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes progress-slide {
+  0%   { transform: translateX(-150%); }
+  100% { transform: translateX(400%); }
+}

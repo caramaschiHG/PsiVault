@@ -28,14 +28,17 @@ function generateId() {
 
 // ─── createReminderAction ─────────────────────────────────────────────────────
 
-export async function createReminderAction(formData: FormData): Promise<void> {
+export async function createReminderAction(
+  _prevState: { success: boolean } | null,
+  formData: FormData,
+): Promise<{ success: boolean }> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getReminderRepository();
   const audit = getAuditRepository();
   const now = new Date();
 
   const title = String(formData.get("title") ?? "").trim();
-  if (!title) return; // client validation should prevent this, but guard anyway
+  if (!title) return { success: false };
 
   const dueAtRaw = String(formData.get("dueAt") ?? "").trim();
   const dueAt = dueAtRaw ? new Date(dueAtRaw) : null;
@@ -72,6 +75,8 @@ export async function createReminderAction(formData: FormData): Promise<void> {
   if (patientId) {
     revalidatePath(`/patients/${patientId}`);
   }
+
+  return { success: true };
 }
 
 // ─── completeReminderAction ───────────────────────────────────────────────────

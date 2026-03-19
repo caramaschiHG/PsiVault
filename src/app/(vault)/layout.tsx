@@ -1,6 +1,7 @@
 import { SearchBar } from "./components/search-bar";
 import { VaultSidebarNav } from "./components/vault-sidebar-nav";
 import { BottomNav } from "./components/bottom-nav";
+import { ToastProvider } from "@/components/ui/toast-provider";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,9 @@ export default function VaultLayout({ children }: { children: React.ReactNode })
 
       {/* Content area */}
       <main className="vault-content" style={contentStyle}>
-        {children}
+        <ToastProvider>
+          {children}
+        </ToastProvider>
       </main>
 
       {/* Mobile bottom navigation */}

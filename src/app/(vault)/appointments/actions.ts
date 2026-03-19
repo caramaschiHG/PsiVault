@@ -563,7 +563,12 @@ export async function updateChargeAction(formData: FormData): Promise<void> {
 
 // ─── Edit meeting link (ONLN-01) ──────────────────────────────────────────────
 
-export async function editMeetingLinkAction(formData: FormData): Promise<void> {
+export type ActionResult = { success: boolean; error?: string };
+
+export async function editMeetingLinkAction(
+  _prevState: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -577,8 +582,8 @@ export async function editMeetingLinkAction(formData: FormData): Promise<void> {
 
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
-    if (!existing) return;
-    if (existing.careMode !== "ONLINE") return;
+    if (!existing) return { success: false, error: "Consulta não encontrada." };
+    if (existing.careMode !== "ONLINE") return { success: false, error: "Consulta não é online." };
 
     const updated = updateAppointmentOnlineCare(existing, { meetingLink }, { now });
     await repo.save(updated);
@@ -598,16 +603,20 @@ export async function editMeetingLinkAction(formData: FormData): Promise<void> {
     patientIdForRevalidate = existing.patientId;
   } catch (err) {
     console.error("[editMeetingLinkAction]", err);
-    return;
+    return { success: false, error: "Erro ao salvar link." };
   }
 
   revalidatePath("/agenda");
   if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
+  return { success: true };
 }
 
 // ─── Add remote issue note (ONLN-03) ──────────────────────────────────────────
 
-export async function addRemoteIssueNoteAction(formData: FormData): Promise<void> {
+export async function addRemoteIssueNoteAction(
+  _prevState: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -621,9 +630,8 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<void
 
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
-    if (!existing) return;
+    if (!existing) return { success: false, error: "Consulta não encontrada." };
 
-    // Domain function guards against non-ONLINE appointments — let error propagate to Next.js error boundary
     const updated = updateAppointmentOnlineCare(existing, { remoteIssueNote }, { now });
     await repo.save(updated);
 
@@ -642,11 +650,12 @@ export async function addRemoteIssueNoteAction(formData: FormData): Promise<void
     patientIdForRevalidate = existing.patientId;
   } catch (err) {
     console.error("[addRemoteIssueNoteAction]", err);
-    return;
+    return { success: false, error: "Erro ao registrar." };
   }
 
   revalidatePath("/agenda");
   if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
+  return { success: true };
 }
 
 // ─── Edit recurrence series ────────────────────────────────────────────────────

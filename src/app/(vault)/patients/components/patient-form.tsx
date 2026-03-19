@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * PatientForm — essentials-first intake and edit form.
  *
@@ -15,6 +17,7 @@
 
 import type { Patient } from "../../../../lib/patients/model";
 import { createPatientAction, updatePatientAction } from "../actions";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 interface PatientFormProps {
   patient?: Patient;
@@ -181,9 +184,10 @@ export function PatientForm({ patient }: PatientFormProps) {
       </section>
 
       <div style={actionsStyle}>
-        <button style={primaryButtonStyle} type="submit">
-          {isEdit ? "Salvar alterações" : "Criar paciente"}
-        </button>
+        <SubmitButton
+          label={isEdit ? "Salvar alterações" : "Criar paciente"}
+          style={primaryButtonStyle}
+        />
       </div>
     </form>
   );

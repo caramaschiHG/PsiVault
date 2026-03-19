@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * AppointmentForm — create or reschedule a single appointment.
  *
@@ -13,6 +15,7 @@
 import type { Appointment } from "../../../../lib/appointments/model";
 import type { Patient } from "../../../../lib/patients/model";
 import { createAppointmentAction } from "../actions";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 interface AppointmentFormProps {
   /** Available active patients for the select. */
@@ -160,9 +163,10 @@ export function AppointmentForm({
       )}
 
       <div style={actionsStyle}>
-        <button style={primaryButtonStyle} type="submit">
-          {isReschedule ? "Reagendar consulta" : "Criar consulta"}
-        </button>
+        <SubmitButton
+          label={isReschedule ? "Reagendar consulta" : "Criar consulta"}
+          style={primaryButtonStyle}
+        />
       </div>
     </form>
   );

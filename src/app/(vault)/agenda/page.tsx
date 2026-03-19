@@ -35,8 +35,9 @@ import {
   buildReminderMailtoUrl,
   buildRescheduleMailtoUrl,
 } from "../../../lib/communication/templates";
-import { editMeetingLinkAction, addRemoteIssueNoteAction } from "../appointments/actions";
 import { AgendaToolbar } from "./components/agenda-toolbar";
+import { MeetingLinkForm } from "./components/meeting-link-form";
+import { RemoteIssueForm } from "./components/remote-issue-form";
 import { AgendaDayView } from "./components/agenda-day-view";
 import { AgendaWeekView } from "./components/agenda-week-view";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
@@ -219,36 +220,25 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             Abrir link
           </a>
         )}
-        <form action={editMeetingLinkAction} style={inlineFormStyle}>
-          <input type="hidden" name="appointmentId" value={appt.id} />
-          <input
-            type="url"
-            name="meetingLink"
-            defaultValue={appt.meetingLink ?? ""}
-            placeholder="https://meet.google.com/..."
-            style={urlInputStyle}
-          />
-          <button type="submit" style={submitButtonStyle}>
-            Salvar link
-          </button>
-        </form>
+        <MeetingLinkForm
+          appointmentId={appt.id}
+          meetingLink={appt.meetingLink ?? null}
+          urlInputStyle={urlInputStyle}
+          inlineFormStyle={inlineFormStyle}
+          submitButtonStyle={submitButtonStyle}
+        />
         <details style={detailsStyle}>
           <summary style={detailsSummaryStyle}>Problemas de conexão</summary>
           {appt.remoteIssueNote && (
             <p style={remoteIssueNoteStyle}>{appt.remoteIssueNote}</p>
           )}
-          <form action={addRemoteIssueNoteAction} style={inlineFormStyle}>
-            <input type="hidden" name="appointmentId" value={appt.id} />
-            <textarea
-              name="remoteIssueNote"
-              defaultValue={appt.remoteIssueNote ?? ""}
-              placeholder="Descreva o problema..."
-              style={textareaStyle}
-            />
-            <button type="submit" style={submitButtonStyle}>
-              Registrar
-            </button>
-          </form>
+          <RemoteIssueForm
+            appointmentId={appt.id}
+            remoteIssueNote={appt.remoteIssueNote ?? null}
+            inlineFormStyle={inlineFormStyle}
+            textareaStyle={textareaStyle}
+            submitButtonStyle={submitButtonStyle}
+          />
         </details>
       </section>
     ) : null;

@@ -12,6 +12,7 @@ import {
 } from "../../setup/actions";
 import { SignatureUpload } from "./components/signature-upload";
 import { resolveSession } from "../../../../lib/supabase/session";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 const serviceModeLabels: Record<string, string> = {
   [SERVICE_MODE_OPTIONS.inPerson]: "Presencial",
@@ -118,9 +119,7 @@ export default async function ProfileSettingsPage() {
             </div>
           </div>
 
-          <button style={buttonStyle} type="submit">
-            Salvar perfil e padrões
-          </button>
+          <SubmitButton label="Salvar perfil e padrões" style={buttonStyle} />
         </form>
 
         <aside style={sidebarStyle}>

@@ -13,13 +13,13 @@
  * to keep this component presentational and free of import side effects.
  */
 
-import { useState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
 import type { Reminder } from "../../../../../lib/reminders/model";
 
 interface RemindersSectionProps {
   activeReminders: Reminder[];
   completedReminders: Reminder[];
-  createReminderAction: (formData: FormData) => Promise<void>;
+  createReminderAction: (prevState: { success: boolean } | null, formData: FormData) => Promise<{ success: boolean }>;
   completeReminderAction: (reminderId: string) => Promise<void>;
   patientId: string;
 }
@@ -33,6 +33,7 @@ export function RemindersSection({
 }: RemindersSectionProps) {
   const [completedOpen, setCompletedOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [, formAction] = useActionState(createReminderAction, null);
 
   const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
@@ -85,7 +86,7 @@ export function RemindersSection({
       {/* New reminder inline form */}
       <div style={newReminderFormContainerStyle}>
         <p style={newReminderFormLabelStyle}>Novo lembrete</p>
-        <form action={createReminderAction} style={newReminderFormStyle}>
+        <form action={formAction} style={newReminderFormStyle}>
           {/* Hidden patient link — createReminderAction reads patientId to set link.type="patient" */}
           <input type="hidden" name="patientId" value={patientId} />
           <input

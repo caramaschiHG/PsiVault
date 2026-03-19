@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 interface SignatureUploadProps {
   saveAction: (
@@ -16,6 +17,22 @@ interface SignatureUploadProps {
 const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/svg+xml"];
 const MAX_SIZE = 2 * 1024 * 1024;
 
+function SignatureSubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <div style={{ display: "grid", gap: "0.4rem" }}>
+      <button type="submit" disabled={pending} style={{ ...confirmBtnStyle, ...(pending ? { opacity: 0.7, cursor: "not-allowed" } : {}) }}>
+        {pending ? "Salvando..." : "Confirmar assinatura"}
+      </button>
+      {pending && (
+        <div style={progressTrackStyle}>
+          <div style={progressBarStyle} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SignatureUpload({
   saveAction,
   removeAction,
@@ -26,7 +43,16 @@ export function SignatureUpload({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [clientError, setClientError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [state, formAction] = useActionState(saveAction, null);
+
+  useEffect(() => {
+    if (state && !state.error) {
+      setSaved(true);
+      const t = setTimeout(() => setSaved(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [state]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFile(file: File) {
@@ -103,9 +129,8 @@ export function SignatureUpload({
             {error && <p style={errorStyle}>{error}</p>}
 
             <div style={previewActionsStyle}>
-              <button type="submit" style={confirmBtnStyle}>
-                Confirmar assinatura
-              </button>
+              <SignatureSubmitButton />
+              {saved && <span style={savedLabelStyle}>✓ Assinatura salva</span>}
               <button type="button" style={changeBtnStyle} onClick={handleClear}>
                 Trocar imagem
               </button>
@@ -279,4 +304,26 @@ const errorStyle = {
   fontSize: "0.82rem",
   color: "#9f1239",
   fontWeight: 500,
+} satisfies React.CSSProperties;
+
+const progressTrackStyle = {
+  height: "3px",
+  borderRadius: "2px",
+  background: "rgba(154, 52, 18, 0.15)",
+  overflow: "hidden",
+} satisfies React.CSSProperties;
+
+const progressBarStyle = {
+  height: "100%",
+  width: "40%",
+  background: "var(--color-accent)",
+  borderRadius: "2px",
+  animation: "progress-slide 1.2s ease-in-out infinite",
+} satisfies React.CSSProperties;
+
+const savedLabelStyle = {
+  fontSize: "0.85rem",
+  color: "#2d6a4f",
+  fontWeight: 600,
+  alignSelf: "center",
 } satisfies React.CSSProperties;
