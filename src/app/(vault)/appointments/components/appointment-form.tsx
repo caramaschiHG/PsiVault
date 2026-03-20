@@ -39,8 +39,19 @@ export function AppointmentForm({
   original,
 }: AppointmentFormProps) {
   const isReschedule = Boolean(original);
-  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceType, setRecurrenceType] = useState<"none" | "weekly" | "biweekly" | "twice_weekly">("none");
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [state, formAction, isPending] = useActionState(createAppointmentAction, null);
+
+  function toggleDay(day: number) {
+    setSelectedDays((prev) =>
+      prev.includes(day)
+        ? prev.filter((d) => d !== day)
+        : prev.length < 2
+          ? [...prev, day].sort((a, b) => a - b)
+          : prev,
+    );
+  }
 
   return (
     <form action={formAction} style={formStyle}>
@@ -132,30 +143,79 @@ export function AppointmentForm({
         <section style={sectionStyle}>
           <div style={sectionHeadingStyle}>
             <p style={eyebrowStyle}>Opcional</p>
-            <h2 style={sectionTitleStyle}>Recorrência semanal</h2>
-            <p style={sectionCopyStyle}>
-              Crie uma série de consultas semanais de uma vez. O dia da semana e
-              o horário são mantidos para todas as ocorrências.
-            </p>
+            <h2 style={sectionTitleStyle}>Recorrência</h2>
           </div>
 
-          <label style={{ ...labelStyle, flexDirection: "row", alignItems: "center", gap: "0.6rem" }}>
-            <input
-              name="isRecurring"
-              style={{ width: "auto", margin: 0 }}
-              type="checkbox"
-              value="true"
-              onChange={(e) => setIsRecurring(e.target.checked)}
-            />
-            Criar série semanal
+          {recurrenceType !== "none" && (
+            <input type="hidden" name="isRecurring" value="true" />
+          )}
+          {recurrenceType !== "none" && (
+            <input type="hidden" name="recurrenceType" value={recurrenceType} />
+          )}
+
+          <label style={labelStyle}>
+            Frequência
+            <select
+              style={selectStyle}
+              value={recurrenceType}
+              onChange={(e) => {
+                setRecurrenceType(e.target.value as typeof recurrenceType);
+                setSelectedDays([]);
+              }}
+            >
+              <option value="none">Sessão única</option>
+              <option value="weekly">Semanal</option>
+              <option value="biweekly">Quinzenal (a cada 2 semanas)</option>
+              <option value="twice_weekly">2× por semana</option>
+            </select>
           </label>
 
-          {isRecurring && (
+          {recurrenceType === "twice_weekly" && (
+            <>
+              <input type="hidden" name="recurrenceDaysOfWeek" value={JSON.stringify(selectedDays)} />
+              <div style={labelStyle}>
+                <span>Dias da semana <span style={requiredMarkStyle}>*</span> (selecione 2)</span>
+                <div style={daysRowStyle}>
+                  {[
+                    { label: "Dom", value: 0 },
+                    { label: "Seg", value: 1 },
+                    { label: "Ter", value: 2 },
+                    { label: "Qua", value: 3 },
+                    { label: "Qui", value: 4 },
+                    { label: "Sex", value: 5 },
+                    { label: "Sáb", value: 6 },
+                  ].map(({ label, value }) => {
+                    const isSelected = selectedDays.includes(value);
+                    const isDisabled = !isSelected && selectedDays.length >= 2;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        disabled={isDisabled}
+                        onClick={() => toggleDay(value)}
+                        style={{
+                          ...dayBtnStyle,
+                          ...(isSelected ? dayBtnSelectedStyle : {}),
+                          ...(isDisabled ? dayBtnDisabledStyle : {}),
+                        }}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {recurrenceType !== "none" && (
             <>
               <input type="hidden" name="recurrenceCount" value="OPEN_ENDED" />
               <p style={recurrenceInfoStyle}>
-                Série semanal sem data de encerramento — 2 anos materializados (104 sessões).
-                Para encerrar, cancele as sessões futuras pela agenda.
+                {recurrenceType === "weekly" && "Série semanal sem data de encerramento — 2 anos (104 sessões)."}
+                {recurrenceType === "biweekly" && "Série quinzenal sem data de encerramento — 1 ano (52 sessões)."}
+                {recurrenceType === "twice_weekly" && "Série 2× por semana sem data de encerramento — 1 ano (104 sessões)."}
+                {" "}Para encerrar, cancele as sessões futuras pela agenda.
               </p>
             </>
           )}
@@ -256,6 +316,34 @@ const primaryButtonStyle = {
   color: "#fff7ed",
   fontWeight: 700,
   cursor: "pointer",
+} satisfies React.CSSProperties;
+
+const daysRowStyle = {
+  display: "flex",
+  gap: "0.4rem",
+  flexWrap: "wrap" as const,
+} satisfies React.CSSProperties;
+
+const dayBtnStyle = {
+  padding: "0.35rem 0.65rem",
+  borderRadius: "10px",
+  border: "1px solid rgba(120, 53, 15, 0.2)",
+  background: "transparent",
+  color: "#78716c",
+  fontWeight: 500,
+  fontSize: "0.82rem",
+  cursor: "pointer",
+} satisfies React.CSSProperties;
+
+const dayBtnSelectedStyle = {
+  background: "#9a3412",
+  color: "#fff7ed",
+  borderColor: "#9a3412",
+} satisfies React.CSSProperties;
+
+const dayBtnDisabledStyle = {
+  opacity: 0.4,
+  cursor: "not-allowed",
 } satisfies React.CSSProperties;
 
 const recurrenceInfoStyle = {

@@ -6,7 +6,6 @@
  */
 
 import type { Patient } from "../../../../lib/patients/model";
-import { archivePatientAction } from "../actions";
 
 interface PatientProfileHeaderProps {
   patient: Patient;
@@ -29,12 +28,9 @@ export function PatientProfileHeader({ patient }: PatientProfileHeaderProps) {
           {patient.archivedAt ? (
             <span style={archivedBadgeStyle}>Arquivado</span>
           ) : (
-            <form action={archivePatientAction}>
-              <input name="patientId" type="hidden" value={patient.id} />
-              <button style={archiveButtonStyle} type="submit">
-                Arquivar paciente
-              </button>
-            </form>
+            <a href={`/patients/${patient.id}/archive-confirm`} style={archiveButtonStyle}>
+              Arquivar paciente
+            </a>
           )}
         </div>
       </div>

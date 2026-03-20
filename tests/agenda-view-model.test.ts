@@ -21,6 +21,9 @@ function makeAppointment(overrides: Partial<Appointment> & { id: string }): Appo
     rescheduledFromId: overrides.rescheduledFromId ?? null,
     canceledAt: overrides.canceledAt ?? null,
     canceledByAccountId: overrides.canceledByAccountId ?? null,
+    canceledBy: overrides.canceledBy ?? null,
+    seriesPattern: overrides.seriesPattern ?? null,
+    seriesDaysOfWeek: overrides.seriesDaysOfWeek ?? [],
     confirmedAt: overrides.confirmedAt ?? null,
     completedAt: overrides.completedAt ?? null,
     noShowAt: overrides.noShowAt ?? null,
@@ -48,8 +51,8 @@ describe("day and week agenda", () => {
       expect(card.careMode).toBe("IN_PERSON");
 
       // Must not expose sensitive fields or note content
-      expect((card as Record<string, unknown>).importantObservations).toBeUndefined();
-      expect((card as Record<string, unknown>).notes).toBeUndefined();
+      expect((card as unknown as Record<string, unknown>).importantObservations).toBeUndefined();
+      expect((card as unknown as Record<string, unknown>).notes).toBeUndefined();
     });
 
     it("generates a human-readable status label in pt-BR", async () => {

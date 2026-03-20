@@ -30,6 +30,7 @@ export function AppointmentQuickActions({
   seriesId,
 }: AppointmentQuickActionsProps) {
   const [showCancelScope, setShowCancelScope] = useState(false);
+  const [canceledBy, setCanceledBy] = useState<"PATIENT" | "THERAPIST">("THERAPIST");
   const [isPending, startTransition] = useTransition();
 
   if (status !== "SCHEDULED" && status !== "CONFIRMED") return null;
@@ -43,6 +44,7 @@ export function AppointmentQuickActions({
           }}
         >
           <input type="hidden" name="appointmentId" value={appointmentId} />
+          <input type="hidden" name="canceledBy" value={canceledBy} />
           {seriesId ? (
             <RecurrenceScopeDialog defaultScope="THIS" verb="cancelar" />
           ) : (
@@ -54,7 +56,7 @@ export function AppointmentQuickActions({
               disabled={isPending}
               style={cancelConfirmBtnStyle}
             >
-              {isPending ? "Cancelando…" : "Confirmar cancelamento"}
+              {isPending ? "Cancelando…" : (canceledBy === "PATIENT" ? "Paciente cancelou" : "Cancelei")}
             </button>
             <button
               type="button"
@@ -111,11 +113,19 @@ export function AppointmentQuickActions({
 
       <button
         type="button"
-        onClick={() => setShowCancelScope(true)}
+        onClick={() => { setCanceledBy("PATIENT"); setShowCancelScope(true); }}
         style={cancelBtnStyle}
         disabled={isPending}
       >
-        Cancelar
+        Paciente cancelou
+      </button>
+      <button
+        type="button"
+        onClick={() => { setCanceledBy("THERAPIST"); setShowCancelScope(true); }}
+        style={cancelBtnStyle}
+        disabled={isPending}
+      >
+        Cancelei
       </button>
     </div>
   );

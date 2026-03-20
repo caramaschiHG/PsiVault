@@ -18,6 +18,10 @@
 
 export type AppointmentCareMode = "IN_PERSON" | "ONLINE";
 
+export type CancellationActor = "PATIENT" | "THERAPIST";
+
+export type SeriesPattern = "WEEKLY" | "BIWEEKLY" | "TWICE_WEEKLY";
+
 export type AppointmentStatus =
   | "SCHEDULED"
   | "CONFIRMED"
@@ -52,9 +56,14 @@ export interface Appointment {
   // Lifecycle timestamps
   canceledAt: Date | null;
   canceledByAccountId: string | null;
+  canceledBy: CancellationActor | null;
   confirmedAt: Date | null;
   completedAt: Date | null;
   noShowAt: Date | null;
+
+  // Recurrence pattern metadata
+  seriesPattern: SeriesPattern | null;
+  seriesDaysOfWeek: number[];
 
   // Finance — deferred from Phase 2 [02-04], hydrated in Phase 5
   priceInCents: number | null;
@@ -78,6 +87,8 @@ export interface CreateAppointmentInput {
   rescheduledFromId?: string | null;
   priceInCents?: number | null;
   meetingLink?: string | null;
+  seriesPattern?: SeriesPattern | null;
+  seriesDaysOfWeek?: number[];
 }
 
 interface CreateAppointmentDeps {
@@ -111,12 +122,15 @@ export function createAppointment(
     rescheduledFromId: input.rescheduledFromId ?? null,
     canceledAt: null,
     canceledByAccountId: null,
+    canceledBy: null,
     confirmedAt: null,
     completedAt: null,
     noShowAt: null,
     priceInCents: input.priceInCents ?? null,
     meetingLink: input.meetingLink ?? null,
     remoteIssueNote: null,
+    seriesPattern: input.seriesPattern ?? null,
+    seriesDaysOfWeek: input.seriesDaysOfWeek ?? [],
     createdAt: deps.now,
     updatedAt: deps.now,
   };
@@ -186,12 +200,15 @@ export function rescheduleAppointment(
     rescheduledFromId: appointment.id,
     canceledAt: null,
     canceledByAccountId: null,
+    canceledBy: null,
     confirmedAt: null,
     completedAt: null,
     noShowAt: null,
     priceInCents: appointment.priceInCents,
     meetingLink: null,
     remoteIssueNote: null,
+    seriesPattern: appointment.seriesPattern,
+    seriesDaysOfWeek: appointment.seriesDaysOfWeek,
     createdAt: deps.now,
     updatedAt: deps.now,
   };
@@ -199,13 +216,14 @@ export function rescheduleAppointment(
 
 export function cancelAppointment(
   appointment: Appointment,
-  deps: { now: Date; canceledByAccountId: string },
+  deps: { now: Date; canceledByAccountId: string; canceledBy: CancellationActor },
 ): Appointment {
   return {
     ...appointment,
     status: "CANCELED",
     canceledAt: deps.now,
     canceledByAccountId: deps.canceledByAccountId,
+    canceledBy: deps.canceledBy,
     updatedAt: deps.now,
   };
 }

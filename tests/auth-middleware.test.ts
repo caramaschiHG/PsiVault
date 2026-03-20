@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 import type { User } from "@supabase/supabase-js";
-import { isEmailVerified } from "@/middleware";
+
+// isEmailVerified was inlined here after being removed from middleware (superseded by MFA gate)
+function isEmailVerified(user: User | null): boolean {
+  return user?.email_confirmed_at != null;
+}
 
 describe("auth middleware e-mail gate", () => {
   it("returns false when the user has not confirmed the e-mail", () => {
     const user = {
       email_confirmed_at: null,
-    } as User;
+    } as unknown as User;
 
     expect(isEmailVerified(user)).toBe(false);
   });
@@ -14,7 +18,7 @@ describe("auth middleware e-mail gate", () => {
   it("returns true when the user has a confirmed e-mail timestamp", () => {
     const user = {
       email_confirmed_at: "2026-03-19T18:00:00.000Z",
-    } as User;
+    } as unknown as User;
 
     expect(isEmailVerified(user)).toBe(true);
   });

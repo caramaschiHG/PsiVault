@@ -11,9 +11,9 @@ import {
   noShowAppointment,
   updateAppointmentOnlineCare,
 } from "../../../lib/appointments/model";
-import type { AppointmentCareMode } from "../../../lib/appointments/model";
+import type { AppointmentCareMode, CancellationActor } from "../../../lib/appointments/model";
 import { checkConflicts, assertPatientSchedulable } from "../../../lib/appointments/conflicts";
-import { generateWeeklySeries, applySeriesEdit } from "../../../lib/appointments/recurrence";
+import { generateWeeklySeries, generateBiweeklySeries, generateTwiceWeeklySeries, applySeriesEdit } from "../../../lib/appointments/recurrence";
 import type { RecurrenceEditScope } from "../../../lib/appointments/recurrence";
 import { getAppointmentRepository } from "../../../lib/appointments/store";
 import { getPatientRepository } from "../../../lib/patients/store";
@@ -56,9 +56,14 @@ export async function createAppointmentAction(
   const durationMinutes = Number(formData.get("durationMinutes") ?? 60);
   const careMode = String(formData.get("careMode") ?? "IN_PERSON") as AppointmentCareMode;
   const isRecurring = formData.get("isRecurring") === "true";
+  const recurrenceType = String(formData.get("recurrenceType") ?? "weekly") as "weekly" | "biweekly" | "twice_weekly";
   const recurrenceCountRaw = formData.get("recurrenceCount");
   const recurrenceCount: number | "OPEN_ENDED" =
     recurrenceCountRaw === "OPEN_ENDED" ? "OPEN_ENDED" : Number(recurrenceCountRaw ?? 1);
+  const recurrenceDaysOfWeekRaw = formData.get("recurrenceDaysOfWeek");
+  const recurrenceDaysOfWeek: [number, number] = recurrenceDaysOfWeekRaw
+    ? (JSON.parse(String(recurrenceDaysOfWeekRaw)) as [number, number])
+    : [1, 4];
 
   let redirectPath: string | null = null;
 
@@ -69,22 +74,20 @@ export async function createAppointmentAction(
     assertPatientSchedulable(patient);
 
     if (isRecurring) {
-      // Generate weekly series
-      const occurrences = generateWeeklySeries(
-        {
-          workspaceId: workspaceId,
-          patientId,
-          startsAt,
-          durationMinutes,
-          careMode,
-        },
-        { count: recurrenceCount },
-        {
-          now,
-          createId: generateId,
-          createSeriesId: generateSeriesId,
-        },
-      );
+      // Generate series based on recurrence type
+      const seed = { workspaceId, patientId, startsAt, durationMinutes, careMode };
+      const seriesDeps = { now, createId: generateId, createSeriesId: generateSeriesId };
+
+      const occurrences =
+        recurrenceType === "biweekly"
+          ? generateBiweeklySeries(seed, { count: recurrenceCount }, seriesDeps)
+          : recurrenceType === "twice_weekly"
+            ? generateTwiceWeeklySeries(
+                { ...seed, daysOfWeek: recurrenceDaysOfWeek },
+                { count: recurrenceCount },
+                seriesDeps,
+              )
+            : generateWeeklySeries(seed, { count: recurrenceCount }, seriesDeps);
 
       // Check conflicts for each occurrence before saving any
       const allExisting = await repo.listByDateRange(
@@ -342,6 +345,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
   const scope = (formData.get("recurrenceScope") ?? "THIS") as RecurrenceEditScope;
+  const canceledBy = (formData.get("canceledBy") === "PATIENT" ? "PATIENT" : "THERAPIST") as CancellationActor;
 
   let shouldRedirect = false;
 
@@ -369,6 +373,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
         const canceled = cancelAppointment(occurrence, {
           now,
           canceledByAccountId: accountId,
+          canceledBy,
         });
 
         await repo.save(canceled);
@@ -388,6 +393,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
       const canceled = cancelAppointment(existing, {
         now,
         canceledByAccountId: accountId,
+        canceledBy,
       });
 
       await repo.save(canceled);

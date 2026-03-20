@@ -40,9 +40,12 @@ import { TodayWhatsAppPanel } from "./components/today-whatsapp-panel";
 import { MeetingLinkForm } from "./components/meeting-link-form";
 import { RemoteIssueForm } from "./components/remote-issue-form";
 import { AgendaDayView } from "./components/agenda-day-view";
-import { AgendaWeekView } from "./components/agenda-week-view";
+import { CalendarGrid } from "./components/calendar-grid";
+import { WeekCalendarGrid } from "./components/week-calendar-grid";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
 import { AppointmentQuickActions } from "./components/appointment-quick-actions";
+import { toGridBlock } from "../../../lib/appointments/grid-layout";
+import { EmptyState } from "../components/empty-state";
 import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 
@@ -352,6 +355,17 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     );
   }
 
+  // Build panels: combined quickActions + nextSessionActions per appointment (for side panel)
+  const panels: Record<string, React.ReactNode> = {};
+  for (const appt of appointments) {
+    panels[appt.id] = (
+      <div style={{ display: "grid", gap: "1rem" }}>
+        {quickActionsMap[appt.id]}
+        {nextSessionActions[appt.id]}
+      </div>
+    );
+  }
+
   // Derive view models
   const dayResult = deriveDayAgenda(appointments, anchorDate, TIMEZONE);
   const weekStart = activeView === "week" ? anchorDate : getWeekStart(anchorDate);
@@ -414,9 +428,39 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
       {/* Agenda content */}
       {activeView === "day" ? (
-        <AgendaDayView day={dayResult} patientNames={patientNames} nextSessionActions={nextSessionActions} quickActions={quickActionsMap} />
+        dayResult.cards.length > 0 ? (
+          <CalendarGrid
+            blocks={appointments
+              .filter((a) => dayResult.cards.some((c) => c.appointmentId === a.id))
+              .map(toGridBlock)}
+            panels={panels}
+            patientNames={patientNames}
+            date={dateToParam(anchorDate)}
+            options={{ dayStartHour: 7, dayEndHour: 21 }}
+          />
+        ) : (
+          <div style={emptyStateContainerStyle}>
+            <EmptyState
+              icon={
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+              }
+              title="Sua agenda está livre hoje"
+              description="Nenhuma sessão agendada para este dia."
+              actionLabel="Agendar sessão"
+              actionHref="/appointments/new"
+            />
+          </div>
+        )
       ) : (
-        <AgendaWeekView week={weekResult} patientNames={patientNames} nextSessionActions={nextSessionActions} quickActions={quickActionsMap} />
+        <WeekCalendarGrid
+          blocks={appointments.map(toGridBlock)}
+          panels={panels}
+          patientNames={patientNames}
+          weekStart={dateToParam(weekStart)}
+          options={{ dayStartHour: 7, dayEndHour: 21 }}
+        />
       )}
 
       {/* WhatsApp batch panel — day view only */}
@@ -511,6 +555,12 @@ function formatWeekLabel(start: Date, end: Date): string {
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
+
+const emptyStateContainerStyle = {
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+} satisfies React.CSSProperties;
 
 const shellStyle = {
   padding: "2rem 2.5rem",
