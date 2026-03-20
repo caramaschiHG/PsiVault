@@ -47,6 +47,8 @@ model Workspace {
   sessionCharges  SessionCharge[]
   auditEvents     AuditEvent[]
   reminders       Reminder[]
+  smtpConfig      WorkspaceSmtpConfig?
+  notificationJobs NotificationJob[]
 
   @@unique([id, ownerAccountId])
   @@map("workspaces")
@@ -148,10 +150,11 @@ model Appointment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  patient       Patient        @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  clinicalNote  ClinicalNote?
-  sessionCharge SessionCharge?
+  workspace        Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  patient          Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  clinicalNote     ClinicalNote?
+  sessionCharge    SessionCharge?
+  notificationJobs NotificationJob[]
 
   @@index([workspaceId, startsAt])
   @@index([workspaceId, patientId])
@@ -189,12 +192,13 @@ model Patient {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  appointments  Appointment[]
-  clinicalNotes ClinicalNote[]
-  documents     PracticeDocument[]
-  sessionCharges SessionCharge[]
-  reminders      Reminder[]
+  workspace        Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  appointments     Appointment[]
+  clinicalNotes    ClinicalNote[]
+  documents        PracticeDocument[]
+  sessionCharges   SessionCharge[]
+  reminders        Reminder[]
+  notificationJobs NotificationJob[]
 
   @@index([workspaceId, deletedAt])
   @@map("patients")
@@ -321,4 +325,49 @@ model Reminder {
   @@index([workspaceId, completedAt])
   @@index([workspaceId, linkType, linkId])
   @@map("reminders")
+}
+
+model WorkspaceSmtpConfig {
+  id                  String    @id @default(uuid())
+  workspaceId         String    @unique @map("workspace_id")
+  host                String
+  port                Int       @default(587)
+  secure              Boolean   @default(false)
+  username            String
+  passwordCiphertext  String    @map("password_ciphertext")
+  fromName            String    @map("from_name")
+  fromEmail           String    @map("from_email")
+  sendReminder24h     Boolean   @default(true) @map("send_reminder_24h")
+  sendReminder1h      Boolean   @default(true) @map("send_reminder_1h")
+  sendConfirmation    Boolean   @default(true) @map("send_confirmation")
+  sendCancellation    Boolean   @default(true) @map("send_cancellation")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  workspace           Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("workspace_smtp_configs")
+}
+
+model NotificationJob {
+  id             String    @id @default(uuid())
+  workspaceId    String    @map("workspace_id")
+  appointmentId  String    @map("appointment_id")
+  patientId      String    @map("patient_id")
+  recipientEmail String    @map("recipient_email")
+  type           String    // REMINDER_24H | REMINDER_1H | CONFIRMATION | CANCELLATION
+  status         String    @default("PENDING") // PENDING | SENT | FAILED | CANCELED
+  scheduledFor   DateTime  @map("scheduled_for")
+  sentAt         DateTime? @map("sent_at")
+  failedAt       DateTime? @map("failed_at")
+  errorNote      String?   @map("error_note")
+  idempotencyKey String    @unique @map("idempotency_key")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  appointment    Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  patient        Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status, scheduledFor])
+  @@index([appointmentId, type])
+  @@map("notification_jobs")
 }

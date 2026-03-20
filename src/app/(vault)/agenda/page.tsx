@@ -36,6 +36,7 @@ import {
   buildRescheduleMailtoUrl,
 } from "../../../lib/communication/templates";
 import { AgendaToolbar } from "./components/agenda-toolbar";
+import { TodayWhatsAppPanel } from "./components/today-whatsapp-panel";
 import { MeetingLinkForm } from "./components/meeting-link-form";
 import { RemoteIssueForm } from "./components/remote-issue-form";
 import { AgendaDayView } from "./components/agenda-day-view";
@@ -94,9 +95,40 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     { workspaceId },
   );
   const patientNames: Record<string, string> = {};
+  const patientById: Record<string, typeof allPatients[number]> = {};
   for (const p of allPatients) {
     patientNames[p.id] = p.socialName ? `${p.fullName} (${p.socialName})` : p.fullName;
+    patientById[p.id] = p;
   }
+
+  // Build WhatsApp batch entries for today's scheduled/confirmed appointments with phone
+  const todayWhatsAppEntries = activeView === "day"
+    ? appointments
+        .filter(
+          (a) =>
+            (a.status === "SCHEDULED" || a.status === "CONFIRMED") &&
+            patientById[a.patientId]?.phone,
+        )
+        .map((a) => {
+          const patient = patientById[a.patientId]!;
+          const patientName = patient.socialName ?? patient.fullName;
+          const patientPhone = patient.phone!;
+          const apptDate = new Intl.DateTimeFormat("pt-BR", {
+            day: "numeric", month: "long", year: "numeric", timeZone: TIMEZONE,
+          }).format(a.startsAt);
+          const apptTime = new Intl.DateTimeFormat("pt-BR", {
+            hour: "2-digit", minute: "2-digit", timeZone: TIMEZONE,
+          }).format(a.startsAt);
+          return {
+            appointmentId: a.id,
+            patientName,
+            patientPhone,
+            appointmentDate: apptDate,
+            appointmentTime: apptTime,
+            whatsappUrl: buildReminderWhatsAppUrl({ patientName, patientPhone, appointmentDate: apptDate, appointmentTime: apptTime }),
+          };
+        })
+    : [];
 
   // Load practice profile for next-session defaults
   const profile = await observeServerStage(
@@ -355,6 +387,11 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         <AgendaDayView day={dayResult} patientNames={patientNames} nextSessionActions={nextSessionActions} />
       ) : (
         <AgendaWeekView week={weekResult} patientNames={patientNames} nextSessionActions={nextSessionActions} />
+      )}
+
+      {/* WhatsApp batch panel — day view only, when there are entries */}
+      {activeView === "day" && todayWhatsAppEntries.length > 0 && (
+        <TodayWhatsAppPanel entries={todayWhatsAppEntries} />
       )}
 
       {/* FAB mobile — visible only on mobile via CSS class */}

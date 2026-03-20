@@ -24,6 +24,8 @@ import { createSessionCharge, updateSessionCharge } from "../../../lib/finance/m
 import type { ChargeStatus, PaymentMethod } from "../../../lib/finance/model";
 import { createChargeAuditEvent } from "../../../lib/finance/audit";
 import { resolveSession } from "../../../lib/supabase/session";
+import { queueAppointmentNotifications } from "../../../lib/notifications/queue";
+import { getSmtpConfigRepository } from "../../../lib/notifications/smtp-config-store";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -147,6 +149,15 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
           { now, createId: generateId },
         ),
       );
+
+      if (patient.email) {
+        const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
+        await queueAppointmentNotifications({
+          workspaceId, appointmentId: appointment.id, patientId,
+          recipientEmail: patient.email, startsAt: appointment.startsAt,
+          type: "CREATED", smtpPrefs, now, createId: generateId,
+        });
+      }
 
       redirectPath = `/appointments/${appointment.id}`;
     }
@@ -275,6 +286,16 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
           { now, createId: generateId },
         ),
       );
+
+      const patientForNotif = await getPatientRepository().findById(rescheduled.patientId, workspaceId);
+      if (patientForNotif?.email) {
+        const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
+        await queueAppointmentNotifications({
+          workspaceId, appointmentId: rescheduled.id, patientId: rescheduled.patientId,
+          recipientEmail: patientForNotif.email, startsAt: rescheduled.startsAt,
+          type: "RESCHEDULED", smtpPrefs, now, createId: generateId,
+        });
+      }
     }
 
     shouldRedirect = true;
@@ -356,6 +377,16 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
           { now, createId: generateId },
         ),
       );
+
+      const patientForNotif = await getPatientRepository().findById(canceled.patientId, workspaceId);
+      if (patientForNotif?.email) {
+        const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
+        await queueAppointmentNotifications({
+          workspaceId, appointmentId: canceled.id, patientId: canceled.patientId,
+          recipientEmail: patientForNotif.email, startsAt: canceled.startsAt,
+          type: "CANCELED", smtpPrefs, now, createId: generateId,
+        });
+      }
     }
 
     shouldRedirect = true;
