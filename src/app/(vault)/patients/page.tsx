@@ -49,7 +49,7 @@ export default async function PatientsPage() {
         ) : (
           <ul style={listStyle}>
             {patients.map((patient) => (
-              <li key={patient.id} className="card-hover" style={listItemStyle}>
+              <li key={patient.id} className="card-hover row-interactive" style={listItemStyle}>
                 <Link href={`/patients/${patient.id}`} style={patientLinkStyle}>
                   <div>
                     <strong style={patientNameStyle}>{patient.fullName}</strong>

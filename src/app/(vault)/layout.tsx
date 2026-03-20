@@ -8,8 +8,27 @@ export const dynamic = "force-dynamic";
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={shellStyle}>
+      {/* Skip link — acessibilidade teclado */}
+      <a
+        href="#main-content"
+        style={skipLinkStyle}
+        onFocus={(e) => {
+          e.currentTarget.style.left = "1rem";
+          e.currentTarget.style.top = "1rem";
+          e.currentTarget.style.width = "auto";
+          e.currentTarget.style.height = "auto";
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.left = "-9999px";
+          e.currentTarget.style.width = "1px";
+          e.currentTarget.style.height = "1px";
+        }}
+      >
+        Ir para conteúdo principal
+      </a>
+
       {/* Sidebar */}
-      <aside className="vault-sidebar" style={sidebarStyle}>
+      <aside className="vault-sidebar" style={sidebarStyle} aria-label="Navegação principal">
         {/* Brand */}
         <div style={brandStyle}>
           <div style={brandLockStyle}>
@@ -34,7 +53,7 @@ export default function VaultLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Content area */}
-      <main className="vault-content" style={contentStyle}>
+      <main id="main-content" className="vault-content" style={contentStyle}>
         <ToastProvider>
           {children}
         </ToastProvider>
@@ -108,4 +127,20 @@ const contentStyle = {
   flex: 1,
   minWidth: 0,
   background: "var(--color-bg)",
+} satisfies React.CSSProperties;
+
+const skipLinkStyle = {
+  position: "absolute",
+  left: "-9999px",
+  top: "auto",
+  width: "1px",
+  height: "1px",
+  overflow: "hidden",
+  background: "var(--color-surface-0)",
+  color: "var(--color-accent)",
+  padding: "0.5rem 1rem",
+  borderRadius: "var(--radius-sm)",
+  fontWeight: 600,
+  zIndex: 9999,
+  textDecoration: "none",
 } satisfies React.CSSProperties;

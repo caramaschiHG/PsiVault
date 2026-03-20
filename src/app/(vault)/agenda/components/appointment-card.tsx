@@ -16,29 +16,29 @@ import type { AgendaCard } from "../../../../lib/appointments/agenda";
 
 const STATUS_COLORS: Record<string, { background: string; color: string; border: string }> = {
   SCHEDULED: {
-    background: "rgba(255, 247, 237, 0.9)",
+    background: "var(--status-scheduled-bg)",
     color: "#92400e",
-    border: "rgba(146, 64, 14, 0.22)",
+    border: "var(--status-scheduled-border)",
   },
   CONFIRMED: {
-    background: "rgba(245, 250, 246, 0.9)",
+    background: "var(--status-confirmed-bg)",
     color: "#2d6a4f",
-    border: "rgba(45, 106, 79, 0.2)",
+    border: "var(--status-confirmed-border)",
   },
   COMPLETED: {
-    background: "rgba(245, 235, 220, 0.9)",
+    background: "var(--status-completed-bg)",
     color: "#92400e",
-    border: "rgba(146, 64, 14, 0.2)",
+    border: "var(--status-completed-border)",
   },
   CANCELED: {
-    background: "rgba(248, 250, 252, 0.9)",
+    background: "var(--status-canceled-bg)",
     color: "#64748b",
-    border: "rgba(100, 116, 139, 0.2)",
+    border: "var(--status-canceled-border)",
   },
   NO_SHOW: {
-    background: "rgba(255, 241, 242, 0.9)",
+    background: "var(--status-no-show-bg)",
     color: "#9f1239",
-    border: "rgba(159, 18, 57, 0.2)",
+    border: "var(--status-no-show-border)",
   },
 };
 
@@ -74,6 +74,7 @@ export function AppointmentCard({
 
   return (
     <div
+      className="card-hover"
       style={{
         ...cardStyle,
         borderColor: statusStyle.border,

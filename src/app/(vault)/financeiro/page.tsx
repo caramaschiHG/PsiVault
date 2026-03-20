@@ -41,9 +41,9 @@ const CHARGE_STATUS_LABELS: Record<string, string> = {
 };
 
 const CHARGE_STATUS_COLORS: Record<string, { background: string; color: string }> = {
-  pago: { background: "rgba(34, 197, 94, 0.1)", color: "#166534" },
-  pendente: { background: "rgba(245, 158, 11, 0.1)", color: "#92400e" },
-  atrasado: { background: "rgba(239, 68, 68, 0.1)", color: "#991b1b" },
+  pago: { background: "var(--charge-paid-bg)", color: "var(--charge-paid-text)" },
+  pendente: { background: "var(--charge-pending-bg)", color: "var(--charge-pending-text)" },
+  atrasado: { background: "var(--charge-overdue-bg)", color: "var(--charge-overdue-text)" },
 };
 
 function prevMonthHref(year: number, month: number): string {
@@ -163,7 +163,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
                 : "Sem valor definido";
 
             return (
-              <div key={charge.id} style={rowStyle}>
+              <div key={charge.id} className="row-interactive" style={rowStyle}>
                 <div style={rowInfoStyle}>
                   <span style={patientNameStyle}>{patientName}</span>
                   <span style={dateLabelStyle}>{ptBRDate.format(charge.createdAt)}</span>

@@ -20,11 +20,22 @@ export function EmptyState({ icon, title, description, actionLabel, actionHref }
     color: "var(--color-text-2)",
   } satisfies React.CSSProperties;
 
-  const iconStyle = {
-    width: "3rem",
-    height: "3rem",
-    opacity: 0.4,
+  const iconWrapStyle = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "3.5rem",
+    height: "3.5rem",
+    borderRadius: "var(--radius-pill)",
+    background: "var(--color-accent-light)",
     marginBottom: "0.25rem",
+    flexShrink: 0,
+  } satisfies React.CSSProperties;
+
+  const iconStyle = {
+    width: "1.75rem",
+    height: "1.75rem",
+    opacity: 0.55,
   } satisfies React.CSSProperties;
 
   const titleStyle = {
@@ -32,6 +43,7 @@ export function EmptyState({ icon, title, description, actionLabel, actionHref }
     fontWeight: 600,
     color: "var(--color-text-1)",
     margin: 0,
+    letterSpacing: "0.01em",
   } satisfies React.CSSProperties;
 
   const descStyle = {
@@ -43,7 +55,9 @@ export function EmptyState({ icon, title, description, actionLabel, actionHref }
 
   return (
     <div style={containerStyle}>
-      <div style={iconStyle}>{icon}</div>
+      <div style={iconWrapStyle}>
+        <div style={iconStyle}>{icon}</div>
+      </div>
       <p style={titleStyle}>{title}</p>
       {description && <p style={descStyle}>{description}</p>}
       {actionLabel && actionHref && (
