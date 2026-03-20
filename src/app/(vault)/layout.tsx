@@ -8,22 +8,8 @@ export const dynamic = "force-dynamic";
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={shellStyle}>
-      {/* Skip link — acessibilidade teclado */}
-      <a
-        href="#main-content"
-        style={skipLinkStyle}
-        onFocus={(e) => {
-          e.currentTarget.style.left = "1rem";
-          e.currentTarget.style.top = "1rem";
-          e.currentTarget.style.width = "auto";
-          e.currentTarget.style.height = "auto";
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.left = "-9999px";
-          e.currentTarget.style.width = "1px";
-          e.currentTarget.style.height = "1px";
-        }}
-      >
+      {/* Skip link — acessibilidade teclado (CSS-only, sem event handlers) */}
+      <a href="#main-content" className="skip-link">
         Ir para conteúdo principal
       </a>
 
@@ -129,18 +115,3 @@ const contentStyle = {
   background: "var(--color-bg)",
 } satisfies React.CSSProperties;
 
-const skipLinkStyle = {
-  position: "absolute",
-  left: "-9999px",
-  top: "auto",
-  width: "1px",
-  height: "1px",
-  overflow: "hidden",
-  background: "var(--color-surface-0)",
-  color: "var(--color-accent)",
-  padding: "0.5rem 1rem",
-  borderRadius: "var(--radius-sm)",
-  fontWeight: 600,
-  zIndex: 9999,
-  textDecoration: "none",
-} satisfies React.CSSProperties;
