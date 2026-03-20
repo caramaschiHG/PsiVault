@@ -41,7 +41,10 @@ function generateSeriesId() {
 
 // ─── Create appointment ────────────────────────────────────────────────────────
 
-export async function createAppointmentAction(formData: FormData): Promise<void> {
+export async function createAppointmentAction(
+  _prevState: { error: string } | null,
+  formData: FormData,
+): Promise<{ error: string } | null> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const patientRepo = getPatientRepository();
@@ -53,17 +56,19 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
   const durationMinutes = Number(formData.get("durationMinutes") ?? 60);
   const careMode = String(formData.get("careMode") ?? "IN_PERSON") as AppointmentCareMode;
   const isRecurring = formData.get("isRecurring") === "true";
-  const recurrenceCount = Number(formData.get("recurrenceCount") ?? 1);
+  const recurrenceCountRaw = formData.get("recurrenceCount");
+  const recurrenceCount: number | "OPEN_ENDED" =
+    recurrenceCountRaw === "OPEN_ENDED" ? "OPEN_ENDED" : Number(recurrenceCountRaw ?? 1);
 
   let redirectPath: string | null = null;
 
   try {
     // Guard: patient must be active
     const patient = await patientRepo.findById(patientId, workspaceId);
-    if (!patient) return;
+    if (!patient) return { error: "Paciente não encontrado." };
     assertPatientSchedulable(patient);
 
-    if (isRecurring && recurrenceCount > 1) {
+    if (isRecurring) {
       // Generate weekly series
       const occurrences = generateWeeklySeries(
         {
@@ -91,15 +96,16 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
       for (const occurrence of occurrences) {
         const conflictResult = checkConflicts(occurrence, allExisting);
         if (conflictResult.hasConflict) {
-          // In a production action this would return an error; here we throw
           throw new Error(
             `Scheduling conflict detected for ${occurrence.startsAt.toISOString()}.`,
           );
         }
       }
 
+      // Save all occurrences atomically
+      await repo.saveBatch(occurrences);
+
       for (const occurrence of occurrences) {
-        await repo.save(occurrence);
         audit.append(
           createAppointmentAuditEvent(
             {
@@ -163,10 +169,20 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
     }
   } catch (err) {
     console.error("[createAppointmentAction]", err);
-    return;
+    if (err instanceof Error) {
+      if (err.message.includes("conflict") || err.message.includes("Scheduling conflict")) {
+        return { error: "Conflito de horário: o horário escolhido já está ocupado." };
+      }
+      if (err.message.includes("archived") || err.message.includes("schedulable")) {
+        return { error: "Este paciente está arquivado e não pode ser agendado." };
+      }
+      return { error: "Erro ao criar consulta. Tente novamente." };
+    }
+    return { error: "Erro inesperado. Tente novamente." };
   }
 
   if (redirectPath) redirect(redirectPath);
+  return null;
 }
 
 // ─── Reschedule appointment ────────────────────────────────────────────────────
@@ -204,6 +220,8 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
                   : existing.startsAt.getTime()),
             );
 
+      // First pass: check all conflicts before saving any
+      const toReschedule: Array<{ occurrence: typeof inScope[0]; newStart: Date }> = [];
       for (const occurrence of inScope) {
         if (["COMPLETED", "CANCELED", "NO_SHOW"].includes(occurrence.status)) continue;
 
@@ -224,11 +242,18 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
           conflictCheck,
         );
 
-        if (conflictResult.hasConflict) continue; // Skip conflicting occurrences in series reschedule
+        if (conflictResult.hasConflict) {
+          throw new Error(`Scheduling conflict detected for ${newOccurrenceStart.toISOString()}.`);
+        }
 
+        toReschedule.push({ occurrence, newStart: newOccurrenceStart });
+      }
+
+      // Second pass: save all (no conflict found above)
+      for (const { occurrence, newStart } of toReschedule) {
         const rescheduled = rescheduleAppointment(
           occurrence,
-          { startsAt: newOccurrenceStart, durationMinutes },
+          { startsAt: newStart, durationMinutes },
           { now, createId: generateId },
         );
 

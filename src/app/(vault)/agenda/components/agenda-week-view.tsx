@@ -22,12 +22,15 @@ interface AgendaWeekViewProps {
   patientNames: Record<string, string>;
   /** Optional: slot for completed-appointment next-session actions (keyed by appointmentId). */
   nextSessionActions?: Record<string, React.ReactNode>;
+  /** Optional: slot for inline quick action buttons (confirm, complete, cancel, no-show). */
+  quickActions?: Record<string, React.ReactNode>;
 }
 
 export function AgendaWeekView({
   week,
   patientNames,
   nextSessionActions = {},
+  quickActions = {},
 }: AgendaWeekViewProps) {
   return (
     <div style={weekGridStyle}>
@@ -57,6 +60,7 @@ export function AgendaWeekView({
                     card={card}
                     patientDisplayName={patientNames[card.patientId] ?? "Paciente"}
                     nextSessionAction={nextSessionActions[card.appointmentId]}
+                    quickActions={quickActions[card.appointmentId]}
                   />
                 ))
               )}

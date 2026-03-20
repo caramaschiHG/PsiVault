@@ -117,5 +117,37 @@ export function createPrismaAppointmentRepository(): AppointmentRepository {
 
       return appointments.map(mapToDomain);
     },
+
+    async saveBatch(appointments: Appointment[]): Promise<void> {
+      await db.$transaction(
+        appointments.map((appointment) => {
+          const data = {
+            workspaceId: appointment.workspaceId,
+            patientId: appointment.patientId,
+            startsAt: appointment.startsAt,
+            endsAt: appointment.endsAt,
+            durationMinutes: appointment.durationMinutes,
+            careMode: appointment.careMode as PrismaCareMode,
+            status: appointment.status as PrismaStatus,
+            seriesId: appointment.seriesId,
+            seriesIndex: appointment.seriesIndex,
+            rescheduledFromId: appointment.rescheduledFromId,
+            canceledAt: appointment.canceledAt,
+            canceledByAccountId: appointment.canceledByAccountId,
+            confirmedAt: appointment.confirmedAt,
+            completedAt: appointment.completedAt,
+            noShowAt: appointment.noShowAt,
+            priceInCents: appointment.priceInCents,
+            meetingLink: appointment.meetingLink,
+            remoteIssueNote: appointment.remoteIssueNote,
+          };
+          return db.appointment.upsert({
+            where: { id: appointment.id },
+            update: data,
+            create: { id: appointment.id, ...data },
+          });
+        }),
+      );
+    },
   };
 }

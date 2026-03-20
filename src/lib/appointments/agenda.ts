@@ -33,6 +33,7 @@ export interface AgendaCard {
   statusLabel: string;
   careMode: AppointmentCareMode;
   careModeLabel: string;
+  seriesId: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -71,6 +72,7 @@ export function deriveAgendaCard(appointment: Appointment): AgendaCard {
     statusLabel: STATUS_LABELS[appointment.status],
     careMode: appointment.careMode,
     careModeLabel: CARE_MODE_LABELS[appointment.careMode],
+    seriesId: appointment.seriesId,
   };
 }
 

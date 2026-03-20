@@ -27,8 +27,11 @@ export interface WeeklySeriesSeed {
 }
 
 export interface WeeklySeriesOptions {
-  /** Number of weekly occurrences to generate. */
-  count: number;
+  /**
+   * Number of weekly occurrences to generate, or "OPEN_ENDED" for an
+   * indefinite series (materializes 2 years / 104 occurrences).
+   */
+  count: number | "OPEN_ENDED";
 }
 
 interface GenerateWeeklySeriesDeps {
@@ -49,10 +52,11 @@ export function generateWeeklySeries(
 ): Appointment[] {
   const seriesId = deps.createSeriesId();
   const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+  const resolvedCount = options.count === "OPEN_ENDED" ? 104 : options.count;
 
   const occurrences: Appointment[] = [];
 
-  for (let i = 0; i < options.count; i++) {
+  for (let i = 0; i < resolvedCount; i++) {
     const startsAt = new Date(seed.startsAt.getTime() + i * WEEK_MS);
 
     const occurrence = createAppointment(

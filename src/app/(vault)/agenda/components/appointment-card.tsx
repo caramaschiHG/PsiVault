@@ -52,12 +52,15 @@ interface AppointmentCardProps {
   patientDisplayName: string;
   /** When provided, renders the quick next-session action below the card. */
   nextSessionAction?: React.ReactNode;
+  /** When provided, renders inline action buttons (confirm, complete, cancel, no-show). */
+  quickActions?: React.ReactNode;
 }
 
 export function AppointmentCard({
   card,
   patientDisplayName,
   nextSessionAction,
+  quickActions,
 }: AppointmentCardProps) {
   const statusStyle = STATUS_COLORS[card.status] ?? STATUS_COLORS.SCHEDULED;
 
@@ -109,6 +112,9 @@ export function AppointmentCard({
           {card.careModeLabel}
         </span>
       </div>
+
+      {/* Quick action buttons (confirm, complete, no-show, cancel) */}
+      {quickActions && <div style={quickActionsRowStyle}>{quickActions}</div>}
 
       {/* Quick next-session action (e.g., completed-appointment rebooking) */}
       {nextSessionAction && <div style={nextSessionActionStyle}>{nextSessionAction}</div>}
@@ -182,6 +188,10 @@ const careModeChipStyle = {
 const careModeIconStyle = {
   marginRight: "0.35rem",
   fontSize: "0.85rem",
+} satisfies React.CSSProperties;
+
+const quickActionsRowStyle = {
+  paddingTop: "0.5rem",
 } satisfies React.CSSProperties;
 
 const nextSessionActionStyle = {

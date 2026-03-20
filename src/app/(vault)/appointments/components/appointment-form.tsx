@@ -12,6 +12,7 @@
  * setting, not a per-appointment value).
  */
 
+import { useState, useActionState } from "react";
 import type { Appointment } from "../../../../lib/appointments/model";
 import type { Patient } from "../../../../lib/patients/model";
 import { createAppointmentAction } from "../actions";
@@ -38,9 +39,11 @@ export function AppointmentForm({
   original,
 }: AppointmentFormProps) {
   const isReschedule = Boolean(original);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [state, formAction, isPending] = useActionState(createAppointmentAction, null);
 
   return (
-    <form action={createAppointmentAction} style={formStyle}>
+    <form action={formAction} style={formStyle}>
       {original && (
         <input name="rescheduledFromId" type="hidden" value={original.id} />
       )}
@@ -136,35 +139,38 @@ export function AppointmentForm({
             </p>
           </div>
 
-          <div className="form-grid">
-            <label style={labelStyle}>
-              <input
-                name="isRecurring"
-                style={{ width: "auto" }}
-                type="checkbox"
-                value="true"
-              />
-              &nbsp;Criar série semanal
-            </label>
+          <label style={{ ...labelStyle, flexDirection: "row", alignItems: "center", gap: "0.6rem" }}>
+            <input
+              name="isRecurring"
+              style={{ width: "auto", margin: 0 }}
+              type="checkbox"
+              value="true"
+              onChange={(e) => setIsRecurring(e.target.checked)}
+            />
+            Criar série semanal
+          </label>
 
-            <label style={labelStyle}>
-              Número de sessões
-              <input
-                defaultValue={1}
-                min={1}
-                max={52}
-                name="recurrenceCount"
-                style={inputStyle}
-                type="number"
-              />
-            </label>
-          </div>
+          {isRecurring && (
+            <>
+              <input type="hidden" name="recurrenceCount" value="OPEN_ENDED" />
+              <p style={recurrenceInfoStyle}>
+                Série semanal sem data de encerramento — 2 anos materializados (104 sessões).
+                Para encerrar, cancele as sessões futuras pela agenda.
+              </p>
+            </>
+          )}
         </section>
+      )}
+
+      {state?.error && (
+        <p style={errorMessageStyle}>{state.error}</p>
       )}
 
       <div style={actionsStyle}>
         <SubmitButton
-          label={isReschedule ? "Reagendar consulta" : "Criar consulta"}
+          label={isPending
+            ? (isReschedule ? "Reagendando…" : "Criando…")
+            : (isReschedule ? "Reagendar consulta" : "Criar consulta")}
           style={primaryButtonStyle}
         />
       </div>
@@ -250,4 +256,26 @@ const primaryButtonStyle = {
   color: "#fff7ed",
   fontWeight: 700,
   cursor: "pointer",
+} satisfies React.CSSProperties;
+
+const recurrenceInfoStyle = {
+  margin: 0,
+  padding: "0.75rem 1rem",
+  borderRadius: "12px",
+  background: "rgba(120, 53, 15, 0.05)",
+  border: "1px solid rgba(120, 53, 15, 0.14)",
+  color: "#78716c",
+  fontSize: "0.88rem",
+  lineHeight: 1.6,
+} satisfies React.CSSProperties;
+
+const errorMessageStyle = {
+  margin: 0,
+  padding: "0.75rem 1rem",
+  borderRadius: "12px",
+  background: "rgba(220, 38, 38, 0.06)",
+  border: "1px solid rgba(220, 38, 38, 0.2)",
+  color: "#b91c1c",
+  fontSize: "0.9rem",
+  fontWeight: 500,
 } satisfies React.CSSProperties;

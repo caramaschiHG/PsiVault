@@ -26,6 +26,9 @@ export interface AppointmentRepository {
 
   /** All appointments for a specific patient in a workspace, most recent first. */
   listByPatient(patientId: string, workspaceId: string): Promise<Appointment[]>;
+
+  /** Persist multiple appointments atomically. Fails all-or-nothing. */
+  saveBatch(appointments: Appointment[]): Promise<void>;
 }
 
 export function createInMemoryAppointmentRepository(
@@ -74,6 +77,10 @@ export function createInMemoryAppointmentRepository(
             a.patientId === patientId,
         )
         .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
+    },
+
+    async saveBatch(appointments) {
+      for (const a of appointments) await this.save(a);
     },
   };
 }

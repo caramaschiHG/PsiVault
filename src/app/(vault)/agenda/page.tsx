@@ -42,6 +42,7 @@ import { RemoteIssueForm } from "./components/remote-issue-form";
 import { AgendaDayView } from "./components/agenda-day-view";
 import { AgendaWeekView } from "./components/agenda-week-view";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
+import { AppointmentQuickActions } from "./components/appointment-quick-actions";
 import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 
@@ -322,6 +323,19 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     }
   }
 
+  // Build quickActionsMap for active appointment cards
+  const quickActionsMap: Record<string, React.ReactNode> = {};
+  for (const appt of appointments) {
+    if (appt.status === "COMPLETED" || appt.status === "CANCELED" || appt.status === "NO_SHOW") continue;
+    quickActionsMap[appt.id] = (
+      <AppointmentQuickActions
+        appointmentId={appt.id}
+        status={appt.status}
+        seriesId={appt.seriesId}
+      />
+    );
+  }
+
   // Derive view models
   const dayResult = deriveDayAgenda(appointments, anchorDate, TIMEZONE);
   const weekStart = activeView === "week" ? anchorDate : getWeekStart(anchorDate);
@@ -384,9 +398,9 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
       {/* Agenda content */}
       {activeView === "day" ? (
-        <AgendaDayView day={dayResult} patientNames={patientNames} nextSessionActions={nextSessionActions} />
+        <AgendaDayView day={dayResult} patientNames={patientNames} nextSessionActions={nextSessionActions} quickActions={quickActionsMap} />
       ) : (
-        <AgendaWeekView week={weekResult} patientNames={patientNames} nextSessionActions={nextSessionActions} />
+        <AgendaWeekView week={weekResult} patientNames={patientNames} nextSessionActions={nextSessionActions} quickActions={quickActionsMap} />
       )}
 
       {/* WhatsApp batch panel — day view only, when there are entries */}
