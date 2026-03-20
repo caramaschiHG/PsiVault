@@ -11,6 +11,9 @@ import { getPatientRepository } from "../../../lib/patients/store";
 import { createPatientAuditEvent } from "../../../lib/patients/audit";
 import { getAuditRepository } from "../../../lib/audit/store";
 import { resolveSession } from "../../../lib/supabase/session";
+import { getAppointmentRepository } from "../../../lib/appointments/store";
+import { cancelAppointment } from "../../../lib/appointments/model";
+import { createAppointmentAuditEvent } from "../../../lib/appointments/audit";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -131,15 +134,39 @@ export async function updatePatientAction(formData: FormData): Promise<void> {
 export async function archivePatientAction(formData: FormData): Promise<void> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getPatientRepository();
+  const apptRepo = getAppointmentRepository();
   const audit = getAuditRepository();
   const now = new Date();
   const patientId = String(formData.get("patientId") ?? "");
+  const cancelFuture = formData.get("cancelFutureSessions") === "true";
 
   let shouldRedirect = false;
 
   try {
     const existing = await repo.findById(patientId, workspaceId);
     if (!existing) return;
+
+    if (cancelFuture) {
+      const futureAppts = await apptRepo.listFutureActiveByPatient(patientId, workspaceId, now);
+      for (const appt of futureAppts) {
+        const canceled = cancelAppointment(appt, {
+          now,
+          canceledByAccountId: accountId,
+          canceledBy: "THERAPIST",
+        });
+        await apptRepo.save(canceled);
+        audit.append(
+          createAppointmentAuditEvent(
+            {
+              type: "appointment.canceled",
+              appointment: canceled,
+              actor: { accountId, workspaceId },
+            },
+            { now, createId: generateId },
+          ),
+        );
+      }
+    }
 
     const archived = archivePatient(existing, {
       now,

@@ -86,9 +86,9 @@ describe("quick next-session defaults", () => {
       });
 
       // No startsAt, no endsAt — date/time must remain absent
-      expect((defaults as Record<string, unknown>).startsAt).toBeUndefined();
-      expect((defaults as Record<string, unknown>).endsAt).toBeUndefined();
-      expect((defaults as Record<string, unknown>).date).toBeUndefined();
+      expect((defaults as unknown as Record<string, unknown>).startsAt).toBeUndefined();
+      expect((defaults as unknown as Record<string, unknown>).endsAt).toBeUndefined();
+      expect((defaults as unknown as Record<string, unknown>).date).toBeUndefined();
     });
 
     it("priceInCents is null when neither last appointment nor profile has a price", async () => {

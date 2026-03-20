@@ -27,6 +27,9 @@ export interface AppointmentRepository {
   /** All appointments for a specific patient in a workspace, most recent first. */
   listByPatient(patientId: string, workspaceId: string): Promise<Appointment[]>;
 
+  /** Future active (SCHEDULED | CONFIRMED) appointments for a patient, from a given date, oldest first. */
+  listFutureActiveByPatient(patientId: string, workspaceId: string, from: Date): Promise<Appointment[]>;
+
   /** Persist multiple appointments atomically. Fails all-or-nothing. */
   saveBatch(appointments: Appointment[]): Promise<void>;
 }
@@ -77,6 +80,18 @@ export function createInMemoryAppointmentRepository(
             a.patientId === patientId,
         )
         .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
+    },
+
+    async listFutureActiveByPatient(patientId, workspaceId, from) {
+      return [...store.values()]
+        .filter(
+          (a) =>
+            a.workspaceId === workspaceId &&
+            a.patientId === patientId &&
+            (a.status === "SCHEDULED" || a.status === "CONFIRMED") &&
+            a.startsAt >= from,
+        )
+        .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
     },
 
     async saveBatch(appointments) {

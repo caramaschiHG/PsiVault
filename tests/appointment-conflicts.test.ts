@@ -1,29 +1,9 @@
 import { describe, it, expect } from "vitest";
+import type { Appointment } from "../src/lib/appointments/model";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function makeAppointment(
-  overrides: Partial<{
-    id: string;
-    workspaceId: string;
-    patientId: string;
-    startsAt: Date;
-    endsAt: Date;
-    durationMinutes: number;
-    careMode: string;
-    status: string;
-    seriesId: string | null;
-    seriesIndex: number | null;
-    rescheduledFromId: string | null;
-    canceledAt: Date | null;
-    canceledByAccountId: string | null;
-    confirmedAt: Date | null;
-    completedAt: Date | null;
-    noShowAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-  }> = {},
-) {
+function makeAppointment(overrides: Partial<Appointment> = {}): Appointment {
   const now = new Date("2026-03-13T10:00:00.000Z");
   return {
     id: "appt_1",
@@ -39,6 +19,9 @@ function makeAppointment(
     rescheduledFromId: null,
     canceledAt: null,
     canceledByAccountId: null,
+    canceledBy: null,
+    seriesPattern: null,
+    seriesDaysOfWeek: [],
     confirmedAt: null,
     completedAt: null,
     noShowAt: null,
@@ -377,7 +360,7 @@ describe("appointment domain", () => {
         status: "SCHEDULED",
       });
 
-      const canceled = cancelAppointment(original, { now, canceledByAccountId: "acct_1" });
+      const canceled = cancelAppointment(original, { now, canceledByAccountId: "acct_1", canceledBy: "THERAPIST" });
 
       expect(canceled.status).toBe("CANCELED");
       expect(canceled.canceledAt).toEqual(now);
