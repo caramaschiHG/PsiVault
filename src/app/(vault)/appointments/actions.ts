@@ -112,7 +112,7 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
         );
       }
 
-      redirectPath = `/appointments`;
+      redirectPath = `/agenda`;
     } else {
       // Single appointment
       const existing = await repo.listByDateRange(
@@ -159,7 +159,7 @@ export async function createAppointmentAction(formData: FormData): Promise<void>
         });
       }
 
-      redirectPath = `/appointments/${appointment.id}`;
+      redirectPath = `/agenda`;
     }
   } catch (err) {
     console.error("[createAppointmentAction]", err);
@@ -304,7 +304,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
     return;
   }
 
-  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Cancel appointment ────────────────────────────────────────────────────────
@@ -395,7 +395,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
     return;
   }
 
-  if (shouldRedirect) redirect(`/appointments`);
+  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Confirm appointment ───────────────────────────────────────────────────────
@@ -434,7 +434,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<void
     return;
   }
 
-  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Complete appointment ──────────────────────────────────────────────────────
@@ -499,7 +499,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<voi
     return;
   }
 
-  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── No-show ──────────────────────────────────────────────────────────────────
@@ -538,7 +538,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<void>
     return;
   }
 
-  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Update charge ─────────────────────────────────────────────────────────────
@@ -745,5 +745,5 @@ export async function editSeriesAction(formData: FormData): Promise<void> {
     return;
   }
 
-  if (shouldRedirect) redirect(`/appointments/${appointmentId}`);
+  if (shouldRedirect) redirect(`/agenda`);
 }
