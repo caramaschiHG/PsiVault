@@ -103,6 +103,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   }
 
   // Build WhatsApp batch entries for today's scheduled/confirmed appointments with phone
+  const todayDateStr = new Date().toISOString().slice(0, 10);
   const todayWhatsAppEntries = activeView === "day"
     ? appointments
         .filter(
@@ -129,6 +130,21 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             whatsappUrl: buildReminderWhatsAppUrl({ patientName, patientPhone, appointmentDate: apptDate, appointmentTime: apptTime }),
           };
         })
+    : [];
+
+  // Patients without phone who have appointments today — shown as warning in panel
+  const noPhonePatients = activeView === "day"
+    ? appointments
+        .filter(
+          (a) =>
+            (a.status === "SCHEDULED" || a.status === "CONFIRMED") &&
+            !patientById[a.patientId]?.phone,
+        )
+        .map((a) => {
+          const p = patientById[a.patientId];
+          return p ? (p.socialName ?? p.fullName) : null;
+        })
+        .filter((name): name is string => name !== null)
     : [];
 
   // Load practice profile for next-session defaults
@@ -403,9 +419,13 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         <AgendaWeekView week={weekResult} patientNames={patientNames} nextSessionActions={nextSessionActions} quickActions={quickActionsMap} />
       )}
 
-      {/* WhatsApp batch panel — day view only, when there are entries */}
-      {activeView === "day" && todayWhatsAppEntries.length > 0 && (
-        <TodayWhatsAppPanel entries={todayWhatsAppEntries} />
+      {/* WhatsApp batch panel — day view only */}
+      {activeView === "day" && (todayWhatsAppEntries.length > 0 || noPhonePatients.length > 0) && (
+        <TodayWhatsAppPanel
+          entries={todayWhatsAppEntries}
+          noPhonePatients={noPhonePatients}
+          todayDateStr={todayDateStr}
+        />
       )}
 
       {/* FAB mobile — visible only on mobile via CSS class */}

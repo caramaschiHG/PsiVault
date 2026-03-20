@@ -14,3 +14,4 @@ npm-debug.log*
 /landing-hero.png
 /landing-updated.png
 .vercel
+tsconfig.tsbuildinfo
