@@ -232,7 +232,7 @@ const metaRowStyle = {
 } satisfies React.CSSProperties;
 
 const metaLabelStyle = {
-  color: "#78716c",
+  color: "var(--color-text-3)",
   minWidth: "7rem",
 } satisfies React.CSSProperties;
 
@@ -305,7 +305,7 @@ const signatureImgStyle = {
 const archiveButtonStyle = {
   fontSize: "0.875rem",
   fontWeight: 500,
-  color: "#78716c",
+  color: "var(--color-text-3)",
   cursor: "pointer",
   padding: "0.45rem 1rem",
   borderRadius: "999px",

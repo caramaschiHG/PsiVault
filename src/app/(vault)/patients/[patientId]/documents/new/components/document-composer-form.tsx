@@ -192,7 +192,7 @@ const labelStyle = {
 
 const wordCountStyle = {
   fontSize: "0.74rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
   letterSpacing: "0.03em",
   textTransform: "uppercase" as const,
 } satisfies React.CSSProperties;

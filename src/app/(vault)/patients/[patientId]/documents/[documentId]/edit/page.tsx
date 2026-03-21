@@ -112,7 +112,7 @@ const navStyle = {
   alignItems: "center",
   gap: "0.5rem",
   fontSize: "0.9rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const navLinkStyle = {
@@ -188,6 +188,6 @@ const submitButtonStyle = {
 const cancelLinkStyle = {
   fontSize: "0.875rem",
   fontWeight: 500,
-  color: "#78716c",
+  color: "var(--color-text-3)",
   textDecoration: "none",
 } satisfies React.CSSProperties;

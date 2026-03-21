@@ -211,7 +211,7 @@ export function NoteComposerForm({
             style={{
               margin: "0.25rem 0 0",
               fontSize: "0.75rem",
-              color: "var(--color-text-3, #78716c)",
+              color: "var(--color-text-3)",
             } satisfies React.CSSProperties}
           >
             ✓ Auto-salvo {formatRelativeTime(lastSaved)}
@@ -421,7 +421,7 @@ const submitButtonStyle = {
 
 const cancelLinkStyle = {
   fontSize: "0.9rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
   textDecoration: "none",
   fontWeight: 500,
 } satisfies React.CSSProperties;

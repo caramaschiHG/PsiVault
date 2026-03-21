@@ -325,7 +325,7 @@ const sectionCopyStyle = {
   margin: 0,
   fontSize: "0.9rem",
   lineHeight: 1.6,
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const labelStyle = {
@@ -377,7 +377,7 @@ const dayBtnStyle = {
   borderRadius: "10px",
   border: "1px solid rgba(120, 53, 15, 0.2)",
   background: "transparent",
-  color: "#78716c",
+  color: "var(--color-text-3)",
   fontWeight: 500,
   fontSize: "0.82rem",
   cursor: "pointer",
@@ -400,7 +400,7 @@ const recurrenceInfoStyle = {
   borderRadius: "12px",
   background: "rgba(120, 53, 15, 0.05)",
   border: "1px solid rgba(120, 53, 15, 0.14)",
-  color: "#78716c",
+  color: "var(--color-text-3)",
   fontSize: "0.88rem",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;

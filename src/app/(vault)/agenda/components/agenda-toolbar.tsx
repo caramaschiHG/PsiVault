@@ -146,7 +146,7 @@ const viewTabStyle = {
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "0.88rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
   transition: "background 0.15s, color 0.15s",
 } satisfies React.CSSProperties;
 

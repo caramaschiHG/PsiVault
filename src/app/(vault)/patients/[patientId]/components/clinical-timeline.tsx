@@ -456,7 +456,7 @@ const subSectionLabelStyle = {
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const cardsGroupStyle = {
@@ -515,12 +515,12 @@ const dateLabelStyle = {
 
 const mutedDateLabelStyle = {
   fontSize: "0.88rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const durationLabelStyle = {
   fontSize: "0.8rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const chipsRowStyle = {
@@ -613,7 +613,7 @@ const detailsSummaryStyle = {
   padding: "0.6rem 1rem",
   fontSize: "0.82rem",
   fontWeight: 500,
-  color: "#78716c",
+  color: "var(--color-text-3)",
   cursor: "pointer",
   listStyle: "none",
   display: "flex",

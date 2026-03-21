@@ -200,7 +200,7 @@ const titleStyle = {
 
 const emptyStateStyle = {
   margin: 0,
-  color: "#78716c",
+  color: "var(--color-text-3)",
   fontSize: "0.95rem",
   padding: "0.5rem 0",
 } satisfies React.CSSProperties;
@@ -252,7 +252,7 @@ const amountStyle = {
 
 const methodStyle = {
   fontSize: "0.8rem",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const detailsStyle = {

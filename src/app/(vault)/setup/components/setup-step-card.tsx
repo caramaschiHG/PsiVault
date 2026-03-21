@@ -107,7 +107,7 @@ const titleStyle = {
 
 const statusStyle = {
   margin: "0.25rem 0 0",
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const chipStyle = {

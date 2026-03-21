@@ -230,7 +230,7 @@ const sectionCopyStyle = {
   margin: 0,
   fontSize: "0.9rem",
   lineHeight: 1.6,
-  color: "#78716c",
+  color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
 const labelStyle = {

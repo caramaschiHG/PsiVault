@@ -276,7 +276,7 @@ const headingTextStyle = {
 const contextualMessageStyle = {
   margin: 0,
   fontSize: "0.875rem",
-  color: "var(--color-text-2, #78716c)",
+  color: "var(--color-text-3)",
   fontWeight: 400,
 } satisfies React.CSSProperties;
 
