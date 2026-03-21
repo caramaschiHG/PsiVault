@@ -19,6 +19,18 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
   }
 
+  // Validate workspace ownership
+  const workspace = await db.workspace.findFirst({
+    where: {
+      id: workspaceId,
+      ownerAccountId: user.id,
+    },
+    select: { id: true },
+  });
+  if (!workspace) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const startsAt = new Date(startsAtStr);
   const endsAt = new Date(startsAt.getTime() + durationMinutes * 60 * 1000);
 
