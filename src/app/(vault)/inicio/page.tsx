@@ -27,6 +27,7 @@ import {
   deriveMonthlySnapshot,
 } from "../../../lib/dashboard/aggregation";
 import { RemindersSection } from "./components/reminders-section";
+import { QuickActionFab } from "./components/quick-action-fab";
 import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 
@@ -113,6 +114,20 @@ export default async function InicioPage() {
     monthlyAppointments,
   });
 
+  // Contextual header message based on next upcoming appointment today
+  const nextAppt = todayAppointments
+    .filter((a) => ["SCHEDULED", "CONFIRMED"].includes(a.status))
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0];
+
+  const minutesUntilNext = nextAppt
+    ? Math.floor((new Date(nextAppt.startsAt).getTime() - now.getTime()) / 60000)
+    : null;
+
+  const contextualMessage =
+    minutesUntilNext !== null && minutesUntilNext > 0 && minutesUntilNext <= 60
+      ? `Sua próxima sessão começa em ${minutesUntilNext} min`
+      : "Sua rotina clínica está organizada";
+
   await observeServerStage(
     route,
     "renderPreparation",
@@ -144,6 +159,7 @@ export default async function InicioPage() {
         <div style={headingTextStyle}>
           <p style={eyebrowStyle}>Consultório</p>
           <h1 style={titleStyle}>Início</h1>
+          <p style={contextualMessageStyle}>{contextualMessage}</p>
         </div>
       </div>
 
@@ -228,6 +244,8 @@ export default async function InicioPage() {
           </div>
         </div>
       </section>
+
+      <QuickActionFab />
     </main>
   );
 }
@@ -253,6 +271,13 @@ const headingRowStyle = {
 const headingTextStyle = {
   display: "grid",
   gap: "0.2rem",
+} satisfies React.CSSProperties;
+
+const contextualMessageStyle = {
+  margin: 0,
+  fontSize: "0.875rem",
+  color: "var(--color-text-2, #78716c)",
+  fontWeight: 400,
 } satisfies React.CSSProperties;
 
 const eyebrowStyle = {
