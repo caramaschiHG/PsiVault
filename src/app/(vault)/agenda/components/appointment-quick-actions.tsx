@@ -9,6 +9,7 @@
  */
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   confirmAppointmentAction,
   completeAppointmentAction,
@@ -16,6 +17,7 @@ import {
   cancelAppointmentAction,
 } from "../../appointments/actions";
 import { RecurrenceScopeDialog } from "../../appointments/components/recurrence-scope-dialog";
+import { useToast } from "../../../../components/ui/toast-provider";
 import type { AppointmentStatus } from "../../../../lib/appointments/model";
 
 interface AppointmentQuickActionsProps {
@@ -32,6 +34,8 @@ export function AppointmentQuickActions({
   const [showCancelScope, setShowCancelScope] = useState(false);
   const [canceledBy, setCanceledBy] = useState<"PATIENT" | "THERAPIST">("THERAPIST");
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const { toast } = useToast();
 
   if (status !== "SCHEDULED" && status !== "CONFIRMED") return null;
 
@@ -40,7 +44,16 @@ export function AppointmentQuickActions({
       <div style={cancelScopeContainerStyle}>
         <form
           action={(formData) => {
-            startTransition(() => cancelAppointmentAction(formData));
+            startTransition(async () => {
+              const isSeries = formData.get("recurrenceScope") !== "THIS";
+              const result = await cancelAppointmentAction(formData);
+              if (result.success) {
+                toast(isSeries ? "Série cancelada" : "Consulta cancelada");
+                router.refresh();
+              } else {
+                toast(result.error ?? "Erro ao cancelar consulta", "error");
+              }
+            });
           }}
         >
           <input type="hidden" name="appointmentId" value={appointmentId} />
@@ -76,7 +89,15 @@ export function AppointmentQuickActions({
       {status === "SCHEDULED" && (
         <form
           action={(formData) => {
-            startTransition(() => confirmAppointmentAction(formData));
+            startTransition(async () => {
+              const result = await confirmAppointmentAction(formData);
+              if (result.success) {
+                toast("Consulta confirmada");
+                router.refresh();
+              } else {
+                toast(result.error ?? "Erro ao confirmar consulta", "error");
+              }
+            });
           }}
           style={inlineFormStyle}
         >
@@ -89,7 +110,15 @@ export function AppointmentQuickActions({
 
       <form
         action={(formData) => {
-          startTransition(() => completeAppointmentAction(formData));
+          startTransition(async () => {
+            const result = await completeAppointmentAction(formData);
+            if (result.success) {
+              toast("Consulta concluída");
+              router.refresh();
+            } else {
+              toast(result.error ?? "Erro ao concluir consulta", "error");
+            }
+          });
         }}
         style={inlineFormStyle}
       >
@@ -101,7 +130,15 @@ export function AppointmentQuickActions({
 
       <form
         action={(formData) => {
-          startTransition(() => noShowAppointmentAction(formData));
+          startTransition(async () => {
+            const result = await noShowAppointmentAction(formData);
+            if (result.success) {
+              toast("Não comparecimento registrado");
+              router.refresh();
+            } else {
+              toast(result.error ?? "Erro ao registrar não comparecimento", "error");
+            }
+          });
         }}
         style={inlineFormStyle}
       >

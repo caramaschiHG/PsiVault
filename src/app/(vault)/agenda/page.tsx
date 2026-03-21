@@ -79,25 +79,34 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     ? new Date(anchorDate.getTime() + 2 * DAY_MS)
     : new Date(anchorDate.getTime() + WEEK_MS + DAY_MS);
 
-  const appointments = await observeServerStage(
-    route,
-    "loadAppointments",
-    () => appointmentRepo.listByDateRange(workspaceId, rangeFrom, rangeTo),
-    {
-      workspaceId,
-      activeView,
-      rangeFrom: rangeFrom.toISOString(),
-      rangeTo: rangeTo.toISOString(),
-    },
-  );
+  // Parallel load of independent data sources
+  const [appointments, allPatients, profile] = await Promise.all([
+    observeServerStage(
+      route,
+      "loadAppointments",
+      () => appointmentRepo.listByDateRange(workspaceId, rangeFrom, rangeTo),
+      {
+        workspaceId,
+        activeView,
+        rangeFrom: rangeFrom.toISOString(),
+        rangeTo: rangeTo.toISOString(),
+      },
+    ),
+    observeServerStage(
+      route,
+      "loadPatients",
+      () => patientRepo.listActive(workspaceId),
+      { workspaceId },
+    ),
+    observeServerStage(
+      route,
+      "loadPracticeProfile",
+      () => getPracticeProfileSnapshot(accountId, workspaceId),
+      { accountId, workspaceId },
+    ),
+  ]);
 
   // Build patient name lookup from the patient repository
-  const allPatients = await observeServerStage(
-    route,
-    "loadPatients",
-    () => patientRepo.listActive(workspaceId),
-    { workspaceId },
-  );
   const patientNames: Record<string, string> = {};
   const patientById: Record<string, typeof allPatients[number]> = {};
   for (const p of allPatients) {
@@ -149,14 +158,6 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         })
         .filter((name): name is string => name !== null)
     : [];
-
-  // Load practice profile for next-session defaults
-  const profile = await observeServerStage(
-    route,
-    "loadPracticeProfile",
-    () => getPracticeProfileSnapshot(accountId, workspaceId),
-    { accountId, workspaceId },
-  );
 
   // Resolve default care mode from practice profile (HYBRID is not a booking value)
   const profileCareMode =

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   DndContext,
   PointerSensor,
@@ -14,6 +15,7 @@ import type { GridBlock, GridLayoutOptions } from "../../../../lib/appointments/
 import { AppointmentBlock } from "./appointment-block";
 import { AppointmentSidePanel } from "./appointment-side-panel";
 import { rescheduleAppointmentAction } from "../../appointments/actions";
+import { useToast } from "../../../../components/ui/toast-provider";
 
 interface CalendarGridProps {
   blocks: GridBlock[];
@@ -29,6 +31,8 @@ const SLOT_MINUTES = 15;
 export function CalendarGrid({ blocks, panels, patientNames, date, options }: CalendarGridProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const router = useRouter();
+  const { toast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -77,8 +81,14 @@ export function CalendarGrid({ blocks, panels, patientNames, date, options }: Ca
     formData.set("careMode", dragged.careMode);
     formData.set("rescheduledFromId", dragged.appointmentId);
 
-    startTransition(() => {
-      rescheduleAppointmentAction(formData).catch(console.error);
+    startTransition(async () => {
+      const result = await rescheduleAppointmentAction(formData);
+      if (result.success) {
+        toast("Consulta reagendada");
+        router.refresh();
+      } else {
+        toast(result.error ?? "Erro ao reagendar consulta", "error");
+      }
     });
   }
 

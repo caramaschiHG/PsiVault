@@ -190,7 +190,7 @@ export async function createAppointmentAction(
 
 // ─── Reschedule appointment ────────────────────────────────────────────────────
 
-export async function rescheduleAppointmentAction(formData: FormData): Promise<void> {
+export async function rescheduleAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -201,11 +201,9 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
   const durationMinutes = Number(formData.get("durationMinutes") ?? 60);
   const scope = (formData.get("recurrenceScope") ?? "THIS") as RecurrenceEditScope;
 
-  let shouldRedirect = false;
-
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
-    if (!existing) return;
+    if (!existing) return { success: false, error: "Consulta não encontrada." };
 
     if (existing.seriesId && scope !== "THIS") {
       // Series reschedule — delegate to series edit for THIS_AND_FUTURE or ALL
@@ -326,18 +324,17 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<v
       }
     }
 
-    shouldRedirect = true;
+    revalidatePath("/agenda");
+    return { success: true };
   } catch (err) {
     console.error("[rescheduleAppointmentAction]", err);
-    return;
+    return { success: false, error: "Erro ao reagendar consulta. Tente novamente." };
   }
-
-  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Cancel appointment ────────────────────────────────────────────────────────
 
-export async function cancelAppointmentAction(formData: FormData): Promise<void> {
+export async function cancelAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -347,11 +344,9 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
   const scope = (formData.get("recurrenceScope") ?? "THIS") as RecurrenceEditScope;
   const canceledBy = (formData.get("canceledBy") === "PATIENT" ? "PATIENT" : "THERAPIST") as CancellationActor;
 
-  let shouldRedirect = false;
-
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
-    if (!existing) return;
+    if (!existing) return { success: false, error: "Consulta não encontrada." };
 
     if (existing.seriesId && scope !== "THIS") {
       const allInSeries = await repo.listBySeries(existing.seriesId, workspaceId);
@@ -420,18 +415,17 @@ export async function cancelAppointmentAction(formData: FormData): Promise<void>
       }
     }
 
-    shouldRedirect = true;
+    revalidatePath("/agenda");
+    return { success: true };
   } catch (err) {
     console.error("[cancelAppointmentAction]", err);
-    return;
+    return { success: false, error: "Erro ao cancelar consulta. Tente novamente." };
   }
-
-  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Confirm appointment ───────────────────────────────────────────────────────
 
-export async function confirmAppointmentAction(formData: FormData): Promise<void> {
+export async function confirmAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -439,11 +433,9 @@ export async function confirmAppointmentAction(formData: FormData): Promise<void
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
 
-  let shouldRedirect = false;
-
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
-    if (!existing) return;
+    if (!existing) return { success: false, error: "Consulta não encontrada." };
 
     const confirmed = confirmAppointment(existing, { now });
     await repo.save(confirmed);
@@ -459,18 +451,17 @@ export async function confirmAppointmentAction(formData: FormData): Promise<void
       ),
     );
 
-    shouldRedirect = true;
+    revalidatePath("/agenda");
+    return { success: true };
   } catch (err) {
     console.error("[confirmAppointmentAction]", err);
-    return;
+    return { success: false, error: "Erro ao confirmar consulta. Tente novamente." };
   }
-
-  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Complete appointment ──────────────────────────────────────────────────────
 
-export async function completeAppointmentAction(formData: FormData): Promise<void> {
+export async function completeAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -478,11 +469,9 @@ export async function completeAppointmentAction(formData: FormData): Promise<voi
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
 
-  let shouldRedirect = false;
-
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
-    if (!existing) return;
+    if (!existing) return { success: false, error: "Consulta não encontrada." };
 
     const completed = completeAppointment(existing, { now });
     await repo.save(completed);
@@ -524,18 +513,18 @@ export async function completeAppointmentAction(formData: FormData): Promise<voi
       );
     }
 
-    shouldRedirect = true;
+    revalidatePath("/agenda");
+    revalidatePath(`/patients/${completed.patientId}`);
+    return { success: true };
   } catch (err) {
     console.error("[completeAppointmentAction]", err);
-    return;
+    return { success: false, error: "Erro ao concluir consulta. Tente novamente." };
   }
-
-  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── No-show ──────────────────────────────────────────────────────────────────
 
-export async function noShowAppointmentAction(formData: FormData): Promise<void> {
+export async function noShowAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -543,11 +532,9 @@ export async function noShowAppointmentAction(formData: FormData): Promise<void>
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
 
-  let shouldRedirect = false;
-
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
-    if (!existing) return;
+    if (!existing) return { success: false, error: "Consulta não encontrada." };
 
     const noShow = noShowAppointment(existing, { now });
     await repo.save(noShow);
@@ -563,13 +550,12 @@ export async function noShowAppointmentAction(formData: FormData): Promise<void>
       ),
     );
 
-    shouldRedirect = true;
+    revalidatePath("/agenda");
+    return { success: true };
   } catch (err) {
     console.error("[noShowAppointmentAction]", err);
-    return;
+    return { success: false, error: "Erro ao registrar não comparecimento. Tente novamente." };
   }
-
-  if (shouldRedirect) redirect(`/agenda`);
 }
 
 // ─── Update charge ─────────────────────────────────────────────────────────────
