@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { OtpInput } from "../components/otp-input";
@@ -32,16 +32,12 @@ export default function MfaVerifyPage() {
     });
   }, [supabase]);
 
-  async function handleVerify(e: React.FormEvent) {
-    e.preventDefault();
-    if (!supabase) {
-      setError("Verificação indisponível no momento. Recarregue a página.");
-      return;
-    }
+  const verify = useCallback(async (currentCode: string) => {
+    if (!supabase || !factorId || currentCode.length !== 6) return;
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code });
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code: currentCode });
 
     setLoading(false);
     if (error) {
@@ -50,7 +46,15 @@ export default function MfaVerifyPage() {
     }
 
     router.push("/complete-profile");
-  }
+  }, [supabase, factorId, router]);
+
+  // Auto-submit ao completar os 6 dígitos
+  useEffect(() => {
+    if (code.length === 6 && !loading && factorId) {
+      verify(code);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code]);
 
   return (
     <main className="auth-shell">
@@ -63,7 +67,7 @@ export default function MfaVerifyPage() {
         </p>
 
         <form
-          onSubmit={handleVerify}
+          onSubmit={(e) => { e.preventDefault(); verify(code); }}
           style={{ display: "grid", gap: "1rem" } satisfies React.CSSProperties}
         >
           <OtpInput

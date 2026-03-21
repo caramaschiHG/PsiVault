@@ -21,72 +21,92 @@ export default async function SignInPage({
     : null;
 
   return (
-    <main className="auth-shell">
-      <p className="auth-brand">PsiVault</p>
-      <section className="auth-card">
-        <p className="auth-eyebrow">Entrar</p>
-        <h1 className="auth-title">Bem-vindo de volta.</h1>
-
-        {successMessage && (
-          <div
-            className="auth-alert auth-alert--success"
-            style={{ marginBottom: "1rem" } satisfies React.CSSProperties}
-          >
-            {successMessage}
+    <div className="auth-page">
+      <aside className="auth-brand-panel">
+        <div className="auth-brand-panel-inner">
+          <div className="auth-brand-mark">PsiVault</div>
+          <div className="auth-brand-body">
+            <p className="auth-brand-tagline">
+              Rotina clínica com calma, sigilo e clareza.
+            </p>
+            <ul className="auth-brand-points">
+              <li>Prontuário eletrônico organizado</li>
+              <li>Agenda e sessões integradas</li>
+              <li>Documentos, recibos e declarações</li>
+              <li>Acesso seguro com autenticação em dois fatores</li>
+            </ul>
           </div>
-        )}
+          <p className="auth-brand-foot">Para psicólogos brasileiros</p>
+        </div>
+      </aside>
 
-        <form className="auth-form" action={signIn}>
-          <AuthForm>
-            <label className="auth-label">
-              E-mail
-              <input
-                className="auth-input"
-                type="email"
-                name="email"
-                placeholder="voce@consultorio.com.br"
-                required
-              />
-              {errorField === "email" && errorMessage && (
-                <span className="auth-field-error">{errorMessage}</span>
-              )}
-            </label>
+      <main className="auth-form-panel">
+        <div className="auth-form-inner">
+          <p className="auth-eyebrow">Entrar</p>
+          <h1 className="auth-title">Bem-vindo de volta.</h1>
+          <p className="auth-copy">Acesse seu vault clínico.</p>
 
-            <label className="auth-label">
-              Senha
-              <PasswordInput
-                name="password"
-                placeholder="Sua senha"
-                required
-              />
-              {errorField === "password" && errorMessage && (
-                <span className="auth-field-error">{errorMessage}</span>
-              )}
-            </label>
-
-            <div style={{ textAlign: "right" } satisfies React.CSSProperties}>
-              <a
-                href="/reset-password"
-                className="link-subtle"
-                style={{ fontSize: "0.875rem" } satisfies React.CSSProperties}
-              >
-                Esqueceu a senha?
-              </a>
+          {successMessage && (
+            <div
+              className="auth-alert auth-alert--success"
+              style={{ marginBottom: "1.25rem" } satisfies React.CSSProperties}
+            >
+              {successMessage}
             </div>
+          )}
 
-            <SubmitButton label="Entrar" />
+          <form className="auth-form" action={signIn}>
+            <AuthForm>
+              <label className="auth-label">
+                E-mail
+                <input
+                  className="auth-input"
+                  type="email"
+                  name="email"
+                  placeholder="voce@consultorio.com.br"
+                  required
+                />
+                {errorField === "email" && errorMessage && (
+                  <span className="auth-field-error">{errorMessage}</span>
+                )}
+              </label>
 
-            {errorMessage && !errorField && (
-              <div className="auth-alert auth-alert--error">{errorMessage}</div>
-            )}
-          </AuthForm>
-        </form>
+              <label className="auth-label">
+                Senha
+                <PasswordInput
+                  name="password"
+                  placeholder="Sua senha"
+                  required
+                />
+                {errorField === "password" && errorMessage && (
+                  <span className="auth-field-error">{errorMessage}</span>
+                )}
+              </label>
 
-        <p className="auth-footer">
-          Não tem conta?{" "}
-          <a href="/sign-up">Criar conta</a>
-        </p>
-      </section>
-    </main>
+              <div style={{ textAlign: "right" } satisfies React.CSSProperties}>
+                <a
+                  href="/reset-password"
+                  className="link-subtle"
+                  style={{ fontSize: "0.875rem" } satisfies React.CSSProperties}
+                >
+                  Esqueceu a senha?
+                </a>
+              </div>
+
+              <SubmitButton label="Entrar" />
+
+              {errorMessage && !errorField && (
+                <div className="auth-alert auth-alert--error">{errorMessage}</div>
+              )}
+            </AuthForm>
+          </form>
+
+          <p className="auth-footer">
+            Não tem conta?{" "}
+            <a href="/sign-up">Criar conta</a>
+          </p>
+        </div>
+      </main>
+    </div>
   );
 }

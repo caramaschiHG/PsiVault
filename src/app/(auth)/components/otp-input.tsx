@@ -18,7 +18,16 @@ export function OtpInput({ value, onValueChange, hasError, autoFocus }: OtpInput
   }
 
   function handleChange(i: number, raw: string) {
-    const char = raw.replace(/\D/g, "").slice(-1);
+    const clean = raw.replace(/\D/g, "");
+    // Mobile: paste chega via onChange com múltiplos dígitos
+    if (clean.length > 1) {
+      const next = [...digits];
+      clean.split("").slice(0, 6 - i).forEach((c, j) => { next[i + j] = c; });
+      onValueChange(next.join(""));
+      focusAt(Math.min(i + clean.length - 1, 5));
+      return;
+    }
+    const char = clean.slice(-1);
     const next = [...digits];
     next[i] = char;
     onValueChange(next.join(""));
@@ -53,12 +62,13 @@ export function OtpInput({ value, onValueChange, hasError, autoFocus }: OtpInput
           className={`auth-otp-digit${hasError ? " auth-otp-digit--error" : ""}`}
           type="text"
           inputMode="numeric"
-          maxLength={1}
+          maxLength={6}
           value={d}
           autoFocus={autoFocus && i === 0}
           aria-label={`Dígito ${i + 1} do código`}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
+          onPaste={handlePaste}
         />
       ))}
     </div>
