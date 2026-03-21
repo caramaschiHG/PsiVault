@@ -19,12 +19,14 @@ export function OtpInput({ value, onValueChange, hasError, autoFocus }: OtpInput
 
   function handleChange(i: number, raw: string) {
     const clean = raw.replace(/\D/g, "");
-    // Mobile: paste chega via onChange com múltiplos dígitos
+    // Mobile: paste chega via onChange com múltiplos dígitos.
+    // Sempre distribui a partir de i=0 para garantir código correto
+    // independente de qual input está focado ao colar.
     if (clean.length > 1) {
-      const next = [...digits];
-      clean.split("").slice(0, 6 - i).forEach((c, j) => { next[i + j] = c; });
+      const next = Array(6).fill("") as string[];
+      clean.split("").slice(0, 6).forEach((c, j) => { next[j] = c; });
       onValueChange(next.join(""));
-      focusAt(Math.min(i + clean.length - 1, 5));
+      focusAt(Math.min(clean.length - 1, 5));
       return;
     }
     const char = clean.slice(-1);
