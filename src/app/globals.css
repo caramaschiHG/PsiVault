@@ -316,6 +316,11 @@ select.input-field {
   50%       { opacity: 0.5; }
 }
 
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* ─── Sidebar dark context ───────────────────────────────────────────────────── */
 
 .vault-sidebar .nav-link {
