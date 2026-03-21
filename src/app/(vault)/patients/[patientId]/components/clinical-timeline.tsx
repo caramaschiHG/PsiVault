@@ -1,12 +1,12 @@
 /**
- * ClinicalTimeline — chronological session history for a single patient.
+ * ClinicalTimeline — session history for a single patient, split into sections.
  *
  * Pure presentational server component: all data comes from props.
- * Renders all appointment statuses with appropriate visual treatment:
- * - COMPLETED + note:    full-opacity card, "Ver / Editar evolução" link
- * - COMPLETED + no note: full-opacity card, "Registrar evolução" link
- * - SCHEDULED/CONFIRMED: full-opacity card, status chip, no note action
- * - CANCELED/NO_SHOW:    muted card (opacity 0.6), status chip, no note action
+ *
+ * Sections:
+ * - Upcoming (SCHEDULED/CONFIRMED, future): first 3 visible, rest collapsible
+ * - Sessions (COMPLETED): first 5 visible, rest collapsible
+ * - Dismissed (CANCELED/NO_SHOW): always collapsible, count in summary
  */
 
 import Link from "next/link";
@@ -24,16 +24,21 @@ interface TimelineEntry {
   durationMinutes: number;
   careMode: "IN_PERSON" | "ONLINE";
   status: "SCHEDULED" | "CONFIRMED" | "COMPLETED" | "CANCELED" | "NO_SHOW";
-  sessionNumber: number | null; // from deriveSessionNumber
+  sessionNumber: number | null;
   hasNote: boolean;
   noteId: string | null;
 }
 
 interface ClinicalTimelineProps {
-  entries: TimelineEntry[]; // sorted most-recent first by parent
+  upcoming: TimelineEntry[];   // SCHEDULED/CONFIRMED future, sorted ASC
+  completed: TimelineEntry[];  // COMPLETED, sorted most-recent first
+  dismissed: TimelineEntry[];  // CANCELED/NO_SHOW
   patientName: string;
   patientPhone: string | null;
 }
+
+const UPCOMING_VISIBLE = 3;
+const COMPLETED_VISIBLE = 5;
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   weekday: "long",
@@ -45,7 +50,6 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
 
 function formatDate(date: Date): string {
   const formatted = dateFormatter.format(date);
-  // Capitalize first letter
   return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 
@@ -145,7 +149,7 @@ function ComunicacaoGroup({ patientName, patientPhone, startsAt }: CommProps) {
   );
 }
 
-function CompletedEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
+function CompletedEntryCard({ entry }: { entry: TimelineEntry }) {
   const sessionLabel =
     entry.sessionNumber !== null
       ? `Sessão ${entry.sessionNumber}`
@@ -184,12 +188,19 @@ function CompletedEntryCard({ entry, patientName, patientPhone }: { entry: Timel
           </Link>
         )}
       </div>
-      <ComunicacaoGroup patientName={patientName} patientPhone={patientPhone} startsAt={entry.startsAt} />
     </div>
   );
 }
 
-function ScheduledEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
+function ScheduledEntryCard({
+  entry,
+  patientName,
+  patientPhone,
+}: {
+  entry: TimelineEntry;
+  patientName: string;
+  patientPhone: string | null;
+}) {
   return (
     <div style={activeCardStyle}>
       <div style={cardRowStyle}>
@@ -202,12 +213,16 @@ function ScheduledEntryCard({ entry, patientName, patientPhone }: { entry: Timel
           <StatusChip status={entry.status} />
         </div>
       </div>
-      <ComunicacaoGroup patientName={patientName} patientPhone={patientPhone} startsAt={entry.startsAt} />
+      <ComunicacaoGroup
+        patientName={patientName}
+        patientPhone={patientPhone}
+        startsAt={entry.startsAt}
+      />
     </div>
   );
 }
 
-function MutedEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
+function MutedEntryCard({ entry }: { entry: TimelineEntry }) {
   return (
     <div style={mutedCardStyle}>
       <div style={cardRowStyle}>
@@ -218,12 +233,35 @@ function MutedEntryCard({ entry, patientName, patientPhone }: { entry: TimelineE
           <StatusChip status={entry.status} />
         </div>
       </div>
-      <ComunicacaoGroup patientName={patientName} patientPhone={patientPhone} startsAt={entry.startsAt} />
     </div>
   );
 }
 
-export function ClinicalTimeline({ entries, patientName, patientPhone }: ClinicalTimelineProps) {
+export function ClinicalTimeline({
+  upcoming,
+  completed,
+  dismissed,
+  patientName,
+  patientPhone,
+}: ClinicalTimelineProps) {
+  const hasAny = upcoming.length > 0 || completed.length > 0 || dismissed.length > 0;
+
+  const upcomingVisible = upcoming.slice(0, UPCOMING_VISIBLE);
+  const upcomingHidden = upcoming.slice(UPCOMING_VISIBLE);
+
+  const completedVisible = completed.slice(0, COMPLETED_VISIBLE);
+  const completedHidden = completed.slice(COMPLETED_VISIBLE);
+
+  const canceledCount = dismissed.filter((e) => e.status === "CANCELED").length;
+  const noShowCount = dismissed.filter((e) => e.status === "NO_SHOW").length;
+
+  const dismissedSummary = [
+    canceledCount > 0 ? `${canceledCount} cancelada${canceledCount > 1 ? "s" : ""}` : "",
+    noShowCount > 0 ? `${noShowCount} falta${noShowCount > 1 ? "s" : ""}` : "",
+  ]
+    .filter(Boolean)
+    .join(" e ");
+
   return (
     <section style={sectionStyle}>
       <div style={headingBlockStyle}>
@@ -231,7 +269,7 @@ export function ClinicalTimeline({ entries, patientName, patientPhone }: Clinica
         <h2 style={titleStyle}>Linha do tempo</h2>
       </div>
 
-      {entries.length === 0 ? (
+      {!hasAny ? (
         <EmptyState
           icon={
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
@@ -243,16 +281,77 @@ export function ClinicalTimeline({ entries, patientName, patientPhone }: Clinica
         />
       ) : (
         <div style={entriesListStyle}>
-          {entries.map((entry) => {
-            if (entry.status === "COMPLETED") {
-              return <CompletedEntryCard key={entry.appointmentId} entry={entry} patientName={patientName} patientPhone={patientPhone} />;
-            }
-            if (entry.status === "SCHEDULED" || entry.status === "CONFIRMED") {
-              return <ScheduledEntryCard key={entry.appointmentId} entry={entry} patientName={patientName} patientPhone={patientPhone} />;
-            }
-            // CANCELED or NO_SHOW
-            return <MutedEntryCard key={entry.appointmentId} entry={entry} patientName={patientName} patientPhone={patientPhone} />;
-          })}
+
+          {/* ── Upcoming ────────────────────────────────────────────── */}
+          {upcoming.length > 0 && (
+            <div style={subSectionStyle}>
+              <p style={subSectionLabelStyle}>Próximas consultas</p>
+              <div style={cardsGroupStyle}>
+                {upcomingVisible.map((entry) => (
+                  <ScheduledEntryCard
+                    key={entry.appointmentId}
+                    entry={entry}
+                    patientName={patientName}
+                    patientPhone={patientPhone}
+                  />
+                ))}
+                {upcomingHidden.length > 0 && (
+                  <details style={detailsStyle}>
+                    <summary style={detailsSummaryStyle}>
+                      Ver mais {upcomingHidden.length} consulta{upcomingHidden.length > 1 ? "s" : ""} agendada{upcomingHidden.length > 1 ? "s" : ""}
+                    </summary>
+                    <div style={detailsContentStyle}>
+                      {upcomingHidden.map((entry) => (
+                        <ScheduledEntryCard
+                          key={entry.appointmentId}
+                          entry={entry}
+                          patientName={patientName}
+                          patientPhone={patientPhone}
+                        />
+                      ))}
+                    </div>
+                  </details>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── Completed ───────────────────────────────────────────── */}
+          {completed.length > 0 && (
+            <div style={subSectionStyle}>
+              <p style={subSectionLabelStyle}>Sessões realizadas</p>
+              <div style={cardsGroupStyle}>
+                {completedVisible.map((entry) => (
+                  <CompletedEntryCard key={entry.appointmentId} entry={entry} />
+                ))}
+                {completedHidden.length > 0 && (
+                  <details style={detailsStyle}>
+                    <summary style={detailsSummaryStyle}>
+                      Ver {completedHidden.length} sessão{completedHidden.length > 1 ? "ões" : ""} anterior{completedHidden.length > 1 ? "es" : ""}
+                    </summary>
+                    <div style={detailsContentStyle}>
+                      {completedHidden.map((entry) => (
+                        <CompletedEntryCard key={entry.appointmentId} entry={entry} />
+                      ))}
+                    </div>
+                  </details>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── Dismissed ───────────────────────────────────────────── */}
+          {dismissed.length > 0 && (
+            <details style={detailsStyle}>
+              <summary style={detailsSummaryStyle}>{dismissedSummary}</summary>
+              <div style={detailsContentStyle}>
+                {dismissed.map((entry) => (
+                  <MutedEntryCard key={entry.appointmentId} entry={entry} />
+                ))}
+              </div>
+            </details>
+          )}
+
         </div>
       )}
     </section>
@@ -285,6 +384,25 @@ const titleStyle = {
 } satisfies React.CSSProperties;
 
 const entriesListStyle = {
+  display: "grid",
+  gap: "1.5rem",
+} satisfies React.CSSProperties;
+
+const subSectionStyle = {
+  display: "grid",
+  gap: "0.5rem",
+} satisfies React.CSSProperties;
+
+const subSectionLabelStyle = {
+  margin: 0,
+  fontSize: "0.78rem",
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.1em",
+  color: "#78716c",
+} satisfies React.CSSProperties;
+
+const cardsGroupStyle = {
   display: "grid",
   gap: "0.625rem",
 } satisfies React.CSSProperties;
@@ -424,6 +542,33 @@ const registerNoteLinkStyle = {
   fontWeight: 500,
   color: "#b45309",
   textDecoration: "none",
+} satisfies React.CSSProperties;
+
+// ─── Details/summary styles ────────────────────────────────────────────────────
+
+const detailsStyle = {
+  borderRadius: "12px",
+  border: "1px solid rgba(146, 64, 14, 0.12)",
+  overflow: "hidden",
+} satisfies React.CSSProperties;
+
+const detailsSummaryStyle = {
+  padding: "0.6rem 1rem",
+  fontSize: "0.82rem",
+  fontWeight: 500,
+  color: "#78716c",
+  cursor: "pointer",
+  listStyle: "none",
+  display: "flex",
+  alignItems: "center",
+  gap: "0.35rem",
+  userSelect: "none" as const,
+} satisfies React.CSSProperties;
+
+const detailsContentStyle = {
+  display: "grid",
+  gap: "0.625rem",
+  padding: "0 0 0.625rem 0",
 } satisfies React.CSSProperties;
 
 // ─── Comunicacao group styles ──────────────────────────────────────────────────

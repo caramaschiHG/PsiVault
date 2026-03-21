@@ -139,7 +139,7 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
 
   // Build timeline entries — all appointments, most recent first
   // (appointments is already sorted most-recent first from listByPatient)
-  const timelineEntries = appointments.map((appt) => ({
+  const allEntries = appointments.map((appt) => ({
     appointmentId: appt.id,
     startsAt: appt.startsAt,
     durationMinutes: appt.durationMinutes,
@@ -149,6 +149,21 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
     hasNote: notesByAppointment.has(appt.id),
     noteId: notesByAppointment.get(appt.id) ?? null,
   }));
+
+  const now = new Date();
+
+  // Upcoming: SCHEDULED/CONFIRMED in the future, sorted ASC (next first)
+  const upcomingEntries = allEntries
+    .filter((e) => (e.status === "SCHEDULED" || e.status === "CONFIRMED") && e.startsAt > now)
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+
+  // Completed: most recent first (already sorted DESC from listByPatient)
+  const completedEntries = allEntries.filter((e) => e.status === "COMPLETED");
+
+  // Dismissed: canceled or no-show
+  const dismissedEntries = allEntries.filter(
+    (e) => e.status === "CANCELED" || e.status === "NO_SHOW",
+  );
 
   const patientDisplayName = patient.socialName
     ? `${patient.fullName} (${patient.socialName})`
@@ -179,7 +194,9 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
 
       {/* 4. Clinical timeline — longitudinal session history */}
       <ClinicalTimeline
-        entries={timelineEntries}
+        upcoming={upcomingEntries}
+        completed={completedEntries}
+        dismissed={dismissedEntries}
         patientName={patientDisplayName}
         patientPhone={patient.phone}
       />
