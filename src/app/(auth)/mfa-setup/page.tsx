@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { OtpInput } from "../components/otp-input";
@@ -61,30 +61,29 @@ export default function MfaSetupPage() {
     enroll();
   }, [step, supabase]);
 
-  const verify = useCallback(async (currentCode: string) => {
-    if (!supabase || !factorId || currentCode.length !== 6) return;
+  // Auto-submit: dispara uma única vez por código de 6 dígitos no step verify.
+  // cancelled flag evita múltiplos challengeAndVerify concorrentes (causaria 422).
+  useEffect(() => {
+    if (step !== "verify" || code.length !== 6 || !supabase || !factorId) return;
+
+    let cancelled = false;
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code: currentCode });
+    supabase.auth.mfa.challengeAndVerify({ factorId, code }).then(({ error }) => {
+      if (cancelled) return;
+      setLoading(false);
+      if (error) {
+        setError("Código inválido. Tente novamente.");
+        setCode(""); // limpa para nova tentativa com código fresco
+      } else {
+        setStep("success");
+        setTimeout(() => router.push("/inicio"), 1500);
+      }
+    });
 
-    setLoading(false);
-    if (error) {
-      setError("Código inválido. Tente novamente.");
-      return;
-    }
-
-    setStep("success");
-    setTimeout(() => router.push("/inicio"), 1500);
-  }, [supabase, factorId, router]);
-
-  // Auto-submit ao completar os 6 dígitos
-  useEffect(() => {
-    if (code.length === 6 && !loading && factorId) {
-      verify(code);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [code]);
+    return () => { cancelled = true; };
+  }, [code, step, supabase, factorId, router]);
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
 
@@ -336,7 +335,7 @@ export default function MfaSetupPage() {
             </p>
 
             <form
-              onSubmit={(e) => { e.preventDefault(); verify(code); }}
+              onSubmit={(e) => e.preventDefault()}
               style={{ display: "grid", gap: "1rem" } satisfies React.CSSProperties}
             >
               <OtpInput
@@ -356,14 +355,18 @@ export default function MfaSetupPage() {
                 </p>
               )}
 
-              <button
-                className="btn-primary"
-                style={{ width: "100%" } satisfies React.CSSProperties}
-                type="submit"
-                disabled={loading || code.length !== 6}
+              <p
+                style={
+                  {
+                    fontSize: "0.8rem",
+                    color: "var(--color-text-3)",
+                    margin: 0,
+                    textAlign: "center",
+                  } satisfies React.CSSProperties
+                }
               >
-                {loading ? "Verificando..." : "Confirmar"}
-              </button>
+                {loading ? "Verificando…" : "O código expira em 30 segundos."}
+              </p>
             </form>
           </>
         )}
