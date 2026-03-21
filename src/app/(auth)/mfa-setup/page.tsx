@@ -61,28 +61,35 @@ export default function MfaSetupPage() {
     enroll();
   }, [step, supabase]);
 
-  // Auto-submit: dispara uma única vez por código de 6 dígitos no step verify.
-  // cancelled flag evita múltiplos challengeAndVerify concorrentes (causaria 422).
+  // Auto-submit ao completar 6 dígitos no step verify.
+  // setTimeout(50ms) + cancelled flag previnem double-invoke do React StrictMode.
   useEffect(() => {
     if (step !== "verify" || code.length !== 6 || !supabase || !factorId) return;
 
     let cancelled = false;
-    setError(null);
-    setLoading(true);
 
-    supabase.auth.mfa.challengeAndVerify({ factorId, code }).then(({ error }) => {
+    const timer = setTimeout(() => {
       if (cancelled) return;
-      setLoading(false);
-      if (error) {
-        setError("Código inválido. Tente novamente.");
-        setCode(""); // limpa para nova tentativa com código fresco
-      } else {
-        setStep("success");
-        setTimeout(() => router.push("/inicio"), 1500);
-      }
-    });
+      setError(null);
+      setLoading(true);
 
-    return () => { cancelled = true; };
+      supabase.auth.mfa.challengeAndVerify({ factorId, code }).then(({ error }) => {
+        if (cancelled) return;
+        setLoading(false);
+        if (error) {
+          setError("Código inválido. Tente novamente.");
+          setCode(""); // limpa para nova tentativa com código fresco
+        } else {
+          setStep("success");
+          setTimeout(() => router.push("/inicio"), 1500);
+        }
+      });
+    }, 50);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [code, step, supabase, factorId, router]);
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);

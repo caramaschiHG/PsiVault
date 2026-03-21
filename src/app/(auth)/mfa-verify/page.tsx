@@ -29,28 +29,36 @@ export default function MfaVerifyPage() {
     });
   }, [supabase]);
 
-  // Auto-submit: dispara uma única vez por código de 6 dígitos.
-  // O cancelled flag evita que múltiplos challengeAndVerify concorrentes
-  // invalidem uns aos outros no Supabase (causaria 422).
+  // Auto-submit: dispara ao completar 6 dígitos.
+  // setTimeout(50ms) + cancelled flag previnem double-invoke do React StrictMode:
+  // o cleanup do primeiro mount cancela o timer antes de disparar — só o segundo
+  // mount (o "real") executa, garantindo um único challengeAndVerify por código.
   useEffect(() => {
     if (code.length !== 6 || !supabase || !factorId) return;
 
     let cancelled = false;
-    setError(null);
-    setLoading(true);
 
-    supabase.auth.mfa.challengeAndVerify({ factorId, code }).then(({ error }) => {
+    const timer = setTimeout(() => {
       if (cancelled) return;
-      setLoading(false);
-      if (error) {
-        setError("Código inválido. Tente novamente.");
-        setCode(""); // limpa para nova tentativa com código fresco
-      } else {
-        router.push("/complete-profile");
-      }
-    });
+      setError(null);
+      setLoading(true);
 
-    return () => { cancelled = true; };
+      supabase.auth.mfa.challengeAndVerify({ factorId, code }).then(({ error }) => {
+        if (cancelled) return;
+        setLoading(false);
+        if (error) {
+          setError("Código inválido. Tente novamente.");
+          setCode(""); // limpa para nova tentativa com código fresco
+        } else {
+          router.push("/complete-profile");
+        }
+      });
+    }, 50);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [code, supabase, factorId, router]);
 
   return (
