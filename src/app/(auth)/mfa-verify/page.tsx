@@ -15,6 +15,7 @@ export default function MfaVerifyPage() {
   const [loading, setLoading] = useState(false);
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const loaded = useRef(false);
+  const submitting = useRef(false);
 
   useEffect(() => {
     setSupabase(createClient());
@@ -29,38 +30,30 @@ export default function MfaVerifyPage() {
     });
   }, [supabase]);
 
-  // Auto-submit: dispara ao completar 6 dígitos.
-  // setTimeout(50ms) + cancelled flag previnem double-invoke do React StrictMode:
-  // o cleanup do primeiro mount cancela o timer antes de disparar — só o segundo
-  // mount (o "real") executa, garantindo um único challengeAndVerify por código.
-  useEffect(() => {
-    if (code.length !== 6 || !supabase || !factorId) return;
+  function submit(otp: string, client: SupabaseClient, fId: string) {
+    if (submitting.current) return;
+    submitting.current = true;
+    setError(null);
+    setLoading(true);
 
-    let cancelled = false;
+    client.auth.mfa.challengeAndVerify({ factorId: fId, code: otp }).then(({ error }) => {
+      submitting.current = false;
+      setLoading(false);
+      if (error) {
+        setError("Código inválido. Tente novamente.");
+        setCode("");
+      } else {
+        router.push("/complete-profile");
+      }
+    });
+  }
 
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      setError(null);
-      setLoading(true);
-
-      supabase.auth.mfa.challengeAndVerify({ factorId, code }).then(({ error }) => {
-        if (cancelled) return;
-        setLoading(false);
-        if (error) {
-          setError("Código inválido. Tente novamente.");
-          setCode(""); // limpa para nova tentativa com código fresco
-        } else {
-          setCode(""); // previne re-submit caso router atualize e effect re-execute
-          router.push("/complete-profile");
-        }
-      });
-    }, 50);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [code, supabase, factorId, router]);
+  function handleCodeChange(v: string) {
+    setCode(v);
+    if (v.length === 6 && supabase && factorId) {
+      submit(v, supabase, factorId);
+    }
+  }
 
   return (
     <main className="auth-shell">
@@ -78,7 +71,7 @@ export default function MfaVerifyPage() {
         >
           <OtpInput
             value={code}
-            onValueChange={setCode}
+            onValueChange={handleCodeChange}
             hasError={!!error}
             autoFocus
           />

@@ -27,6 +27,7 @@ export default function MfaSetupPage() {
   const [loading, setLoading] = useState(false);
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const enrolled = useRef(false);
+  const submitting = useRef(false);
 
   useEffect(() => {
     setSupabase(createClient());
@@ -61,36 +62,31 @@ export default function MfaSetupPage() {
     enroll();
   }, [step, supabase]);
 
-  // Auto-submit ao completar 6 dígitos no step verify.
-  // setTimeout(50ms) + cancelled flag previnem double-invoke do React StrictMode.
-  useEffect(() => {
-    if (step !== "verify" || code.length !== 6 || !supabase || !factorId) return;
+  function submitVerify(otp: string, client: SupabaseClient, fId: string) {
+    if (submitting.current) return;
+    submitting.current = true;
+    setError(null);
+    setLoading(true);
 
-    let cancelled = false;
+    client.auth.mfa.challengeAndVerify({ factorId: fId, code: otp }).then(({ error }) => {
+      submitting.current = false;
+      setLoading(false);
+      if (error) {
+        setError("Código inválido. Tente novamente.");
+        setCode("");
+      } else {
+        setStep("success");
+        setTimeout(() => router.push("/inicio"), 1500);
+      }
+    });
+  }
 
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      setError(null);
-      setLoading(true);
-
-      supabase.auth.mfa.challengeAndVerify({ factorId, code }).then(({ error }) => {
-        if (cancelled) return;
-        setLoading(false);
-        if (error) {
-          setError("Código inválido. Tente novamente.");
-          setCode(""); // limpa para nova tentativa com código fresco
-        } else {
-          setStep("success");
-          setTimeout(() => router.push("/inicio"), 1500);
-        }
-      });
-    }, 50);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [code, step, supabase, factorId, router]);
+  function handleCodeChange(v: string) {
+    setCode(v);
+    if (v.length === 6 && step === "verify" && supabase && factorId) {
+      submitVerify(v, supabase, factorId);
+    }
+  }
 
   const currentStepIndex = STEPS.findIndex((s) => s.key === step);
 
@@ -347,7 +343,7 @@ export default function MfaSetupPage() {
             >
               <OtpInput
                 value={code}
-                onValueChange={setCode}
+                onValueChange={handleCodeChange}
                 hasError={!!error}
                 autoFocus
               />
