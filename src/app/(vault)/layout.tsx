@@ -1,13 +1,15 @@
 import { SearchBar } from "./components/search-bar";
 import { VaultSidebarNav } from "./components/vault-sidebar-nav";
 import { BottomNav } from "./components/bottom-nav";
+import { KeyboardShortcutsProvider } from "./components/keyboard-shortcuts-provider";
 import { ToastProvider } from "@/components/ui/toast-provider";
 
 export const dynamic = "force-dynamic";
 
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={shellStyle}>
+    <KeyboardShortcutsProvider>
+      <div style={shellStyle}>
       {/* Skip link — acessibilidade teclado (CSS-only, sem event handlers) */}
       <a href="#main-content" className="skip-link">
         Ir para conteúdo principal
@@ -47,7 +49,8 @@ export default function VaultLayout({ children }: { children: React.ReactNode })
 
       {/* Mobile bottom navigation */}
       <BottomNav />
-    </div>
+      </div>
+    </KeyboardShortcutsProvider>
   );
 }
 

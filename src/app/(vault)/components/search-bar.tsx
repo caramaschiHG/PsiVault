@@ -138,7 +138,9 @@ export function SearchBar() {
           aria-label="Buscar"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
+          data-search-input
         />
+        <span style={commandKHintStyle}>⌘K</span>
       </div>
       {isOpen && results !== null && (
         <SearchDropdown results={results} onClose={() => setIsOpen(false)} />
@@ -237,4 +239,12 @@ const emptyStyle: React.CSSProperties = {
   color: "var(--color-text-3)",
   padding: "0.5rem 0.875rem",
   margin: 0,
+};
+
+const commandKHintStyle: React.CSSProperties = {
+  fontSize: "0.7rem",
+  color: "rgba(255,255,255,0.4)",
+  letterSpacing: "0.05em",
+  pointerEvents: "none",
+  paddingRight: "0.375rem",
 };
