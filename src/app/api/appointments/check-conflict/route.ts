@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   const excludeId = searchParams.get("excludeId");
 
   if (!workspaceId || !startsAtStr) {
-    return NextResponse.json({ hasConflict: false });
+    return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
   }
 
   const startsAt = new Date(startsAtStr);
