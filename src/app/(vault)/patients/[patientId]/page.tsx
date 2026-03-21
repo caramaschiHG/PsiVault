@@ -194,6 +194,7 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
 
       {/* 4. Clinical timeline — longitudinal session history */}
       <ClinicalTimeline
+        patientId={patient.id}
         upcoming={upcomingEntries}
         completed={completedEntries}
         dismissed={dismissedEntries}

@@ -30,6 +30,7 @@ interface TimelineEntry {
 }
 
 interface ClinicalTimelineProps {
+  patientId: string;
   upcoming: TimelineEntry[];   // SCHEDULED/CONFIRMED future, sorted ASC
   completed: TimelineEntry[];  // COMPLETED, sorted most-recent first
   dismissed: TimelineEntry[];  // CANCELED/NO_SHOW
@@ -149,14 +150,29 @@ function ComunicacaoGroup({ patientName, patientPhone, startsAt }: CommProps) {
   );
 }
 
-function CompletedEntryCard({ entry }: { entry: TimelineEntry }) {
+function CompletedEntryCard({
+  entry,
+  patientId,
+  isFirstCompleted = false,
+}: {
+  entry: TimelineEntry;
+  patientId: string;
+  isFirstCompleted?: boolean;
+}) {
   const sessionLabel =
     entry.sessionNumber !== null
       ? `Sessão ${entry.sessionNumber}`
       : "Consulta avulsa";
 
+  const cardStyle = isFirstCompleted
+    ? { ...completedCardStyle, ...mostRecentCardOverride }
+    : completedCardStyle;
+
   return (
-    <div style={completedCardStyle}>
+    <div style={cardStyle}>
+      {isFirstCompleted && (
+        <span style={mostRecentBadgeStyle}>Sessão mais recente</span>
+      )}
       <div style={cardRowStyle}>
         <div style={cardInfoStyle}>
           <span style={sessionLabelStyle}>{sessionLabel}</span>
@@ -185,6 +201,14 @@ function CompletedEntryCard({ entry }: { entry: TimelineEntry }) {
             style={registerNoteLinkStyle}
           >
             Registrar evolução →
+          </Link>
+        )}
+        {entry.hasNote && (
+          <Link
+            href={`/patients/${patientId}/documents/new?type=session_note`}
+            style={copyToNewNoteLinkStyle}
+          >
+            Copiar para nova nota →
           </Link>
         )}
       </div>
@@ -238,6 +262,7 @@ function MutedEntryCard({ entry }: { entry: TimelineEntry }) {
 }
 
 export function ClinicalTimeline({
+  patientId,
   upcoming,
   completed,
   dismissed,
@@ -321,8 +346,13 @@ export function ClinicalTimeline({
             <div style={subSectionStyle}>
               <p style={subSectionLabelStyle}>Sessões realizadas</p>
               <div style={cardsGroupStyle}>
-                {completedVisible.map((entry) => (
-                  <CompletedEntryCard key={entry.appointmentId} entry={entry} />
+                {completedVisible.map((entry, index) => (
+                  <CompletedEntryCard
+                    key={entry.appointmentId}
+                    entry={entry}
+                    patientId={patientId}
+                    isFirstCompleted={index === 0}
+                  />
                 ))}
                 {completedHidden.length > 0 && (
                   <details style={detailsStyle}>
@@ -331,7 +361,7 @@ export function ClinicalTimeline({
                     </summary>
                     <div style={detailsContentStyle}>
                       {completedHidden.map((entry) => (
-                        <CompletedEntryCard key={entry.appointmentId} entry={entry} />
+                        <CompletedEntryCard key={entry.appointmentId} entry={entry} patientId={patientId} />
                       ))}
                     </div>
                   </details>
@@ -357,6 +387,33 @@ export function ClinicalTimeline({
     </section>
   );
 }
+
+const mostRecentCardOverride = {
+  borderColor: "rgba(154, 52, 18, 0.35)",
+  background: "rgba(255, 247, 237, 0.98)",
+  boxShadow: "0 2px 12px rgba(154, 52, 18, 0.1)",
+} satisfies React.CSSProperties;
+
+const mostRecentBadgeStyle = {
+  display: "inline-block",
+  padding: "0.15rem 0.6rem",
+  borderRadius: 999,
+  fontSize: "0.7rem",
+  fontWeight: 600,
+  background: "rgba(154, 52, 18, 0.1)",
+  color: "#9a3412",
+  letterSpacing: "0.05em",
+  textTransform: "uppercase" as const,
+  marginBottom: "0.5rem",
+} satisfies React.CSSProperties;
+
+const copyToNewNoteLinkStyle = {
+  fontSize: "0.8rem",
+  color: "#9a3412",
+  textDecoration: "none",
+  opacity: 0.8,
+  marginLeft: "1rem",
+} satisfies React.CSSProperties;
 
 // --- Style objects ---
 
