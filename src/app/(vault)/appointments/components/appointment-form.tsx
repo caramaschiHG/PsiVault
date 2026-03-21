@@ -12,7 +12,7 @@
  * setting, not a per-appointment value).
  */
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import type { Appointment } from "../../../../lib/appointments/model";
 import type { Patient } from "../../../../lib/patients/model";
 import { createAppointmentAction } from "../actions";
@@ -21,6 +21,8 @@ import { SubmitButton } from "@/components/ui/submit-button";
 interface AppointmentFormProps {
   /** Available active patients for the select. */
   patients: Pick<Patient, "id" | "fullName" | "socialName">[];
+  /** Workspace id used for conflict detection. */
+  workspaceId: string;
   /** Prefilled patient id (e.g., quick next-session from patient context). */
   defaultPatientId?: string;
   /** Prefilled duration in minutes from practice profile defaults. */
@@ -33,6 +35,7 @@ interface AppointmentFormProps {
 
 export function AppointmentForm({
   patients,
+  workspaceId,
   defaultPatientId,
   defaultDurationMinutes = 50,
   defaultCareMode = "IN_PERSON",
@@ -42,6 +45,37 @@ export function AppointmentForm({
   const [recurrenceType, setRecurrenceType] = useState<"none" | "weekly" | "biweekly" | "twice_weekly">("none");
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [state, formAction, isPending] = useActionState(createAppointmentAction, null);
+  const [startsAtValue, setStartsAtValue] = useState("");
+  const [durationValue, setDurationValue] = useState(String(original?.durationMinutes ?? defaultDurationMinutes));
+  const [conflict, setConflict] = useState<{ patientName: string; startsAt: string } | null>(null);
+
+  useEffect(() => {
+    if (!startsAtValue || !durationValue) {
+      setConflict(null);
+      return;
+    }
+    const parsed = new Date(startsAtValue);
+    if (isNaN(parsed.getTime())) {
+      setConflict(null);
+      return;
+    }
+    const t = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({
+          workspaceId,
+          startsAt: parsed.toISOString(),
+          durationMinutes: durationValue,
+          ...(original?.id ? { excludeId: original.id } : {}),
+        });
+        const res = await fetch(`/api/appointments/check-conflict?${params}`);
+        const data = await res.json();
+        setConflict(data.hasConflict ? data.conflictingAppointment : null);
+      } catch {
+        setConflict(null);
+      }
+    }, 500);
+    return () => clearTimeout(t);
+  }, [startsAtValue, durationValue, workspaceId, original?.id]);
 
   function toggleDay(day: number) {
     setSelectedDays((prev) =>
@@ -100,6 +134,8 @@ export function AppointmentForm({
             required
             style={inputStyle}
             type="datetime-local"
+            value={startsAtValue}
+            onChange={(e) => setStartsAtValue(e.target.value)}
           />
         </label>
       </section>
@@ -115,7 +151,8 @@ export function AppointmentForm({
           <label style={labelStyle}>
             Duração (minutos)
             <input
-              defaultValue={original?.durationMinutes ?? defaultDurationMinutes}
+              value={durationValue}
+              onChange={(e) => setDurationValue(e.target.value)}
               min={15}
               name="durationMinutes"
               step={5}
@@ -220,6 +257,16 @@ export function AppointmentForm({
             </>
           )}
         </section>
+      )}
+
+      {conflict && (
+        <div style={conflictWarningStyle}>
+          Conflito com sessão de {conflict.patientName} às{" "}
+          {new Date(conflict.startsAt).toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
       )}
 
       {state?.error && (
@@ -355,6 +402,16 @@ const recurrenceInfoStyle = {
   color: "#78716c",
   fontSize: "0.88rem",
   lineHeight: 1.6,
+} satisfies React.CSSProperties;
+
+const conflictWarningStyle = {
+  margin: 0,
+  padding: "0.75rem 1rem",
+  borderRadius: "10px",
+  background: "rgba(234, 179, 8, 0.1)",
+  border: "1px solid rgba(234, 179, 8, 0.35)",
+  fontSize: "0.875rem",
+  color: "#713f12",
 } satisfies React.CSSProperties;
 
 const errorMessageStyle = {

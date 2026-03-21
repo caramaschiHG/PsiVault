@@ -86,6 +86,7 @@ export default async function NewAppointmentPage({
       {/* Booking form with prefilled defaults */}
       <AppointmentForm
         patients={patients}
+        workspaceId={workspaceId}
         defaultPatientId={defaultPatientId}
         defaultDurationMinutes={defaultDurationMinutes}
         defaultCareMode={defaultCareMode}
