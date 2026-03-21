@@ -50,6 +50,7 @@ export default function MfaVerifyPage() {
           setError("Código inválido. Tente novamente.");
           setCode(""); // limpa para nova tentativa com código fresco
         } else {
+          setCode(""); // previne re-submit caso router atualize e effect re-execute
           router.push("/complete-profile");
         }
       });
