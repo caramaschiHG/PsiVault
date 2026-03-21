@@ -70,7 +70,6 @@ export function OtpInput({ value, onValueChange, hasError, autoFocus }: OtpInput
           aria-label={`Dígito ${i + 1} do código`}
           onChange={(e) => handleChange(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
-          onPaste={handlePaste}
         />
       ))}
     </div>

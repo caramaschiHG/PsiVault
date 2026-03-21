@@ -28,6 +28,7 @@ export default function MfaSetupPage() {
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const enrolled = useRef(false);
   const submitting = useRef(false);
+  const verified = useRef(false);
 
   useEffect(() => {
     setSupabase(createClient());
@@ -63,7 +64,7 @@ export default function MfaSetupPage() {
   }, [step, supabase]);
 
   function submitVerify(otp: string, client: SupabaseClient, fId: string) {
-    if (submitting.current) return;
+    if (submitting.current || verified.current) return;
     submitting.current = true;
     setError(null);
     setLoading(true);
@@ -75,6 +76,8 @@ export default function MfaSetupPage() {
         setError("Código inválido. Tente novamente.");
         setCode("");
       } else {
+        verified.current = true;
+        setCode("");
         setStep("success");
         setTimeout(() => router.push("/inicio"), 1500);
       }
