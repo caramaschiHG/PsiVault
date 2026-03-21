@@ -5,12 +5,16 @@
  *
  * Handles:
  * - Form state and dirty tracking (isDirty)
+ * - Controlled freeText with localStorage auto-save (2 s debounce)
+ * - Draft restore on mount (new notes only)
+ * - Template selector (SOAP / BIRP)
+ * - Focus mode toggle (collapses vault sidebar)
  * - Unsaved-draft guard: beforeunload event for browser tab/window close
  * - In-app cancel guard: confirm dialog on the cancel link when isDirty
  * - Switches between createAction / updateAction based on whether an existing note exists
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { ClinicalNote } from "../../../../../../lib/clinical/model";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -24,6 +28,19 @@ interface NoteComposerFormProps {
   updateAction: (formData: FormData) => Promise<void>;
 }
 
+const TEMPLATES = {
+  livre: "",
+  soap: "**S (Subjetivo):**\n\n**O (Objetivo):**\n\n**A (Avaliação):**\n\n**P (Plano):**\n",
+  birp: "**B (Comportamento):**\n\n**I (Intervenção):**\n\n**R (Resposta):**\n\n**P (Plano):**\n",
+} as const;
+
+function formatRelativeTime(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return "agora mesmo";
+  const minutes = Math.floor(seconds / 60);
+  return `há ${minutes} min`;
+}
+
 export function NoteComposerForm({
   existingNote,
   appointmentId,
@@ -32,7 +49,42 @@ export function NoteComposerForm({
   createAction,
   updateAction,
 }: NoteComposerFormProps) {
+  const [freeTextValue, setFreeTextValue] = useState(existingNote?.freeText ?? "");
   const [isDirty, setIsDirty] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [focusMode, setFocusMode] = useState(false);
+  // Tracks interval for auto-save indicator re-renders
+  const indicatorTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Draft restore on mount (new notes only)
+  useEffect(() => {
+    if (!existingNote) {
+      const draft = localStorage.getItem(`note-draft-${appointmentId}`);
+      if (draft) setFreeTextValue(draft);
+    }
+  }, [appointmentId, existingNote]);
+
+  // Auto-save debounce
+  useEffect(() => {
+    if (!isDirty) return;
+    const t = setTimeout(() => {
+      localStorage.setItem(`note-draft-${appointmentId}`, freeTextValue);
+      setLastSaved(new Date());
+    }, 2000);
+    return () => clearTimeout(t);
+  }, [freeTextValue, isDirty, appointmentId]);
+
+  // Re-render indicator every 30 s so relative time stays accurate
+  useEffect(() => {
+    if (!lastSaved) return;
+    if (indicatorTimerRef.current) clearInterval(indicatorTimerRef.current);
+    indicatorTimerRef.current = setInterval(() => {
+      setLastSaved((d) => (d ? new Date(d) : null));
+    }, 30_000);
+    return () => {
+      if (indicatorTimerRef.current) clearInterval(indicatorTimerRef.current);
+    };
+  }, [lastSaved]);
 
   // Unsaved-draft guard: warn on browser close / refresh
   useEffect(() => {
@@ -40,7 +92,6 @@ export function NoteComposerForm({
 
     function handleBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
-      // Modern browsers show their own message; setting returnValue triggers the dialog
       event.returnValue = "";
     }
 
@@ -53,6 +104,11 @@ export function NoteComposerForm({
   const action = existingNote ? updateAction : createAction;
   const submitLabel = existingNote ? "Atualizar evolução" : "Salvar evolução";
 
+  function handleFreeTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setFreeTextValue(e.target.value);
+    setIsDirty(true);
+  }
+
   function handleChange() {
     setIsDirty(true);
   }
@@ -60,6 +116,7 @@ export function NoteComposerForm({
   function handleSubmitStart() {
     // Reset dirty flag before submission so beforeunload doesn't fire on redirect
     setIsDirty(false);
+    localStorage.removeItem(`note-draft-${appointmentId}`);
   }
 
   function handleCancelClick(event: React.MouseEvent<HTMLAnchorElement>) {
@@ -72,6 +129,12 @@ export function NoteComposerForm({
     }
   }
 
+  function handleToggleFocusMode() {
+    setFocusMode((f) => !f);
+    const sidebar = document.querySelector<HTMLElement>(".vault-sidebar");
+    if (sidebar) sidebar.classList.toggle("collapsed");
+  }
+
   return (
     <form action={action} onSubmit={handleSubmitStart} style={formStyle}>
       {/* Hidden fields */}
@@ -81,20 +144,79 @@ export function NoteComposerForm({
         <input type="hidden" name="noteId" value={existingNote.id} />
       )}
 
+      {/* Toolbar: focus mode */}
+      <div style={toolbarStyle}>
+        <button
+          type="button"
+          onClick={handleToggleFocusMode}
+          style={focusButtonStyle}
+        >
+          {focusMode ? "Sair do modo foco" : "Modo foco"}
+        </button>
+      </div>
+
       {/* Primary free-text area */}
       <div style={fieldGroupStyle}>
         <label htmlFor="freeText" style={labelStyle}>
           Evolução livre
         </label>
+
+        {/* Template selector */}
+        <div style={{ marginBottom: "0.5rem" }}>
+          <label
+            style={{
+              fontSize: "0.8rem",
+              color: "var(--color-text-2, #57534e)",
+              marginRight: "0.5rem",
+            } satisfies React.CSSProperties}
+          >
+            Template:
+          </label>
+          <select
+            style={{
+              fontSize: "0.8rem",
+              border: "1px solid rgba(0,0,0,0.12)",
+              borderRadius: 8,
+              padding: "0.25rem 0.5rem",
+              background: "transparent",
+            } satisfies React.CSSProperties}
+            onChange={(e) => {
+              const t = TEMPLATES[e.target.value as keyof typeof TEMPLATES];
+              if (!t) return;
+              if (!isDirty || window.confirm("Isso substituirá o texto atual. Confirmar?")) {
+                setFreeTextValue(t);
+                setIsDirty(true);
+                e.target.value = "livre";
+              }
+            }}
+          >
+            <option value="livre">Evolução livre</option>
+            <option value="soap">SOAP</option>
+            <option value="birp">BIRP</option>
+          </select>
+        </div>
+
         <textarea
           id="freeText"
           name="freeText"
-          defaultValue={existingNote?.freeText ?? ""}
+          value={freeTextValue}
           placeholder="Escreva a evolução da sessão..."
-          onChange={handleChange}
+          onChange={handleFreeTextChange}
           style={primaryTextareaStyle}
           required
         />
+
+        {lastSaved && (
+          <p
+            style={{
+              margin: "0.25rem 0 0",
+              fontSize: "0.75rem",
+              color: "var(--color-text-3, #78716c)",
+            } satisfies React.CSSProperties}
+          >
+            ✓ Auto-salvo {formatRelativeTime(lastSaved)}
+          </p>
+        )}
       </div>
 
       {/* Optional structured fields */}
@@ -195,6 +317,21 @@ export function NoteComposerForm({
 const formStyle = {
   display: "grid",
   gap: "1.5rem",
+} satisfies React.CSSProperties;
+
+const toolbarStyle = {
+  display: "flex",
+  justifyContent: "flex-end",
+} satisfies React.CSSProperties;
+
+const focusButtonStyle = {
+  background: "transparent",
+  border: "1px solid rgba(0,0,0,0.15)",
+  borderRadius: 8,
+  padding: "0.35rem 0.75rem",
+  fontSize: "0.8rem",
+  cursor: "pointer",
+  color: "var(--color-text-2, #57534e)",
 } satisfies React.CSSProperties;
 
 const fieldGroupStyle = {

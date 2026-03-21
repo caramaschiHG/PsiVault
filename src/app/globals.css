@@ -402,6 +402,14 @@ label[for], .nav-link, summary {
   outline: none;
 }
 
+/* ─── Focus mode ─────────────────────────────────────────────────────────────── */
+
+.vault-sidebar.collapsed {
+  width: 0 !important;
+  overflow: hidden;
+  transition: width 0.25s ease;
+}
+
 /* ─── Responsividade vault ───────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
