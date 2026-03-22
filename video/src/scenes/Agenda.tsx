@@ -1,7 +1,10 @@
 /**
- * Agenda — 9s to 12.5s
+ * Agenda — 9.5s to 14.5s
  * A semana clínica organizada. Consultas confirmadas.
  * Narrativa: clareza na agenda, profissionalismo no atendimento.
+ *
+ * Layout: faixa de dias da semana + card que entra da DIREITA.
+ * Glow: centro-superior para variar da cena anterior.
  */
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
@@ -21,7 +24,15 @@ const APPOINTMENTS = [
   { time: "14:00", name: "Carlos E. Pinheiro",    status: "confirmed" as const, day: "Qua 19" },
 ];
 
-// Calendar icon
+// Days of the week — with appointment count indicator
+const DAYS = [
+  { label: "Seg", day: "17", count: 2 },
+  { label: "Ter", day: "18", count: 1 },
+  { label: "Qua", day: "19", count: 1 },
+  { label: "Qui", day: "20", count: 0 },
+  { label: "Sex", day: "21", count: 0 },
+];
+
 const CalendarIcon: React.FC = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.text3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="4" width="18" height="18" rx="3" />
@@ -35,26 +46,35 @@ export const Agenda: React.FC<SceneProps> = ({ duration }) => {
   const sceneOpacity = useSceneFade(duration);
 
   const eyebrowIn = useEntrance(8,  SPRING.ORGANIC);
-  const cardIn    = useEntrance(18, SPRING.FLOAT);
+  const daysIn    = useEntrance(20, SPRING.FLOAT);
+  const cardIn    = useEntrance(34, SPRING.FLOAT);
 
-  // Staggered row entrances — called at top level (hooks must not be in loops)
-  const rowIn0 = useEntrance(38, SPRING.ORGANIC);
-  const rowIn1 = useEntrance(50, SPRING.ORGANIC);
-  const rowIn2 = useEntrance(62, SPRING.ORGANIC);
-  const rowIn3 = useEntrance(74, SPRING.ORGANIC);
+  // Staggered row entrances
+  const rowIn0 = useEntrance(54, SPRING.ORGANIC);
+  const rowIn1 = useEntrance(66, SPRING.ORGANIC);
+  const rowIn2 = useEntrance(78, SPRING.ORGANIC);
+  const rowIn3 = useEntrance(90, SPRING.ORGANIC);
   const rowEntrances = [rowIn0, rowIn1, rowIn2, rowIn3];
+
+  // Day pill stagger
+  const dayIn0 = useEntrance(22, SPRING.CRISP);
+  const dayIn1 = useEntrance(29, SPRING.CRISP);
+  const dayIn2 = useEntrance(36, SPRING.CRISP);
+  const dayIn3 = useEntrance(43, SPRING.CRISP);
+  const dayIn4 = useEntrance(50, SPRING.CRISP);
+  const dayEntrances = [dayIn0, dayIn1, dayIn2, dayIn3, dayIn4];
 
   return (
     <AbsoluteFill style={{ background: T.bg, opacity: sceneOpacity }}>
 
-      {/* Warm glow */}
+      {/* Glow — centro-superior */}
       <div style={{
         position: "absolute",
-        width: 1100, height: 1100,
-        left: "50%", top: "50%",
-        transform: "translate(-50%, -50%)",
+        width: 1200, height: 900,
+        left: "50%", top: "10%",
+        transform: "translate(-50%, 0)",
         borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(154,52,18,0.09) 0%, transparent 56%)",
+        background: "radial-gradient(circle, rgba(154,52,18,0.09) 0%, transparent 55%)",
         pointerEvents: "none",
       }} />
       <Vignette />
@@ -64,7 +84,7 @@ export const Agenda: React.FC<SceneProps> = ({ duration }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 28,
+        gap: 24,
       }}>
 
         {/* Eyebrow */}
@@ -75,12 +95,77 @@ export const Agenda: React.FC<SceneProps> = ({ duration }) => {
           Agenda
         </EyebrowLabel>
 
-        {/* Main card */}
+        {/* Week day pills */}
+        <div style={{
+          display: "flex",
+          gap: 12,
+          opacity: interpolate(daysIn, [0, 1], [0, 1]),
+        }}>
+          {DAYS.map((d, i) => {
+            const hasAppt = d.count > 0;
+            const din = dayEntrances[i];
+            return (
+              <div
+                key={d.label}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 6,
+                  opacity: interpolate(din, [0, 1], [0, 1]),
+                  transform: `translateY(${springY(din, 14)}px) scale(${springScale(din, 0.88)})`,
+                }}
+              >
+                <div style={{
+                  width: 56, height: 64,
+                  borderRadius: T.rMd,
+                  background: hasAppt ? T.accentLight : "transparent",
+                  border: `1px solid ${hasAppt ? T.borderMed : T.border}`,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 2,
+                }}>
+                  <span style={{
+                    fontFamily: T.fontSans,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: "0.08em",
+                    color: hasAppt ? T.accent : T.text4,
+                    textTransform: "uppercase",
+                  }}>
+                    {d.label}
+                  </span>
+                  <span style={{
+                    fontFamily: T.fontSans,
+                    fontSize: 18,
+                    fontWeight: hasAppt ? 700 : 400,
+                    color: hasAppt ? T.text1 : T.text4,
+                    lineHeight: 1,
+                  }}>
+                    {d.day}
+                  </span>
+                </div>
+                {/* appointment count dot */}
+                {hasAppt && (
+                  <div style={{
+                    width: 6, height: 6, borderRadius: "50%",
+                    background: T.accent,
+                    opacity: 0.7,
+                  }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Main card — enters from RIGHT */}
         <UICard
           width={860}
           style={{
             opacity: interpolate(cardIn, [0, 1], [0, 1]),
-            transform: `translateY(${springY(cardIn, 40)}px) scale(${springScale(cardIn, 0.96)})`,
+            transform: `translateX(${interpolate(cardIn, [0, 1], [60, 0])}px) scale(${springScale(cardIn, 0.97)})`,
           }}
         >
           {/* Card header */}
@@ -97,7 +182,7 @@ export const Agenda: React.FC<SceneProps> = ({ duration }) => {
             </span>
           </div>
 
-          {/* Appointment rows — entrance values computed outside map to respect hooks rules */}
+          {/* Appointment rows */}
           <div style={{ padding: "8px 0" }}>
             {APPOINTMENTS.map((appt, i) => {
               const rowEntrance = rowEntrances[i];
@@ -111,31 +196,18 @@ export const Agenda: React.FC<SceneProps> = ({ duration }) => {
                     padding: "14px 32px",
                     borderBottom: i < APPOINTMENTS.length - 1 ? `1px solid ${T.border}` : "none",
                     opacity: interpolate(rowEntrance, [0, 1], [0, 1]),
-                    transform: `translateX(${interpolate(rowEntrance, [0, 1], [-16, 0])}px)`,
+                    transform: `translateX(${interpolate(rowEntrance, [0, 1], [20, 0])}px)`,
                   }}
                 >
-                  {/* Day */}
-                  <span style={{
-                    width: 56, fontSize: 13, fontWeight: 600, color: T.text4,
-                    fontFamily: T.fontSans, flexShrink: 0,
-                  }}>
+                  <span style={{ width: 56, fontSize: 13, fontWeight: 600, color: T.text4, fontFamily: T.fontSans, flexShrink: 0 }}>
                     {appt.day}
                   </span>
-                  {/* Time */}
-                  <span style={{
-                    width: 54, fontSize: 15, fontWeight: 600, color: T.brownMid,
-                    fontFamily: T.fontSans, flexShrink: 0,
-                  }}>
+                  <span style={{ width: 54, fontSize: 15, fontWeight: 600, color: T.brownMid, fontFamily: T.fontSans, flexShrink: 0 }}>
                     {appt.time}
                   </span>
-                  {/* Name */}
-                  <span style={{
-                    flex: 1, fontSize: 16, fontWeight: 500, color: T.text1,
-                    fontFamily: T.fontSans,
-                  }}>
+                  <span style={{ flex: 1, fontSize: 16, fontWeight: 500, color: T.text1, fontFamily: T.fontSans }}>
                     {appt.name}
                   </span>
-                  {/* Badge */}
                   <Badge variant={appt.status}>
                     {appt.status === "confirmed" ? "Confirmada" : "Agendada"}
                   </Badge>

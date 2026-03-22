@@ -14,23 +14,23 @@ import { Closing } from "./scenes/Closing";
 // Each scene handles its own fade-in / fade-out via useSceneFade().
 // ─────────────────────────────────────────────────────────────
 // Opening:    0    → 135   (4.5s)
-// Centering:  120  → 285   (5.5s)  [15fr overlap with Opening]
-// Agenda:     270  → 375   (3.5s)  [15fr overlap with Centering]
-// Patient:    360  → 465   (3.5s)  [15fr overlap with Agenda]
-// Timeline:   450  → 555   (3.5s)  [15fr overlap with Patient]
-// Financeiro: 540  → 615   (2.5s)  [15fr overlap with Timeline]
-// Closing:    600  → 750   (5.0s)  [15fr overlap with Financeiro]
+// Centering:  120  → 300   (6.0s)  [15fr overlap with Opening]
+// Agenda:     285  → 435   (5.0s)  [15fr overlap with Centering]
+// Patient:    420  → 570   (5.0s)  [15fr overlap with Agenda]
+// Timeline:   555  → 690   (4.5s)  [15fr overlap with Patient]
+// Financeiro: 675  → 780   (3.5s)  [15fr overlap with Timeline]
+// Closing:    765  → 900   (4.5s)  [15fr overlap with Financeiro]
 // ─────────────────────────────────────────────────────────────
-// Total composition: 750 frames = 25s @ 30fps ✓
+// Total composition: 900 frames = 30s @ 30fps ✓
 
 const SCENES = {
   opening:    { from: 0,   dur: 135 },
-  centering:  { from: 120, dur: 165 },
-  agenda:     { from: 270, dur: 105 },
-  patient:    { from: 360, dur: 105 },
-  timeline:   { from: 450, dur: 105 },
-  financeiro: { from: 540, dur: 75  },
-  closing:    { from: 600, dur: 150 },
+  centering:  { from: 120, dur: 180 },
+  agenda:     { from: 285, dur: 150 },
+  patient:    { from: 420, dur: 150 },
+  timeline:   { from: 555, dur: 135 },
+  financeiro: { from: 675, dur: 105 },
+  closing:    { from: 765, dur: 135 },
 } as const;
 
 export const PsiVaultVideo: React.FC = () => (
