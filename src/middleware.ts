@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
 
       // Already on the correct MFA page — let through
       if (pathname === "/mfa-verify" && hasMfa) return supabaseResponse;
-      if (pathname === "/mfa-setup" && !hasMfa) return supabaseResponse;
+      if (pathname === "/mfa-setup") return supabaseResponse; // allow reconfiguration too
 
       return NextResponse.redirect(
         new URL(hasMfa ? "/mfa-verify" : "/mfa-setup", request.url)

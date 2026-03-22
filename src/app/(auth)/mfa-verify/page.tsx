@@ -13,6 +13,7 @@ export default function MfaVerifyPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [failCount, setFailCount] = useState(0);
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const loaded = useRef(false);
   const submitting = useRef(false);
@@ -43,6 +44,7 @@ export default function MfaVerifyPage() {
       if (error) {
         setError("Código inválido. Tente novamente.");
         setCode("");
+        setFailCount((n) => n + 1);
       } else {
         verified.current = true;
         setCode("");
@@ -101,6 +103,33 @@ export default function MfaVerifyPage() {
           >
             {loading ? "Verificando…" : "O código expira em 30 segundos."}
           </p>
+
+          {failCount >= 2 && supabase && (
+            <button
+              type="button"
+              style={
+                {
+                  background: "none",
+                  border: "none",
+                  color: "var(--color-text-3)",
+                  fontSize: "0.8rem",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                  padding: 0,
+                  textAlign: "center",
+                } satisfies React.CSSProperties
+              }
+              onClick={async () => {
+                const { data } = await supabase.auth.mfa.listFactors();
+                for (const f of data?.totp ?? []) {
+                  await supabase.auth.mfa.unenroll({ factorId: f.id });
+                }
+                router.push("/mfa-setup");
+              }}
+            >
+              Problema com o código? Reconfigurar autenticador →
+            </button>
+          )}
         </form>
       </section>
     </main>
