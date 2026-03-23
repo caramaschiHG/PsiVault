@@ -208,9 +208,17 @@ describe("finance domain", () => {
       const repo = createInMemorySessionChargeRepository();
       const charge = createSessionCharge(BASE_INPUT, { now: NOW, createId: makeId });
       await repo.save(charge);
-      const found = await repo.findById(charge.id);
+      const found = await repo.findById(charge.id, BASE_INPUT.workspaceId);
       expect(found).not.toBeNull();
       expect(found?.id).toBe(charge.id);
+    });
+
+    it("findById returns null for wrong workspaceId", async () => {
+      const repo = createInMemorySessionChargeRepository();
+      const charge = createSessionCharge(BASE_INPUT, { now: NOW, createId: makeId });
+      await repo.save(charge);
+      const found = await repo.findById(charge.id, "ws_other");
+      expect(found).toBeNull();
     });
 
     it("findByAppointmentId returns null when no charge exists for that appointmentId", async () => {

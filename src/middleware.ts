@@ -60,6 +60,7 @@ export const config = {
     "/complete-profile",
     "/inicio",
     "/patients/:path*",
+    "/appointments/:path*",
     "/agenda/:path*",
     "/sessions/:path*",
     "/financeiro/:path*",

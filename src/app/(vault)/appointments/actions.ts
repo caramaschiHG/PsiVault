@@ -250,27 +250,41 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
         toReschedule.push({ occurrence, newStart: newOccurrenceStart });
       }
 
-      // Second pass: save all (no conflict found above)
-      for (const { occurrence, newStart } of toReschedule) {
-        const rescheduled = rescheduleAppointment(
+      // Second pass: build rescheduled list, then save atomically
+      const rescheduledOccurrences = toReschedule.map(({ occurrence, newStart }) =>
+        rescheduleAppointment(
           occurrence,
           { startsAt: newStart, durationMinutes },
           { now, createId: generateId },
-        );
+        ),
+      );
 
-        await repo.save(rescheduled);
+      await repo.saveBatch(rescheduledOccurrences);
 
+      for (let i = 0; i < rescheduledOccurrences.length; i++) {
         audit.append(
           createAppointmentAuditEvent(
             {
               type: "appointment.rescheduled",
-              appointment: rescheduled,
+              appointment: rescheduledOccurrences[i],
               actor: { accountId: accountId, workspaceId: workspaceId },
-              metadata: { originalId: occurrence.id },
+              metadata: { originalId: toReschedule[i].occurrence.id },
             },
             { now, createId: generateId },
           ),
         );
+      }
+
+      const patientForSeriesNotif = await getPatientRepository().findById(existing.patientId, workspaceId);
+      if (patientForSeriesNotif?.email) {
+        const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
+        for (const occ of rescheduledOccurrences) {
+          await queueAppointmentNotifications({
+            workspaceId, appointmentId: occ.id, patientId: occ.patientId,
+            recipientEmail: patientForSeriesNotif.email, startsAt: occ.startsAt,
+            type: "RESCHEDULED", smtpPrefs, now, createId: generateId,
+          });
+        }
       }
     } else {
       // Single occurrence reschedule
@@ -383,6 +397,21 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ suc
             { now, createId: generateId },
           ),
         );
+      }
+
+      const patientForSeriesNotif = await getPatientRepository().findById(existing.patientId, workspaceId);
+      if (patientForSeriesNotif?.email) {
+        const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
+        const canceledOccurrences = inScope.filter(
+          (o) => !["COMPLETED", "CANCELED", "NO_SHOW"].includes(o.status),
+        );
+        for (const occ of canceledOccurrences) {
+          await queueAppointmentNotifications({
+            workspaceId, appointmentId: occ.id, patientId: occ.patientId,
+            recipientEmail: patientForSeriesNotif.email, startsAt: occ.startsAt,
+            type: "CANCELED", smtpPrefs, now, createId: generateId,
+          });
+        }
       }
     } else {
       const canceled = cancelAppointment(existing, {
@@ -582,7 +611,7 @@ export async function updateChargeAction(formData: FormData): Promise<void> {
   let patientIdForRevalidate: string | null = null;
 
   try {
-    const charge = await financeRepo.findById(chargeId);
+    const charge = await financeRepo.findById(chargeId, workspaceId);
     if (!charge) return;
 
     const updated = updateSessionCharge(charge, { status, amountInCents, paymentMethod }, { now });

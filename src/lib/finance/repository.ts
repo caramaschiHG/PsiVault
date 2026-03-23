@@ -13,7 +13,7 @@ import type { SessionCharge } from "./model";
 
 export interface SessionChargeRepository {
   save(charge: SessionCharge): Promise<SessionCharge>;
-  findById(id: string): Promise<SessionCharge | null>;
+  findById(id: string, workspaceId: string): Promise<SessionCharge | null>;
   findByAppointmentId(appointmentId: string): Promise<SessionCharge | null>;
   listByPatient(patientId: string, workspaceId: string): Promise<SessionCharge[]>;
   listByMonth(workspaceId: string, patientId: string, year: number, month: number): Promise<SessionCharge[]>;
@@ -29,8 +29,10 @@ export function createInMemorySessionChargeRepository(): SessionChargeRepository
       return Promise.resolve(charge);
     },
 
-    findById(id: string): Promise<SessionCharge | null> {
-      return Promise.resolve(store.get(id) ?? null);
+    findById(id: string, workspaceId: string): Promise<SessionCharge | null> {
+      const charge = store.get(id) ?? null;
+      if (!charge || charge.workspaceId !== workspaceId) return Promise.resolve(null);
+      return Promise.resolve(charge);
     },
 
     findByAppointmentId(appointmentId: string): Promise<SessionCharge | null> {

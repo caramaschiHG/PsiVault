@@ -38,9 +38,10 @@ export function createPrismaFinanceRepository(): SessionChargeRepository {
       return mapToDomain(c);
     },
 
-    async findById(id: string): Promise<SessionCharge | null> {
+    async findById(id: string, workspaceId: string): Promise<SessionCharge | null> {
       const c = await db.sessionCharge.findUnique({ where: { id } });
-      return c ? mapToDomain(c) : null;
+      if (!c || c.workspaceId !== workspaceId) return null;
+      return mapToDomain(c);
     },
 
     async findByAppointmentId(appointmentId: string): Promise<SessionCharge | null> {
