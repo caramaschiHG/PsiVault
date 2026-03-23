@@ -137,46 +137,48 @@ export default async function ProfileSettingsPage() {
           <SubmitButton label="Salvar perfil e padrões" style={buttonStyle} />
         </form>
 
-        <section style={sideCardStyle}>
-          <p style={sectionEyebrowStyle}>
-            {SETUP_STEP_TITLES[SETUP_STEP_IDS.signatureAsset]}
-          </p>
-          <h2 style={sectionTitleStyle}>Assinatura profissional</h2>
-          <p style={sideCopyStyle}>
-            Aparece no rodapé dos documentos clínicos gerados.
-          </p>
+        <aside style={sidebarStyle}>
+          <section style={sideCardStyle}>
+            <p style={sectionEyebrowStyle}>
+              {SETUP_STEP_TITLES[SETUP_STEP_IDS.signatureAsset]}
+            </p>
+            <h2 style={sectionTitleStyle}>Assinatura profissional</h2>
+            <p style={sideCopyStyle}>
+              Aparece no rodapé dos documentos clínicos gerados.
+            </p>
 
-          <SignatureUpload
-            saveAction={saveSignatureAssetAction}
-            removeAction={removeSignatureAssetAction}
-            currentFileName={profile.signatureAsset?.fileName ?? null}
-            currentImageUrl={signatureImageUrl}
-            professionalName={profile.fullName ?? ""}
-            crp={profile.crp ?? ""}
-          />
-        </section>
+            <SignatureUpload
+              saveAction={saveSignatureAssetAction}
+              removeAction={removeSignatureAssetAction}
+              currentFileName={profile.signatureAsset?.fileName ?? null}
+              currentImageUrl={signatureImageUrl}
+              professionalName={profile.fullName ?? ""}
+              crp={profile.crp ?? ""}
+            />
+          </section>
 
-        <section style={sideCardStyle}>
-          <p style={sectionEyebrowStyle}>Estado atual</p>
-          <h2 style={sectionTitleStyle}>Resumo de prontidão</h2>
-          <p style={sideCopyStyle}>
-            {readiness.progressLabel} •{" "}
-            {readiness.vaultReady ? "Vault pronto" : "Pendências obrigatórias abertas"}
-          </p>
-          <ul style={statusListStyle}>
-            {readiness.steps.map((step) => {
-              const done = step.status === "complete";
-              return (
-                <li key={step.id} style={{ ...statusItemStyle, opacity: done ? 1 : 0.55 }}>
-                  <span style={{ color: done ? "#047857" : "var(--color-text-3)", fontWeight: 600 }}>
-                    {done ? "✓" : "✗"}
-                  </span>
-                  <span>{step.title}</span>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+          <section style={sideCardStyle}>
+            <p style={sectionEyebrowStyle}>Estado atual</p>
+            <h2 style={sectionTitleStyle}>Resumo de prontidão</h2>
+            <p style={sideCopyStyle}>
+              {readiness.progressLabel} •{" "}
+              {readiness.vaultReady ? "Vault pronto" : "Pendências obrigatórias abertas"}
+            </p>
+            <ul style={statusListStyle}>
+              {readiness.steps.map((step) => {
+                const done = step.status === "complete";
+                return (
+                  <li key={step.id} style={{ ...statusItemStyle, opacity: done ? 1 : 0.55 }}>
+                    <span style={{ color: done ? "#047857" : "var(--color-text-3)", fontWeight: 600 }}>
+                      {done ? "✓" : "✗"}
+                    </span>
+                    <span>{step.title}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        </aside>
       </section>
     </main>
   );
@@ -201,7 +203,7 @@ const heroStyle = {
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
+  gridTemplateColumns: "minmax(0, 1fr) minmax(380px, 1fr)",
   gap: "1.25rem",
   alignItems: "start",
 } satisfies React.CSSProperties;
@@ -214,7 +216,11 @@ const formCardStyle = {
   boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
   display: "grid",
   gap: "1.25rem",
-  gridColumn: "1 / -1", // Make form span full width on top
+} satisfies React.CSSProperties;
+
+const sidebarStyle = {
+  display: "grid",
+  gap: "1rem",
 } satisfies React.CSSProperties;
 
 const sideCardStyle = {
@@ -267,8 +273,8 @@ const sectionTitleStyle = {
 
 const fieldGridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  gap: "1.25rem",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+  gap: "1rem",
 } satisfies React.CSSProperties;
 
 const labelStyle = {
