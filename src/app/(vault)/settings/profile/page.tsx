@@ -204,32 +204,34 @@ const heroStyle = {
 const gridStyle = {
   display: "grid",
   gridTemplateColumns: "minmax(0, 1fr) minmax(380px, 1fr)",
-  gap: "1.25rem",
+  gap: "1.5rem",
   alignItems: "start",
 } satisfies React.CSSProperties;
 
 const formCardStyle = {
-  padding: "2rem 2.5rem",
+  padding: "2rem",
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-2)",
   border: "1px solid var(--color-border-med)",
   boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
   display: "grid",
-  gap: "1.25rem",
+  gap: "1.5rem",
 } satisfies React.CSSProperties;
 
 const sidebarStyle = {
   display: "grid",
-  gap: "1rem",
+  gap: "1.5rem",
 } satisfies React.CSSProperties;
 
 const sideCardStyle = {
-  padding: "1.35rem",
+  padding: "2rem",
   borderRadius: "var(--radius-xl)",
-  background: "var(--color-surface-1)",
+  background: "var(--color-surface-2)",
   border: "1px solid var(--color-border-med)",
+  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
   display: "grid",
-  gap: "0.9rem",
+  gap: "1.5rem",
+  alignContent: "start",
 } satisfies React.CSSProperties;
 
 const eyebrowStyle = {
