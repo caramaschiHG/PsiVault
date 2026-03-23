@@ -12,6 +12,7 @@ import {
 } from "../../setup/actions";
 import { SignatureUpload } from "./components/signature-upload";
 import { resolveSession } from "../../../../lib/supabase/session";
+import { createClient } from "@/lib/supabase/server";
 import { SubmitButton } from "@/components/ui/submit-button";
 
 const serviceModeLabels: Record<string, string> = {
@@ -24,6 +25,15 @@ export default async function ProfileSettingsPage() {
   const { accountId, workspaceId } = await resolveSession();
   const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
   const readiness = buildSetupReadiness(profile);
+
+  const supabase = await createClient();
+  let signatureImageUrl: string | null = null;
+  if (profile.signatureAsset?.storageKey) {
+    const { data } = await supabase.storage
+      .from("signatures")
+      .createSignedUrl(profile.signatureAsset.storageKey, 3600);
+    signatureImageUrl = data?.signedUrl ?? null;
+  }
 
   return (
     <main style={shellStyle}>
@@ -141,6 +151,7 @@ export default async function ProfileSettingsPage() {
               saveAction={saveSignatureAssetAction}
               removeAction={removeSignatureAssetAction}
               currentFileName={profile.signatureAsset?.fileName ?? null}
+              currentImageUrl={signatureImageUrl}
               professionalName={profile.fullName ?? ""}
               crp={profile.crp ?? ""}
             />

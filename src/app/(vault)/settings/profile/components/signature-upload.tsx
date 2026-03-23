@@ -11,6 +11,7 @@ interface SignatureUploadProps {
   ) => Promise<{ error?: string }>;
   removeAction: () => Promise<void>;
   currentFileName: string | null;
+  currentImageUrl?: string | null;
   professionalName: string;
   crp: string;
 }
@@ -38,6 +39,7 @@ export function SignatureUpload({
   saveAction,
   removeAction,
   currentFileName,
+  currentImageUrl,
   professionalName,
   crp,
 }: SignatureUploadProps) {
@@ -45,16 +47,25 @@ export function SignatureUpload({
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
   const [clientError, setClientError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isReplacing, setIsReplacing] = useState(false);
   const [saved, setSaved] = useState(false);
   const [state, formAction] = useActionState(saveAction, null);
 
   useEffect(() => {
     if (state && !state.error) {
       setSaved(true);
+      setIsReplacing(false);
+      if (previewUrl) {
+         URL.revokeObjectURL(previewUrl);
+         setPreviewUrl(null);
+      }
+      if (inputRef.current) inputRef.current.value = "";
       const t = setTimeout(() => setSaved(false), 2000);
       return () => clearTimeout(t);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
+  
   const inputRef = useRef<HTMLInputElement>(null);
 
   function assignToInput(file: File) {
@@ -123,9 +134,14 @@ export function SignatureUpload({
     setPreviewUrl(null);
     setClientError(null);
     if (inputRef.current) inputRef.current.value = "";
+    
+    if (currentImageUrl) {
+      setIsReplacing(false);
+    }
   }
 
   const error = clientError ?? state?.error;
+  const displayUrl = previewUrl || (isReplacing ? null : currentImageUrl);
 
   return (
     <div style={wrapperStyle}>
@@ -148,13 +164,15 @@ export function SignatureUpload({
           onChange={handleInputChange}
         />
 
-        {previewUrl ? (
+        {displayUrl ? (
           /* Preview state */
           <div style={previewSectionStyle}>
             <div style={previewCardStyle}>
-              <span style={previewEyebrowStyle}>Assinatura digitalizada</span>
+              <span style={previewEyebrowStyle}>
+                {previewUrl ? "Assinatura digitalizada" : "Assinatura salva"}
+              </span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={previewUrl} alt="Pré-visualização da assinatura" style={previewImgStyle} />
+              <img src={displayUrl} alt="Pré-visualização da assinatura" style={previewImgStyle} />
               <div style={previewMetaStyle}>
                 <span style={previewNameStyle}>{professionalName || "Nome profissional"}</span>
                 <span style={previewCrpStyle}>{crp || "CRP 00/000000"}</span>
@@ -164,10 +182,16 @@ export function SignatureUpload({
             {error && <p style={errorStyle}>{error}</p>}
 
             <div style={previewActionsStyle}>
-              <SignatureSubmitButton />
+              {previewUrl && <SignatureSubmitButton />}
               {saved && <span style={savedLabelStyle}>✓ Assinatura salva</span>}
-              <button type="button" style={changeBtnStyle} onClick={handleClear}>
-                Trocar imagem
+              <button type="button" style={changeBtnStyle} onClick={() => {
+                if (previewUrl) {
+                  handleClear();
+                } else {
+                  setIsReplacing(true);
+                }
+              }}>
+                {previewUrl && currentImageUrl ? "Cancelar troca" : "Trocar imagem"}
               </button>
             </div>
           </div>
@@ -207,6 +231,12 @@ export function SignatureUpload({
               </p>
               <p style={dropHintStyle}>PNG, JPG ou SVG • máx. 2 MB</p>
             </div>
+
+            {isReplacing && currentImageUrl && (
+               <button type="button" style={changeBtnStyle} onClick={() => setIsReplacing(false)}>
+                 Cancelar troca
+               </button>
+            )}
 
             {error && <p style={errorStyle}>{error}</p>}
           </>
