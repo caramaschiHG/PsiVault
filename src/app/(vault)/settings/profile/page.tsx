@@ -13,6 +13,7 @@ import {
 import { SignatureUpload } from "./components/signature-upload";
 import { resolveSession } from "../../../../lib/supabase/session";
 import { createClient } from "@/lib/supabase/server";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { SubmitButton } from "@/components/ui/submit-button";
 
 const serviceModeLabels: Record<string, string> = {
@@ -64,7 +65,8 @@ export default async function ProfileSettingsPage() {
             </label>
             <label style={labelStyle}>
               CRP
-              <input
+              <MaskedInput
+                mask="crp"
                 defaultValue={profile.crp ?? ""}
                 name="crp"
                 placeholder="CRP 00/000000"
@@ -83,10 +85,11 @@ export default async function ProfileSettingsPage() {
             </label>
             <label style={labelStyle}>
               Telefone
-              <input
+              <MaskedInput
+                mask="phone"
                 defaultValue={profile.contactPhone ?? ""}
                 name="contactPhone"
-                placeholder="+55 11 99999-9999"
+                placeholder="(11) 99999-9999"
                 style={inputStyle}
               />
             </label>

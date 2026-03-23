@@ -4,6 +4,7 @@ import { resolveSession } from "@/lib/supabase/session";
 import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
 import { SERVICE_MODE_OPTIONS } from "@/lib/setup/constants";
 import { completeProfileAction } from "./actions";
+import { MaskedInput } from "@/components/ui/masked-input";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +59,8 @@ export default async function CompleteProfilePage() {
 
             <label className="auth-label">
               CRP
-              <input
+              <MaskedInput
+                mask="crp"
                 className="auth-input"
                 name="crp"
                 placeholder="CRP 00/000000"
@@ -80,10 +82,11 @@ export default async function CompleteProfilePage() {
 
             <label className="auth-label">
               Telefone
-              <input
+              <MaskedInput
+                mask="phone"
                 className="auth-input"
                 name="contactPhone"
-                placeholder="+55 11 99999-9999"
+                placeholder="(11) 99999-9999"
                 defaultValue={profile.contactPhone ?? ""}
               />
             </label>

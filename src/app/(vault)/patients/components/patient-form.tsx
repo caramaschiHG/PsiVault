@@ -18,6 +18,7 @@
 import type { Patient } from "../../../../lib/patients/model";
 import { createPatientAction, updatePatientAction } from "../actions";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { MaskedInput } from "@/components/ui/masked-input";
 
 interface PatientFormProps {
   patient?: Patient;
@@ -65,10 +66,11 @@ export function PatientForm({ patient }: PatientFormProps) {
 
           <label style={labelStyle}>
             Telefone
-            <input
+            <MaskedInput
+              mask="phone"
               defaultValue={patient?.phone ?? ""}
               name="phone"
-              placeholder="+55 11 91234-5678"
+              placeholder="(11) 91234-5678"
               style={inputStyle}
             />
           </label>
@@ -120,10 +122,11 @@ export function PatientForm({ patient }: PatientFormProps) {
 
           <label style={labelStyle}>
             Telefone do responsável
-            <input
+            <MaskedInput
+              mask="phone"
               defaultValue={patient?.guardianPhone ?? ""}
               name="guardianPhone"
-              placeholder="+55 11 98765-4321"
+              placeholder="(11) 98765-4321"
               style={inputStyle}
             />
           </label>
@@ -150,10 +153,11 @@ export function PatientForm({ patient }: PatientFormProps) {
 
           <label style={labelStyle}>
             Telefone
-            <input
+            <MaskedInput
+              mask="phone"
               defaultValue={patient?.emergencyContactPhone ?? ""}
               name="emergencyContactPhone"
-              placeholder="+55 11 97654-3210"
+              placeholder="(11) 97654-3210"
               style={inputStyle}
             />
           </label>

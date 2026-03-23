@@ -5,6 +5,7 @@ import { translateAuthError } from "../auth-errors";
 import { AuthForm } from "../components/auth-form";
 import { SubmitButton } from "../components/submit-button";
 import { PasswordInput } from "../components/password-input";
+import { MaskedInput } from "@/components/ui/masked-input";
 
 export default async function SignUpPage({
   searchParams,
@@ -62,7 +63,8 @@ export default async function SignUpPage({
 
               <label className="auth-label">
                 CRP
-                <input
+                <MaskedInput
+                  mask="crp"
                   className="auth-input"
                   name="crp"
                   placeholder="CRP 06/000000"
