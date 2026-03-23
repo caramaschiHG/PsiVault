@@ -203,7 +203,7 @@ const heroStyle = {
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "minmax(0, 1.1fr) minmax(340px, 1fr)",
+  gridTemplateColumns: "minmax(0, 1fr) minmax(380px, 1fr)",
   gap: "1.25rem",
   alignItems: "start",
 } satisfies React.CSSProperties;
