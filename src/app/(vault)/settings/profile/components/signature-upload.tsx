@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { SignatureCropModal } from "./signature-crop-modal";
 
 interface SignatureUploadProps {
   saveAction: (
@@ -41,6 +42,7 @@ export function SignatureUpload({
   crp,
 }: SignatureUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [cropImageUrl, setCropImageUrl] = useState<string | null>(null);
   const [clientError, setClientError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -55,6 +57,16 @@ export function SignatureUpload({
   }, [state]);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  function assignToInput(file: File) {
+    try {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      if (inputRef.current) inputRef.current.files = dt.files;
+    } catch {
+      // DataTransfer not available (old browser) — fall through
+    }
+  }
+
   function handleFile(file: File) {
     setClientError(null);
 
@@ -67,17 +79,31 @@ export function SignatureUpload({
       return;
     }
 
-    // Assign file to input so it's included in FormData on submit
-    try {
-      const dt = new DataTransfer();
-      dt.items.add(file);
-      if (inputRef.current) inputRef.current.files = dt.files;
-    } catch {
-      // DataTransfer not available (old browser) — fall through
+    // SVG: sem processamento de canvas — vai direto ao preview
+    if (file.type === "image/svg+xml") {
+      assignToInput(file);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(URL.createObjectURL(file));
+      return;
     }
 
+    // PNG/JPG: abrir modal de crop + digitalização
+    if (cropImageUrl) URL.revokeObjectURL(cropImageUrl);
+    setCropImageUrl(URL.createObjectURL(file));
+  }
+
+  function handleCropConfirm(processedFile: File) {
+    if (cropImageUrl) URL.revokeObjectURL(cropImageUrl);
+    setCropImageUrl(null);
+    assignToInput(processedFile);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl(URL.createObjectURL(file));
+    setPreviewUrl(URL.createObjectURL(processedFile));
+  }
+
+  function handleCropCancel() {
+    if (cropImageUrl) URL.revokeObjectURL(cropImageUrl);
+    setCropImageUrl(null);
+    if (inputRef.current) inputRef.current.value = "";
   }
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -103,6 +129,14 @@ export function SignatureUpload({
 
   return (
     <div style={wrapperStyle}>
+      {cropImageUrl && (
+        <SignatureCropModal
+          imageUrl={cropImageUrl}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
+      )}
+
       {/* Main upload form — file input is always inside */}
       <form action={formAction} style={formStyle}>
         <input
@@ -118,6 +152,7 @@ export function SignatureUpload({
           /* Preview state */
           <div style={previewSectionStyle}>
             <div style={previewCardStyle}>
+              <span style={previewEyebrowStyle}>Assinatura digitalizada</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={previewUrl} alt="Pré-visualização da assinatura" style={previewImgStyle} />
               <div style={previewMetaStyle}>
@@ -151,7 +186,20 @@ export function SignatureUpload({
                 if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
               }}
             >
-              <span style={dropIconStyle}>🖊️</span>
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="rgba(146, 64, 14, 0.45)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
               <p style={dropLabelStyle}>
                 {currentFileName
                   ? `Atual: ${currentFileName} — arraste ou clique para substituir`
@@ -207,9 +255,12 @@ const dropZoneActiveStyle = {
   background: "rgba(255, 237, 213, 0.5)",
 } satisfies React.CSSProperties;
 
-const dropIconStyle = {
-  fontSize: "1.75rem",
-  lineHeight: 1,
+const previewEyebrowStyle = {
+  fontSize: "0.8rem",
+  fontWeight: 600,
+  letterSpacing: "0.13em",
+  textTransform: "uppercase" as const,
+  color: "var(--color-accent)", // #9a3412 — contraste ≥ 4.5:1 sobre #fffcf7
 } satisfies React.CSSProperties;
 
 const dropLabelStyle = {
@@ -235,8 +286,9 @@ const previewCardStyle = {
   gap: "0.5rem",
   padding: "1.1rem 1.25rem",
   borderRadius: "10px",
-  background: "rgba(255, 252, 247, 0.95)",
+  background: "#fffcf7",
   border: "1px solid rgba(146, 64, 14, 0.15)",
+  boxShadow: "var(--shadow-md)",
 } satisfies React.CSSProperties;
 
 const previewImgStyle = {
