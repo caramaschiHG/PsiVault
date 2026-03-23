@@ -29,10 +29,11 @@ export async function savePracticeProfileAction(formData: FormData) {
       formData,
       "defaultAppointmentDurationMinutes",
     ),
-    defaultSessionPriceInCents: readFormValue(
-      formData,
-      "defaultSessionPriceInCents",
-    ),
+    defaultSessionPriceInCents: (() => {
+      const raw = readFormValue(formData, "defaultSessionPriceInReais");
+      const reais = parseFloat(raw);
+      return Number.isFinite(reais) && reais > 0 ? String(Math.round(reais * 100)) : "";
+    })(),
     serviceModes: formData.getAll("serviceModes").filter(
       (value): value is string => typeof value === "string",
     ),

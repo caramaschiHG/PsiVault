@@ -31,7 +31,7 @@ export default async function ProfileSettingsPage() {
         <p style={eyebrowStyle}>Perfil profissional</p>
         <h1 style={titleStyle}>Identidade, padrões do consultório e assinatura em um só lugar.</h1>
         <p style={copyStyle}>
-          Seu perfil profissional, padrões do consultório e assinatura digital.
+          Mantenha seu perfil atualizado para que documentos gerados carreguem os dados corretos.
         </p>
       </section>
 
@@ -91,11 +91,16 @@ export default async function ProfileSettingsPage() {
               />
             </label>
             <label style={labelStyle}>
-              Valor padrão em centavos
+              Valor padrão da sessão (R$)
               <input
-                defaultValue={profile.defaultSessionPriceInCents ?? ""}
-                min={1}
-                name="defaultSessionPriceInCents"
+                defaultValue={
+                  profile.defaultSessionPriceInCents
+                    ? profile.defaultSessionPriceInCents / 100
+                    : ""
+                }
+                min={0.01}
+                name="defaultSessionPriceInReais"
+                step="0.01"
                 style={inputStyle}
                 type="number"
               />
@@ -149,12 +154,17 @@ export default async function ProfileSettingsPage() {
               {readiness.vaultReady ? "Vault pronto" : "Pendências obrigatórias abertas"}
             </p>
             <ul style={statusListStyle}>
-              {readiness.steps.map((step) => (
-                <li key={step.id} style={statusItemStyle}>
-                  <span>{step.status === "complete" ? "✓" : "✗"}</span>
-                  <span>{step.title}</span>
-                </li>
-              ))}
+              {readiness.steps.map((step) => {
+                const done = step.status === "complete";
+                return (
+                  <li key={step.id} style={{ ...statusItemStyle, opacity: done ? 1 : 0.55 }}>
+                    <span style={{ color: done ? "#047857" : "var(--color-text-3)", fontWeight: 600 }}>
+                      {done ? "✓" : "✗"}
+                    </span>
+                    <span>{step.title}</span>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         </aside>
@@ -172,7 +182,7 @@ const shellStyle = {
 } satisfies React.CSSProperties;
 
 const heroStyle = {
-  maxWidth: "980px",
+  width: "min(880px, 100%)",
   padding: "1.7rem 1.8rem",
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-2)",
@@ -303,22 +313,10 @@ const buttonStyle = {
   fontWeight: 700,
 } satisfies React.CSSProperties;
 
-const secondaryButtonStyle = {
-  ...buttonStyle,
-  background: "var(--color-surface-1)",
-  color: "var(--color-accent)",
-  border: "1px solid var(--color-border-med)",
-} satisfies React.CSSProperties;
-
 const sideCopyStyle = {
   margin: 0,
   lineHeight: 1.6,
   color: "var(--color-text-2)",
-} satisfies React.CSSProperties;
-
-const miniFormStyle = {
-  display: "grid",
-  gap: "0.85rem",
 } satisfies React.CSSProperties;
 
 const signatureSummaryStyle = {

@@ -31,6 +31,12 @@ const shellStyle = {
 } satisfies React.CSSProperties;
 
 const heroStyle = {
+  width: "min(880px, 100%)",
+  padding: "1.6rem 1.7rem",
+  borderRadius: "var(--radius-xl)",
+  background: "var(--color-surface-2)",
+  border: "1px solid var(--color-border-med)",
+  boxShadow: "0 28px 90px rgba(120, 53, 15, 0.12)",
   display: "grid",
   gap: "0.5rem",
 } satisfies React.CSSProperties;

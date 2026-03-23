@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
@@ -17,13 +18,14 @@ export function SettingsNav() {
       {tabs.map((tab) => {
         const isActive = pathname === tab.href;
         return (
-          <a
+          <Link
             key={tab.href}
             href={tab.href}
+            prefetch
             style={isActive ? activeTabStyle : tabLinkStyle}
           >
             {tab.label}
-          </a>
+          </Link>
         );
       })}
     </nav>
