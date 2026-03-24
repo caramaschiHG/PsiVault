@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 interface RichTextEditorProps {
   name: string;
@@ -81,7 +81,14 @@ export function RichTextEditor({
   const editorRef = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState(initialHtml);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    if (editor.innerHTML !== initialHtml) {
+      editor.innerHTML = initialHtml;
+    }
+
     setHtml(initialHtml);
   }, [initialHtml]);
 
@@ -160,7 +167,6 @@ export function RichTextEditor({
         data-placeholder={placeholder}
         onInput={syncHtml}
         onPaste={handlePaste}
-        dangerouslySetInnerHTML={{ __html: initialHtml }}
       />
     </div>
   );
