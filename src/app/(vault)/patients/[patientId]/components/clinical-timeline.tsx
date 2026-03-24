@@ -4,7 +4,7 @@
  * Pure presentational server component: all data comes from props.
  *
  * Sections:
- * - Upcoming (SCHEDULED/CONFIRMED, future): first 3 visible, rest collapsible
+ * - Upcoming (SCHEDULED/CONFIRMED, future): next appointment only
  * - Sessions (COMPLETED): first 5 visible, rest collapsible
  * - Dismissed (CANCELED/NO_SHOW): always collapsible, count in summary
  */
@@ -38,7 +38,6 @@ interface ClinicalTimelineProps {
   patientPhone: string | null;
 }
 
-const UPCOMING_VISIBLE = 3;
 const COMPLETED_VISIBLE = 5;
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -271,9 +270,6 @@ export function ClinicalTimeline({
 }: ClinicalTimelineProps) {
   const hasAny = upcoming.length > 0 || completed.length > 0 || dismissed.length > 0;
 
-  const upcomingVisible = upcoming.slice(0, UPCOMING_VISIBLE);
-  const upcomingHidden = upcoming.slice(UPCOMING_VISIBLE);
-
   const completedVisible = completed.slice(0, COMPLETED_VISIBLE);
   const completedHidden = completed.slice(COMPLETED_VISIBLE);
 
@@ -312,7 +308,7 @@ export function ClinicalTimeline({
             <div style={subSectionStyle}>
               <p style={subSectionLabelStyle}>Próximas consultas</p>
               <div style={cardsGroupStyle}>
-                {upcomingVisible.map((entry) => (
+                {upcoming.map((entry) => (
                   <ScheduledEntryCard
                     key={entry.appointmentId}
                     entry={entry}
@@ -320,23 +316,6 @@ export function ClinicalTimeline({
                     patientPhone={patientPhone}
                   />
                 ))}
-                {upcomingHidden.length > 0 && (
-                  <details style={detailsStyle}>
-                    <summary style={detailsSummaryStyle}>
-                      Ver mais {upcomingHidden.length} consulta{upcomingHidden.length > 1 ? "s" : ""} agendada{upcomingHidden.length > 1 ? "s" : ""}
-                    </summary>
-                    <div style={detailsContentStyle}>
-                      {upcomingHidden.map((entry) => (
-                        <ScheduledEntryCard
-                          key={entry.appointmentId}
-                          entry={entry}
-                          patientName={patientName}
-                          patientPhone={patientPhone}
-                        />
-                      ))}
-                    </div>
-                  </details>
-                )}
               </div>
             </div>
           )}

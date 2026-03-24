@@ -18,6 +18,7 @@ const VALID_TYPES = new Set<DocumentType>([
   "session_note",
   "case_study_psychoanalytic",
   "referral_letter",
+  "patient_record_summary",
 ]);
 
 // ─── Null coercion helper ──────────────────────────────────────────────────────

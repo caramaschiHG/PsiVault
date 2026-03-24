@@ -81,6 +81,22 @@ describe("document domain", () => {
       expect(doc.createdAt).toEqual(NOW);
       expect(doc.updatedAt).toEqual(NOW);
     });
+
+    it("accepts patient_record_summary as a valid document type", () => {
+      const doc = createPracticeDocument(
+        {
+          workspaceId: "ws_1",
+          patientId: "pat_1",
+          type: "patient_record_summary",
+          content: "Resumo revisável do prontuário.",
+          createdByAccountId: "acct_1",
+          createdByName: "Dra. Ana Silva",
+        },
+        { now: NOW, createId: makeId },
+      );
+
+      expect(doc.type).toBe("patient_record_summary");
+    });
   });
 
   describe("updatePracticeDocument", () => {
@@ -398,6 +414,27 @@ describe("document domain", () => {
       expect(content).toContain("Caso (iniciais ou código): ________");
       expect(content).toContain("sigilo clínico");
       expect(content).not.toContain(`Caso: ${ctx.patientFullName}`);
+    });
+
+    it("returns patient record summary template with accompaniment metadata and ethical note", () => {
+      const content = buildDocumentContent("patient_record_summary", {
+        ...ctx,
+        patientRecordSummaryEntries: [
+          {
+            sessionLabel: "Sessão 1",
+            sessionDateLabel: "10/03/2025",
+            demand: "Ansiedade relacionada ao trabalho",
+            clinicalEvolution: "Paciente apresentou maior clareza sobre gatilhos.",
+            nextSteps: "Monitorar rotina de sono.",
+          },
+        ],
+      });
+
+      expect(content).toContain("RESUMO DE PRONTUÁRIO PSICOLÓGICO");
+      expect(content).toContain("Sessões concluídas: 10");
+      expect(content).toContain("Sessão 1 — 10/03/2025");
+      expect(content).toContain("NOTA ÉTICA");
+      expect(content).toContain("Profissional: Dra. Ana Oliveira — CRP 06/12345");
     });
   });
 

@@ -151,7 +151,8 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   // Upcoming: SCHEDULED/CONFIRMED in the future, sorted ASC (next first)
   const upcomingEntries = allEntries
     .filter((e) => (e.status === "SCHEDULED" || e.status === "CONFIRMED") && e.startsAt > now)
-    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+    .slice(0, 1);
 
   // Completed: most recent first (already sorted DESC from listByPatient)
   const completedEntries = allEntries.filter((e) => e.status === "COMPLETED");

@@ -18,9 +18,12 @@ import { getAppointmentRepository } from "../../../../../../lib/appointments/sto
 import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
 import { buildDocumentContent } from "../../../../../../lib/documents/templates";
 import type { DocumentType } from "../../../../../../lib/documents/model";
+import { DOCUMENT_TYPE_LABELS } from "../../../../../../lib/documents/presenter";
 import { DocumentComposerForm } from "./components/document-composer-form";
 import { createDocumentAction } from "./actions";
 import { resolveSession } from "../../../../../../lib/supabase/session";
+import { getClinicalNoteRepository } from "../../../../../../lib/clinical/store";
+import { deriveSessionNumber } from "../../../../../../lib/clinical/model";
 
 const VALID_TYPES = new Set<DocumentType>([
   "declaration_of_attendance",
@@ -31,18 +34,8 @@ const VALID_TYPES = new Set<DocumentType>([
   "session_note",
   "case_study_psychoanalytic",
   "referral_letter",
+  "patient_record_summary",
 ]);
-
-const TYPE_LABELS: Record<DocumentType, string> = {
-  declaration_of_attendance: "Declaração de Comparecimento",
-  receipt: "Recibo de Pagamento",
-  anamnesis: "Anamnese",
-  psychological_report: "Laudo Psicológico",
-  consent_and_service_contract: "Contrato de Prestação de Serviços",
-  session_note: "Evolução de Sessão",
-  case_study_psychoanalytic: "Estudo de Caso Psicanalítico",
-  referral_letter: "Carta de Encaminhamento",
-};
 
 const TYPE_METADATA: Array<{
   type: DocumentType;
@@ -88,6 +81,11 @@ const TYPE_METADATA: Array<{
     type: "consent_and_service_contract",
     category: "Administrativo",
     description: "Contrato e consentimento informado",
+  },
+  {
+    type: "patient_record_summary",
+    category: "Compartilhável",
+    description: "Síntese revisável do prontuário para envio ao paciente em PDF",
   },
 ];
 
@@ -141,7 +139,7 @@ export default async function DocumentComposerPage({
                 <span style={typeCardAccentStyle} aria-hidden="true" />
                 <span style={typeCardCategoryStyle}>{category}</span>
               </div>
-              <strong style={typeCardNameStyle}>{TYPE_LABELS[type]}</strong>
+              <strong style={typeCardNameStyle}>{DOCUMENT_TYPE_LABELS[type]}</strong>
               <span style={typeCardDescStyle}>{description}</span>
               <span style={typeCardActionStyle}>Selecionar modelo</span>
             </Link>
@@ -206,6 +204,11 @@ export default async function DocumentComposerPage({
   const intakeDate =
     sortedCompleted.length > 0 ? formatDateShort(sortedCompleted[0].startsAt) : null;
 
+  const patientRecordSummaryEntries =
+    documentType === "patient_record_summary"
+      ? await buildPatientRecordSummaryEntries(patient.id, workspaceId, allAppointments)
+      : null;
+
   const todayLabel = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "long",
   }).format(new Date());
@@ -220,6 +223,7 @@ export default async function DocumentComposerPage({
     intakeDate,
     amountLabel: null, // Phase 5 will enrich — priceInCents does not exist yet
     paymentMethod: null,
+    patientRecordSummaryEntries,
   };
 
   // 5. Build template content server-side
@@ -230,7 +234,7 @@ export default async function DocumentComposerPage({
     ? `${patient.fullName} (${patient.socialName})`
     : patient.fullName;
 
-  const typeLabel = TYPE_LABELS[documentType];
+  const typeLabel = DOCUMENT_TYPE_LABELS[documentType];
 
   return (
     <main style={shellStyle}>
@@ -262,6 +266,46 @@ export default async function DocumentComposerPage({
       />
     </main>
   );
+}
+
+async function buildPatientRecordSummaryEntries(
+  patientId: string,
+  workspaceId: string,
+  appointments: Awaited<ReturnType<ReturnType<typeof getAppointmentRepository>["listByPatient"]>>,
+) {
+  const clinicalRepo = getClinicalNoteRepository();
+  const notes = await clinicalRepo.listByPatient(patientId, workspaceId);
+  const appointmentById = new Map(appointments.map((appointment) => [appointment.id, appointment]));
+
+  return notes
+    .map((note) => {
+      const appointment = appointmentById.get(note.appointmentId);
+      if (!appointment) return null;
+
+      const sessionNumber = deriveSessionNumber(appointment.id, appointments);
+
+      return {
+        sessionLabel: sessionNumber != null ? `Sessão ${sessionNumber}` : "Sessão registrada",
+        sessionDateLabel: formatDateShort(appointment.startsAt),
+        demand: note.demand,
+        observedMood: note.observedMood,
+        themes: note.themes,
+        clinicalEvolution: note.clinicalEvolution,
+        nextSteps: note.nextSteps,
+        freeTextExcerpt: summarizeFreeText(note.freeText),
+        startsAt: appointment.startsAt,
+      };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+    .map(({ startsAt: _startsAt, ...entry }) => entry);
+}
+
+function summarizeFreeText(freeText: string): string | null {
+  const normalized = freeText.replace(/\s+/g, " ").trim();
+  if (normalized.length === 0) return null;
+  if (normalized.length <= 220) return normalized;
+  return `${normalized.slice(0, 217).trimEnd()}...`;
 }
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────

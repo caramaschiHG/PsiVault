@@ -14,18 +14,11 @@ import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile"
 import { createClient } from "../../../../../../lib/supabase/server";
 import { archiveDocumentAction } from "./actions";
 import type { DocumentType } from "../../../../../../lib/documents/model";
+import {
+  DOCUMENT_TYPE_LABELS,
+  canExportDocumentAsPdf,
+} from "../../../../../../lib/documents/presenter";
 import { resolveSession } from "../../../../../../lib/supabase/session";
-
-const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
-  declaration_of_attendance: "Declaração de Comparecimento",
-  receipt: "Recibo de Pagamento",
-  anamnesis: "Anamnese",
-  psychological_report: "Laudo Psicológico",
-  consent_and_service_contract: "Contrato de Prestação de Serviços",
-  session_note: "Evolução de Sessão",
-  case_study_psychoanalytic: "Estudo de Caso Psicanalítico",
-  referral_letter: "Carta de Encaminhamento",
-};
 
 const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "long",
@@ -141,6 +134,15 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
         <a href={dataUri} download={`${typeLabel}-${doc.id}.txt`} style={downloadLinkStyle}>
           Baixar documento
         </a>
+
+        {profile.signatureAsset && canExportDocumentAsPdf(doc.type) && (
+          <a
+            href={`/api/patients/${patientId}/documents/${doc.id}/pdf`}
+            style={downloadLinkStyle}
+          >
+            Baixar PDF
+          </a>
+        )}
 
         {isActive && (
           <Link href={`/patients/${patientId}/documents/${doc.id}/edit`} style={editLinkStyle}>

@@ -11,19 +11,9 @@ import { getPatientRepository } from "../../../../../../../lib/patients/store";
 import { getDocumentRepository } from "../../../../../../../lib/documents/store";
 import { updateDocumentAction } from "./actions";
 import type { DocumentType } from "../../../../../../../lib/documents/model";
+import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
 import Link from "next/link";
 import { resolveSession } from "../../../../../../../lib/supabase/session";
-
-const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
-  declaration_of_attendance: "Declaração de Comparecimento",
-  receipt: "Recibo de Pagamento",
-  anamnesis: "Anamnese",
-  psychological_report: "Laudo Psicológico",
-  consent_and_service_contract: "Contrato de Prestação de Serviços",
-  session_note: "Evolução de Sessão",
-  case_study_psychoanalytic: "Estudo de Caso Psicanalítico",
-  referral_letter: "Carta de Encaminhamento",
-};
 
 interface DocumentEditPageProps {
   params: Promise<{ patientId: string; documentId: string }>;

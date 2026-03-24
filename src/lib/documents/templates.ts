@@ -13,6 +13,17 @@
 
 import type { DocumentType } from "./model";
 
+export interface PatientRecordSummaryEntry {
+  sessionLabel: string;
+  sessionDateLabel: string;
+  demand?: string | null;
+  observedMood?: string | null;
+  themes?: string | null;
+  clinicalEvolution?: string | null;
+  nextSteps?: string | null;
+  freeTextExcerpt?: string | null;
+}
+
 export interface DocumentPreFillContext {
   patientFullName: string;
   professionalName: string;
@@ -23,6 +34,7 @@ export interface DocumentPreFillContext {
   intakeDate?: string | null;
   amountLabel?: string | null;
   paymentMethod?: string | null;
+  patientRecordSummaryEntries?: PatientRecordSummaryEntry[] | null;
 }
 
 function signatureBlock(professionalName: string, crp: string, todayLabel: string): string {
@@ -242,6 +254,52 @@ Coloco-me à disposição para maiores informações por meio do contato profiss
 Atenciosamente,${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
 }
 
+function buildPatientRecordSummary(ctx: DocumentPreFillContext): string {
+  const entries = ctx.patientRecordSummaryEntries ?? [];
+
+  const entryBlocks =
+    entries.length > 0
+      ? entries
+          .map((entry) => {
+            const lines = [
+              `${entry.sessionLabel} — ${entry.sessionDateLabel}`,
+              entry.demand ? `Demanda principal: ${entry.demand}` : null,
+              entry.observedMood ? `Apresentação emocional: ${entry.observedMood}` : null,
+              entry.themes ? `Temas centrais: ${entry.themes}` : null,
+              entry.clinicalEvolution ? `Evolução clínica: ${entry.clinicalEvolution}` : null,
+              entry.nextSteps ? `Encaminhamentos / próximos passos: ${entry.nextSteps}` : null,
+              entry.freeTextExcerpt ? `Síntese complementar: ${entry.freeTextExcerpt}` : null,
+            ].filter(Boolean);
+
+            return lines.join("\n");
+          })
+          .join("\n\n")
+      : "[Inserir síntese cronológica do acompanhamento com base no prontuário]";
+
+  return `RESUMO DE PRONTUÁRIO PSICOLÓGICO
+
+Paciente: ${ctx.patientFullName}
+Profissional responsável: ${ctx.professionalName} (${ctx.crp})
+Data de emissão: ${ctx.todayLabel}
+
+FINALIDADE DO DOCUMENTO
+Resumo clínico destinado ao compartilhamento com o(a) paciente quando necessário, mediante revisão profissional prévia.
+
+DADOS GERAIS DO ACOMPANHAMENTO
+Início do acompanhamento: ${ctx.intakeDate ?? "________"}
+Período considerado: ${ctx.sessionDateRange ?? "________"}
+Sessões concluídas: ${ctx.sessionCount != null ? String(ctx.sessionCount) : "________"}
+
+SÍNTESE DO ACOMPANHAMENTO
+${entryBlocks}
+
+OBSERVAÇÕES FINAIS / ENCAMINHAMENTOS
+[Revisar e complementar este resumo conforme a finalidade específica do envio]
+
+NOTA ÉTICA
+Este resumo deriva do prontuário psicológico e deve conter apenas as informações estritamente necessárias para a finalidade do compartilhamento com o(a) paciente, conforme avaliação técnica e ética da(o) profissional.${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
 export function buildDocumentContent(type: DocumentType, context: DocumentPreFillContext): string {
   switch (type) {
     case "declaration_of_attendance":
@@ -260,5 +318,7 @@ export function buildDocumentContent(type: DocumentType, context: DocumentPreFil
       return buildPsychoanalyticCaseStudy(context);
     case "referral_letter":
       return buildReferralLetter(context);
+    case "patient_record_summary":
+      return buildPatientRecordSummary(context);
   }
 }

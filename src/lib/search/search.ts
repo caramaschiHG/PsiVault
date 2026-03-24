@@ -72,6 +72,7 @@ function translateDocumentType(type: DocumentType): string {
     session_note: "Evolução de sessão",
     case_study_psychoanalytic: "Estudo de caso psicanalítico",
     referral_letter: "Carta de encaminhamento",
+    patient_record_summary: "Resumo de prontuário",
   };
   return labels[type] ?? type;
 }

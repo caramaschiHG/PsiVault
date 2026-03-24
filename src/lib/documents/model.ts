@@ -18,7 +18,8 @@ export type DocumentType =
   | "consent_and_service_contract"
   | "session_note"
   | "case_study_psychoanalytic"
-  | "referral_letter";
+  | "referral_letter"
+  | "patient_record_summary";
 
 export interface PracticeDocument {
   id: string;
