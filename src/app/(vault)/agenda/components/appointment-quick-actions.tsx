@@ -31,6 +31,8 @@ export function AppointmentQuickActions({
   status,
   seriesId,
 }: AppointmentQuickActionsProps) {
+  const [showCompleteForm, setShowCompleteForm] = useState(false);
+  const [patientRecordEntry, setPatientRecordEntry] = useState("");
   const [showCancelScope, setShowCancelScope] = useState(false);
   const [canceledBy, setCanceledBy] = useState<"PATIENT" | "THERAPIST">("THERAPIST");
   const [isPending, startTransition] = useTransition();
@@ -84,6 +86,59 @@ export function AppointmentQuickActions({
     );
   }
 
+  if (showCompleteForm) {
+    return (
+      <div style={completeContainerStyle}>
+        <form
+          action={(formData) => {
+            startTransition(async () => {
+              const result = await completeAppointmentAction(formData);
+              if (result.success) {
+                toast("Consulta concluída");
+                setShowCompleteForm(false);
+                setPatientRecordEntry("");
+                router.refresh();
+              } else {
+                toast(result.error ?? "Erro ao concluir consulta", "error");
+              }
+            });
+          }}
+          style={completeFormStyle}
+        >
+          <input type="hidden" name="appointmentId" value={appointmentId} />
+          <label htmlFor={`patient-record-entry-${appointmentId}`} style={completeLabelStyle}>
+            Registro para prontuário
+          </label>
+          <textarea
+            id={`patient-record-entry-${appointmentId}`}
+            name="patientRecordEntry"
+            value={patientRecordEntry}
+            onChange={(event) => setPatientRecordEntry(event.target.value)}
+            rows={4}
+            required
+            placeholder="Escreva o registro clínico que deve entrar no prontuário."
+            style={completeTextareaStyle}
+          />
+          <div style={cancelActionsStyle}>
+            <button type="submit" disabled={isPending} style={completeConfirmBtnStyle}>
+              {isPending ? "Concluindo…" : "Salvar e concluir"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCompleteForm(false);
+                setPatientRecordEntry("");
+              }}
+              style={cancelDismissBtnStyle}
+            >
+              Voltar
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div style={rowStyle}>
       {status === "SCHEDULED" && (
@@ -109,21 +164,14 @@ export function AppointmentQuickActions({
       )}
 
       <form
-        action={(formData) => {
-          startTransition(async () => {
-            const result = await completeAppointmentAction(formData);
-            if (result.success) {
-              toast("Consulta concluída");
-              router.refresh();
-            } else {
-              toast(result.error ?? "Erro ao concluir consulta", "error");
-            }
-          });
-        }}
         style={inlineFormStyle}
       >
-        <input type="hidden" name="appointmentId" value={appointmentId} />
-        <button type="submit" disabled={isPending} style={completeBtnStyle}>
+        <button
+          type="button"
+          disabled={isPending}
+          style={completeBtnStyle}
+          onClick={() => setShowCompleteForm(true)}
+        >
           Concluir
         </button>
       </form>
@@ -221,6 +269,40 @@ const cancelScopeContainerStyle = {
   gap: "0.75rem",
 } satisfies React.CSSProperties;
 
+const completeContainerStyle = {
+  display: "grid",
+  gap: "0.75rem",
+  padding: "0.8rem",
+  borderRadius: "14px",
+  background: "rgba(255, 252, 247, 0.95)",
+  border: "1px solid rgba(146, 64, 14, 0.12)",
+} satisfies React.CSSProperties;
+
+const completeFormStyle = {
+  display: "grid",
+  gap: "0.6rem",
+} satisfies React.CSSProperties;
+
+const completeLabelStyle = {
+  fontSize: "0.82rem",
+  fontWeight: 600,
+  color: "#44403c",
+} satisfies React.CSSProperties;
+
+const completeTextareaStyle = {
+  width: "100%",
+  padding: "0.75rem 0.9rem",
+  borderRadius: "12px",
+  border: "1px solid rgba(146, 64, 14, 0.16)",
+  background: "rgba(255,255,255,0.98)",
+  fontSize: "0.85rem",
+  lineHeight: 1.6,
+  resize: "vertical" as const,
+  color: "#1c1917",
+  boxSizing: "border-box" as const,
+  fontFamily: "inherit",
+} satisfies React.CSSProperties;
+
 const cancelActionsStyle = {
   display: "flex",
   gap: "0.5rem",
@@ -237,6 +319,12 @@ const cancelConfirmBtnStyle = {
   fontWeight: 600,
   fontSize: "0.85rem",
   cursor: "pointer",
+} satisfies React.CSSProperties;
+
+const completeConfirmBtnStyle = {
+  ...cancelConfirmBtnStyle,
+  color: "#92400e",
+  borderColor: "rgba(146, 64, 14, 0.28)",
 } satisfies React.CSSProperties;
 
 const cancelDismissBtnStyle = {

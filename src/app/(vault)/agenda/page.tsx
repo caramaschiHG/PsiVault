@@ -321,11 +321,11 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           />
           {hasNote ? (
             <Link href={`/sessions/${appt.id}/note`} style={viewNoteStyle}>
-              Ver evolução
+              Ver prontuário
             </Link>
           ) : (
             <Link href={`/sessions/${appt.id}/note`} style={registerNoteStyle}>
-              Registrar evolução
+              Registrar prontuário
             </Link>
           )}
           {onlineSection}

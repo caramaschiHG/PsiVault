@@ -192,14 +192,14 @@ function CompletedEntryCard({
             href={`/sessions/${entry.appointmentId}/note`}
             style={viewNoteLinkStyle}
           >
-            Ver / Editar evolução →
+            Ver / Editar prontuário →
           </Link>
         ) : (
           <Link
             href={`/sessions/${entry.appointmentId}/note`}
             style={registerNoteLinkStyle}
           >
-            Registrar evolução →
+            Registrar prontuário →
           </Link>
         )}
         {entry.hasNote && (

@@ -32,7 +32,7 @@ const VALID_TYPES = new Set<DocumentType>([
   "psychological_report",
   "consent_and_service_contract",
   "session_note",
-  "case_study_psychoanalytic",
+  "session_record",
   "referral_letter",
   "patient_record_summary",
 ]);
@@ -53,9 +53,9 @@ const TYPE_METADATA: Array<{
     description: "Registro de progresso e intervenções da sessão",
   },
   {
-    type: "case_study_psychoanalytic",
+    type: "session_record",
     category: "Clínico",
-    description: "Registro narrativo para formulação e supervisão clínica psicanalítica",
+    description: "Registro livre, privado e exclusivo do psicólogo, sem modelo pré-definido",
   },
   {
     type: "psychological_report",
@@ -141,7 +141,9 @@ export default async function DocumentComposerPage({
               </div>
               <strong style={typeCardNameStyle}>{DOCUMENT_TYPE_LABELS[type]}</strong>
               <span style={typeCardDescStyle}>{description}</span>
-              <span style={typeCardActionStyle}>Selecionar modelo</span>
+              <span style={typeCardActionStyle}>
+                {type === "session_record" ? "Abrir editor" : "Selecionar modelo"}
+              </span>
             </Link>
           ))}
         </div>
@@ -153,7 +155,7 @@ export default async function DocumentComposerPage({
 
   // 3. Signature gate
   const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
-  if (!profile.signatureAsset) {
+  if (documentType !== "session_record" && !profile.signatureAsset) {
     return (
       <main style={shellStyle}>
         <nav style={breadcrumbStyle}>

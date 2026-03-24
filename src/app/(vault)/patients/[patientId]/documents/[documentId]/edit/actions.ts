@@ -6,6 +6,10 @@ import { getDocumentRepository } from "../../../../../../../lib/documents/store"
 import { createDocumentAuditEvent } from "../../../../../../../lib/documents/audit";
 import { getAuditRepository } from "../../../../../../../lib/audit/store";
 import { resolveSession } from "../../../../../../../lib/supabase/session";
+import {
+  isMeaningfulDocumentContent,
+  normalizeDocumentContent,
+} from "../../../../../../../lib/documents/rich-text";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -17,7 +21,7 @@ export async function updateDocumentAction(formData: FormData): Promise<void> {
   const { accountId, workspaceId } = await resolveSession();
   const documentId = String(formData.get("documentId") ?? "");
   const patientId = String(formData.get("patientId") ?? "");
-  const content = String(formData.get("content") ?? "").trim();
+  const rawContent = String(formData.get("content") ?? "");
 
   let shouldRedirect = false;
   let guardRedirect = false;
@@ -28,6 +32,11 @@ export async function updateDocumentAction(formData: FormData): Promise<void> {
     if (!doc || doc.patientId !== patientId || doc.archivedAt !== null) {
       guardRedirect = true;
     } else {
+      const content = normalizeDocumentContent(doc.type, rawContent);
+      if (!isMeaningfulDocumentContent(doc.type, content)) {
+        throw new Error("Document content is required");
+      }
+
       const now = new Date();
       const updated = updatePracticeDocument(doc, { content }, { now });
       await repo.save(updated);

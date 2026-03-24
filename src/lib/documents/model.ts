@@ -17,7 +17,7 @@ export type DocumentType =
   | "psychological_report"
   | "consent_and_service_contract"
   | "session_note"
-  | "case_study_psychoanalytic"
+  | "session_record"
   | "referral_letter"
   | "patient_record_summary";
 

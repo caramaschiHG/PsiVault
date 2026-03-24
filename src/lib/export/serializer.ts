@@ -14,6 +14,7 @@ import type { ClinicalNote } from "../clinical/model";
 import type { PracticeDocument } from "../documents/model";
 import type { SessionCharge } from "../finance/model";
 import type { AuditEvent } from "../audit/events";
+import { canIncludeDocumentInPatientExports } from "../documents/presenter";
 
 // ─── Exported types ──────────────────────────────────────────────────────────
 
@@ -59,7 +60,7 @@ export function buildPatientExport(input: {
     patient: input.patient,
     appointments: input.appointments,
     clinicalNotes: input.clinicalNotes,
-    documents: input.documents,
+    documents: input.documents.filter((document) => canIncludeDocumentInPatientExports(document.type)),
     charges: input.charges,
   };
 }
@@ -85,7 +86,7 @@ export function buildWorkspaceBackup(input: {
     patients: input.patients,
     appointments: input.appointments,
     clinicalNotes: input.clinicalNotes,
-    documents: input.documents,
+    documents: input.documents.filter((document) => canIncludeDocumentInPatientExports(document.type)),
     charges: input.charges,
     auditEvents: input.auditEvents,
   };

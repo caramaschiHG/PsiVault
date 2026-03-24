@@ -82,14 +82,14 @@ export default async function NotePage({ params }: NotePageProps) {
           {patientDisplayName}
         </Link>
         <span style={breadcrumbSepStyle}>›</span>
-        <span style={breadcrumbCurrentStyle}>Registrar evolução</span>
+        <span style={breadcrumbCurrentStyle}>Prontuário da sessão</span>
       </nav>
 
       {/* Page heading */}
       <div style={headingStyle}>
         <p style={eyebrowStyle}>Prontuário clínico</p>
         <h1 style={titleStyle}>
-          {existingNote ? "Editar evolução" : "Registrar evolução"}
+          {existingNote ? "Editar registro do prontuário" : "Registrar prontuário"}
         </h1>
       </div>
 

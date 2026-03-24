@@ -8,6 +8,10 @@ import { getAuditRepository } from "../../../../../../lib/audit/store";
 import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
 import type { DocumentType } from "../../../../../../lib/documents/model";
 import { resolveSession } from "../../../../../../lib/supabase/session";
+import {
+  isMeaningfulDocumentContent,
+  normalizeDocumentContent,
+} from "../../../../../../lib/documents/rich-text";
 
 const VALID_TYPES = new Set<DocumentType>([
   "declaration_of_attendance",
@@ -16,7 +20,7 @@ const VALID_TYPES = new Set<DocumentType>([
   "psychological_report",
   "consent_and_service_contract",
   "session_note",
-  "case_study_psychoanalytic",
+  "session_record",
   "referral_letter",
   "patient_record_summary",
 ]);
@@ -53,7 +57,7 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
   const { accountId, workspaceId } = await resolveSession();
   const patientId = String(formData.get("patientId") ?? "");
   const rawType = String(formData.get("documentType") ?? "");
-  const content = nullCoerce(formData.get("content")) ?? "";
+  const rawContent = String(formData.get("content") ?? "");
 
   let shouldRedirect = false;
 
@@ -63,6 +67,11 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
       throw new Error("Invalid document type");
     }
     const type = rawType as DocumentType;
+    const content = normalizeDocumentContent(type, rawContent);
+
+    if (!isMeaningfulDocumentContent(type, content)) {
+      throw new Error("Document content is required");
+    }
 
     // Get professional name for provenance snapshot
     const profile = await getPracticeProfileSnapshot(accountId, workspaceId);

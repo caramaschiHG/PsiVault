@@ -13,6 +13,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { DocumentType } from "../../../../../../../lib/documents/model";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 interface DocumentComposerFormProps {
   defaultContent: string;
@@ -30,6 +31,7 @@ export function DocumentComposerForm({
   const [isDirty, setIsDirty] = useState(false);
   const [wordCount, setWordCount] = useState(() => countWords(defaultContent));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isSessionRecord = documentType === "session_record";
 
   // Unsaved-draft guard: warn on browser close / refresh
   useEffect(() => {
@@ -92,57 +94,70 @@ export function DocumentComposerForm({
       <div style={fieldGroupStyle}>
         <div style={labelRowStyle}>
           <label htmlFor="content" style={labelStyle}>
-            Conteúdo do documento
+            {isSessionRecord ? "Registro de sessão" : "Conteúdo do documento"}
           </label>
           <span style={wordCountStyle}>{wordCount} palavras</span>
         </div>
 
-        {/* Toolbar */}
-        <div style={toolbarStyle}>
-          <button
-            type="button"
-            title="Converter seleção para maiúsculas"
-            style={toolbarBtnStyle}
-            onClick={() => applyToolbar("uppercase")}
-          >
-            A→A↑
-          </button>
-          <button
-            type="button"
-            title="Inserir separador"
-            style={toolbarBtnStyle}
-            onClick={() => applyToolbar("separator")}
-          >
-            ———
-          </button>
-          <button
-            type="button"
-            title="Inserir item com marcador"
-            style={toolbarBtnStyle}
-            onClick={() => applyToolbar("bullet")}
-          >
-            •
-          </button>
-          <button
-            type="button"
-            title="Indentar (4 espaços)"
-            style={toolbarBtnStyle}
-            onClick={() => applyToolbar("indent")}
-          >
-            ⇥
-          </button>
-        </div>
+        {isSessionRecord ? (
+          <RichTextEditor
+            name="content"
+            initialHtml={defaultContent}
+            placeholder="Escreva livremente o que for necessário para seu uso clínico privado."
+            minHeight={520}
+            onDirtyChange={setIsDirty}
+            onWordCountChange={setWordCount}
+          />
+        ) : (
+          <>
+            {/* Toolbar */}
+            <div style={toolbarStyle}>
+              <button
+                type="button"
+                title="Converter seleção para maiúsculas"
+                style={toolbarBtnStyle}
+                onClick={() => applyToolbar("uppercase")}
+              >
+                A→A↑
+              </button>
+              <button
+                type="button"
+                title="Inserir separador"
+                style={toolbarBtnStyle}
+                onClick={() => applyToolbar("separator")}
+              >
+                ———
+              </button>
+              <button
+                type="button"
+                title="Inserir item com marcador"
+                style={toolbarBtnStyle}
+                onClick={() => applyToolbar("bullet")}
+              >
+                •
+              </button>
+              <button
+                type="button"
+                title="Indentar (4 espaços)"
+                style={toolbarBtnStyle}
+                onClick={() => applyToolbar("indent")}
+              >
+                ⇥
+              </button>
+            </div>
 
-        <textarea
-          ref={textareaRef}
-          id="content"
-          name="content"
-          defaultValue={defaultContent}
-          rows={24}
-          onChange={handleChange}
-          required
-          style={composerTextareaStyle}
-        />
+            <textarea
+              ref={textareaRef}
+              id="content"
+              name="content"
+              defaultValue={defaultContent}
+              rows={24}
+              onChange={handleChange}
+              required
+              style={composerTextareaStyle}
+            />
+          </>
+        )}
       </div>
 
       {/* Form actions */}

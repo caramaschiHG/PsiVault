@@ -169,6 +169,26 @@ describe("buildPatientExport", () => {
     expect(result.charges).toEqual([charge]);
   });
 
+  it("excludes private session records from patient export", () => {
+    const privateDocument: PracticeDocument = {
+      ...document,
+      id: "doc_private_1",
+      type: "session_record",
+      content: "<p>Privado</p>",
+    };
+
+    const result = buildPatientExport({
+      patient,
+      appointments: [appointment],
+      clinicalNotes: [note],
+      documents: [document, privateDocument],
+      charges: [charge],
+      now,
+    });
+
+    expect(result.documents).toEqual([document]);
+  });
+
   it("works with empty arrays", () => {
     const result = buildPatientExport({
       patient,
@@ -262,6 +282,28 @@ describe("buildWorkspaceBackup", () => {
     expect(result.documents).toEqual([document]);
     expect(result.charges).toEqual([charge]);
     expect(result.auditEvents).toEqual([auditEvent]);
+  });
+
+  it("excludes private session records from workspace backup", () => {
+    const privateDocument: PracticeDocument = {
+      ...document,
+      id: "doc_private_backup",
+      type: "session_record",
+      content: "<p>Privado</p>",
+    };
+
+    const result = buildWorkspaceBackup({
+      workspaceId: "ws_1",
+      patients: [patient],
+      appointments: [appointment],
+      clinicalNotes: [note],
+      documents: [document, privateDocument],
+      charges: [charge],
+      auditEvents: [auditEvent],
+      now,
+    });
+
+    expect(result.documents).toEqual([document]);
   });
 });
 

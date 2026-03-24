@@ -26,6 +26,9 @@ import { createChargeAuditEvent } from "../../../lib/finance/audit";
 import { resolveSession } from "../../../lib/supabase/session";
 import { queueAppointmentNotifications } from "../../../lib/notifications/queue";
 import { getSmtpConfigRepository } from "../../../lib/notifications/smtp-config-store";
+import { createClinicalNote, updateClinicalNote } from "../../../lib/clinical/model";
+import { getClinicalNoteRepository } from "../../../lib/clinical/store";
+import { createClinicalNoteAuditEvent } from "../../../lib/clinical/audit";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -494,13 +497,16 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
+  const clinicalRepo = getClinicalNoteRepository();
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
+  const freeText = String(formData.get("patientRecordEntry") ?? "").trim();
 
   try {
     const existing = await repo.findById(appointmentId, workspaceId);
     if (!existing) return { success: false, error: "Consulta não encontrada." };
+    if (!freeText) return { success: false, error: "Preencha o registro do prontuário para concluir a sessão." };
 
     const completed = completeAppointment(existing, { now });
     await repo.save(completed);
@@ -542,8 +548,46 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
       );
     }
 
+    const existingNote = await clinicalRepo.findByAppointmentId(completed.id, workspaceId);
+    if (existingNote) {
+      const updatedNote = updateClinicalNote(existingNote, { freeText }, { now });
+      await clinicalRepo.save(updatedNote);
+      audit.append(
+        createClinicalNoteAuditEvent(
+          {
+            type: "clinical.note.updated",
+            note: updatedNote,
+            actor: { accountId, workspaceId },
+          },
+          { now, createId: generateId },
+        ),
+      );
+    } else {
+      const note = createClinicalNote(
+        {
+          workspaceId,
+          patientId: completed.patientId,
+          appointmentId: completed.id,
+          freeText,
+        },
+        { now, createId: generateId },
+      );
+      await clinicalRepo.save(note);
+      audit.append(
+        createClinicalNoteAuditEvent(
+          {
+            type: "clinical.note.created",
+            note,
+            actor: { accountId, workspaceId },
+          },
+          { now, createId: generateId },
+        ),
+      );
+    }
+
     revalidatePath("/agenda");
     revalidatePath(`/patients/${completed.patientId}`);
+    revalidatePath(`/sessions/${completed.id}/note`);
     return { success: true };
   } catch (err) {
     console.error("[completeAppointmentAction]", err);

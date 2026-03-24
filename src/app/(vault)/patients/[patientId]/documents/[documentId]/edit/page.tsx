@@ -14,6 +14,7 @@ import type { DocumentType } from "../../../../../../../lib/documents/model";
 import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
 import Link from "next/link";
 import { resolveSession } from "../../../../../../../lib/supabase/session";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 interface DocumentEditPageProps {
   params: Promise<{ patientId: string; documentId: string }>;
@@ -36,6 +37,7 @@ export default async function DocumentEditPage({ params }: DocumentEditPageProps
   if (doc.patientId !== patient.id) notFound();
 
   const typeLabel = DOCUMENT_TYPE_LABELS[doc.type];
+  const isSessionRecord = doc.type === "session_record";
 
   return (
     <main style={shellStyle}>
@@ -66,13 +68,22 @@ export default async function DocumentEditPage({ params }: DocumentEditPageProps
       <form action={updateDocumentAction} style={formStyle}>
         <input type="hidden" name="documentId" value={doc.id} />
         <input type="hidden" name="patientId" value={patientId} />
-        <textarea
-          name="content"
-          defaultValue={doc.content}
-          rows={24}
-          required
-          style={textareaStyle}
-        />
+        {isSessionRecord ? (
+          <RichTextEditor
+            name="content"
+            initialHtml={doc.content}
+            placeholder="Escreva livremente o que for necessário para seu uso clínico privado."
+            minHeight={520}
+          />
+        ) : (
+          <textarea
+            name="content"
+            defaultValue={doc.content}
+            rows={24}
+            required
+            style={textareaStyle}
+          />
+        )}
         <div style={actionsStyle}>
           <button type="submit" style={submitButtonStyle}>
             Salvar alterações

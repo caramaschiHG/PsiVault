@@ -102,7 +102,7 @@ export function NoteComposerForm({
   }, [isDirty]);
 
   const action = existingNote ? updateAction : createAction;
-  const submitLabel = existingNote ? "Atualizar evolução" : "Salvar evolução";
+  const submitLabel = existingNote ? "Atualizar prontuário" : "Salvar prontuário";
 
   function handleFreeTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setFreeTextValue(e.target.value);
@@ -158,7 +158,7 @@ export function NoteComposerForm({
       {/* Primary free-text area */}
       <div style={fieldGroupStyle}>
         <label htmlFor="freeText" style={labelStyle}>
-          Evolução livre
+          Registro principal do prontuário
         </label>
 
         {/* Template selector */}
@@ -200,7 +200,7 @@ export function NoteComposerForm({
           id="freeText"
           name="freeText"
           value={freeTextValue}
-          placeholder="Escreva a evolução da sessão..."
+          placeholder="Escreva o registro clínico que deve compor o prontuário."
           onChange={handleFreeTextChange}
           style={primaryTextareaStyle}
           required

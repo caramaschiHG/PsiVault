@@ -7,6 +7,7 @@ const redirectMock = vi.fn((url: string) => {
 const createClientMock = vi.fn();
 const accountUpsertMock = vi.fn();
 const workspaceUpsertMock = vi.fn();
+const savePracticeProfileMock = vi.fn();
 
 vi.mock("next/navigation", () => ({
   redirect: redirectMock,
@@ -25,6 +26,10 @@ vi.mock("@/lib/db", () => ({
       upsert: workspaceUpsertMock,
     },
   },
+}));
+
+vi.mock("@/lib/setup/profile", () => ({
+  savePracticeProfile: savePracticeProfileMock,
 }));
 
 describe("signUp action", () => {
@@ -55,9 +60,10 @@ describe("signUp action", () => {
     const formData = new FormData();
     formData.set("email", "teste@example.com");
     formData.set("password", "secret123");
+    formData.set("confirmPassword", "secret123");
     formData.set("displayName", "Dra. Ana");
 
-    await expect(signUp(formData)).rejects.toThrow("REDIRECT:/verify-email");
+    await expect(signUp(formData)).rejects.toThrow("REDIRECT:/mfa-setup");
 
     expect(accountUpsertMock).toHaveBeenCalledWith({
       where: { email: "teste@example.com" },
@@ -78,6 +84,13 @@ describe("signUp action", () => {
         slug: "ws_user_123",
         displayName: "Consultório de Dra. Ana",
       },
+      select: { id: true },
+    });
+
+    expect(savePracticeProfileMock).toHaveBeenCalledWith({
+      workspaceId: "workspace_1",
+      fullName: "Dra. Ana",
+      crp: null,
     });
   });
 
@@ -104,9 +117,10 @@ describe("signUp action", () => {
     const formData = new FormData();
     formData.set("email", "fallback@example.com");
     formData.set("password", "secret123");
+    formData.set("confirmPassword", "secret123");
     formData.set("displayName", "");
 
-    await expect(signUp(formData)).rejects.toThrow("REDIRECT:/verify-email");
+    await expect(signUp(formData)).rejects.toThrow("REDIRECT:/mfa-setup");
 
     expect(accountUpsertMock).toHaveBeenCalledWith(
       expect.objectContaining({

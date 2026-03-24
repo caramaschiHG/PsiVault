@@ -17,8 +17,10 @@ import type { DocumentType } from "../../../../../../lib/documents/model";
 import {
   DOCUMENT_TYPE_LABELS,
   canExportDocumentAsPdf,
+  isPrivateDocumentType,
 } from "../../../../../../lib/documents/presenter";
 import { resolveSession } from "../../../../../../lib/supabase/session";
+import { richTextHtmlToPlainText, sanitizeRichTextHtml } from "../../../../../../lib/documents/rich-text";
 
 const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "long",
@@ -50,8 +52,11 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
   if (doc.patientId !== patient.id) notFound();
 
   const typeLabel = DOCUMENT_TYPE_LABELS[doc.type];
-  const dataUri = `data:text/plain;charset=utf-8,${encodeURIComponent(doc.content)}`;
+  const dataUri = `data:text/plain;charset=utf-8,${encodeURIComponent(
+    doc.type === "session_record" ? richTextHtmlToPlainText(doc.content) : doc.content,
+  )}`;
   const isActive = doc.archivedAt === null;
+  const isPrivate = isPrivateDocumentType(doc.type);
 
   // Signature image — generate a short-lived signed URL if asset exists
   const profile = await getPracticeProfileSnapshot(undefined, workspaceId);
@@ -83,6 +88,7 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
       <section style={provenanceStyle}>
         <p style={eyebrowStyle}>Documento clínico</p>
         <h1 style={titleStyle}>{typeLabel}</h1>
+        {isPrivate && <p style={privateNoticeStyle}>Uso exclusivo do psicólogo. Não entra no prontuário nem em exportações.</p>}
         <div style={metaGridStyle}>
           <div style={metaRowStyle}>
             <span style={metaLabelStyle}>Paciente</span>
@@ -115,9 +121,16 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
 
       {/* Document content */}
       <section style={contentSectionStyle}>
-        <pre style={contentPreStyle}>{doc.content}</pre>
+        {doc.type === "session_record" ? (
+          <div
+            style={contentRichStyle}
+            dangerouslySetInnerHTML={{ __html: sanitizeRichTextHtml(doc.content) }}
+          />
+        ) : (
+          <pre style={contentPreStyle}>{doc.content}</pre>
+        )}
 
-        {signatureImageUrl && (
+        {signatureImageUrl && !isPrivate && (
           <div style={signatureBlockStyle}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -131,11 +144,13 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
 
       {/* Actions */}
       <section style={actionsStyle}>
-        <a href={dataUri} download={`${typeLabel}-${doc.id}.txt`} style={downloadLinkStyle}>
-          Baixar documento
-        </a>
+        {!isPrivate && (
+          <a href={dataUri} download={`${typeLabel}-${doc.id}.txt`} style={downloadLinkStyle}>
+            Baixar documento
+          </a>
+        )}
 
-        {profile.signatureAsset && canExportDocumentAsPdf(doc.type) && (
+        {!isPrivate && profile.signatureAsset && canExportDocumentAsPdf(doc.type) && (
           <a
             href={`/api/patients/${patientId}/documents/${doc.id}/pdf`}
             style={downloadLinkStyle}
@@ -221,6 +236,13 @@ const titleStyle = {
   color: "#292524",
 } satisfies React.CSSProperties;
 
+const privateNoticeStyle = {
+  margin: 0,
+  fontSize: "0.88rem",
+  color: "#92400e",
+  fontWeight: 500,
+} satisfies React.CSSProperties;
+
 const metaGridStyle = {
   display: "grid",
   gap: "0.35rem",
@@ -258,6 +280,12 @@ const contentPreStyle = {
   color: "#292524",
   whiteSpace: "pre-wrap" as const,
   wordBreak: "break-word" as const,
+} satisfies React.CSSProperties;
+
+const contentRichStyle = {
+  color: "#292524",
+  fontSize: "0.95rem",
+  lineHeight: 1.75,
 } satisfies React.CSSProperties;
 
 const actionsStyle = {

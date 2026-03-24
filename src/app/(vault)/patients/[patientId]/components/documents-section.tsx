@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import type { PracticeDocument, DocumentType } from "../../../../../lib/documents/model";
-import { DOCUMENT_TYPE_LABELS } from "../../../../../lib/documents/presenter";
+import { canShareDocument, DOCUMENT_TYPE_LABELS, isPrivateDocumentType } from "../../../../../lib/documents/presenter";
 import {
   buildDocumentDeliveryWhatsAppUrl,
   buildDocumentDeliveryMailtoUrl,
@@ -49,7 +49,7 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
             </svg>
           }
           title="Nenhum documento gerado ainda"
-          description="Crie declarações, recibos, laudos e estudos de caso para este paciente."
+          description="Crie declarações, recibos, laudos e registros privados para este paciente."
           actionLabel="Novo documento"
           actionHref={`/patients/${patientId}/documents/new`}
         />
@@ -57,6 +57,7 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
         <div style={listStyle}>
           {documents.map((doc) => {
             const docTypeLabel = DOCUMENT_TYPE_LABELS[doc.type];
+            const isPrivate = isPrivateDocumentType(doc.type);
             const waUrl = buildDocumentDeliveryWhatsAppUrl({
               patientName,
               patientPhone,
@@ -71,23 +72,28 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
             return (
               <div key={doc.id} style={rowStyle}>
                 <div style={rowInfoStyle}>
-                  <span style={typeLabelStyle}>{docTypeLabel}</span>
+                  <span style={typeLabelStyle}>
+                    {docTypeLabel}
+                    {isPrivate ? <span style={privateBadgeStyle}>Privado</span> : null}
+                  </span>
                   <span style={dateLabelStyle}>
                     {shortDateFormatter.format(doc.createdAt)}
                   </span>
                 </div>
                 <div style={rowActionsStyle}>
-                  <details style={enviarDetailsStyle}>
-                    <summary style={enviarSummaryStyle}>Enviar</summary>
-                    <div style={enviarLinksStyle}>
-                      <a href={waUrl} target="_blank" rel="noreferrer" style={commLinkStyle}>
-                        WhatsApp
-                      </a>
-                      <a href={mailtoUrl} target="_blank" rel="noreferrer" style={commLinkStyle}>
-                        Email
-                      </a>
-                    </div>
-                  </details>
+                  {canShareDocument(doc.type) ? (
+                    <details style={enviarDetailsStyle}>
+                      <summary style={enviarSummaryStyle}>Enviar</summary>
+                      <div style={enviarLinksStyle}>
+                        <a href={waUrl} target="_blank" rel="noreferrer" style={commLinkStyle}>
+                          WhatsApp
+                        </a>
+                        <a href={mailtoUrl} target="_blank" rel="noreferrer" style={commLinkStyle}>
+                          Email
+                        </a>
+                      </div>
+                    </details>
+                  ) : null}
                   <Link
                     href={`/patients/${patientId}/documents/${doc.id}`}
                     style={viewLinkStyle}
@@ -178,6 +184,22 @@ const typeLabelStyle = {
   fontWeight: 500,
   fontSize: "0.9rem",
   color: "var(--color-text-1)",
+  display: "flex",
+  alignItems: "center",
+  gap: "0.45rem",
+} satisfies React.CSSProperties;
+
+const privateBadgeStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  padding: "0.1rem 0.45rem",
+  borderRadius: "999px",
+  background: "rgba(146, 64, 14, 0.1)",
+  color: "#92400e",
+  fontSize: "0.72rem",
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.04em",
 } satisfies React.CSSProperties;
 
 const dateLabelStyle = {

@@ -217,22 +217,22 @@ describe("searchAll", () => {
       }
     });
 
-    it("returns document result when query matches psychoanalytic case study label", () => {
+    it("returns document result when query matches session record label", () => {
       const result = searchAll({
         ...DATA,
-        query: "psicanalítico",
+        query: "registro",
         documents: [
           {
             ...document,
             id: "doc_case_1",
-            type: "case_study_psychoanalytic",
+            type: "session_record",
           },
         ],
       });
 
       const documentResults = result.filter((r: SearchResultItem) => r.type === "document");
       expect(documentResults).toHaveLength(1);
-      expect(documentResults[0]?.label).toBe("Estudo de caso psicanalítico");
+      expect(documentResults[0]?.label).toBe("Registro de sessão");
     });
   });
 
