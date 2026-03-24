@@ -43,12 +43,12 @@ export default async function NotePage({ params }: NotePageProps) {
     notFound();
   }
 
-  // Compute session number
-  const allAppointments = await appointmentRepo.listByPatient(patient.id, workspaceId);
+  // Compute session number and load existing note in parallel (independent queries)
+  const [allAppointments, existingNote] = await Promise.all([
+    appointmentRepo.listByPatient(patient.id, workspaceId),
+    clinicalRepo.findByAppointmentId(appointmentId, workspaceId),
+  ]);
   const sessionNumber = deriveSessionNumber(appointmentId, allAppointments);
-
-  // Load existing note (null if first creation)
-  const existingNote = await clinicalRepo.findByAppointmentId(appointmentId, workspaceId);
 
   // Build read-only header labels
   const sessionLabel =

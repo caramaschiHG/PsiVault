@@ -126,16 +126,12 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   // Load clinical notes and build timeline entries
   const clinicalRepo = getClinicalNoteRepository();
 
-  // Build a map of appointmentId -> noteId for COMPLETED appointments that have a note
-  const completedAppointments = appointments.filter((appt) => appt.status === "COMPLETED");
-  const noteResults = await Promise.all(
-    completedAppointments.map((appt) => clinicalRepo.findByAppointmentId(appt.id, workspaceId)),
-  );
+  // Build a map of appointmentId -> noteId using a single listByPatient query (avoids N+1)
+  const patientNotes = await clinicalRepo.listByPatient(patient.id, workspaceId);
   const notesByAppointment = new Map<string, string>();
-  completedAppointments.forEach((appt, i) => {
-    const note = noteResults[i];
-    if (note) notesByAppointment.set(appt.id, note.id);
-  });
+  for (const note of patientNotes) {
+    notesByAppointment.set(note.appointmentId, note.id);
+  }
 
   // Build timeline entries — all appointments, most recent first
   // (appointments is already sorted most-recent first from listByPatient)
