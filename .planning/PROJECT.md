@@ -6,24 +6,29 @@ PsiVault is a digital vault for Brazilian psychologists who run their own practi
 
 **Status: v1.0 shipped (2026-03-15).** The complete office loop — create patient, schedule session, register the session, issue a professional document, track payment, and find anything later — is fully functional and launch-ready.
 
-## Current Milestone: v1.2 Lançamento
+## Parallel Milestone: v1.2 Lançamento (in progress)
 
-**Goal:** Ship PsiVault to real users — complete all remaining Supabase persistence, add professional authentication UX, apply full UI/UX polish, and harden the app to production standards.
+**Goal:** Complete Supabase persistence, authentication UX, UI/UX polish, and production hardening. Phases 07–20.
 
-**Current unarchived launch scope:** phases `07`–`20` in `.planning/phases/`, with Phase 15 focused on planning metadata realignment before the remaining verification and launch sign-off phases.
+---
+
+## Current Milestone: v2.0 Reposicionamento Psicanalítico
+
+**Goal:** Reposition PsiVault as a premium platform specifically for psychoanalytic clinicians in Brazil — rewrite product identity, landing page, UI copy, module framing, and introduce the premium AI research assistant concept tied to psychoanalytic literature.
 
 **Target features:**
-- Complete Supabase persistence for all remaining domains (Clinical, Document, Finance, Ops, Audit)
-- Professional authentication UX — real login, signup, and password reset flows with Supabase Auth
-- Full UI/UX polish — design system, typography, color, responsive layout, accessibility
-- Production best practices — error handling, security hardening, code quality, performance
-- Production deployment readiness
-
-**Merges remaining v1.1 work (phases 07–11) with the v1.2 polish and verification layers into one coherent launch release.**
+- Product repositioning: clear psychoanalytic niche identity across all surfaces
+- Landing page rewrite: hero, features, pricing, FAQ in pt-BR with psychoanalytic vocabulary
+- UI/UX copy refinement: module names, empty states, onboarding, dashboard labels — all aligned to psychoanalytic practice language
+- Premium plan concept: personalized AI research assistant for psychoanalytic literature (no diagnostics, no copyright violation)
+- Visual direction: editorial, discreet, premium — strong typography, restrained palette, calm hierarchy
+- Brand consistency: CLAUDE.md updated with new positioning as ground truth for all future work
 
 ## Core Value
 
-The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
+**v1.x:** The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
+
+**v2.0:** PsiVault é o cofre digital da prática psicanalítica — um ambiente seguro, elegante e estruturado para o clínico que leva a sério o registro, a continuidade e a preservação do trabalho analítico.
 
 ## Requirements
 
@@ -48,6 +53,9 @@ The psychologist can finish a session, register everything correctly in a few mi
 - Multi-user clinic management — excluded from v1 to keep the initial product focused on the solo professional and avoid premature permissions complexity.
 - Large-clinic operations, deep integrations, and advanced analytics — excluded from v1 because they are not required to validate the product's core value.
 - Built-in teleconferencing platform — excluded from v1; online care support is organizational, not a full video stack.
+- AI diagnostic assistant or clinical decision support — explicitly out of scope for all versions; PsiVault's AI is for research and literature navigation only.
+- Generic broad-therapist positioning — v2.0 targets psychoanalytic orientation specifically; generalist framing is an anti-goal.
+- Full-text copyrighted book/article distribution via AI — excluded on legal grounds; AI may provide metadata, citations, summaries, and public-domain texts only.
 
 ## Context
 
@@ -90,5 +98,24 @@ The psychologist can finish a session, register everything correctly in a few mi
 | SECU-05 enforced at type level | Prevent accidental clinical/financial leakage to search, dashboard, or audit surfaces | ✓ Good — SearchResultItem type and audit contracts prevent leakage by construction |
 | Next.js nested layouts for settings sub-nav | One new `layout.tsx` file applies sub-navigation to all `/settings/*` routes automatically | ✓ Good — zero modifications to existing pages needed; gap closed in 1 task |
 
+## v2.0 Product Positioning
+
+**Audience (primary):** Psicólogos brasileiros de orientação psicanalítica — autônomos, consultórios privados, prática individual.
+
+**Audience (secondary):** Psicólogos que valorizam qualidade de documentos, continuidade de registros e sigilo; buscam um ambiente mais sério e organizado do que ferramentas genéricas.
+
+**Brand feeling:** Discreto. Premium sem exibicionismo. Clinicamente profissional sem frieza hospitalar. Editorial, estável, confiável.
+
+**Vocabulary to use:** rotina clínica, escuta, registro, prontuário, documentos, continuidade, sigilo, acompanhamento, organização da prática, condução clínica, preservação dos registros, apoio à pesquisa, literatura psicanalítica, linha psicanalítica, pensador de preferência.
+
+**Anti-patterns:** hype, AI gimmick, wellness brand, fintech visual, generic SaaS tone, diagnostic claims, legal overpromising.
+
+**Premium Plan — Assistente de Pesquisa Psicanalítica:**
+- Purpose: research assistant, literature navigator, clinical study companion
+- Configured per user's preferred thinker/psychoanalytic line
+- Provides: literature references, concept explanations, reading lists, annotated bibliographies, comparisons between thinkers/schools
+- Does NOT: diagnose, replace clinical judgment, make case conclusions, freely distribute copyrighted texts
+- Copyright rule: full-text only for public domain, licensed, or user-uploaded material; otherwise metadata + citation + excerpt + legal access path
+
 ---
-*Last updated: 2026-03-17 after v1.2 milestone defined*
+*Last updated: 2026-03-26 after v2.0 milestone defined*

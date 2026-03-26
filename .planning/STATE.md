@@ -1,36 +1,38 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: milestone
-status: Ready to start Phase 10
-stopped_at: Completed 14-06-PLAN.md
-last_updated: "2026-03-18T21:49:48.076Z"
-last_activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
+milestone: v2.0
+milestone_name: Reposicionamento Psicanalítico
+status: Defining requirements
+stopped_at: —
+last_updated: "2026-03-26T00:00:00.000Z"
+last_activity: 2026-03-26 — Milestone v2.0 started (repositioning + premium plan)
 progress:
-  total_phases: 8
-  completed_phases: 6
-  total_plans: 21
-  completed_plans: 21
-  percent: 43
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-17 after v1.2 milestone defined)
+See: .planning/PROJECT.md (updated 2026-03-26 after v2.0 milestone defined)
 
-**Core value:** The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
-**Current focus:** Phase 10 — Clinical & Document Persistence (first incomplete phase)
+**Core value:** PsiVault é o cofre digital da prática psicanalítica — um ambiente seguro, elegante e estruturado para o clínico que leva a sério o registro, a continuidade e a preservação do trabalho analítico.
+**Current focus:** v2.0 — Reposicionamento Psicanalítico (defining requirements)
+
+**Note:** v1.2 technical milestone (phases 07–20) continues independently in parallel.
 
 ## Current Position
 
-Phase: 4 of 7 (Phase 10: Clinical & Document Persistence)
+Phase: Not started (defining requirements)
 Plan: —
-Status: Ready to start Phase 10
-Last activity: 2026-03-17 — v1.2 milestone defined; phases 07–09 confirmed complete; phases 10–15 pending
+Status: Defining requirements
+Last activity: 2026-03-26 — Milestone v2.0 started
 
-Progress: [████░░░░░░] 43%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
