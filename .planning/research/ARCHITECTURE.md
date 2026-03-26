@@ -1,23 +1,68 @@
-# Architecture Research
+# Architecture Research — v2.0 Reposicionamento Psicanalítico
 
 ## Question
-How does the Supabase backend integrate with the existing architecture?
+Como as novas features do v2.0 se integram à arquitetura Next.js 15 App Router existente?
 
 ## Findings
 
-**Existing Architecture:**
-- All data access is abstracted behind repository interfaces (e.g., `PatientRepository`, `AgendaRepository`).
-- The data model is entirely server-side (React Server Components and Server Actions).
+### Novos componentes e rotas
 
-**Integration Points:**
-- **Prisma Schema:** We will define a `schema.prisma` that mirrors the current domain types. 
-- **Repository Implementations:** We will create `Prisma...Repository` implementations that fulfill the existing repository contracts. The rest of the application (actions, views) will remain untouched.
-- **Authentication:** The `src/lib/auth/session.ts` and `src/middleware.ts` will be updated to use Supabase SSR auth. 
+**Landing page:**
+- Rota: `/` (root) — fora dos grupos `(auth)` e `(vault)`
+- Arquivo: `src/app/page.tsx` (provavelmente já existe ou redireciona para `/login`)
+- Subcomponentes em `src/components/landing/`
+- Layout separado: `src/app/layout.tsx` raiz — sem sidebar/nav do vault
 
-**Build Order:**
-1. Setup Supabase project and define `schema.prisma`.
-2. Implement and test Prisma repositories one by one (Patient -> Agenda -> Clinical -> Document -> Finance).
-3. Integrate Supabase Auth and replace the current workspace/auth stubs.
+**Pricing page:**
+- Rota: `/planos` ou integrado à landing como seção
+- Server Component puro — sem estado, sem auth necessária
+
+**Premium AI Research Assistant:**
+- Rota protegida: `(vault)/pesquisa/`
+- Backend: Route Handler em `src/app/api/pesquisa/route.ts` — streaming com Claude API
+- Config do usuário: nova tabela `workspace_ai_preferences` com `preferred_thinker`, `psychoanalytic_line`
+- Server Action para salvar preferências em settings existente
+- Componente de chat: Client Component para streaming UI
+
+**Copy management:**
+- Padrão: constantes de string organizadas por módulo diretamente nos componentes ou em `src/lib/copy/`
+- Sem lib de i18n — produto é pt-BR exclusivo
+
+### Modificações em arquivos existentes
+
+**CLAUDE.md:** Atualizar com nova identidade de produto, vocabulário, anti-padrões
+
+**globals.css:** Possível ajuste de CSS vars para direção visual mais editorial
+
+**Módulos existentes — copy em todos:**
+- `src/app/(vault)/patients/` — labels, empty states, títulos
+- `src/app/(vault)/appointments/` — idem
+- `src/app/(vault)/records/` ou equivalente — idem
+- `src/app/(vault)/documents/` — idem
+- `src/app/(vault)/finance/` — idem
+- Sidebar/nav — renomear itens de navegação
+
+### Ordem de build sugerida
+
+1. **CLAUDE.md + identidade** — âncora do posicionamento (já feito em parte)
+2. **Landing page** — a face pública do produto
+3. **Módulos internos: copy + renomeação** — coesão da experiência
+4. **Pricing page** — suporte ao plano premium
+5. **Settings: preferências AI** — prep para assistente
+6. **Assistente de pesquisa** — feature premium core
+
+### Schema additions (Prisma — additive only)
+
+```prisma
+model WorkspaceAIPreferences {
+  workspaceId        String   @id
+  preferredThinker   String?  // "Freud", "Lacan", "Winnicott", etc.
+  psychoanalyticLine String?  // "freudiana", "lacaniana", "kleiniana", etc.
+  updatedAt          DateTime @updatedAt
+}
+```
+
+Sem breaking changes em modelos existentes.
 
 ## Conclusion
-The foresight to use repository interfaces in v1.0 pays off here. The architecture supports a clean swap of the persistence layer. We only need to write the Prisma implementations and update the auth layer.
+A arquitetura existente suporta bem o v2.0. Não há refatoração estrutural — é additive. O maior risco é garantir que landing e vault compartilhem sistema visual sem conflitar layouts.

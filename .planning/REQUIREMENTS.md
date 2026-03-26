@@ -1,129 +1,118 @@
 # Requirements: PsiVault
 
-**Defined:** 2026-03-15
-**Core Value:** The psychologist can finish a session, register everything correctly in a few minutes, and trust that the clinical and operational history is safe, findable, and under control.
+**Defined:** 2026-03-15 (v1.0) | Updated: 2026-03-26 (v2.0)
+**Core Value (v2.0):** PsiVault é o cofre digital da prática psicanalítica — um ambiente seguro, elegante e estruturado para o clínico que leva a sério o registro, a continuidade e a preservação do trabalho analítico.
 
-## v1.1 Requirements
+---
 
-Requirements for the Supabase backend migration. Each maps to roadmap phases.
+## v2.0 Requirements — Reposicionamento Psicanalítico
 
-### Infrastructure
+### Brand — Identidade e Marca
 
-- [ ] **INFRA-01**: Setup Supabase project and environment variables
-- [ ] **INFRA-02**: Define Prisma schema mirroring all existing domain models
-- [ ] **INFRA-03**: Configure Prisma connection pooling (Supavisor) for Next.js serverless
+- [ ] **BRAND-01**: O CLAUDE.md do projeto contém o posicionamento psicanalítico, vocabulário obrigatório, anti-padrões de tom e as regras explícitas do plano premium (o que o AI faz / não faz, limites de copyright)
+- [ ] **BRAND-02**: A direção visual está documentada em tokens/globals.css — paleta off-white/charcoal/sage, tipografia editorial forte, espaçamento generoso — e aplicada consistentemente
 
-### Authentication
+### Land — Landing Page
 
-- [ ] **AUTH-01**: Integrate `@supabase/ssr` for cookie-based session management
-- [ ] **AUTH-02**: Replace auth stub in `middleware.ts` with Supabase session validation
-- [ ] **AUTH-03**: Update sign-in and sign-up flows to use Supabase Auth
-- [ ] **AUTH-04**: Map Supabase user to internal Workspace/Account model
+- [ ] **LAND-01**: A landing page tem hero com posicionamento explícito para psicólogos de orientação psicanalítica, CTA para cadastro, copy inteiramente em pt-BR com vocabulário de nicho (prontuário, escuta, continuidade, sigilo)
+- [ ] **LAND-02**: A landing page tem seção de módulos apresentando Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing específico para prática psicanalítica
+- [ ] **LAND-03**: A landing page tem seção de trust e preservação comunicando sigilo, continuidade e preservação de longo prazo em linguagem de responsabilidade operacional — sem promessas legais vagas
+- [ ] **LAND-04**: A landing page tem FAQ direcionado às dúvidas reais do psicólogo de orientação psicanalítica em consultório privado
 
-### Repositories
+### Nav — Navegação e Copy Interna
 
-- [ ] **REPO-01**: Implement `PrismaPatientRepository` and replace in-memory stub
-- [ ] **REPO-02**: Implement `PrismaAgendaRepository` and replace in-memory stub
-- [x] **REPO-03**: Implement `PrismaClinicalRepository` and replace in-memory stub
-- [x] **REPO-04**: Implement `PrismaDocumentRepository` and replace in-memory stub
-- [x] **REPO-05**: Implement `PrismaFinanceRepository` and replace in-memory stub
-- [x] **REPO-06**: Implement `PrismaAuditRepository` and replace in-memory stub
+- [ ] **NAV-01**: Sidebar e todos os itens de navegação em pt-BR com vocabulário psicanalítico (Prontuário, Agenda, Pacientes, Documentos, Financeiro)
+- [ ] **NAV-02**: Dashboard e visão geral com labels e framing de prática clínica — sem linguagem SaaS genérica ou métricas de "engajamento"
+- [ ] **NAV-03**: Onboarding usa tom de marca — calmo, profissional, específico para clínicos psicanalíticos — sem jargão genérico ou hype
 
-## v1.2 Requirements
+### Cont — Continuidade e Fluxo de Documentos
 
-Requirements for the v1.2 "Lançamento" production milestone. Phases 12–15.
+- [ ] **CONT-01**: Prontuário com navegação cronológica fluida — histórico de sessões visível, ordenado e navegável sem perda de contexto temporal
+- [ ] **CONT-02**: Fluxo sessão → registro → documento gerado é suave e intuitivo: o usuário nunca perde o fio condutor entre sessão, registro clínico e documento produzido
+- [ ] **CONT-03**: Hierarquia paciente → sessões → registros → documentos é visualmente coerente e orientada em todas as telas relevantes
+- [ ] **CONT-04**: Empty states, títulos e mensagens usam linguagem de acompanhamento ao longo do tempo — nunca de registros isolados
 
-### Authentication UX
+### Prem — Plano Premium (conceito e UI)
 
-- [x] **AUTHUX-01**: Implement a professional sign-in page (email/password) with proper form validation and error messages
-- [x] **AUTHUX-02**: Implement a sign-up page with user-friendly onboarding flow using Supabase Auth
-- [x] **AUTHUX-03**: Implement a password reset flow (request reset email + update password page)
-- [x] **AUTHUX-04**: Handle Supabase Auth errors gracefully with user-facing Portuguese messages
-- [x] **AUTHUX-05**: Protect auth pages from authenticated users (redirect logged-in users away from login/signup)
+- [ ] **PREM-01**: Página de apresentação do Assistente de Pesquisa Psicanalítica descrevendo o que faz (literatura, referências por pensador, bibliografias) e o que não faz (diagnóstico, casos clínicos, distribuição de textos protegidos)
+- [ ] **PREM-02**: Usuário pode configurar pensador de preferência e linha psicanalítica (Freud, Lacan, Winnicott, Klein, Bion, etc.) nas configurações de perfil
+- [ ] **PREM-03**: Copy do plano premium sem linguagem de AI gimmick, sem promessas de diagnóstico, sem implicação de acesso irrestrito a obras protegidas por copyright
 
-### UI/UX Polish
+---
 
-- [ ] **UIUX-01**: Establish a consistent design system — typography scale, color palette, spacing tokens, and border-radius applied throughout
-- [ ] **UIUX-02**: Apply professional visual design to all primary views (inicio, agenda, patients list, patient profile, financeiro)
-- [ ] **UIUX-03**: Ensure all pages are fully responsive across mobile, tablet, and desktop viewports
-- [ ] **UIUX-04**: Achieve WCAG 2.1 AA color contrast ratios on all interactive elements and body text
-- [ ] **UIUX-05**: Add proper empty states, loading states, and error states to all data-dependent pages
-- [ ] **UIUX-06**: Polish navigation — clear active states, breadcrumbs where helpful, smooth transitions
+## v1.x Requirements (previously defined)
 
-### Quality & Production Hardening
+### Validated
 
-- [x] **QUAL-01**: Replace the re-auth gate stub in export/backup routes with the real `evaluateSensitiveAction` flow
-- [x] **QUAL-02**: Add structured error boundaries to all route segments to prevent white-screen crashes
-- [x] **QUAL-03**: Harden all server actions — validate inputs, handle Prisma errors, return typed error responses
-- [x] **QUAL-04**: Ensure workspace audit trail is complete — remove the `auditEvents: never[]` stub from backup
-- [x] **QUAL-05**: Security review — confirm no sensitive data leaks in search, audit, or dashboard surfaces (SECU-05 audit)
-- [x] **QUAL-06**: Ensure all domain tests pass against Prisma implementations (no in-memory repository leakage)
+- ✓ Solo Brazilian psychologist can manage patients, sessions, clinical records, key documents, and simple payment tracking in one responsive web app — v1.0
+- ✓ Product supports real rhythm of Brazilian private practice — recurring appointments, rescheduling, WhatsApp-adjacent workflows, Pix-oriented payment tracking, hybrid online/presential care — v1.0
+- ✓ Sensitive health data treated like a vault — strong access protection, auditability, backup/export paths — v1.0
 
-### Deployment Readiness
+### Active (v1.2 — in parallel milestone)
 
-- [x] **DEPLOY-01**: Configure production environment variables for Supabase, Prisma, and Next.js
-- [ ] **DEPLOY-02**: Verify the application builds and starts cleanly in production mode (`next build`)
-- [x] **DEPLOY-03**: Confirm Prisma migrations are applied and the production database schema is correct
+- [ ] Complete Supabase persistence for all remaining domains (Clinical, Document, Finance, Ops, Audit)
+- [ ] Professional authentication UX — real login, signup, and password reset flows
+- [ ] Full UI/UX polish — design system, typography, color, responsive layout, accessibility
+- [ ] Production best practices — error handling, security hardening, code quality, performance
 
-## v2 Requirements
+---
 
-### Storage
-- **STOR-01**: Migrate document storage to Supabase Storage buckets
+## v3.0 Requirements (deferred)
 
-### Realtime
-- **REAL-01**: Implement Supabase Realtime for instant updates across devices
+### Premium AI — Integração funcional
+
+- **AI-01**: Integração real com Claude API para o assistente de pesquisa psicanalítica
+- **AI-02**: Busca e citação de obras em domínio público (Freud completo) com precisão
+- **AI-03**: Construção de listas de leitura e bibliografias anotadas por linha teórica
+- **AI-04**: Comparação de conceitos entre diferentes pensadores/escolas
+
+### Pricing
+
+- **PRICE-01**: Página de planos com tabela livre/premium em BRL
+- **PRICE-02**: Integração com gateway de pagamento para plano premium
+
+---
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Row Level Security (RLS) | V1 architecture enforces tenancy via server actions and `workspaceId` queries; direct DB client access is not used, so Prisma service-role is sufficient for now. |
-| Existing data migration | The v1.0 MVP used in-memory stores, so there is no production data to migrate. |
+| AI diagnóstico ou apoio a decisão clínica | Fora do escopo de todos os planos — responsabilidade legal e posicionamento de produto |
+| Distribuição de obras protegidas por copyright | Risco legal — apenas domínio público, licenciado, ou enviado pelo usuário |
+| Plataforma genérica para todos os psicólogos | Anti-goal de posicionamento — nicho psicanalítico é intencional |
+| Chat/messaging interno | Excluído desde v1.0 — produto não é uma inbox |
+| Multi-usuário / clínica | Excluído desde v1.0 — foco no profissional autônomo |
+| Integração funcional do AI no v2.0 | Deferida para v3.0 — v2.0 é conceito e UI |
+| Pricing/planos no v2.0 | Deferido para v3.0 — v2.0 foca em identidade e experiência |
+
+---
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 16 | Pending |
-| INFRA-02 | Phase 16 | Pending |
-| INFRA-03 | Phase 16 | Pending |
-| AUTH-01 | Phase 17 | Pending |
-| AUTH-02 | Phase 17 | Pending |
-| AUTH-03 | Phase 17 | Pending |
-| AUTH-04 | Phase 18 | Pending |
-| REPO-01 | Phase 18 | Pending |
-| REPO-02 | Phase 18 | Pending |
-| REPO-03 | Phase 10 | Complete |
-| REPO-04 | Phase 10 | Complete |
-| REPO-05 | Phase 11 | Complete |
-| REPO-06 | Phase 11 | Complete |
-| AUTHUX-01 | Phase 12 | Complete |
-| AUTHUX-02 | Phase 12 | Complete |
-| AUTHUX-03 | Phase 12 | Complete |
-| AUTHUX-04 | Phase 12 | Complete |
-| AUTHUX-05 | Phase 12 | Complete |
-| UIUX-01 | Phase 19 | Pending |
-| UIUX-02 | Phase 19 | Pending |
-| UIUX-03 | Phase 19 | Pending |
-| UIUX-04 | Phase 19 | Pending |
-| UIUX-05 | Phase 19 | Pending |
-| UIUX-06 | Phase 19 | Pending |
-| QUAL-01 | Phase 14 | Complete |
-| QUAL-02 | Phase 14 | Complete |
-| QUAL-03 | Phase 14 | Complete |
-| QUAL-04 | Phase 14 | Complete |
-| QUAL-05 | Phase 14 | Complete |
-| QUAL-06 | Phase 14 | Complete |
-| DEPLOY-01 | Phase 14 | Complete |
-| DEPLOY-02 | Phase 20 | Pending |
-| DEPLOY-03 | Phase 14 | Complete |
+| BRAND-01 | Phase 21 | Pending |
+| BRAND-02 | Phase 21 | Pending |
+| LAND-01 | Phase 22 | Pending |
+| LAND-02 | Phase 22 | Pending |
+| LAND-03 | Phase 22 | Pending |
+| LAND-04 | Phase 22 | Pending |
+| NAV-01 | Phase 23 | Pending |
+| NAV-02 | Phase 23 | Pending |
+| NAV-03 | Phase 23 | Pending |
+| CONT-01 | Phase 24 | Pending |
+| CONT-02 | Phase 24 | Pending |
+| CONT-03 | Phase 24 | Pending |
+| CONT-04 | Phase 24 | Pending |
+| PREM-01 | Phase 25 | Pending |
+| PREM-02 | Phase 25 | Pending |
+| PREM-03 | Phase 25 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 13 total
-- v1.2 requirements: 20 total
-- Mapped to phases: 33
+- v2.0 requirements: 16 total
+- Mapped to phases: 16
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-18 after v1.1 audit gap-closure phases added*
+*Last updated: 2026-03-26 after v2.0 milestone definition*

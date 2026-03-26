@@ -1,8 +1,30 @@
-# Research Summary: v1.1 Supabase Backend
+# Research Summary — v2.0 Reposicionamento Psicanalítico
 
 ## Stack Additions
-- `@supabase/supabase-js` and `@supabase/ssr` for authentication and session management in Next.js App Router.
-- `prisma` and `@prisma/client` for the ORM layer to interact with Supabase Postgres.
+- `@anthropic-ai/sdk` — única dependência nova real (assistente premium de pesquisa literária)
+- Sem CMS, sem i18n, sem rebuild de módulos core
+- Framer-motion: verificar se já existe antes de adicionar para animações sutis
+
+## Feature Table Stakes
+- Landing page específica para nicho psicanalítico (hero, módulos, pricing, FAQ, trust)
+- Copy pt-BR com vocabulário psicanalítico em TODOS os módulos internos (não só landing)
+- Renomeação consistente: "Prontuário" não "Records", "Agenda" não "Appointments"
+- Pricing com distinção livre/premium clara em BRL
+- Mensagem de preservação de longo prazo (responsável, sem promessas legais vagas)
+
+## Differentiators
+- Positioning explícito para orientação psicanalítica (não genérico para todos os psicólogos)
+- Assistente Premium: pesquisa literária configurável por pensador/linha teórica preferida
+- Tom editorial, adulto, discreto — nunca wellness ou startup
+- Horizonte de 20 anos para preservação de registros como referência de produto
+
+## Watch Out For
+1. **Nicho só na landing** — copy interna genérica destrói a credibilidade. Reescrever TUDO.
+2. **AI assistant drift clínico** — boundaries de system prompt são obrigatórios; nunca participar de caso clínico
+3. **Copyright na literatura** — apenas domínio público / licenciado / enviado pelo usuário em texto completo
+4. **Tom errado** — qualquer frase de hype, wellness ou "revolução" quebra o posicionamento
+5. **Promessas legais** — nunca "em conformidade com CFP" sem evidência real no produto
+6. **Pricing desconectado** — precisa estar em BRL e alinhado com realidade de consultório autônomo brasileiro
 
 ## Feature Table Stakes
 - **Persistence:** Real PostgreSQL database replacing in-memory stores.
