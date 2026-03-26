@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Reposicionamento Psicanalítico
-status: Defining requirements
-stopped_at: —
+status: Roadmap defined — ready to plan Phase 21
+stopped_at: Phase 21 (not started)
 last_updated: "2026-03-26T00:00:00.000Z"
-last_activity: 2026-03-26 — Milestone v2.0 started (repositioning + premium plan)
+last_activity: 2026-03-26 — Roadmap v2.0 created (phases 21–25, 16 requirements mapped)
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,18 +21,30 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26 after v2.0 milestone defined)
 
 **Core value:** PsiVault é o cofre digital da prática psicanalítica — um ambiente seguro, elegante e estruturado para o clínico que leva a sério o registro, a continuidade e a preservação do trabalho analítico.
-**Current focus:** v2.0 — Reposicionamento Psicanalítico (defining requirements)
+**Current focus:** v2.0 — Reposicionamento Psicanalítico (roadmap defined, ready to plan)
 
 **Note:** v1.2 technical milestone (phases 07–20) continues independently in parallel.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 21 — Brand Foundation (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-03-26 — Milestone v2.0 started
+Status: Roadmap defined — ready to plan Phase 21
+Last activity: 2026-03-26 — Roadmap v2.0 created
 
 Progress: [░░░░░░░░░░] 0%
+
+## v2.0 Roadmap Summary
+
+| Phase | Goal | Requirements |
+|-------|------|--------------|
+| 21 - Brand Foundation | Posicionamento psicanalítico e tokens visuais como ground truth | BRAND-01, BRAND-02 |
+| 22 - Landing Page | Landing page com hero, módulos, trust e FAQ para nicho psicanalítico | LAND-01, LAND-02, LAND-03, LAND-04 |
+| 23 - Copy Interna | Navegação, dashboard e onboarding com vocabulário e tom de marca | NAV-01, NAV-02, NAV-03 |
+| 24 - Continuidade e Fluxo | Prontuário, hierarquia e empty states comunicando acompanhamento | CONT-01, CONT-02, CONT-03, CONT-04 |
+| 25 - Plano Premium (UI/conceito) | Assistente de Pesquisa configurável com limites claros | PREM-01, PREM-02, PREM-03 |
+
+**Coverage:** 16/16 v2.0 requirements mapped
 
 ## Performance Metrics
 
@@ -40,7 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Total plans completed: 3
 - Total execution time: —
 
-**By Phase:**
+**By Phase (v1.2 — parallel milestone):**
 | Phase | Plans | Status |
 |-------|-------|--------|
 | 07-infrastructure-foundation | 1/1 | ✓ Complete |
@@ -82,6 +94,10 @@ Progress: [░░░░░░░░░░] 0%
 - [INIT-04]: Communication remains assistive and outbound-contextual; no chat/inbox in v1.
 - [INIT-05]: Multi-user clinic management, built-in telehealth, and AI clinical writing are deferred beyond v1.
 - [INIT-06]: Roadmap order follows operational dependency: foundation -> patient/agenda -> clinical -> documents -> finance/ops -> retrieval/polish.
+- [v2.0-01]: v2.0 targets psychoanalytic orientation specifically — generalist framing is an anti-goal. Phase 21 establishes brand ground truth before any UI changes.
+- [v2.0-02]: Premium AI assistant is UI/concept only in v2.0 — functional Claude API integration deferred to v3.0.
+- [v2.0-03]: Copyright rule is hard: full-text only for public domain, licensed, or user-uploaded material; otherwise metadata + citation + excerpt + legal access path.
+- [v2.0-04]: All five v2.0 phases depend on Phase 21 (brand foundation) completing first — it defines vocabulary and visual tokens consumed by all other phases.
 - [01-01-01]: TOTP is the first mandatory MFA factor so Phase 1 enforces MFA now without blocking future passkey expansion.
 - [01-01-02]: Workspace ownership is explicit in schema and code so later domains inherit a stable account boundary.
 - [01-01-03]: Vault access policy stays centralized: sign-in, verify-email, then MFA setup before protected routes.
@@ -180,11 +196,11 @@ Progress: [░░░░░░░░░░] 0%
 
 ### Pending Todos
 
-- Plan and execute Phase 10 (Clinical & Document Persistence).
-- Plan and execute Phase 11 (Finance & Ops Persistence).
-- Plan and execute Phase 12 (Authentication UX).
-- Plan and execute Phase 13 (UI/UX Polish).
-- Plan and execute Phase 14 (Quality & Production Hardening).
+- Plan and execute Phase 21 (Brand Foundation) — first v2.0 phase.
+- Plan and execute Phase 22 (Landing Page).
+- Plan and execute Phase 23 (Copy Interna).
+- Plan and execute Phase 24 (Continuidade e Fluxo).
+- Plan and execute Phase 25 (Plano Premium UI/conceito).
 
 ### Blockers/Concerns
 
@@ -193,6 +209,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-18T22:10:00.000Z
-Stopped at: Session resumed; preparing milestone closeout after Phase 14 completion
-Resume: Close current milestone — /gsd:complete-milestone
+Last session: 2026-03-26T00:00:00.000Z
+Stopped at: Roadmap v2.0 created — 5 phases, 16 requirements mapped
+Resume: Plan first v2.0 phase — /gsd:plan-phase 21

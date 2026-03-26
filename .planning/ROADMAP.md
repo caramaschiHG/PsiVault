@@ -233,3 +233,89 @@ Plans:
 2. Remaining runtime auth/error-boundary checks from Phase 14 are completed or replaced with executable verification
 3. Phase 14 verification no longer depends on unresolved human-needed launch gates
 4. Requirements traceability can mark `DEPLOY-02` complete with structured supporting evidence
+
+---
+
+## v2.0 Reposicionamento Psicanalítico
+
+## Phases
+
+- [ ] **Phase 21: Brand Foundation** — Documenta o posicionamento psicanalítico e os tokens visuais como ground truth para todas as superfícies do produto
+- [ ] **Phase 22: Landing Page** — Reescreve a landing page com hero, módulos, trust e FAQ direcionados ao psicólogo de orientação psicanalítica
+- [ ] **Phase 23: Copy Interna** — Alinha navegação, dashboard e onboarding com vocabulário e tom de marca psicanalítico
+- [ ] **Phase 24: Continuidade e Fluxo** — Garante que prontuário, hierarquia e empty states comuniquem acompanhamento ao longo do tempo
+- [ ] **Phase 25: Plano Premium (UI/conceito)** — Apresenta o Assistente de Pesquisa Psicanalítica com configuração por pensador e limites claros
+
+## Phase Details
+
+### Phase 21: Brand Foundation
+**Goal:** O posicionamento psicanalítico e a direção visual estão documentados como referência canônica e aplicados aos tokens globais do produto.
+**Depends on:** Nothing (first v2.0 phase)
+**Requirements:** BRAND-01, BRAND-02
+**Success Criteria** (what must be TRUE):
+  1. CLAUDE.md contém vocabulário obrigatório, anti-padrões de tom, regras do plano premium e limites de copyright — qualquer contribuidor pode ler e saber como soar
+  2. globals.css define tokens de paleta (off-white, charcoal, sage), escala tipográfica editorial e espaçamento generoso como variáveis CSS nomeadas
+  3. As variáveis de cor e tipografia são aplicadas de forma coerente em pelo menos uma superfície de produto (sidebar ou dashboard) — o produto visualmente comunica a marca
+**Plans:** TBD
+
+---
+
+### Phase 22: Landing Page
+**Goal:** A landing page convence o psicólogo de orientação psicanalítica de que o PsiVault foi feito para sua prática — por meio de copy específica, vocabulário de nicho e ausência de qualquer ruído genérico.
+**Depends on:** Phase 21
+**Requirements:** LAND-01, LAND-02, LAND-03, LAND-04
+**Success Criteria** (what must be TRUE):
+  1. O hero identifica explicitamente o nicho psicanalítico, usa vocabulário de prontuário/escuta/continuidade/sigilo, e tem CTA para cadastro — um psicólogo ao ler sabe que é para ele
+  2. A seção de módulos apresenta Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing de prática clínica analítica — sem linguagem SaaS genérica
+  3. A seção de trust comunica sigilo e preservação de longo prazo com linguagem de responsabilidade operacional — sem promessas legais vagas como "em conformidade com CFP"
+  4. O FAQ responde dúvidas reais do psicólogo autônomo de consultório privado (dados, acesso, funcionamento offline, continuidade)
+**Plans:** TBD
+
+---
+
+### Phase 23: Copy Interna
+**Goal:** Toda a navegação, dashboard e onboarding do produto usam vocabulário e tom de marca psicanalítico — o psicólogo que entra no app sente a mesma coerência que viu na landing.
+**Depends on:** Phase 21
+**Requirements:** NAV-01, NAV-02, NAV-03
+**Success Criteria** (what must be TRUE):
+  1. Todos os itens da sidebar e navegação estão em pt-BR com vocabulário clínico correto (Prontuário, Agenda, Pacientes, Documentos, Financeiro) — nenhum label em inglês ou SaaS genérico visível
+  2. O dashboard exibe labels e métricas de prática clínica (próximas sessões, registros pendentes, documentos recentes) — sem termos de "engajamento", "usuários ativos" ou painéis de analytics genéricos
+  3. O onboarding acolhe o clínico com tom calmo e específico, sem jargão de startup ou hype — o psicólogo sente que está entrando em um ambiente feito para seu trabalho
+**Plans:** TBD
+
+---
+
+### Phase 24: Continuidade e Fluxo
+**Goal:** A experiência do prontuário comunica acompanhamento ao longo do tempo — o psicólogo navega pelo histórico de um paciente e sente a continuidade do trabalho analítico, não uma lista de registros isolados.
+**Depends on:** Phase 21
+**Requirements:** CONT-01, CONT-02, CONT-03, CONT-04
+**Success Criteria** (what must be TRUE):
+  1. A página do prontuário exibe sessões em ordem cronológica navegável — o psicólogo pode percorrer o histórico sem perder o contexto temporal
+  2. O fluxo sessão → registro → documento gerado é percorrível em sequência lógica — o psicólogo nunca precisa sair do contexto de uma sessão para localizar o documento dela
+  3. A hierarquia paciente → sessões → registros → documentos é visualmente coerente e orientada em todas as telas relevantes — o usuário sempre sabe onde está na estrutura clínica
+  4. Empty states, títulos e mensagens usam linguagem de acompanhamento ("nenhuma sessão registrada ainda", "o histórico deste paciente aparecerá aqui") — nunca de tabelas ou registros isolados
+**Plans:** TBD
+
+---
+
+### Phase 25: Plano Premium (UI/conceito)
+**Goal:** O Assistente de Pesquisa Psicanalítica existe como conceito tangível no produto — o psicólogo entende o que é, pode configurar seu pensador de preferência, e sabe exatamente o que o assistente faz e não faz.
+**Depends on:** Phase 21
+**Requirements:** PREM-01, PREM-02, PREM-03
+**Success Criteria** (what must be TRUE):
+  1. A página de apresentação do assistente descreve com clareza: o que faz (literatura, referências por pensador, bibliografias anotadas) e o que não faz (diagnóstico, conclusões clínicas, distribuição de obras protegidas) — o psicólogo não tem expectativas erradas
+  2. O psicólogo pode selecionar seu pensador de preferência e linha psicanalítica nas configurações de perfil (Freud, Lacan, Winnicott, Klein, Bion e outros) — a configuração persiste e seria usada pelo assistente real em v3.0
+  3. Todo o copy do plano premium usa linguagem de pesquisa e estudo — sem mencionar "IA revolucionária", sem implicar acesso irrestrito a obras protegidas, sem qualquer tom de gimmick ou hype
+**Plans:** TBD
+
+---
+
+## Progress Table
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 21. Brand Foundation | 0/TBD | Not started | - |
+| 22. Landing Page | 0/TBD | Not started | - |
+| 23. Copy Interna | 0/TBD | Not started | - |
+| 24. Continuidade e Fluxo | 0/TBD | Not started | - |
+| 25. Plano Premium (UI/conceito) | 0/TBD | Not started | - |
