@@ -62,6 +62,69 @@
 - Usar Context7 para docs atualizadas de Next.js, Prisma, Supabase
 - Usar Serena para navegação semântica do código
 
+## Posicionamento Psicanalítico
+
+### Nome de produto
+- **PsiVault** — nome do produto em UI, copy, landing e comunicação com o usuário (botões, labels, mensagens, título do browser, marketing)
+- **PsiLock** — nome técnico do repositório (código, variáveis de ambiente, paths, documentação interna de dev, nomes de package)
+- Nunca usar PsiLock em copy voltado ao usuário. Nunca usar PsiVault em nomes de variáveis, imports ou paths de código.
+
+### Vocabulário obrigatório
+
+| Use | Não use |
+|-----|---------|
+| paciente | cliente, usuário |
+| atendimento | serviço, sessão genérica |
+| prontuário | ficha, registro |
+| acompanhamento | tratamento, programa |
+| escuta | suporte, ajuda |
+
+Termos psicanalíticos — `transferência`, `inconsciente`, `sintoma` — usar apenas em contexto clínico correto, nunca como metáfora de produto ("a transferência de dados", "o inconsciente do sistema").
+
+### Anti-padrões de tom
+
+Frases proibidas (nunca usar, nem variantes):
+- "Revolucione sua rotina clínica"
+- "Potencialize seus atendimentos"
+- "IA que entende você"
+- "Transforme sua prática"
+- "Ferramenta inteligente para psicólogos"
+
+Tom proibido:
+- Linguagem de coach ou wellness brand
+- Slogans vazios sem substância operacional
+- Hype tecnológico ou AI gimmick
+- Jargão burocrático ou jurídico como voz principal
+
+### Regras do Assistente de Pesquisa (plano premium)
+
+O que faz:
+- Resume conceitos psicanalíticos de obras em domínio público
+- Indica obras e pensadores para estudo
+- Constrói bibliografias anotadas por linha teórica
+- Compara conceitos entre diferentes escolas (Freud, Lacan, Winnicott, Klein, Bion)
+
+O que não faz:
+- Não reproduz textos protegidos por copyright
+- Não faz diagnóstico clínico nem sugere condutas terapêuticas
+- Não simula analista nem substitui supervisão
+- Não gera conclusões clínicas sobre casos reais
+
+### Limites de copyright
+- Resumos, paráfrases e conceitos: permitidos
+- Citações curtas (até 3–4 frases) com atribuição: permitidas
+- Capítulos, seções extensas ou obras completas: proibido reproduzir
+- Obras em domínio público (ex: Freud em português/alemão): texto integral permitido se licença verificada
+- Regra geral: indicar a obra, não substituí-la
+
+### Anti-padrões visuais (app interno)
+(Esta subseção governa o produto, não apenas a landing)
+- Sem gradientes decorativos em superfícies funcionais (sidebar, cards, formulários)
+- Sombras contidas: usar apenas `--shadow-sm` e `--shadow-md` — nunca sombras exageradas para "efeito"
+- Animações só quando melhoram orientação ou resposta de interação — nunca decorativas
+- Sem badges, chips coloridos ou indicadores de "novidade" sem função real
+- Hierarquia via tipografia e espaçamento — não via cor excessiva
+
 ## Direção de Marca — Landing PsiVault
 
 ### Tese
