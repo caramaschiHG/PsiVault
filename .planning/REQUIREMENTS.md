@@ -10,7 +10,7 @@
 ### Brand — Identidade e Marca
 
 - [x] **BRAND-01**: O CLAUDE.md do projeto contém o posicionamento psicanalítico, vocabulário obrigatório, anti-padrões de tom e as regras explícitas do plano premium (o que o AI faz / não faz, limites de copyright)
-- [ ] **BRAND-02**: A direção visual está documentada em tokens/globals.css — paleta off-white/charcoal/sage, tipografia editorial forte, espaçamento generoso — e aplicada consistentemente
+- [x] **BRAND-02**: A direção visual está documentada em tokens/globals.css — paleta off-white/charcoal/sage, tipografia editorial forte, espaçamento generoso — e aplicada consistentemente
 
 ### Land — Landing Page
 
@@ -92,7 +92,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | BRAND-01 | Phase 21 | Complete |
-| BRAND-02 | Phase 21 | Pending |
+| BRAND-02 | Phase 21 | Complete |
 | LAND-01 | Phase 22 | Pending |
 | LAND-02 | Phase 22 | Pending |
 | LAND-03 | Phase 22 | Pending |
