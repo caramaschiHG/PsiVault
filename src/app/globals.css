@@ -48,8 +48,8 @@
   /* Espaçamento */
   --space-page-padding-x: 2.5rem;
   --space-page-padding-y: 2rem;
-  --space-section-gap:    1.5rem;
-  --space-row-height:     3.5rem; /* 56px mínimo */
+  --space-section-gap:    2rem;
+  --space-row-height:     4rem; /* 64px mínimo */
 
   /* Auth pages */
   --auth-card-width: min(460px, 100%);
@@ -123,7 +123,7 @@ body {
   min-height: 100vh;
   background: var(--color-bg);
   color: var(--color-text-1);
-  line-height: 1.5;
+  line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -339,6 +339,8 @@ select.input-field {
 .vault-sidebar .nav-link {
   color: rgba(255, 255, 255, 0.75);
   transition: background-color 150ms ease, color 150ms ease;
+  line-height: 1.4;
+  letter-spacing: 0.005em;
 }
 
 .vault-sidebar .nav-link:hover {
