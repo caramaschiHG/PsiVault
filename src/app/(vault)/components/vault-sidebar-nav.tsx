@@ -125,10 +125,10 @@ export function VaultSidebarNav() {
 
 const navStyle: React.CSSProperties = {
   flex: 1,
-  padding: "0.5rem 0.75rem",
+  padding: "0.75rem 0.875rem",
   display: "flex",
   flexDirection: "column",
-  gap: "0.25rem",
+  gap: "0.375rem",
 };
 
 const listStyle: React.CSSProperties = {

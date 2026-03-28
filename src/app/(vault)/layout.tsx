@@ -78,7 +78,7 @@ const brandStyle = {
   display: "flex",
   alignItems: "center",
   gap: "0.625rem",
-  padding: "1.25rem 1rem 1rem",
+  padding: "1.5rem 1.25rem 1rem",
 } satisfies React.CSSProperties;
 
 const brandLockStyle = {
