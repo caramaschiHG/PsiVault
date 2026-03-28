@@ -256,7 +256,11 @@ Plans:
   1. CLAUDE.md contém vocabulário obrigatório, anti-padrões de tom, regras do plano premium e limites de copyright — qualquer contribuidor pode ler e saber como soar
   2. globals.css define tokens de paleta (off-white, charcoal, sage), escala tipográfica editorial e espaçamento generoso como variáveis CSS nomeadas
   3. As variáveis de cor e tipografia são aplicadas de forma coerente em pelo menos uma superfície de produto (sidebar ou dashboard) — o produto visualmente comunica a marca
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 21-01-PLAN.md — Adicionar seção "Posicionamento Psicanalítico" ao CLAUDE.md
+- [ ] 21-02-PLAN.md — Refinar tokens CSS (globals.css) e aplicar na sidebar
 
 ---
 
