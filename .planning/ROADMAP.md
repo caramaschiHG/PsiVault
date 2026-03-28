@@ -318,7 +318,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 21. Brand Foundation | 2/2 | Complete   | 2026-03-28 |
+| 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
 | 22. Landing Page | 0/TBD | Not started | - |
 | 23. Copy Interna | 0/TBD | Not started | - |
 | 24. Continuidade e Fluxo | 0/TBD | Not started | - |
