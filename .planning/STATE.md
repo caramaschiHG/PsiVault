@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Launch continuation
 status: planning
-stopped_at: Phase 21 context gathered
-last_updated: "2026-03-26T21:36:01.766Z"
+stopped_at: Completed 21-01-PLAN.md
+last_updated: "2026-03-28T12:33:53.865Z"
 last_activity: 2026-03-26 — Roadmap v2.0 created
 progress:
   total_phases: 19
   completed_phases: 6
-  total_plans: 24
-  completed_plans: 21
+  total_plans: 26
+  completed_plans: 22
   percent: 0
 ---
 
@@ -193,6 +193,8 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase 14-quality-production-hardening]: console.error in server actions logs only [actionName] + err object — never clinical, financial, or patient data (SECU-05)
 - [Phase 14-quality-production-hardening]: Tipo de retorno explícito Promise<void> em server actions para compatibilidade TypeScript após try/catch
 - [Phase 14-quality-production-hardening]: Promise<{ ok: boolean; error?: string } | void> como tipo de retorno une compatibilidade com form action e retorno tipado de erro nos catch blocks
+- [Phase 21-brand-foundation]: PsiVault é o nome do produto em toda superfície voltada ao usuário; PsiLock fica restrito ao repositório e ambiente técnico
+- [Phase 21-brand-foundation]: Anti-padrões visuais do app interno documentados em subseção própria separada dos da landing, governando o produto inteiro
 
 ### Pending Todos
 
@@ -209,6 +211,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-26T21:36:01.763Z
-Stopped at: Phase 21 context gathered
+Last session: 2026-03-28T12:33:53.862Z
+Stopped at: Completed 21-01-PLAN.md
 Resume: Plan first v2.0 phase — /gsd:plan-phase 21

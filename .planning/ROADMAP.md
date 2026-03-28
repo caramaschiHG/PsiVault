@@ -256,7 +256,7 @@ Plans:
   1. CLAUDE.md contém vocabulário obrigatório, anti-padrões de tom, regras do plano premium e limites de copyright — qualquer contribuidor pode ler e saber como soar
   2. globals.css define tokens de paleta (off-white, charcoal, sage), escala tipográfica editorial e espaçamento generoso como variáveis CSS nomeadas
   3. As variáveis de cor e tipografia são aplicadas de forma coerente em pelo menos uma superfície de produto (sidebar ou dashboard) — o produto visualmente comunica a marca
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 21-01-PLAN.md — Adicionar seção "Posicionamento Psicanalítico" ao CLAUDE.md
@@ -318,7 +318,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 21. Brand Foundation | 0/TBD | Not started | - |
+| 21. Brand Foundation | 1/2 | In Progress|  |
 | 22. Landing Page | 0/TBD | Not started | - |
 | 23. Copy Interna | 0/TBD | Not started | - |
 | 24. Continuidade e Fluxo | 0/TBD | Not started | - |
