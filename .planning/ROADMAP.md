@@ -273,7 +273,11 @@ Plans:
   2. A seção de módulos apresenta Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing de prática clínica analítica — sem linguagem SaaS genérica
   3. A seção de trust comunica sigilo e preservação de longo prazo com linguagem de responsabilidade operacional — sem promessas legais vagas como "em conformidade com CFP"
   4. O FAQ responde dúvidas reais do psicólogo autônomo de consultório privado (dados, acesso, funcionamento offline, continuidade)
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 22-01-PLAN.md — Hero (eyebrow, H1, lead, bullets, mockup prontuário) + features reordenadas (Prontuário primeiro)
+- [ ] 22-02-PLAN.md — Trust points, pains, security, FAQ e ajuste fino das seções secundárias
 
 ---
 
