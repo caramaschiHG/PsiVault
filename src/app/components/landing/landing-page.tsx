@@ -59,28 +59,8 @@ const pains = [
 
 const features = [
   {
-    title: "Pacientes com contexto",
-    copy: "Cada paciente reúne histórico, próximos passos, documentos e acompanhamento em um só lugar.",
-    icon: (
-      <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
-        <circle cx="12" cy="7" r="4" />
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-      </svg>
-    ),
-  },
-  {
-    title: "Agenda da rotina clínica",
-    copy: "Sessões, recorrência, horários e organização do dia com visão prática para quem atende.",
-    icon: (
-      <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
-        <rect x="3" y="5" width="18" height="16" rx="2" />
-        <path d="M16 3v4M8 3v4M3 10h18" />
-      </svg>
-    ),
-  },
-  {
-    title: "Prontuário e evolução",
-    copy: "Registre a sessão no contexto certo, sem depender de anotações soltas para lembrar o que importa.",
+    title: "Prontuário e evolução clínica",
+    copy: "Registre cada atendimento no contexto do paciente. O histórico cresce junto com o acompanhamento, sem depender de anotações soltas.",
     icon: (
       <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -89,8 +69,28 @@ const features = [
     ),
   },
   {
+    title: "Pacientes em acompanhamento",
+    copy: "Cada paciente reúne histórico de evoluções, documentos e próximos passos — o contexto clínico preservado em um só lugar.",
+    icon: (
+      <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
+        <circle cx="12" cy="7" r="4" />
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+      </svg>
+    ),
+  },
+  {
+    title: "Agenda da prática clínica",
+    copy: "Atendimentos, recorrência e organização do dia para quem atende com continuidade e método.",
+    icon: (
+      <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
+        <rect x="3" y="5" width="18" height="16" rx="2" />
+        <path d="M16 3v4M8 3v4M3 10h18" />
+      </svg>
+    ),
+  },
+  {
     title: "Documentos do consultório",
-    copy: "Recibos, declarações, encaminhamentos e outros documentos ficam próximos da rotina real de atendimento.",
+    copy: "Recibos, declarações e encaminhamentos gerados dentro da rotina do atendimento — próximos do caso, não fora dele.",
     icon: (
       <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
@@ -99,7 +99,7 @@ const features = [
   },
   {
     title: "Financeiro leve",
-    copy: "Acompanhe recebimentos e pendências sem transformar o consultório em uma planilha paralela.",
+    copy: "Acompanhe recebimentos e pendências do mês sem transformar o consultório em uma planilha paralela.",
     icon: (
       <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
         <rect x="2" y="5" width="20" height="14" rx="2" />
@@ -109,7 +109,7 @@ const features = [
   },
   {
     title: "Online e presencial no mesmo fluxo",
-    copy: "A experiência continua a mesma independentemente do formato do atendimento.",
+    copy: "A organização clínica se mantém a mesma independentemente do formato do atendimento.",
     icon: (
       <svg viewBox="0 0 24 24" className={styles.featureIcon} aria-hidden="true">
         <rect x="2" y="3" width="13" height="10" rx="1.5" />
