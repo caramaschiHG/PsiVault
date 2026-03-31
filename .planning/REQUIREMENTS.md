@@ -14,8 +14,8 @@
 
 ### Land — Landing Page
 
-- [ ] **LAND-01**: A landing page tem hero com posicionamento explícito para psicólogos de orientação psicanalítica, CTA para cadastro, copy inteiramente em pt-BR com vocabulário de nicho (prontuário, escuta, continuidade, sigilo)
-- [ ] **LAND-02**: A landing page tem seção de módulos apresentando Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing específico para prática psicanalítica
+- [x] **LAND-01**: A landing page tem hero com posicionamento explícito para psicólogos de orientação psicanalítica, CTA para cadastro, copy inteiramente em pt-BR com vocabulário de nicho (prontuário, escuta, continuidade, sigilo)
+- [x] **LAND-02**: A landing page tem seção de módulos apresentando Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing específico para prática psicanalítica
 - [ ] **LAND-03**: A landing page tem seção de trust e preservação comunicando sigilo, continuidade e preservação de longo prazo em linguagem de responsabilidade operacional — sem promessas legais vagas
 - [ ] **LAND-04**: A landing page tem FAQ direcionado às dúvidas reais do psicólogo de orientação psicanalítica em consultório privado
 
@@ -93,8 +93,8 @@
 |-------------|-------|--------|
 | BRAND-01 | Phase 21 | Complete |
 | BRAND-02 | Phase 21 | Complete |
-| LAND-01 | Phase 22 | Pending |
-| LAND-02 | Phase 22 | Pending |
+| LAND-01 | Phase 22 | Complete |
+| LAND-02 | Phase 22 | Complete |
 | LAND-03 | Phase 22 | Pending |
 | LAND-04 | Phase 22 | Pending |
 | NAV-01 | Phase 23 | Pending |

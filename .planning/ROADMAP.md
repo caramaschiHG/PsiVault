@@ -273,7 +273,7 @@ Plans:
   2. A seção de módulos apresenta Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing de prática clínica analítica — sem linguagem SaaS genérica
   3. A seção de trust comunica sigilo e preservação de longo prazo com linguagem de responsabilidade operacional — sem promessas legais vagas como "em conformidade com CFP"
   4. O FAQ responde dúvidas reais do psicólogo autônomo de consultório privado (dados, acesso, funcionamento offline, continuidade)
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 22-01-PLAN.md — Hero (eyebrow, H1, lead, bullets, mockup prontuário) + features reordenadas (Prontuário primeiro)
@@ -323,7 +323,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
-| 22. Landing Page | 0/TBD | Not started | - |
+| 22. Landing Page | 1/2 | In Progress|  |
 | 23. Copy Interna | 0/TBD | Not started | - |
 | 24. Continuidade e Fluxo | 0/TBD | Not started | - |
 | 25. Plano Premium (UI/conceito) | 0/TBD | Not started | - |

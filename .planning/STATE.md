@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Launch continuation
 status: planning
-stopped_at: Phase 22 context gathered
-last_updated: "2026-03-30T12:51:42.739Z"
+stopped_at: Completed 22-landing-page-01-PLAN.md
+last_updated: "2026-03-31T01:47:42.965Z"
 last_activity: 2026-03-26 — Roadmap v2.0 created
 progress:
   total_phases: 19
   completed_phases: 7
-  total_plans: 26
-  completed_plans: 23
+  total_plans: 28
+  completed_plans: 24
   percent: 0
 ---
 
@@ -84,6 +84,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 14-quality-production-hardening P05 | 20 | 3 tasks | 7 files |
 | Phase 14-quality-production-hardening P06 | 15 | 2 tasks | 6 files |
 | Phase 21 P02 | 15 | 3 tasks | 3 files |
+| Phase 22-landing-page P01 | 5 | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -196,6 +197,9 @@ Progress: [░░░░░░░░░░] 0%
 - [Phase 14-quality-production-hardening]: Promise<{ ok: boolean; error?: string } | void> como tipo de retorno une compatibilidade com form action e retorno tipado de erro nos catch blocks
 - [Phase 21-brand-foundation]: PsiVault é o nome do produto em toda superfície voltada ao usuário; PsiLock fica restrito ao repositório e ambiente técnico
 - [Phase 21-brand-foundation]: Anti-padrões visuais do app interno documentados em subseção própria separada dos da landing, governando o produto inteiro
+- [Phase 22-landing-page]: Eyebrow usa 'Para psicólogos de orientação psicanalítica' — posicionamento de nicho explícito desde a primeira linha visível
+- [Phase 22-landing-page]: Mockup do hero substituído por tela de prontuário com evoluções cronológicas numeradas — remove agenda de horários que comunicava produto genérico
+- [Phase 22-landing-page]: features[0] é Prontuário e evolução clínica — ordem comunica prioridade clínica da ferramenta
 
 ### Pending Todos
 
@@ -212,6 +216,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-30T12:51:42.736Z
-Stopped at: Phase 22 context gathered
+Last session: 2026-03-31T01:47:42.961Z
+Stopped at: Completed 22-landing-page-01-PLAN.md
 Resume: Plan first v2.0 phase — /gsd:plan-phase 21
