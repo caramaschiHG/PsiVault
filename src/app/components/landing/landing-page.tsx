@@ -229,14 +229,14 @@ export function LandingPage() {
           <div className={styles.container}>
             <div className={styles.heroGrid}>
               <div className={styles.heroCopy}>
-                <p className={styles.eyebrow}>Para psicólogos no Brasil</p>
+                <p className={styles.eyebrow}>Para psicólogos de orientação psicanalítica</p>
                 <h1 className={`${styles.heroTitle} ${editorial.className}`}>
-                  <em>Um lugar seguro,</em> discreto e claro para organizar a rotina clínica.
+                  <em>Prontuário, continuidade</em> e acompanhamento para quem pratica psicanálise.
                 </h1>
                 <p className={styles.heroLead}>
-                  PsiVault reúne prontuário, agenda, documentos, acompanhamento e
-                  organização financeira leve em uma estrutura pensada para o dia a dia
-                  do consultório.
+                  PsiVault foi construído para preservar a continuidade do caso: prontuário
+                  vinculado ao paciente, evoluções cronológicas e histórico completo do
+                  acompanhamento em um ambiente discreto e organizado.
                 </p>
 
                 <div className={styles.heroActions}>
@@ -249,9 +249,9 @@ export function LandingPage() {
                 </div>
 
                 <ul className={styles.heroNotes} aria-label="Destaques do produto">
-                  <li>Prontuário, agenda e documentos no mesmo contexto.</li>
-                  <li>Atendimento online e presencial sem duplicar processo.</li>
-                  <li>Organização séria para uma rotina sensível.</li>
+                  <li>Registros de evolução, acompanhamento e documentos no mesmo contexto.</li>
+                  <li>Prontuário vinculado ao paciente, não ao atendimento isolado.</li>
+                  <li>Acesso exclusivo à sua prática, com sigilo desde a estrutura.</li>
                 </ul>
               </div>
 
