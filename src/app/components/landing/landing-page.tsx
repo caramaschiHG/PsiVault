@@ -132,51 +132,61 @@ const securityPoints = [
 const brazilRows = [
   {
     label: "Vocabulário",
-    value: "PsiVault fala em prontuário, pacientes, recibos, declarações e acompanhamento. Não em jargão de software genérico.",
+    value: "PsiVault fala em prontuário, pacientes, evoluções, acompanhamento e atendimento. Não em jargão genérico de software.",
   },
   {
     label: "Documentos",
-    value: "Fluxos pensados para recibos, declarações de comparecimento, encaminhamentos e registros ligados ao atendimento.",
+    value: "Recibos, declarações de comparecimento e encaminhamentos integrados à rotina da prática analítica, não como tarefa separada.",
   },
   {
-    label: "Atendimento",
-    value: "Online e presencial convivem no mesmo espaço, sem duplicar processo ou contexto clínico.",
+    label: "Prática clínica",
+    value: "Online e presencial convivem no mesmo espaço, com o prontuário e o histórico do paciente sempre acessíveis no contexto do caso.",
   },
   {
-    label: "Consultório",
-    value: "O produto respeita a realidade de quem atende de forma independente e precisa de clareza sem burocracia.",
+    label: "Independência",
+    value: "Pensado para psicólogos que atendem de forma autônoma e precisam de organização clínica séria sem burocracia de sistema corporativo.",
   },
   {
     label: "Financeiro",
-    value: "Visão leve, em reais e dentro da rotina do mês, sem empurrar o psicólogo para uma lógica de ERP.",
+    value: "Visão leve de recebimentos e pendências do mês, em reais, dentro da rotina clínica — sem transformar o consultório em uma planilha.",
   },
 ];
 
 const faqs = [
   {
-    question: "O PsiVault serve para atendimento online e presencial?",
+    question: "Se eu sair do PsiVault, o que acontece com meus dados?",
     answer:
-      "Sim. A proposta é manter a mesma organização clínica nos dois formatos, sem separar agenda, registro e acompanhamento em fluxos diferentes.",
+      "Seus dados pertencem a você. A exportação completa está disponível a qualquer momento — prontuários, evoluções, documentos e histórico de acompanhamento. Você sai com tudo, sem depender de suporte para recuperar o que é seu.",
   },
   {
-    question: "Consigo centralizar prontuário, agenda e documentos no mesmo lugar?",
+    question: "O PsiVault funciona sem conexão com a internet?",
     answer:
-      "Essa é a base do produto. PsiVault foi pensado para evitar que o atendimento dependa de notas soltas, arquivos dispersos e ferramentas sem contexto clínico.",
+      "Não. PsiVault é uma aplicação web e requer conexão para funcionar. O acesso é pelo navegador, sem necessidade de instalação local.",
   },
   {
-    question: "Por que o produto parece feito para a rotina no Brasil?",
+    question: "Como faço para exportar os dados dos meus pacientes?",
     answer:
-      "Porque a linguagem, os documentos e os pequenos detalhes da prática local entraram no desenho do produto desde o começo, em vez de serem adaptados no final.",
+      "A exportação fica disponível diretamente nas configurações do vault. Você pode exportar o histórico completo do consultório ou por paciente, no formato estruturado para uso fora do sistema.",
   },
   {
-    question: "Preciso abandonar minhas ferramentas atuais de uma vez?",
+    question: "O que acontece com meus dados se eu cancelar a assinatura?",
     answer:
-      "Não. A proposta é começar a organizar o núcleo da rotina clínica com mais calma e menos improviso, sem exigir uma ruptura brusca logo no primeiro dia.",
+      "Antes de encerrar, você pode exportar tudo. Após o cancelamento, o acesso ao vault é desativado. Os dados não são excluídos imediatamente, mas o prazo para recuperação será informado na comunicação de encerramento.",
   },
   {
-    question: "Qual é o próximo passo para começar?",
+    question: "O produto é adequado para a minha prática como psicólogo?",
     answer:
-      "Criar sua conta e estruturar a base do consultório no PsiVault. A partir daí, a rotina passa a ganhar continuidade com mais clareza.",
+      "PsiVault foi desenhado para psicólogos que precisam de organização clínica séria: acesso exclusivo ao prontuário, histórico preservado por paciente, documentos próximos do atendimento e exportação dos dados quando necessário. A adequação à sua prática depende de como você usa as ferramentas — o produto não substitui supervisão nem orientação ética profissional.",
+  },
+  {
+    question: "Os dados clínicos dos meus pacientes ficam acessíveis a outros?",
+    answer:
+      "Não. O vault é vinculado exclusivamente ao seu login. Nenhum dado clínico é compartilhado com outros usuários do sistema ou acessível por terceiros dentro da plataforma.",
+  },
+  {
+    question: "Posso usar o PsiVault com atendimentos online e presenciais ao mesmo tempo?",
+    answer:
+      "Sim. A organização clínica se mantém igual independentemente do formato do atendimento. Prontuário, agenda e documentos ficam no mesmo espaço, sem separar fluxos por modalidade.",
   },
 ];
 
@@ -364,8 +374,8 @@ export function LandingPage() {
             <AnimateIn>
               <SectionHeading
                 eyebrow="O que é o PsiVault"
-                title="O espaço central da rotina clínica, sem espetáculo e sem excesso."
-                copy="PsiVault organiza o consultório como uma base única: cada paciente ganha contexto, cada sessão deixa rastro no lugar certo e cada documento nasce de uma rotina coerente."
+                title="O espaço central da prática analítica, sem espetáculo e sem excesso."
+                copy="PsiVault organiza o consultório como uma base única: cada paciente ganha contexto, cada atendimento deixa rastro no prontuário e cada documento nasce de uma rotina coerente."
                 titleClassName={editorial.className}
                 centered
               />
@@ -463,9 +473,9 @@ export function LandingPage() {
           <div className={styles.container}>
             <div className={styles.brazilGrid}>
               <SectionHeading
-                eyebrow="Rotina brasileira"
-                title="Feito para o consultório no Brasil, não para um cenário genérico traduzido no fim."
-                copy="Vocabulário, fluxo documental, atendimento híbrido e pequenas necessidades locais fazem parte do desenho do produto."
+                eyebrow="Prática clínica no Brasil"
+                title="Feito para a prática psicanalítica no Brasil, não para um cenário genérico traduzido no fim."
+                copy="Vocabulário clínico, fluxo documental e a realidade do consultório brasileiro fizeram parte do desenho do produto desde o começo."
                 titleClassName={editorial.className}
               />
 
@@ -614,8 +624,9 @@ export function LandingPage() {
                   Organize a rotina clínica com a seriedade, a calma e a discrição que ela pede.
                 </h2>
                 <p className={styles.finalLead}>
-                  PsiVault foi desenhado para quem quer menos improviso e mais clareza no
-                  consultório, sem abrir mão de sensibilidade profissional.
+                  PsiVault foi desenhado para psicólogos de orientação psicanalítica que querem
+                  menos improviso e mais clareza na rotina clínica, sem abrir mão de profundidade
+                  no acompanhamento.
                 </p>
               </div>
 
@@ -638,8 +649,8 @@ export function LandingPage() {
             <div>
               <p className={styles.footerBrand}>PsiVault</p>
               <p className={styles.footerCopy}>
-                Um produto para psicólogos brasileiros que preferem organização discreta,
-                confiança e continuidade clínica.
+                Um produto para psicólogos de orientação psicanalítica que preferem organização
+                discreta, sigilo e continuidade no acompanhamento.
               </p>
             </div>
 
