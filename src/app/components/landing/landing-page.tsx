@@ -12,48 +12,48 @@ const editorial = Newsreader({
 
 const trustPoints = [
   {
-    title: "Tudo no mesmo contexto",
-    copy: "Paciente, prontuário, agenda e documentos deixam de viver em ferramentas separadas.",
+    title: "Só você acessa",
+    copy: "O vault é exclusivo ao seu login. Nenhum dado clínico é compartilhado com terceiros ou acessível por outros usuários do sistema.",
   },
   {
-    title: "Fluxo online e presencial",
-    copy: "A rotina acompanha os dois formatos de atendimento sem dividir o seu processo.",
+    title: "Acesso com autenticação",
+    copy: "Cada entrada requer autenticação. Sessões abertas ficam visíveis para que você saiba onde o vault está ativo e possa encerrá-las quando necessário.",
   },
   {
-    title: "Mais controle, menos improviso",
-    copy: "Sessões ativas, ações sensíveis, backup e exportação entram no fluxo com clareza.",
+    title: "Histórico preservado",
+    copy: "Evoluções, prontuários e registros clínicos não se perdem. O acompanhamento ao longo do tempo mantém coerência e integridade.",
   },
   {
-    title: "Feito para o consultório brasileiro",
-    copy: "Vocabulário, documentos e necessidades práticas pensados para quem atende no Brasil.",
+    title: "Seus dados, sempre",
+    copy: "Exportação completa disponível a qualquer momento. Seus dados pertencem a você — não ficam presos no sistema.",
   },
 ];
 
 const pains = [
   {
     index: "01",
-    title: "Anotações fora do prontuário",
-    copy: "Evoluções, lembretes e histórico acabam espalhados entre notas soltas, mensagens e arquivos.",
+    title: "Registros espalhados sem contexto do caso",
+    copy: "Evoluções em cadernos, notas soltas no celular, arquivos sem ordenação. O histórico existe, mas não acompanha o caso.",
   },
   {
     index: "02",
-    title: "Agenda que não conversa com o resto",
-    copy: "A sessão acontece, mas o link, o registro e o próximo passo continuam em lugares diferentes.",
+    title: "Continuidade comprometida antes da sessão",
+    copy: "Sem acesso fácil ao histórico completo, a preparação para o atendimento depende de memória em vez de registro estruturado.",
   },
   {
     index: "03",
-    title: "Documentos feitos na pressa",
-    copy: "Recibos, declarações e encaminhamentos aparecem no pior momento: quando você já deveria ter encerrado o atendimento.",
+    title: "Documentação ética fora da rotina",
+    copy: "Recibos e declarações produzidos às pressas, fora do fluxo do atendimento, como tarefa separada do trabalho clínico.",
   },
   {
     index: "04",
-    title: "Financeiro leve, mas nebuloso",
-    copy: "Sem precisar virar um sistema contábil, ainda assim o consultório precisa enxergar o que entrou e o que ficou pendente.",
+    title: "Dados sensíveis em ferramentas genéricas",
+    copy: "Prontuários e evoluções armazenados em aplicativos sem controle de acesso clínico — o sigilo fica a cargo de soluções de propósito geral.",
   },
   {
     index: "05",
-    title: "Rotina sem sensação de continuidade",
-    copy: "Quando tudo fica fragmentado, o trabalho clínico perde ritmo, clareza e tranquilidade operacional.",
+    title: "Histórico fragmentado, acompanhamento sem narrativa",
+    copy: "Quando os registros não têm continuidade, o acompanhamento do paciente ao longo do tempo perde coerência e profundidade clínica.",
   },
 ];
 
@@ -122,11 +122,11 @@ const features = [
 ];
 
 const securityPoints = [
-  "Sessões ativas visíveis para saber onde o vault está aberto.",
-  "Reautenticação antes de ações sensíveis, sem dramatizar o uso.",
-  "Backup do consultório quando você precisa preservar a base inteira.",
-  "Exportação por paciente para manter portabilidade sem desmontar a rotina.",
-  "Organização contextual para reduzir exposição desnecessária em ferramentas dispersas.",
+  "Sessões abertas visíveis: você sabe onde o vault está ativo e pode encerrá-las a qualquer momento.",
+  "Ações sensíveis exigem confirmação explícita antes de serem executadas.",
+  "Backup completo disponível para preservar toda a base do consultório quando necessário.",
+  "Exportação integral a qualquer momento — prontuários, documentos e histórico permanecem portáteis.",
+  "Acesso organizado por login exclusivo, sem compartilhamento implícito de dados clínicos.",
 ];
 
 const brazilRows = [
