@@ -263,13 +263,13 @@ export function LandingPage() {
                       <span style={{ background: "#febc2e" }} />
                       <span style={{ background: "#28c840" }} />
                     </div>
-                    <span className={styles.workspaceChromeLabel}>PsiVault — Agenda de hoje</span>
+                    <span className={styles.workspaceChromeLabel}>PsiVault — Prontuário</span>
                   </div>
 
                   <div className={styles.workspaceMain}>
                     <div className={styles.workspaceTopline}>
-                      <span>quinta-feira, 19 de março</span>
-                      <span className={styles.toplineBadge}>consultório organizado</span>
+                      <span>Prontuário — Helena Prado</span>
+                      <span className={styles.toplineBadge}>em acompanhamento</span>
                     </div>
 
                     <div className={styles.workspacePatientCard}>
@@ -278,38 +278,37 @@ export function LandingPage() {
                         <h2 className={styles.workspacePatientName}>Helena Prado</h2>
                       </div>
                       <div className={styles.workspacePatientMeta}>
-                        <span>Retorno semanal</span>
-                        <span>14:00 • online</span>
+                        <span>Desde março de 2024</span>
+                        <span>Atendimento semanal</span>
                       </div>
                     </div>
 
                     <div className={styles.workspaceGrid}>
                       <article className={styles.workspaceCard}>
-                        <p className={styles.workspaceCardLabel}>Hoje</p>
+                        <p className={styles.workspaceCardLabel}>Evoluções recentes</p>
                         <ul className={styles.scheduleList}>
                           <li>
-                            <span>09:00</span>
-                            <strong>Caio Ribeiro</strong>
+                            <span>12 mar</span>
+                            <strong>Sessão 18</strong>
                             <em>Presencial</em>
                           </li>
                           <li>
-                            <span>14:00</span>
-                            <strong>Helena Prado</strong>
+                            <span>05 mar</span>
+                            <strong>Sessão 17</strong>
                             <em>Online</em>
                           </li>
                           <li>
-                            <span>18:30</span>
-                            <strong>Lúcia Torres</strong>
+                            <span>26 fev</span>
+                            <strong>Sessão 16</strong>
                             <em>Presencial</em>
                           </li>
                         </ul>
                       </article>
 
                       <article className={styles.workspaceCard}>
-                        <p className={styles.workspaceCardLabel}>Evolução recente</p>
+                        <p className={styles.workspaceCardLabel}>Registro — 12 de março</p>
                         <p className={styles.workspaceBodyCopy}>
-                          Sessão focada em manejo de ansiedade antecipatória e ajustes de
-                          rotina. Próximo passo: retomar observações sobre sono.
+                          Sessão focada em retomada do histórico do caso. Próximo passo acordado com o paciente.
                         </p>
                       </article>
                     </div>
