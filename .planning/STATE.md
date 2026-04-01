@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Launch continuation
 status: planning
-stopped_at: Completed 22-landing-page-01-PLAN.md
-last_updated: "2026-03-31T01:47:42.965Z"
-last_activity: 2026-03-26 — Roadmap v2.0 created
+stopped_at: Completed 22-landing-page phase (all 2 plans done)
+last_updated: "2026-04-01"
+last_activity: 2026-04-01 — Phase 22 complete (landing page psicanalítica)
 progress:
   total_phases: 19
   completed_phases: 7
@@ -27,12 +27,12 @@ See: .planning/PROJECT.md (updated 2026-03-26 after v2.0 milestone defined)
 
 ## Current Position
 
-Phase: 21 — Brand Foundation (not started)
-Plan: —
-Status: Roadmap defined — ready to plan Phase 21
-Last activity: 2026-03-26 — Roadmap v2.0 created
+Phase: 22 — Landing Page ✅ complete | Next: 23 — Copy Interna
+Plan: 22-02 complete
+Status: Phase 22 done — ready to plan Phase 23
+Last activity: 2026-04-01 — Phase 22 complete
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 
 ## v2.0 Roadmap Summary
 
@@ -216,6 +216,6 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Session Continuity
 
-Last session: 2026-03-31T01:47:42.961Z
-Stopped at: Completed 22-landing-page-01-PLAN.md
-Resume: Plan first v2.0 phase — /gsd:plan-phase 21
+Last session: 2026-04-01
+Stopped at: Phase 22 completa — 22-02-SUMMARY.md criado, STATE.md atualizado
+Resume: Plan Phase 23 (Copy Interna) — /gsd:plan-phase 23
