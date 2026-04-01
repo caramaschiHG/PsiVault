@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Launch continuation
 status: planning
-stopped_at: Completed 22-landing-page phase (all 2 plans done)
-last_updated: "2026-04-01"
-last_activity: 2026-04-01 — Phase 22 complete (landing page psicanalítica)
+stopped_at: Phase 23 context gathered
+last_updated: "2026-04-01T18:23:39.317Z"
+last_activity: 2026-04-01 — Phase 22 complete
 progress:
   total_phases: 19
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 28
-  completed_plans: 24
-  percent: 0
+  completed_plans: 25
+  percent: 40
 ---
 
 # Project State
@@ -216,6 +216,6 @@ Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 
 ## Session Continuity
 
-Last session: 2026-04-01
-Stopped at: Phase 22 completa — 22-02-SUMMARY.md criado, STATE.md atualizado
+Last session: 2026-04-01T18:23:39.313Z
+Stopped at: Phase 23 context gathered
 Resume: Plan Phase 23 (Copy Interna) — /gsd:plan-phase 23
