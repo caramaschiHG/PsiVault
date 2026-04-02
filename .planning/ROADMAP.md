@@ -289,7 +289,7 @@ Plans:
   1. Todos os itens da sidebar e navegação estão em pt-BR com vocabulário clínico correto (Prontuário, Agenda, Pacientes, Documentos, Financeiro) — nenhum label em inglês ou SaaS genérico visível
   2. O dashboard exibe labels e métricas de prática clínica (próximas sessões, registros pendentes, documentos recentes) — sem termos de "engajamento", "usuários ativos" ou painéis de analytics genéricos
   3. O onboarding acolhe o clínico com tom calmo e específico, sem jargão de startup ou hype — o psicólogo sente que está entrando em um ambiente feito para seu trabalho
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
 - [ ] 23-01-PLAN.md — Audit de copy: Prontuário na sidebar/bottom-nav, labels do dashboard e h1 do onboarding
@@ -328,6 +328,6 @@ Plans:
 |-------|----------------|--------|-----------|
 | 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
 | 22. Landing Page | 1/2 | In Progress|  |
-| 23. Copy Interna | 0/2 | Not started | - |
+| 23. Copy Interna | 1/2 | In Progress|  |
 | 24. Continuidade e Fluxo | 0/TBD | Not started | - |
 | 25. Plano Premium (UI/conceito) | 0/TBD | Not started | - |

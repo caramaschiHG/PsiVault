@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Launch continuation
 status: planning
-stopped_at: Phase 23 context gathered
-last_updated: "2026-04-01T18:23:39.317Z"
+stopped_at: Completed 23-copy-interna-01-PLAN.md
+last_updated: "2026-04-02T11:52:44.019Z"
 last_activity: 2026-04-01 — Phase 22 complete
 progress:
   total_phases: 19
   completed_phases: 8
-  total_plans: 28
-  completed_plans: 25
+  total_plans: 30
+  completed_plans: 26
   percent: 40
 ---
 
@@ -85,6 +85,7 @@ Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 | Phase 14-quality-production-hardening P06 | 15 | 2 tasks | 6 files |
 | Phase 21 P02 | 15 | 3 tasks | 3 files |
 | Phase 22-landing-page P01 | 5 | 3 tasks | 1 files |
+| Phase 23-copy-interna P01 | 525606 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -200,6 +201,9 @@ Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 - [Phase 22-landing-page]: Eyebrow usa 'Para psicólogos de orientação psicanalítica' — posicionamento de nicho explícito desde a primeira linha visível
 - [Phase 22-landing-page]: Mockup do hero substituído por tela de prontuário com evoluções cronológicas numeradas — remove agenda de horários que comunicava produto genérico
 - [Phase 22-landing-page]: features[0] é Prontuário e evolução clínica — ordem comunica prioridade clínica da ferramenta
+- [Phase 23-copy-interna]: Item Prontuário inserido entre Pacientes e Financeiro em ambas as navs — ordem comunica prioridade clínica
+- [Phase 23-copy-interna]: Config removido do bottom-nav mobile — Configurações acessível apenas via sidebar desktop
+- [Phase 23-copy-interna]: A receber usado para singular e plural do badge de cobranças — reduz peso de jargão financeiro
 
 ### Pending Todos
 
@@ -216,6 +220,6 @@ Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 
 ## Session Continuity
 
-Last session: 2026-04-01T18:23:39.313Z
-Stopped at: Phase 23 context gathered
+Last session: 2026-04-02T11:52:44.016Z
+Stopped at: Completed 23-copy-interna-01-PLAN.md
 Resume: Plan Phase 23 (Copy Interna) — /gsd:plan-phase 23

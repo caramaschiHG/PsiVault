@@ -21,9 +21,9 @@
 
 ### Nav — Navegação e Copy Interna
 
-- [ ] **NAV-01**: Sidebar e todos os itens de navegação em pt-BR com vocabulário psicanalítico (Prontuário, Agenda, Pacientes, Documentos, Financeiro)
-- [ ] **NAV-02**: Dashboard e visão geral com labels e framing de prática clínica — sem linguagem SaaS genérica ou métricas de "engajamento"
-- [ ] **NAV-03**: Onboarding usa tom de marca — calmo, profissional, específico para clínicos psicanalíticos — sem jargão genérico ou hype
+- [x] **NAV-01**: Sidebar e todos os itens de navegação em pt-BR com vocabulário psicanalítico (Prontuário, Agenda, Pacientes, Documentos, Financeiro)
+- [x] **NAV-02**: Dashboard e visão geral com labels e framing de prática clínica — sem linguagem SaaS genérica ou métricas de "engajamento"
+- [x] **NAV-03**: Onboarding usa tom de marca — calmo, profissional, específico para clínicos psicanalíticos — sem jargão genérico ou hype
 
 ### Cont — Continuidade e Fluxo de Documentos
 
@@ -97,9 +97,9 @@
 | LAND-02 | Phase 22 | Complete |
 | LAND-03 | Phase 22 | Pending |
 | LAND-04 | Phase 22 | Pending |
-| NAV-01 | Phase 23 | Pending |
-| NAV-02 | Phase 23 | Pending |
-| NAV-03 | Phase 23 | Pending |
+| NAV-01 | Phase 23 | Complete |
+| NAV-02 | Phase 23 | Complete |
+| NAV-03 | Phase 23 | Complete |
 | CONT-01 | Phase 24 | Pending |
 | CONT-02 | Phase 24 | Pending |
 | CONT-03 | Phase 24 | Pending |
