@@ -38,22 +38,24 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/prontuario",
+    label: "Prontuário",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" width={20} height={20} aria-hidden="true">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+        <rect x="9" y="3" width="6" height="4" rx="2" />
+        <line x1="9" y1="12" x2="15" y2="12" />
+        <line x1="9" y1="16" x2="13" y2="16" />
+      </svg>
+    ),
+  },
+  {
     href: "/financeiro",
     label: "Financeiro",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" width={20} height={20} aria-hidden="true">
         <rect x="1" y="4" width="22" height="16" rx="2" />
         <line x1="1" y1="10" x2="23" y2="10" />
-      </svg>
-    ),
-  },
-  {
-    href: "/settings/profile",
-    label: "Config",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" width={20} height={20} aria-hidden="true">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.07 4.93l-1.41 1.41M5.34 5.34L3.93 6.75M21 12h-2M3 12H1M19.07 19.07l-1.41-1.41M5.34 18.66l-1.41-1.41M12 21v-2M12 3V1" />
       </svg>
     ),
   },
@@ -65,6 +67,9 @@ export function BottomNav() {
   function isActive(href: string) {
     if (href === "/patients") {
       return pathname.startsWith("/patients");
+    }
+    if (href === "/prontuario") {
+      return pathname.startsWith("/prontuario");
     }
     return pathname === href || pathname.startsWith(href + "/");
   }

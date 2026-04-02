@@ -38,6 +38,18 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/prontuario",
+    label: "Prontuário",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" width={16} height={16} aria-hidden="true">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+        <rect x="9" y="3" width="6" height="4" rx="2" />
+        <line x1="9" y1="12" x2="15" y2="12" />
+        <line x1="9" y1="16" x2="13" y2="16" />
+      </svg>
+    ),
+  },
+  {
     href: "/financeiro",
     label: "Financeiro",
     icon: (
@@ -66,6 +78,9 @@ export function VaultSidebarNav() {
   function isActive(href: string) {
     if (href === "/patients") {
       return pathname.startsWith("/patients");
+    }
+    if (href === "/prontuario") {
+      return pathname.startsWith("/prontuario");
     }
     return pathname === href || pathname.startsWith(href + "/");
   }
