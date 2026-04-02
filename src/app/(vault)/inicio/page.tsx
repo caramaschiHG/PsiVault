@@ -103,7 +103,7 @@ export default async function InicioPage() {
 
   const contextualMessage =
     minutesUntilNext !== null && minutesUntilNext > 0 && minutesUntilNext <= 60
-      ? `Sua próxima sessão começa em ${minutesUntilNext} min`
+      ? `Seu próximo atendimento começa em ${minutesUntilNext} min`
       : "Sua rotina clínica está organizada";
 
   await observeServerStage(
@@ -152,7 +152,7 @@ export default async function InicioPage() {
 
         {todayAppointments.length === 0 ? (
           <div style={emptyStateStyle}>
-            <p style={emptyStateTextStyle}>Nenhuma sessão agendada para hoje.</p>
+            <p style={emptyStateTextStyle}>Sem atendimentos hoje.</p>
             <a href="/appointments/new" className="btn-secondary" style={emptyStateActionStyle}>
               Agendar consulta
             </a>
@@ -208,7 +208,7 @@ export default async function InicioPage() {
           {/* Completed sessions this month */}
           <div style={snapshotCardStyle}>
             <span style={snapshotNumberStyle}>{snapshot.completedSessionCount}</span>
-            <span style={snapshotLabelStyle}>Sessões realizadas</span>
+            <span style={snapshotLabelStyle}>Atendimentos realizados</span>
           </div>
 
           {/* Pending charges — count badge only (SECU-05) */}
@@ -216,7 +216,7 @@ export default async function InicioPage() {
             <a href="/financeiro" style={pendingBadgeLinkStyle}>
               <span style={pendingBadgeNumberStyle}>{pendingChargeCount}</span>
               <span style={pendingBadgeLabelStyle}>
-                {pendingChargeCount === 1 ? "cobrança em aberto" : "cobranças em aberto"}
+                {"A receber"}
               </span>
             </a>
           </div>

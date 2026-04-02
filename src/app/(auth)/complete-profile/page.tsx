@@ -36,7 +36,7 @@ export default async function CompleteProfilePage() {
       <p className="auth-brand">PsiVault</p>
       <section className="auth-card auth-card--wide">
         <p className="auth-eyebrow">Perfil profissional</p>
-        <h1 className="auth-title">Complete seu cadastro.</h1>
+        <h1 className="auth-title">Configure seu consultório.</h1>
         <p className="auth-copy">
           Esses dados identificam você nos documentos clínicos e configuram sua agenda.
         </p>
