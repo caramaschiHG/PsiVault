@@ -203,7 +203,7 @@ export default async function ProntuarioPatientPage({
                   </span>
                   <span style={docDateStyle}>{formatDate(doc.createdAt)}</span>
                 </div>
-                <Link href={`/documents/${doc.id}`} style={noteLinkStyle}>
+                <Link href={`/patients/${patientId}/documents/${doc.id}`} style={noteLinkStyle}>
                   Visualizar
                 </Link>
               </li>
