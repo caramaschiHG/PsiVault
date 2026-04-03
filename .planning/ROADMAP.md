@@ -306,7 +306,12 @@ Plans:
   2. O fluxo sessão → registro → documento gerado é percorrível em sequência lógica — o psicólogo nunca precisa sair do contexto de uma sessão para localizar o documento dela
   3. A hierarquia paciente → sessões → registros → documentos é visualmente coerente e orientada em todas as telas relevantes — o usuário sempre sabe onde está na estrutura clínica
   4. Empty states, títulos e mensagens usam linguagem de acompanhamento ("nenhuma sessão registrada ainda", "o histórico deste paciente aparecerá aqui") — nunca de tabelas ou registros isolados
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 24-01-PLAN.md — Scaffold de testes (Wave 0): prontuario-timeline.test.ts
+- [ ] 24-02-PLAN.md — Nova rota /prontuario/[patientId]: view clínica focada com timeline cronológica
+- [ ] 24-03-PLAN.md — Ajustes em /prontuario/page.tsx: link correto e badge Novo acompanhamento
 
 ---
 
@@ -329,5 +334,5 @@ Plans:
 | 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
 | 22. Landing Page | 1/2 | In Progress|  |
 | 23. Copy Interna | 1/2 | Complete    | 2026-04-02 |
-| 24. Continuidade e Fluxo | 0/TBD | Not started | - |
+| 24. Continuidade e Fluxo | 0/3 | Not started | - |
 | 25. Plano Premium (UI/conceito) | 0/TBD | Not started | - |
