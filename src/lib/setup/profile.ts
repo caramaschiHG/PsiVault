@@ -18,6 +18,8 @@ const DEFAULT_PROFILE_SNAPSHOT: SetupProfileSnapshot = {
   defaultAppointmentDurationMinutes: null,
   defaultSessionPriceInCents: null,
   serviceModes: [],
+  theoreticalOrientation: null,
+  preferredThinker: null,
   signatureAsset: null,
 };
 
@@ -92,6 +94,8 @@ function mapProfileRowToSnapshot(
         defaultAppointmentDurationMinutes: number | null;
         defaultSessionPriceInCents: number | null;
         serviceModes: PrismaServiceMode[];
+        theoreticalOrientation: string | null;
+        preferredThinker: string | null;
         signatureAsset?:
           | {
               storageKey: string;
@@ -117,6 +121,8 @@ function mapProfileRowToSnapshot(
       profile.defaultAppointmentDurationMinutes,
     defaultSessionPriceInCents: profile.defaultSessionPriceInCents,
     serviceModes: profile.serviceModes.map(mapPrismaServiceMode),
+    theoreticalOrientation: profile.theoreticalOrientation,
+    preferredThinker: profile.preferredThinker,
     signatureAsset: mapSignatureAsset(profile.signatureAsset),
   };
 }
@@ -131,6 +137,8 @@ function buildProfileWriteData(profile: SetupProfileSnapshot) {
       profile.defaultAppointmentDurationMinutes,
     defaultSessionPriceInCents: profile.defaultSessionPriceInCents,
     serviceModes: profile.serviceModes.map(mapToPrismaServiceMode),
+    theoreticalOrientation: profile.theoreticalOrientation,
+    preferredThinker: profile.preferredThinker,
   };
 }
 
@@ -167,6 +175,8 @@ export async function savePracticeProfile(input: {
   defaultAppointmentDurationMinutes?: string | number | null;
   defaultSessionPriceInCents?: string | number | null;
   serviceModes?: Iterable<string>;
+  theoreticalOrientation?: string | null;
+  preferredThinker?: string | null;
 }) {
   if (!input.workspaceId) {
     throw new Error("workspaceId is required to save the practice profile.");
@@ -197,6 +207,12 @@ export async function savePracticeProfile(input: {
       input.serviceModes !== undefined
         ? normalizeServiceModes(input.serviceModes)
         : current.serviceModes,
+    theoreticalOrientation: hasText(input.theoreticalOrientation ?? null)
+      ? input.theoreticalOrientation!.trim()
+      : null,
+    preferredThinker: hasText(input.preferredThinker ?? null)
+      ? input.preferredThinker!.trim()
+      : null,
     signatureAsset: current.signatureAsset,
   };
 

@@ -18,6 +18,8 @@ function createProfileSnapshot(
     defaultAppointmentDurationMinutes: 50,
     defaultSessionPriceInCents: 18000,
     serviceModes: [SERVICE_MODE_OPTIONS.inPerson],
+    theoreticalOrientation: "Psicanálise",
+    preferredThinker: "Freud",
     signatureAsset: null,
     ...overrides,
   };

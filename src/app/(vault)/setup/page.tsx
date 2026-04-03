@@ -10,6 +10,8 @@ const draftProfile = {
   defaultAppointmentDurationMinutes: 50,
   defaultSessionPriceInCents: 18000,
   serviceModes: [SERVICE_MODE_OPTIONS.inPerson, SERVICE_MODE_OPTIONS.online],
+  theoreticalOrientation: "Psicanálise",
+  preferredThinker: "Freud",
   signatureAsset: null,
 };
 

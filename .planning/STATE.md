@@ -27,12 +27,12 @@ See: .planning/PROJECT.md (updated 2026-03-26 after v2.0 milestone defined)
 
 ## Current Position
 
-Phase: 23 — Copy Interna ✅ complete | Next: 24 — Continuidade e Fluxo
-Plan: 23-02 complete
-Status: Phase 23 done (12/12 verified) — ready to plan Phase 24
-Last activity: 2026-04-02 — Phase 23 complete
+Phase: 25 — Plano Premium (UI/conceito) ⏳ in progress
+Plan: 25-01 complete
+Status: Phase 25 executing — ready to execute 25-02
+Last activity: 2026-04-03 — Plan 25-01 complete
 
-Progress: [█████░░░░░] 45% (3/5 v2.0 phases)
+Progress: [████████░░] 80% (4/5 v2.0 phases)
 
 ## v2.0 Roadmap Summary
 
@@ -215,8 +215,8 @@ Progress: [█████░░░░░] 45% (3/5 v2.0 phases)
 
 - Plan and execute Phase 21 (Brand Foundation) — first v2.0 phase.
 - Plan and execute Phase 22 (Landing Page).
-- Plan and execute Phase 23 (Copy Interna).
-- Plan and execute Phase 24 (Continuidade e Fluxo).
+- ~~Plan and execute Phase 23 (Copy Interna).~~
+- ~~Plan and execute Phase 24 (Continuidade e Fluxo).~~
 - Plan and execute Phase 25 (Plano Premium UI/conceito).
 
 ### Blockers/Concerns
@@ -226,6 +226,6 @@ Progress: [█████░░░░░] 45% (3/5 v2.0 phases)
 
 ## Session Continuity
 
-Last session: 2026-04-03T17:53:24.520Z
-Stopped at: Completed 24-03-PLAN.md
-Resume: Plan Phase 23 (Copy Interna) — /gsd:plan-phase 23
+Last session: 2026-04-03T18:00:00.000Z
+Stopped at: Completed 25-01-PLAN.md
+Resume: Execute Plan 25-02 (Apresentação do Plano Premium e Assistente) — /gsd:execute-plan 25-02

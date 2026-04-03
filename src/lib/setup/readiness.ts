@@ -21,6 +21,8 @@ export interface SetupProfileSnapshot {
   defaultAppointmentDurationMinutes: number | null;
   defaultSessionPriceInCents: number | null;
   serviceModes: ServiceMode[];
+  theoreticalOrientation: string | null;
+  preferredThinker: string | null;
   signatureAsset: SignatureAssetSnapshot | null;
 }
 

@@ -37,6 +37,8 @@ export async function savePracticeProfileAction(formData: FormData) {
     serviceModes: formData.getAll("serviceModes").filter(
       (value): value is string => typeof value === "string",
     ),
+    theoreticalOrientation: readFormValue(formData, "theoreticalOrientation"),
+    preferredThinker: readFormValue(formData, "preferredThinker"),
   });
 
   revalidatePath("/settings/profile");
