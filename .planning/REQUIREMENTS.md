@@ -34,9 +34,9 @@
 
 ### Prem — Plano Premium (conceito e UI)
 
-- [ ] **PREM-01**: Página de apresentação do Assistente de Pesquisa Psicanalítica descrevendo o que faz (literatura, referências por pensador, bibliografias) e o que não faz (diagnóstico, casos clínicos, distribuição de textos protegidos)
-- [ ] **PREM-02**: Usuário pode configurar pensador de preferência e linha psicanalítica (Freud, Lacan, Winnicott, Klein, Bion, etc.) nas configurações de perfil
-- [ ] **PREM-03**: Copy do plano premium sem linguagem de AI gimmick, sem promessas de diagnóstico, sem implicação de acesso irrestrito a obras protegidas por copyright
+- [x] **PREM-01**: Página de apresentação do Assistente de Pesquisa Psicanalítica descrevendo o que faz (literatura, referências por pensador, bibliografias) e o que não faz (diagnóstico, casos clínicos, distribuição de textos protegidos)
+- [x] **PREM-02**: Usuário pode configurar pensador de preferência e linha psicanalítica (Freud, Lacan, Winnicott, Klein, Bion, etc.) nas configurações de perfil
+- [x] **PREM-03**: Copy do plano premium sem linguagem de AI gimmick, sem promessas de diagnóstico, sem implicação de acesso irrestrito a obras protegidas por copyright
 
 ---
 
@@ -104,9 +104,9 @@
 | CONT-02 | Phase 24 | Complete |
 | CONT-03 | Phase 24 | Complete |
 | CONT-04 | Phase 24 | Complete |
-| PREM-01 | Phase 25 | Pending |
-| PREM-02 | Phase 25 | Pending |
-| PREM-03 | Phase 25 | Pending |
+| PREM-01 | Phase 25 | Complete |
+| PREM-02 | Phase 25 | Complete |
+| PREM-03 | Phase 25 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 16 total

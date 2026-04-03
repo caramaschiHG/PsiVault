@@ -244,7 +244,7 @@ Plans:
 - [ ] **Phase 22: Landing Page** — Reescreve a landing page com hero, módulos, trust e FAQ direcionados ao psicólogo de orientação psicanalítica
 - [x] **Phase 23: Copy Interna** — Alinha navegação, dashboard e onboarding com vocabulário e tom de marca psicanalítico (completed 2026-04-02)
 - [x] **Phase 24: Continuidade e Fluxo** — Garante que prontuário, hierarquia e empty states comuniquem acompanhamento ao longo do tempo (completed 2026-04-03)
-- [ ] **Phase 25: Plano Premium (UI/conceito)** — Apresenta o Assistente de Pesquisa Psicanalítica com configuração por pensador e limites claros
+- [x] **Phase 25: Plano Premium (UI/conceito)** — Apresenta o Assistente de Pesquisa Psicanalítica com configuração por pensador e limites claros (completed 2026-04-03)
 
 ## Phase Details
 
@@ -323,7 +323,11 @@ Plans:
   1. A página de apresentação do assistente descreve com clareza: o que faz (literatura, referências por pensador, bibliografias anotadas) e o que não faz (diagnóstico, conclusões clínicas, distribuição de obras protegidas) — o psicólogo não tem expectativas erradas
   2. O psicólogo pode selecionar seu pensador de preferência e linha psicanalítica nas configurações de perfil (Freud, Lacan, Winnicott, Klein, Bion e outros) — a configuração persiste e seria usada pelo assistente real em v3.0
   3. Todo o copy do plano premium usa linguagem de pesquisa e estudo — sem mencionar "IA revolucionária", sem implicar acesso irrestrito a obras protegidas, sem qualquer tom de gimmick ou hype
-**Plans:** TBD
+**Plans:** 2/2 plans complete
+
+Plans:
+- [x] 25-01-PLAN.md — Configuração de Linha Teórica e Pensador
+- [x] 25-02-PLAN.md — Apresentação do Plano Premium e Assistente
 
 ---
 
@@ -335,4 +339,4 @@ Plans:
 | 22. Landing Page | 1/2 | In Progress|  |
 | 23. Copy Interna | 1/2 | Complete    | 2026-04-02 |
 | 24. Continuidade e Fluxo | 3/3 | Complete    | 2026-04-03 |
-| 25. Plano Premium (UI/conceito) | 0/TBD | Not started | - |
+| 25. Plano Premium (UI/conceito) | 2/2 | Complete | 2026-04-03 |
