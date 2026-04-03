@@ -243,7 +243,7 @@ Plans:
 - [x] **Phase 21: Brand Foundation** — Documenta o posicionamento psicanalítico e os tokens visuais como ground truth para todas as superfícies do produto (completed 2026-03-28)
 - [ ] **Phase 22: Landing Page** — Reescreve a landing page com hero, módulos, trust e FAQ direcionados ao psicólogo de orientação psicanalítica
 - [x] **Phase 23: Copy Interna** — Alinha navegação, dashboard e onboarding com vocabulário e tom de marca psicanalítico (completed 2026-04-02)
-- [ ] **Phase 24: Continuidade e Fluxo** — Garante que prontuário, hierarquia e empty states comuniquem acompanhamento ao longo do tempo
+- [x] **Phase 24: Continuidade e Fluxo** — Garante que prontuário, hierarquia e empty states comuniquem acompanhamento ao longo do tempo (completed 2026-04-03)
 - [ ] **Phase 25: Plano Premium (UI/conceito)** — Apresenta o Assistente de Pesquisa Psicanalítica com configuração por pensador e limites claros
 
 ## Phase Details
@@ -306,7 +306,7 @@ Plans:
   2. O fluxo sessão → registro → documento gerado é percorrível em sequência lógica — o psicólogo nunca precisa sair do contexto de uma sessão para localizar o documento dela
   3. A hierarquia paciente → sessões → registros → documentos é visualmente coerente e orientada em todas as telas relevantes — o usuário sempre sabe onde está na estrutura clínica
   4. Empty states, títulos e mensagens usam linguagem de acompanhamento ("nenhuma sessão registrada ainda", "o histórico deste paciente aparecerá aqui") — nunca de tabelas ou registros isolados
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [ ] 24-01-PLAN.md — Scaffold de testes (Wave 0): prontuario-timeline.test.ts
@@ -334,5 +334,5 @@ Plans:
 | 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
 | 22. Landing Page | 1/2 | In Progress|  |
 | 23. Copy Interna | 1/2 | Complete    | 2026-04-02 |
-| 24. Continuidade e Fluxo | 2/3 | In Progress|  |
+| 24. Continuidade e Fluxo | 3/3 | Complete   | 2026-04-03 |
 | 25. Plano Premium (UI/conceito) | 0/TBD | Not started | - |

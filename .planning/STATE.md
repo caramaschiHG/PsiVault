@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Launch continuation
 status: planning
-stopped_at: Completed 24-02-PLAN.md
-last_updated: "2026-04-03T17:50:47.088Z"
+stopped_at: Completed 24-03-PLAN.md
+last_updated: "2026-04-03T17:53:24.524Z"
 last_activity: 2026-04-02 — Phase 23 complete
 progress:
   total_phases: 19
-  completed_phases: 9
+  completed_phases: 10
   total_plans: 33
-  completed_plans: 29
+  completed_plans: 30
   percent: 45
 ---
 
@@ -87,6 +87,7 @@ Progress: [█████░░░░░] 45% (3/5 v2.0 phases)
 | Phase 22-landing-page P01 | 5 | 3 tasks | 1 files |
 | Phase 23-copy-interna P01 | 525606 | 2 tasks | 4 files |
 | Phase 24-continuidade-e-fluxo P02 | 8 | 2 tasks | 3 files |
+| Phase 24-continuidade-e-fluxo P03 | 5 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -208,6 +209,7 @@ Progress: [█████░░░░░] 45% (3/5 v2.0 phases)
 - [Phase 24-continuidade-e-fluxo]: careMode usado no lugar de serviceMode — plano tinha nome errado, modelo real usa careMode
 - [Phase 24-continuidade-e-fluxo]: Funções puras de timeline em arquivo .ts separado do Server Component — testabilidade sem acoplamento à rota
 - [Phase 24-continuidade-e-fluxo]: details/summary HTML nativo para seções recolhidas (dismissed, completedHidden) — zero JS adicional
+- [Phase 24-continuidade-e-fluxo]: Badge 'Novo acompanhamento' é texto simples itálico sem background — não é chip colorido (anti-padrão visual do produto)
 
 ### Pending Todos
 
@@ -224,6 +226,6 @@ Progress: [█████░░░░░] 45% (3/5 v2.0 phases)
 
 ## Session Continuity
 
-Last session: 2026-04-03T17:50:47.084Z
-Stopped at: Completed 24-02-PLAN.md
+Last session: 2026-04-03T17:53:24.520Z
+Stopped at: Completed 24-03-PLAN.md
 Resume: Plan Phase 23 (Copy Interna) — /gsd:plan-phase 23
