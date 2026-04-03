@@ -334,5 +334,5 @@ Plans:
 | 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
 | 22. Landing Page | 1/2 | In Progress|  |
 | 23. Copy Interna | 1/2 | Complete    | 2026-04-02 |
-| 24. Continuidade e Fluxo | 3/3 | Complete   | 2026-04-03 |
+| 24. Continuidade e Fluxo | 3/3 | Complete    | 2026-04-03 |
 | 25. Plano Premium (UI/conceito) | 0/TBD | Not started | - |
