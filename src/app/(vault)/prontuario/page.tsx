@@ -72,8 +72,11 @@ export default async function ProntuarioPage() {
                   Último registro:{" "}
                   {latestNote ? formatDate(latestNote.createdAt) : "Sem registros"}
                 </p>
+                {!latestNote && (
+                  <span style={newBadgeStyle}>Novo acompanhamento</span>
+                )}
               </div>
-              <Link href={`/patients/${patient.id}`} style={linkStyle}>
+              <Link href={`/prontuario/${patient.id}`} style={linkStyle}>
                 Ver prontuário
               </Link>
             </li>
@@ -195,4 +198,10 @@ const emptyStateTextStyle = {
   margin: "0.25rem 0",
   color: "var(--color-text-3)",
   fontSize: "0.9rem",
+} satisfies React.CSSProperties;
+
+const newBadgeStyle = {
+  fontSize: "0.75rem",
+  color: "var(--color-text-3)",
+  fontStyle: "italic",
 } satisfies React.CSSProperties;
