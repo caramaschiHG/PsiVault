@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Launch continuation
 status: planning
-stopped_at: Phase 24 context gathered
-last_updated: "2026-04-02T21:49:11.073Z"
-last_activity: 2026-04-01 — Phase 22 complete
+stopped_at: Completed 24-02-PLAN.md
+last_updated: "2026-04-03T17:50:47.088Z"
+last_activity: 2026-04-02 — Phase 23 complete
 progress:
   total_phases: 19
   completed_phases: 9
-  total_plans: 30
-  completed_plans: 27
-  percent: 40
+  total_plans: 33
+  completed_plans: 29
+  percent: 45
 ---
 
 # Project State
@@ -27,12 +27,12 @@ See: .planning/PROJECT.md (updated 2026-03-26 after v2.0 milestone defined)
 
 ## Current Position
 
-Phase: 22 — Landing Page ✅ complete | Next: 23 — Copy Interna
-Plan: 22-02 complete
-Status: Phase 22 done — ready to plan Phase 23
-Last activity: 2026-04-01 — Phase 22 complete
+Phase: 23 — Copy Interna ✅ complete | Next: 24 — Continuidade e Fluxo
+Plan: 23-02 complete
+Status: Phase 23 done (12/12 verified) — ready to plan Phase 24
+Last activity: 2026-04-02 — Phase 23 complete
 
-Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
+Progress: [█████░░░░░] 45% (3/5 v2.0 phases)
 
 ## v2.0 Roadmap Summary
 
@@ -86,6 +86,7 @@ Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 | Phase 21 P02 | 15 | 3 tasks | 3 files |
 | Phase 22-landing-page P01 | 5 | 3 tasks | 1 files |
 | Phase 23-copy-interna P01 | 525606 | 2 tasks | 4 files |
+| Phase 24-continuidade-e-fluxo P02 | 8 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -204,6 +205,9 @@ Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 - [Phase 23-copy-interna]: Item Prontuário inserido entre Pacientes e Financeiro em ambas as navs — ordem comunica prioridade clínica
 - [Phase 23-copy-interna]: Config removido do bottom-nav mobile — Configurações acessível apenas via sidebar desktop
 - [Phase 23-copy-interna]: A receber usado para singular e plural do badge de cobranças — reduz peso de jargão financeiro
+- [Phase 24-continuidade-e-fluxo]: careMode usado no lugar de serviceMode — plano tinha nome errado, modelo real usa careMode
+- [Phase 24-continuidade-e-fluxo]: Funções puras de timeline em arquivo .ts separado do Server Component — testabilidade sem acoplamento à rota
+- [Phase 24-continuidade-e-fluxo]: details/summary HTML nativo para seções recolhidas (dismissed, completedHidden) — zero JS adicional
 
 ### Pending Todos
 
@@ -220,6 +224,6 @@ Progress: [████░░░░░░] 40% (2/5 v2.0 phases)
 
 ## Session Continuity
 
-Last session: 2026-04-02T21:49:11.069Z
-Stopped at: Phase 24 context gathered
+Last session: 2026-04-03T17:50:47.084Z
+Stopped at: Completed 24-02-PLAN.md
 Resume: Plan Phase 23 (Copy Interna) — /gsd:plan-phase 23

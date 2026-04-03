@@ -27,10 +27,10 @@
 
 ### Cont — Continuidade e Fluxo de Documentos
 
-- [ ] **CONT-01**: Prontuário com navegação cronológica fluida — histórico de sessões visível, ordenado e navegável sem perda de contexto temporal
-- [ ] **CONT-02**: Fluxo sessão → registro → documento gerado é suave e intuitivo: o usuário nunca perde o fio condutor entre sessão, registro clínico e documento produzido
-- [ ] **CONT-03**: Hierarquia paciente → sessões → registros → documentos é visualmente coerente e orientada em todas as telas relevantes
-- [ ] **CONT-04**: Empty states, títulos e mensagens usam linguagem de acompanhamento ao longo do tempo — nunca de registros isolados
+- [x] **CONT-01**: Prontuário com navegação cronológica fluida — histórico de sessões visível, ordenado e navegável sem perda de contexto temporal
+- [x] **CONT-02**: Fluxo sessão → registro → documento gerado é suave e intuitivo: o usuário nunca perde o fio condutor entre sessão, registro clínico e documento produzido
+- [x] **CONT-03**: Hierarquia paciente → sessões → registros → documentos é visualmente coerente e orientada em todas as telas relevantes
+- [x] **CONT-04**: Empty states, títulos e mensagens usam linguagem de acompanhamento ao longo do tempo — nunca de registros isolados
 
 ### Prem — Plano Premium (conceito e UI)
 
@@ -100,10 +100,10 @@
 | NAV-01 | Phase 23 | Complete |
 | NAV-02 | Phase 23 | Complete |
 | NAV-03 | Phase 23 | Complete |
-| CONT-01 | Phase 24 | Pending |
-| CONT-02 | Phase 24 | Pending |
-| CONT-03 | Phase 24 | Pending |
-| CONT-04 | Phase 24 | Pending |
+| CONT-01 | Phase 24 | Complete |
+| CONT-02 | Phase 24 | Complete |
+| CONT-03 | Phase 24 | Complete |
+| CONT-04 | Phase 24 | Complete |
 | PREM-01 | Phase 25 | Pending |
 | PREM-02 | Phase 25 | Pending |
 | PREM-03 | Phase 25 | Pending |
