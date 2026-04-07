@@ -17,6 +17,11 @@ import { AppointmentSidePanel } from "./appointment-side-panel";
 import { rescheduleAppointmentAction } from "../../appointments/actions";
 import { useToast } from "../../../../components/ui/toast-provider";
 
+export type SlotClickHandler = (
+  slotStartsAt: string,
+  position: { top: number; left: number },
+) => void;
+
 interface CalendarGridProps {
   blocks: GridBlock[];
   panels: Record<string, React.ReactNode>;
@@ -24,11 +29,13 @@ interface CalendarGridProps {
   /** ISO date string for the day being rendered, e.g. "2026-03-20" */
   date: string;
   options: GridLayoutOptions;
+  /** Called when an empty slot is clicked. Opens quick create popover. */
+  onSlotClick?: SlotClickHandler;
 }
 
 const SLOT_MINUTES = 15;
 
-export function CalendarGrid({ blocks, panels, patientNames, date, options }: CalendarGridProps) {
+export function CalendarGrid({ blocks, panels, patientNames, date, options, onSlotClick }: CalendarGridProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
   const router = useRouter();
@@ -129,6 +136,7 @@ export function CalendarGrid({ blocks, panels, patientNames, date, options }: Ca
                 totalMinutes={totalMinutes}
                 pixelsPerMinute={pixelsPerMinute}
                 containerHeight={containerHeight}
+                onClick={onSlotClick}
               />
             ))}
 
@@ -169,9 +177,10 @@ interface DroppableSlotProps {
   totalMinutes: number;
   pixelsPerMinute: number;
   containerHeight: number;
+  onClick?: SlotClickHandler;
 }
 
-function DroppableSlot({ id, dayStartHour, totalMinutes, pixelsPerMinute }: DroppableSlotProps) {
+function DroppableSlot({ id, dayStartHour, totalMinutes, pixelsPerMinute, onClick }: DroppableSlotProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   // Parse hour and minute from slot id: "slot-2026-03-20T14:00"
@@ -181,9 +190,18 @@ function DroppableSlot({ id, dayStartHour, totalMinutes, pixelsPerMinute }: Drop
   const topPx = slotMinutes * pixelsPerMinute;
   const slotHeightPx = SLOT_MINUTES * pixelsPerMinute;
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (!onClick) return;
+    // Parse slot datetime from id: "slot-2026-03-20T14:00"
+    const dateTimePart = id.replace(/^slot-/, "");
+    const isoStartsAt = `${dateTimePart}:00.000Z`;
+    onClick(isoStartsAt, { top: e.clientY, left: e.clientX });
+  };
+
   return (
     <div
       ref={setNodeRef}
+      onClick={handleClick}
       style={{
         position: "absolute",
         top: topPx,
@@ -192,6 +210,7 @@ function DroppableSlot({ id, dayStartHour, totalMinutes, pixelsPerMinute }: Drop
         height: slotHeightPx,
         background: isOver ? "rgba(154, 52, 18, 0.06)" : "transparent",
         transition: "background 80ms",
+        cursor: onClick ? "pointer" : "default",
       }}
     />
   );

@@ -203,6 +203,81 @@ export async function createAppointmentAction(
   return null;
 }
 
+// ─── Create appointment (quick — no redirect, returns { success, error }) ──────
+
+export async function createAppointmentQuickAction(
+  formData: FormData,
+): Promise<{ success: boolean; error?: string }> {
+  const { accountId, workspaceId } = await resolveSession();
+  const repo = getAppointmentRepository();
+  const patientRepo = getPatientRepository();
+  const audit = getAuditRepository();
+  const now = new Date();
+
+  const patientId = String(formData.get("patientId") ?? "");
+  const startsAt = new Date(String(formData.get("startsAt") ?? ""));
+  const durationMinutes = Number(formData.get("durationMinutes") ?? 50);
+  const careMode = String(formData.get("careMode") ?? "IN_PERSON") as AppointmentCareMode;
+
+  try {
+    // Validate date
+    if (isNaN(startsAt.getTime())) {
+      return { success: false, error: "Data/horário inválido." };
+    }
+
+    // Guard: patient must be active
+    const patient = await patientRepo.findById(patientId, workspaceId);
+    if (!patient) return { success: false, error: "Paciente não encontrado." };
+    assertPatientSchedulable(patient);
+
+    // Check conflicts
+    const existing = await repo.listByDateRange(
+      workspaceId,
+      startsAt,
+      new Date(startsAt.getTime() + durationMinutes * 60_000),
+    );
+
+    const appointment = createAppointment(
+      { workspaceId, patientId, startsAt, durationMinutes, careMode },
+      { now, createId: generateId },
+    );
+
+    const conflictResult = checkConflicts(appointment, existing);
+    if (conflictResult.hasConflict) {
+      return { success: false, error: "Conflito de horário: o horário escolhido já está ocupado." };
+    }
+
+    await repo.save(appointment);
+
+    audit.append(
+      createAppointmentAuditEvent(
+        { type: "appointment.created", appointment, actor: { accountId, workspaceId } },
+        { now, createId: generateId },
+      ),
+    );
+
+    if (patient.email) {
+      const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
+      await queueAppointmentNotifications({
+        workspaceId, appointmentId: appointment.id, patientId,
+        recipientEmail: patient.email, startsAt: appointment.startsAt,
+        type: "CREATED", smtpPrefs, now, createId: generateId,
+      });
+    }
+
+    revalidatePath("/agenda");
+    return { success: true };
+  } catch (err) {
+    console.error("[createAppointmentQuickAction]", err);
+    if (err instanceof Error) {
+      if (err.message.includes("archived") || err.message.includes("schedulable")) {
+        return { success: false, error: "Este paciente está arquivado e não pode ser agendado." };
+      }
+    }
+    return { success: false, error: "Erro inesperado. Tente novamente." };
+  }
+}
+
 // ─── Reschedule appointment ────────────────────────────────────────────────────
 
 export async function rescheduleAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string }> {

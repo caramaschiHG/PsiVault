@@ -14,6 +14,7 @@ import type { GridBlock, GridLayoutOptions, PositionedBlock } from "../../../../
 import { AppointmentBlock } from "./appointment-block";
 import { AppointmentSidePanel } from "./appointment-side-panel";
 import { rescheduleAppointmentAction } from "../../appointments/actions";
+import type { SlotClickHandler } from "./calendar-grid";
 
 const SLOT_MINUTES = 15;
 const WEEKDAY_NAMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -33,6 +34,8 @@ interface WeekCalendarGridProps {
   /** ISO date string for the week start (Monday), e.g. "2026-03-16" */
   weekStart: string;
   options: GridLayoutOptions;
+  /** Called when an empty slot is clicked. Opens quick create popover. */
+  onSlotClick?: SlotClickHandler;
 }
 
 export function WeekCalendarGrid({
@@ -41,6 +44,7 @@ export function WeekCalendarGrid({
   patientNames,
   weekStart,
   options,
+  onSlotClick,
 }: WeekCalendarGridProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
@@ -192,6 +196,7 @@ export function WeekCalendarGrid({
                       id={slotId}
                       dayStartHour={dayStartHour}
                       pixelsPerMinute={pixelsPerMinute}
+                      onClick={onSlotClick}
                     />
                   ))}
 
@@ -226,9 +231,10 @@ interface DroppableSlotProps {
   id: string;
   dayStartHour: number;
   pixelsPerMinute: number;
+  onClick?: SlotClickHandler;
 }
 
-function DroppableSlot({ id, dayStartHour, pixelsPerMinute }: DroppableSlotProps) {
+function DroppableSlot({ id, dayStartHour, pixelsPerMinute, onClick }: DroppableSlotProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   // "slot-2026-03-16T09:15" → time part "09:15"
@@ -238,9 +244,18 @@ function DroppableSlot({ id, dayStartHour, pixelsPerMinute }: DroppableSlotProps
   const topPx = slotMinutes * pixelsPerMinute;
   const slotHeightPx = SLOT_MINUTES * pixelsPerMinute;
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (!onClick) return;
+    // Parse slot datetime from id: "slot-{dayIdx}-2026-03-16T09:15" or "slot-2026-03-16T09:15"
+    const dateTimePart = id.replace(/^slot-\d+-/, "").replace(/^slot-/, "");
+    const isoStartsAt = `${dateTimePart}:00.000Z`;
+    onClick(isoStartsAt, { top: e.clientY, left: e.clientX });
+  };
+
   return (
     <div
       ref={setNodeRef}
+      onClick={handleClick}
       style={{
         position: "absolute",
         top: topPx,
@@ -249,6 +264,7 @@ function DroppableSlot({ id, dayStartHour, pixelsPerMinute }: DroppableSlotProps
         height: slotHeightPx,
         background: isOver ? "rgba(154, 52, 18, 0.06)" : "transparent",
         transition: "background 80ms",
+        cursor: onClick ? "pointer" : "default",
       }}
     />
   );

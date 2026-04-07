@@ -53,6 +53,8 @@ import { EmptyState } from "../components/empty-state";
 import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 import { deriveMonthAgenda } from "../../../lib/appointments/agenda";
+import { createAppointmentQuickAction } from "../appointments/actions";
+import { QuickCreateWrapper } from "./components/quick-create-wrapper";
 
 const TIMEZONE = "America/Sao_Paulo";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -425,6 +427,13 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   // Session count for badge
   const sessionCount = activeView === "day" ? dayResult.cards.length : activeView === "week" ? weekResult.days.reduce((sum, d) => sum + d.cards.length, 0) : 0;
 
+  // Patient list for QuickCreate (normalized type)
+  const quickCreatePatients = allPatients.map((p) => ({
+    id: p.id,
+    fullName: p.fullName,
+    socialName: p.socialName ?? undefined,
+  }));
+
   return (
     <div style={pageLayoutStyle}>
       {/* Sidebar — MiniCalendar (desktop only) */}
@@ -478,38 +487,56 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
       {/* Agenda content */}
       {activeView === "day" ? (
-        dayResult.cards.length > 0 ? (
-          <CalendarGrid
-            blocks={appointments
-              .filter((a) => dayResult.cards.some((c) => c.appointmentId === a.id))
-              .map(toGridBlock)}
-            panels={panels}
-            patientNames={patientNames}
-            date={dateToParam(anchorDate)}
-            options={{ dayStartHour: 7, dayEndHour: 21 }}
-          />
-        ) : (
-          <div style={emptyStateContainerStyle}>
-            <EmptyState
-              icon={
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                </svg>
-              }
-              title="Sua agenda está livre hoje"
-              description="Nenhuma sessão agendada para este dia."
-              actionLabel="Agendar sessão"
-              actionHref="/appointments/new"
-            />
-          </div>
-        )
+        <QuickCreateWrapper
+          patients={quickCreatePatients}
+          defaultDurationMinutes={profile.defaultAppointmentDurationMinutes ?? 50}
+          defaultCareMode={profileCareMode}
+          onCreate={createAppointmentQuickAction}
+          renderGrid={(onSlotClick) =>
+            dayResult.cards.length > 0 ? (
+              <CalendarGrid
+                blocks={appointments
+                  .filter((a) => dayResult.cards.some((c) => c.appointmentId === a.id))
+                  .map(toGridBlock)}
+                panels={panels}
+                patientNames={patientNames}
+                date={dateToParam(anchorDate)}
+                options={{ dayStartHour: 7, dayEndHour: 21 }}
+                onSlotClick={onSlotClick}
+              />
+            ) : (
+              <div style={emptyStateContainerStyle}>
+                <EmptyState
+                  icon={
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                  }
+                  title="Sua agenda está livre hoje"
+                  description="Nenhuma sessão agendada para este dia."
+                  actionLabel="Agendar sessão"
+                  actionHref="/appointments/new"
+                />
+              </div>
+            )
+          }
+        />
       ) : activeView === "week" ? (
-        <WeekCalendarGrid
-          blocks={appointments.map(toGridBlock)}
-          panels={panels}
-          patientNames={patientNames}
-          weekStart={dateToParam(weekStart)}
-          options={{ dayStartHour: 7, dayEndHour: 21 }}
+        <QuickCreateWrapper
+          patients={quickCreatePatients}
+          defaultDurationMinutes={profile.defaultAppointmentDurationMinutes ?? 50}
+          defaultCareMode={profileCareMode}
+          onCreate={createAppointmentQuickAction}
+          renderGrid={(onSlotClick) => (
+            <WeekCalendarGrid
+              blocks={appointments.map(toGridBlock)}
+              panels={panels}
+              patientNames={patientNames}
+              weekStart={dateToParam(weekStart)}
+              options={{ dayStartHour: 7, dayEndHour: 21 }}
+              onSlotClick={onSlotClick}
+            />
+          )}
         />
       ) : (
         <AgendaMonthView
