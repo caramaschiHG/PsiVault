@@ -30,10 +30,13 @@ export async function createPatientAction(formData: FormData): Promise<void> {
   let createdPatientId: string | null = null;
 
   try {
+    const fullName = String(formData.get("fullName") ?? "").trim();
+    if (!fullName) return;
+
     const patient = createPatient(
       {
         workspaceId: workspaceId,
-        fullName: String(formData.get("fullName") ?? ""),
+        fullName,
         socialName: formData.get("socialName") ? String(formData.get("socialName")) : null,
         email: formData.get("email") ? String(formData.get("email")) : null,
         phone: formData.get("phone") ? String(formData.get("phone")) : null,
@@ -87,10 +90,13 @@ export async function updatePatientAction(formData: FormData): Promise<void> {
     const existing = await repo.findById(patientId, workspaceId);
     if (!existing) return;
 
+    const fullName = String(formData.get("fullName") ?? "").trim();
+    if (!fullName) return;
+
     const updated = updatePatient(
       existing,
       {
-        fullName: String(formData.get("fullName") ?? ""),
+        fullName,
         socialName: formData.get("socialName") ? String(formData.get("socialName")) : null,
         email: formData.get("email") ? String(formData.get("email")) : null,
         phone: formData.get("phone") ? String(formData.get("phone")) : null,

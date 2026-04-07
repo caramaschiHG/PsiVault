@@ -256,14 +256,9 @@ export async function applySeriesEdit(
   if (input.scope === "THIS") {
     inScope = allInSeries.filter((o) => o.id === input.targetId);
   } else if (input.scope === "THIS_AND_FUTURE") {
-    const targetIndex = target.seriesIndex ?? target.startsAt.getTime();
-    inScope = allInSeries.filter((o) => {
-      const oIndex = o.seriesIndex ?? o.startsAt.getTime();
-      return oIndex >= (target.seriesIndex !== null ? targetIndex : oIndex) &&
-        (target.seriesIndex !== null
-          ? (o.seriesIndex ?? Infinity) >= (target.seriesIndex as number)
-          : o.startsAt.getTime() >= target.startsAt.getTime());
-    });
+    inScope = allInSeries.filter((o) =>
+      o.startsAt.getTime() >= target.startsAt.getTime(),
+    );
   } else {
     // ALL
     inScope = allInSeries;

@@ -91,10 +91,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     allPatients.map((p) => [p.id, p.socialName ?? p.fullName]),
   );
 
-  const chargesResults = await Promise.all(
-    allPatients.map((p) => financeRepo.listByMonth(workspaceId, p.id, year, month)),
-  );
-  const allCharges: SessionCharge[] = chargesResults.flat();
+  const allCharges: SessionCharge[] = await financeRepo.listByWorkspaceAndMonth(workspaceId, year, month);
 
   allCharges.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 

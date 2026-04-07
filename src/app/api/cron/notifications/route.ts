@@ -58,36 +58,31 @@ export async function GET(request: NextRequest) {
   const dateFormatter = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric", timeZone: tz });
   const timeFormatter = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: tz });
 
-  let sent = 0;
-  let failed = 0;
-  let skipped = 0;
+  // ── Process jobs concurrently (avoids Vercel timeout on large batches) ──
+  const results = await Promise.allSettled(
+    dueJobs.map(async (job) => {
+      const smtpConfig = smtpByWorkspace.get(job.workspaceId);
 
-  for (const job of dueJobs) {
-    const smtpConfig = smtpByWorkspace.get(job.workspaceId);
+      if (!smtpConfig) {
+        await jobRepo.save({ ...job, status: "CANCELED", updatedAt: now });
+        return "skipped";
+      }
 
-    if (!smtpConfig) {
-      skipped++;
-      continue;
-    }
+      // Verify appointment status
+      const appointment = await appointmentRepo.findById(job.appointmentId, job.workspaceId);
+      if (!appointment || SKIP_STATUSES.has(appointment.status)) {
+        await jobRepo.save({ ...job, status: "CANCELED", updatedAt: now });
+        return "skipped";
+      }
 
-    // Verify appointment status
-    const appointment = await appointmentRepo.findById(job.appointmentId, job.workspaceId);
-    if (!appointment || SKIP_STATUSES.has(appointment.status)) {
-      // Cancel job and skip
-      await jobRepo.save({ ...job, status: "CANCELED", updatedAt: now });
-      skipped++;
-      continue;
-    }
+      // Resolve patient name
+      const patient = await patientRepo.findById(job.patientId, job.workspaceId);
+      const patientName = patient ? (patient.socialName ?? patient.fullName) : "Paciente";
 
-    // Resolve patient name
-    const patient = await patientRepo.findById(job.patientId, job.workspaceId);
-    const patientName = patient ? (patient.socialName ?? patient.fullName) : "Paciente";
+      const appointmentDate = dateFormatter.format(appointment.startsAt);
+      const appointmentTime = timeFormatter.format(appointment.startsAt);
+      const fromName = smtpConfig.fromName;
 
-    const appointmentDate = dateFormatter.format(appointment.startsAt);
-    const appointmentTime = timeFormatter.format(appointment.startsAt);
-    const fromName = smtpConfig.fromName;
-
-    try {
       let emailData: { subject: string; html: string };
 
       switch (job.type) {
@@ -104,20 +99,35 @@ export async function GET(request: NextRequest) {
           emailData = buildCancellationEmail({ patientName, appointmentDate, appointmentTime, fromName });
           break;
         default:
-          skipped++;
-          continue;
+          await jobRepo.save({ ...job, status: "CANCELED", updatedAt: now });
+          return "skipped";
       }
 
-      await sendEmail(smtpConfig, { to: job.recipientEmail, ...emailData });
-      await jobRepo.save({ ...job, status: "SENT", sentAt: now, updatedAt: now });
-      sent++;
-    } catch (err) {
-      const errorNote = err instanceof Error ? err.message : String(err);
-      await jobRepo.save({ ...job, status: "FAILED", failedAt: now, errorNote, updatedAt: now });
-      failed++;
-      console.error(`[cron/notifications] Job ${job.id} failed:`, err);
-    }
-  }
+      try {
+        await sendEmail(smtpConfig, { to: job.recipientEmail, ...emailData });
+        await jobRepo.save({ ...job, status: "SENT", sentAt: now, updatedAt: now });
+        return "sent";
+      } catch (err) {
+        const errorNote = err instanceof Error ? err.message : String(err);
+        // Retry: reschedule 5 minutes in the future instead of failing permanently
+        const retryAt = new Date(now.getTime() + 5 * 60 * 1000);
+        await jobRepo.save({
+          ...job,
+          status: "PENDING",
+          scheduledFor: retryAt,
+          failedAt: now,
+          errorNote: `${errorNote} (retry scheduled)`,
+          updatedAt: now,
+        });
+        return "retry";
+      }
+    }),
+  );
 
-  return Response.json({ ok: true, sent, failed, skipped });
+  const sent = results.filter((r) => r.status === "fulfilled" && r.value === "sent").length;
+  const failed = results.filter((r) => r.status === "rejected").length;
+  const skipped = results.filter((r) => r.status === "fulfilled" && r.value === "skipped").length;
+  const retried = results.filter((r) => r.status === "fulfilled" && r.value === "retry").length;
+
+  return Response.json({ ok: true, sent, failed, skipped, retried });
 }

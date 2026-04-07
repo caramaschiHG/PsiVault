@@ -1,22 +1,13 @@
 import { SERVICE_MODE_OPTIONS } from "../../../lib/setup/constants";
 import { buildSetupReadiness } from "../../../lib/setup/readiness";
+import { getPracticeProfileSnapshot } from "../../../lib/setup/profile";
+import { resolveSession } from "../../../lib/supabase/session";
 import { SetupChecklist } from "./components/setup-checklist";
 
-const draftProfile = {
-  fullName: "Dra. Helena Prado",
-  crp: "CRP 06/123456",
-  contactEmail: "contato@consultorio.com.br",
-  contactPhone: "",
-  defaultAppointmentDurationMinutes: 50,
-  defaultSessionPriceInCents: 18000,
-  serviceModes: [SERVICE_MODE_OPTIONS.inPerson, SERVICE_MODE_OPTIONS.online],
-  theoreticalOrientation: "Psicanálise",
-  preferredThinker: "Freud",
-  signatureAsset: null,
-};
-
-export default function VaultSetupPage() {
-  const readiness = buildSetupReadiness(draftProfile);
+export default async function VaultSetupPage() {
+  const { workspaceId } = await resolveSession();
+  const profile = await getPracticeProfileSnapshot(undefined, workspaceId);
+  const readiness = buildSetupReadiness(profile);
 
   return (
     <main style={shellStyle}>
@@ -85,7 +76,7 @@ export default function VaultSetupPage() {
             <div style={sidebarListItemStyle}>Anexar assinatura quando quiser reutilizar em documentos</div>
           </div>
 
-          <a href="/vault/settings/profile" style={sidebarLinkStyle}>
+          <a href="/settings/profile" style={sidebarLinkStyle}>
             Abrir perfil profissional
           </a>
         </aside>

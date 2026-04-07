@@ -62,15 +62,27 @@ export async function createAppointmentAction(
   const recurrenceType = String(formData.get("recurrenceType") ?? "weekly") as "weekly" | "biweekly" | "twice_weekly";
   const recurrenceCountRaw = formData.get("recurrenceCount");
   const recurrenceCount: number | "OPEN_ENDED" =
-    recurrenceCountRaw === "OPEN_ENDED" ? "OPEN_ENDED" : Number(recurrenceCountRaw ?? 1);
+    recurrenceCountRaw === "OPEN_ENDED" ? "OPEN_ENDED" : (recurrenceCountRaw && String(recurrenceCountRaw).trim() !== "" ? Number(recurrenceCountRaw) : 1);
   const recurrenceDaysOfWeekRaw = formData.get("recurrenceDaysOfWeek");
-  const recurrenceDaysOfWeek: [number, number] = recurrenceDaysOfWeekRaw
-    ? (JSON.parse(String(recurrenceDaysOfWeekRaw)) as [number, number])
-    : [1, 4];
 
   let redirectPath: string | null = null;
 
   try {
+    // Validate date
+    if (isNaN(startsAt.getTime())) {
+      return { error: "Data/horário inválido." };
+    }
+
+    // Parse recurrence days safely (inside try/catch)
+    let recurrenceDaysOfWeek: [number, number] = [1, 4];
+    if (recurrenceDaysOfWeekRaw) {
+      try {
+        recurrenceDaysOfWeek = JSON.parse(String(recurrenceDaysOfWeekRaw)) as [number, number];
+      } catch {
+        return { error: "Configuração de recorrência inválida." };
+      }
+    }
+
     // Guard: patient must be active
     const patient = await patientRepo.findById(patientId, workspaceId);
     if (!patient) return { error: "Paciente não encontrado." };
@@ -218,10 +230,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
           ? allInSeries
           : allInSeries.filter(
               (o) =>
-                (o.seriesIndex ?? o.startsAt.getTime()) >=
-                (existing.seriesIndex !== null
-                  ? (existing.seriesIndex as number)
-                  : existing.startsAt.getTime()),
+                o.startsAt.getTime() >= existing.startsAt.getTime(),
             );
 
       // First pass: check all conflicts before saving any
@@ -373,10 +382,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ suc
           ? allInSeries
           : allInSeries.filter(
               (o) =>
-                (o.seriesIndex ?? o.startsAt.getTime()) >=
-                (existing.seriesIndex !== null
-                  ? (existing.seriesIndex as number)
-                  : existing.startsAt.getTime()),
+                o.startsAt.getTime() >= existing.startsAt.getTime(),
             );
 
       for (const occurrence of inScope) {
@@ -501,7 +507,8 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
   const now = new Date();
 
   const appointmentId = String(formData.get("appointmentId") ?? "");
-  const freeText = String(formData.get("patientRecordEntry") ?? "").trim();
+  const rawRecordEntry = formData.get("patientRecordEntry");
+  const freeText = rawRecordEntry ? String(rawRecordEntry).trim() : "";
 
   try {
     const existing = await repo.findById(appointmentId, workspaceId);

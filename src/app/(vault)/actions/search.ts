@@ -35,10 +35,11 @@ export async function searchAllAction(query: string): Promise<SearchResultItem[]
 
   // Load all appointments using a wide date range stub
   // (no listAll method available — use wide date range)
+  // Cap date range to avoid loading excessive data; extends as needed.
   const appointments = await appointmentRepo.listByDateRange(
     workspaceId,
     new Date(2020, 0, 1),
-    new Date(2030, 11, 31),
+    new Date(2027, 11, 31),
   );
 
   // Load all documents by iterating over all patients (Asynchronous)
