@@ -30,6 +30,7 @@ import { RemindersSection } from "./components/reminders-section";
 import { QuickActionFab } from "./components/quick-action-fab";
 import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
+import { UpdateNotification } from "../../components/update-notification";
 
 export default async function InicioPage() {
   const route = "vault.inicio";
@@ -224,6 +225,7 @@ export default async function InicioPage() {
       </section>
 
       <QuickActionFab />
+      <UpdateNotification />
     </main>
   );
 }
