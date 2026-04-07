@@ -42,12 +42,15 @@ import { RemoteIssueForm } from "./components/remote-issue-form";
 import { AgendaDayView } from "./components/agenda-day-view";
 import { CalendarGrid } from "./components/calendar-grid";
 import { WeekCalendarGrid } from "./components/week-calendar-grid";
+import { AgendaMonthView } from "./components/agenda-month-view";
+import { MiniCalendar } from "./components/mini-calendar";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
 import { AppointmentQuickActions } from "./components/appointment-quick-actions";
 import { toGridBlock } from "../../../lib/appointments/grid-layout";
 import { EmptyState } from "../components/empty-state";
 import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
+import { deriveMonthAgenda } from "../../../lib/appointments/agenda";
 
 const TIMEZONE = "America/Sao_Paulo";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -371,21 +374,29 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const dayResult = deriveDayAgenda(appointments, anchorDate, TIMEZONE);
   const weekStart = activeView === "week" ? anchorDate : getWeekStart(anchorDate);
   const weekResult = deriveWeekAgenda(appointments, weekStart, TIMEZONE);
+  const monthStart = getMonthStart(anchorDate);
+  const monthResult = deriveMonthAgenda(appointments, anchorDate, TIMEZONE);
 
   // Build toolbar props
   const prevDate =
     activeView === "day"
       ? new Date(anchorDate.getTime() - DAY_MS)
-      : new Date(anchorDate.getTime() - WEEK_MS);
+      : activeView === "week"
+        ? new Date(anchorDate.getTime() - WEEK_MS)
+        : new Date(anchorDate.getTime() - 30 * DAY_MS);
   const nextDate =
     activeView === "day"
       ? new Date(anchorDate.getTime() + DAY_MS)
-      : new Date(anchorDate.getTime() + WEEK_MS);
+      : activeView === "week"
+        ? new Date(anchorDate.getTime() + WEEK_MS)
+        : new Date(anchorDate.getTime() + 30 * DAY_MS);
 
   const periodLabel =
     activeView === "day"
       ? formatDayLabel(anchorDate)
-      : formatWeekLabel(weekStart, new Date(weekStart.getTime() + 6 * DAY_MS));
+      : activeView === "week"
+        ? formatWeekLabel(weekStart, new Date(weekStart.getTime() + 6 * DAY_MS))
+        : formatMonthLabel(monthResult.year, monthResult.month);
 
   const todayDate = getTodayUTCMidnight();
 
@@ -402,19 +413,37 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     },
   );
 
-  return (
-    <main style={shellStyle}>
-      {/* Page heading */}
-      <div style={headingRowStyle}>
-        <div style={headingTextStyle}>
-          <p style={eyebrowStyle}>Consultório</p>
-          <h1 style={titleStyle}>Agenda</h1>
-        </div>
+  // Build appointment counts map for MiniCalendar (date → count)
+  const appointmentCounts = new Map<string, number>();
+  for (const appt of appointments) {
+    const dateStr = appt.startsAt.toISOString().slice(0, 10);
+    appointmentCounts.set(dateStr, (appointmentCounts.get(dateStr) ?? 0) + 1);
+  }
 
-        <Link href="/appointments/new" style={newApptButtonStyle}>
-          Nova consulta
-        </Link>
-      </div>
+  return (
+    <div style={pageLayoutStyle}>
+      {/* Sidebar — MiniCalendar (desktop only) */}
+      <aside style={sidebarStyle}>
+        <MiniCalendar
+          currentDate={anchorDate}
+          appointmentCounts={appointmentCounts}
+          activeView={activeView}
+        />
+      </aside>
+
+      {/* Main content */}
+      <main style={shellStyle}>
+        {/* Page heading */}
+        <div style={headingRowStyle}>
+          <div style={headingTextStyle}>
+            <p style={eyebrowStyle}>Consultório</p>
+            <h1 style={titleStyle}>Agenda</h1>
+          </div>
+
+          <Link href="/appointments/new" style={newApptButtonStyle}>
+            Nova consulta
+          </Link>
+        </div>
 
       {/* Toolbar */}
       <AgendaToolbar
@@ -424,6 +453,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         nextHref={`/agenda?view=${activeView}&date=${dateToParam(nextDate)}`}
         dayViewHref={`/agenda?view=day&date=${dateToParam(anchorDate)}`}
         weekViewHref={`/agenda?view=week&date=${dateToParam(weekStart)}`}
+        monthViewHref={`/agenda?view=month&date=${dateToParam(monthStart)}`}
         todayHref={`/agenda?view=${activeView}&date=${dateToParam(todayDate)}`}
       />
 
@@ -454,13 +484,24 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             />
           </div>
         )
-      ) : (
+      ) : activeView === "week" ? (
         <WeekCalendarGrid
           blocks={appointments.map(toGridBlock)}
           panels={panels}
           patientNames={patientNames}
           weekStart={dateToParam(weekStart)}
           options={{ dayStartHour: 7, dayEndHour: 21 }}
+        />
+      ) : (
+        <AgendaMonthView
+          month={monthResult}
+          patientNames={patientNames}
+          onDayClick={(date) => {
+            // Redirect handled by component
+          }}
+          onAppointmentClick={(appointmentId) => {
+            // Panel handled by component
+          }}
         />
       )}
 
@@ -498,7 +539,8 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       >
         +
       </a>
-    </main>
+      </main>
+    </div>
   );
 }
 
@@ -555,6 +597,21 @@ function formatWeekLabel(start: Date, end: Date): string {
   return `${startDay} – ${endDay}`;
 }
 
+/** Returns the first day of the month containing the given date (UTC). */
+function getMonthStart(date: Date): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+}
+
+function formatMonthLabel(year: number, month: number): string {
+  // month is 1-based; create a UTC date for formatting
+  const date = new Date(Date.UTC(year, month - 1, 1));
+  return date.toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const emptyStateContainerStyle = {
@@ -564,8 +621,8 @@ const emptyStateContainerStyle = {
 } satisfies React.CSSProperties;
 
 const shellStyle = {
-  padding: "2rem 2.5rem",
-  maxWidth: 960,
+  padding: 0,
+  maxWidth: "none",
   width: "100%",
   display: "grid",
   gap: "1.5rem",
@@ -774,4 +831,23 @@ const remoteIssueNoteStyle = {
   padding: "0.4rem 0.6rem",
   borderRadius: "6px",
   whiteSpace: "pre-wrap" as const,
+} satisfies React.CSSProperties;
+
+// ─── Page layout (sidebar + main) ─────────────────────────────────────────────
+
+const pageLayoutStyle = {
+  display: "grid",
+  gridTemplateColumns: "220px 1fr",
+  gap: "1.5rem",
+  padding: "2rem 2.5rem",
+  maxWidth: "1200px",
+  width: "100%",
+  minHeight: "100vh",
+} satisfies React.CSSProperties;
+
+const sidebarStyle = {
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: "1rem",
+  paddingTop: "0.5rem",
 } satisfies React.CSSProperties;

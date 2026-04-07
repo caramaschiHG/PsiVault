@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Launch continuation
-status: planning
-stopped_at: Completed 24-03-PLAN.md
-last_updated: "2026-04-03T17:55:41.807Z"
-last_activity: 2026-04-02 — Phase 23 complete
+milestone: v2.0
+milestone_name: Reposicionamento Psicanalítico
+status: complete
+stopped_at: "v2.0 milestone complete — all 16/16 requirements verified"
+last_updated: "2026-04-07T21:50:00.000Z"
+last_activity: 2026-04-07 — Phase 22 complete (LAND-03, LAND-04 verified in code)
 progress:
-  total_phases: 19
-  completed_phases: 10
-  total_plans: 33
-  completed_plans: 30
-  percent: 45
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 11
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-03-26 after v2.0 milestone defined)
 
 ## Current Position
 
-Phase: 25 — Plano Premium (UI/conceito) ✅ complete
-Plan: 25-02 complete
-Status: Phase 25 done (11/11 verified) — ready for milestone completion
-Last activity: 2026-04-03 — Phase 25 verified
+Phase: 22 — Landing Page ✅ complete
+Plan: 22-02 complete
+Status: Phase 22 done — v2.0 milestone COMPLETE
+Last activity: 2026-04-07 — LAND-03 and LAND-04 verified in code
 
 Progress: [██████████] 100% (5/5 v2.0 phases)
 
@@ -213,11 +213,18 @@ Progress: [██████████] 100% (5/5 v2.0 phases)
 
 ### Pending Todos
 
-- Plan and execute Phase 21 (Brand Foundation) — first v2.0 phase.
-- Plan and execute Phase 22 (Landing Page).
-- ~~Plan and execute Phase 23 (Copy Interna).~~
-- ~~Plan and execute Phase 24 (Continuidade e Fluxo).~~
-- ~~Plan and execute Phase 25 (Plano Premium UI/conceito).~~
+- ~~Plan and execute Phase 21 (Brand Foundation)~~ ✅
+- ~~Plan and execute Phase 22 (Landing Page)~~ ✅
+- ~~Plan and execute Phase 23 (Copy Interna)~~ ✅
+- ~~Plan and execute Phase 24 (Continuidade e Fluxo)~~ ✅
+- ~~Plan and execute Phase 25 (Plano Premium UI/conceito)~~ ✅
+
+### Next Milestone Decisions
+
+O milestone v2.0 está **COMPLETO** (16/16 requirements). Próximas opções:
+1. **Agenda Upgrade** — reescrever agenda estilo Google Calendar (plano existente em `.planning/agenda-upgrade.md`)
+2. **v1.2 Verification artifacts** — criar VERIFICATION.md para phases 07, 08, 13
+3. **v3.0 Planning** — AI Assistant integration (Claude API) + Pricing page
 
 ### Blockers/Concerns
 

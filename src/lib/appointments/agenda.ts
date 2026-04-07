@@ -199,3 +199,77 @@ export function deriveWeekAgenda(
     days,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Month agenda
+// ---------------------------------------------------------------------------
+
+export interface MonthDaySlot {
+  date: Date;
+  cards: AgendaCard[];
+  isCurrentMonth: boolean;
+}
+
+export interface MonthAgendaResult {
+  year: number;
+  month: number; // 1-based
+  days: MonthDaySlot[]; // 35 or 42 days (5-6 weeks)
+}
+
+/**
+ * Derive a full-month grid starting from the anchor date's month.
+ *
+ * Returns a grid of 35 or 42 day slots, always starting on Monday and covering
+ * complete weeks that contain the target month. Days outside the target month
+ * are marked with `isCurrentMonth: false`.
+ *
+ * @param appointments  All appointments to distribute across the month.
+ * @param anchorDate    Any date within the target month.
+ * @param timezone      IANA timezone string used for local date boundary checks.
+ */
+export function deriveMonthAgenda(
+  appointments: Appointment[],
+  anchorDate: Date,
+  timezone: string,
+): MonthAgendaResult {
+  // Get year/month from anchor (using UTC since anchorDate is a UTC midnight anchor)
+  const year = anchorDate.getUTCFullYear();
+  const month = anchorDate.getUTCMonth(); // 0-based
+
+  // First day of the month
+  const firstOfMonth = new Date(Date.UTC(year, month, 1));
+
+  // Find the Monday on or before the 1st (ISO 8601 week start)
+  const dayOfWeek = firstOfMonth.getUTCDay(); // 0 = Sunday
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const gridStart = new Date(firstOfMonth.getTime() - daysFromMonday * DAY_MS);
+
+  // Determine if we need 5 or 6 weeks
+  // If the last day of the month falls on Monday or Tuesday, we need 6 weeks
+  const lastOfMonth = new Date(Date.UTC(year, month + 1, 0));
+  const lastDayOfWeek = lastOfMonth.getUTCDay();
+  const totalDays = daysFromMonday + lastOfMonth.getUTCDate() + (lastDayOfWeek === 0 ? 1 : 7 - lastDayOfWeek + 1);
+  const weekCount = Math.ceil(totalDays / 7);
+  const gridDays = weekCount * 7; // 35 or 42
+
+  // Build day slots
+  const days: MonthDaySlot[] = [];
+  for (let i = 0; i < gridDays; i++) {
+    const dayDate = new Date(gridStart.getTime() + i * DAY_MS);
+    const dayResult = deriveDayAgenda(appointments, dayDate, timezone);
+    const dateParts = getLocalDateParts(dayDate, timezone);
+    const isCurrentMonth = dateParts.year === year && dateParts.month === month + 1;
+
+    days.push({
+      date: dayDate,
+      cards: dayResult.cards,
+      isCurrentMonth,
+    });
+  }
+
+  return {
+    year,
+    month: month + 1, // 1-based
+    days,
+  };
+}

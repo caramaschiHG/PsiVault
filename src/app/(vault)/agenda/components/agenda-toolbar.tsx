@@ -10,21 +10,23 @@
 
 import Link from "next/link";
 
-export type AgendaView = "day" | "week";
+export type AgendaView = "day" | "week" | "month";
 
 interface AgendaToolbarProps {
   /** Current active view. */
   activeView: AgendaView;
   /** Human-readable label for the current period (e.g., "16 de março" or "16–22 de março"). */
   periodLabel: string;
-  /** URL for the previous day/week. */
+  /** URL for the previous day/week/month. */
   prevHref: string;
-  /** URL for the next day/week. */
+  /** URL for the next day/week/month. */
   nextHref: string;
   /** URL to switch to the day view (for the current anchor date). */
   dayViewHref: string;
   /** URL to switch to the week view (for the current anchor date). */
   weekViewHref: string;
+  /** URL to switch to the month view (for the current anchor date). */
+  monthViewHref: string;
   /** URL to navigate to today. */
   todayHref: string;
 }
@@ -36,6 +38,7 @@ export function AgendaToolbar({
   nextHref,
   dayViewHref,
   weekViewHref,
+  monthViewHref,
   todayHref,
 }: AgendaToolbarProps) {
   return (
@@ -76,6 +79,15 @@ export function AgendaToolbar({
           }}
         >
           Semana
+        </Link>
+        <Link
+          href={monthViewHref}
+          style={{
+            ...viewTabStyle,
+            ...(activeView === "month" ? activeViewTabStyle : {}),
+          }}
+        >
+          Mês
         </Link>
       </div>
     </div>

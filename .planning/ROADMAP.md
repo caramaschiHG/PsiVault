@@ -272,12 +272,12 @@ Plans:
   1. O hero identifica explicitamente o nicho psicanalítico, usa vocabulário de prontuário/escuta/continuidade/sigilo, e tem CTA para cadastro — um psicólogo ao ler sabe que é para ele
   2. A seção de módulos apresenta Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing de prática clínica analítica — sem linguagem SaaS genérica
   3. A seção de trust comunica sigilo e preservação de longo prazo com linguagem de responsabilidade operacional — sem promessas legais vagas como "em conformidade com CFP"
-  4. O FAQ responde dúvidas reais do psicólogo autônomo de consultório privado (dados, acesso, funcionamento offline, continuidade)
-**Plans:** 1/2 plans executed
+  4. O FAQ responde dúvidas reais do psicólogo autônomo de consultório privado (dados, acesso, funcionamento offline, exportação, cancelamento, conformidade ética)
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 22-01-PLAN.md — Hero (eyebrow, H1, lead, bullets, mockup prontuário) + features reordenadas (Prontuário primeiro)
-- [ ] 22-02-PLAN.md — Trust points, pains, security, FAQ e ajuste fino das seções secundárias
+- [x] 22-01-PLAN.md — Hero (eyebrow, H1, lead, bullets, mockup prontuário) + features reordenadas (Prontuário primeiro)
+- [x] 22-02-PLAN.md — Trust points, pains, security, FAQ e ajuste fino das seções secundárias
 
 ---
 
@@ -336,7 +336,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
-| 22. Landing Page | 1/2 | In Progress|  |
-| 23. Copy Interna | 1/2 | Complete    | 2026-04-02 |
+| 22. Landing Page | 2/2 | **Complete**| **2026-04-07** |
+| 23. Copy Interna | 2/2 | Complete    | 2026-04-02 |
 | 24. Continuidade e Fluxo | 3/3 | Complete    | 2026-04-03 |
 | 25. Plano Premium (UI/conceito) | 2/2 | Complete | 2026-04-03 |
