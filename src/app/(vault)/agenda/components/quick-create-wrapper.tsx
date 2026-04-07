@@ -10,8 +10,8 @@ interface QuickCreateWrapperProps {
   defaultDurationMinutes: number;
   defaultCareMode: "IN_PERSON" | "ONLINE";
   onCreate: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
-  /** The grid component rendered with onSlotClick injected */
-  renderGrid: (onSlotClick: SlotClickHandler) => React.ReactNode;
+  /** The grid element to render — receives onSlotClick via cloneElement */
+  grid: React.ReactElement<{ onSlotClick?: SlotClickHandler }>;
 }
 
 export function QuickCreateWrapper({
@@ -19,7 +19,7 @@ export function QuickCreateWrapper({
   defaultDurationMinutes,
   defaultCareMode,
   onCreate,
-  renderGrid,
+  grid,
 }: QuickCreateWrapperProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -50,9 +50,18 @@ export function QuickCreateWrapper({
     [onCreate, router, handleClose],
   );
 
+  // Inject onSlotClick into the grid element
+  const gridWithHandler = {
+    ...grid,
+    props: {
+      ...grid.props,
+      onSlotClick: handleSlotClick,
+    },
+  };
+
   return (
     <>
-      {renderGrid(handleSlotClick)}
+      {gridWithHandler}
       {popoverState && (
         <QuickCreatePopover
           patients={patients}

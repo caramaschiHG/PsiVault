@@ -492,7 +492,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           defaultDurationMinutes={profile.defaultAppointmentDurationMinutes ?? 50}
           defaultCareMode={profileCareMode}
           onCreate={createAppointmentQuickAction}
-          renderGrid={(onSlotClick) =>
+          grid={
             dayResult.cards.length > 0 ? (
               <CalendarGrid
                 blocks={appointments
@@ -502,7 +502,6 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
                 patientNames={patientNames}
                 date={dateToParam(anchorDate)}
                 options={{ dayStartHour: 7, dayEndHour: 21 }}
-                onSlotClick={onSlotClick}
               />
             ) : (
               <div style={emptyStateContainerStyle}>
@@ -527,16 +526,15 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           defaultDurationMinutes={profile.defaultAppointmentDurationMinutes ?? 50}
           defaultCareMode={profileCareMode}
           onCreate={createAppointmentQuickAction}
-          renderGrid={(onSlotClick) => (
+          grid={
             <WeekCalendarGrid
               blocks={appointments.map(toGridBlock)}
               panels={panels}
               patientNames={patientNames}
               weekStart={dateToParam(weekStart)}
               options={{ dayStartHour: 7, dayEndHour: 21 }}
-              onSlotClick={onSlotClick}
             />
-          )}
+          }
         />
       ) : (
         <AgendaMonthView
