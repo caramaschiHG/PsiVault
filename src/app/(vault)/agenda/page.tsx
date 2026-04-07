@@ -44,6 +44,8 @@ import { CalendarGrid } from "./components/calendar-grid";
 import { WeekCalendarGrid } from "./components/week-calendar-grid";
 import { AgendaMonthView } from "./components/agenda-month-view";
 import { MiniCalendar } from "./components/mini-calendar";
+import { AgendaKeyboard } from "./components/agenda-keyboard-wrapper";
+import { useKeyboardShortcuts } from "./components/agenda-keyboard";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
 import { AppointmentQuickActions } from "./components/appointment-quick-actions";
 import { toGridBlock } from "../../../lib/appointments/grid-layout";
@@ -420,6 +422,9 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     appointmentCounts.set(dateStr, (appointmentCounts.get(dateStr) ?? 0) + 1);
   }
 
+  // Session count for badge
+  const sessionCount = activeView === "day" ? dayResult.cards.length : activeView === "week" ? weekResult.days.reduce((sum, d) => sum + d.cards.length, 0) : 0;
+
   return (
     <div style={pageLayoutStyle}>
       {/* Sidebar — MiniCalendar (desktop only) */}
@@ -433,6 +438,13 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
       {/* Main content */}
       <main style={shellStyle}>
+        {/* Keyboard shortcuts */}
+        <AgendaKeyboard
+          currentView={activeView}
+          currentDate={anchorDate.toISOString()}
+          monthStart={monthStart.toISOString()}
+        />
+
         {/* Page heading */}
         <div style={headingRowStyle}>
           <div style={headingTextStyle}>
@@ -440,9 +452,16 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             <h1 style={titleStyle}>Agenda</h1>
           </div>
 
-          <Link href="/appointments/new" style={newApptButtonStyle}>
-            Nova consulta
-          </Link>
+          <div style={headingActionsStyle}>
+            {sessionCount > 0 && (
+              <span style={sessionBadgeStyle}>
+                {sessionCount} sess{sessionCount !== 1 ? "ões" : "ão"}
+              </span>
+            )}
+            <Link href="/appointments/new" style={newApptButtonStyle}>
+              Nova consulta
+            </Link>
+          </div>
         </div>
 
       {/* Toolbar */}
@@ -635,6 +654,23 @@ const headingRowStyle = {
   justifyContent: "space-between",
   gap: "1rem",
   flexWrap: "wrap" as const,
+} satisfies React.CSSProperties;
+
+const headingActionsStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.75rem",
+  flexWrap: "wrap" as const,
+} satisfies React.CSSProperties;
+
+const sessionBadgeStyle = {
+  fontSize: "0.75rem",
+  fontWeight: 600,
+  color: "var(--color-text-2)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
+  borderRadius: "9999px",
+  padding: "0.2rem 0.6rem",
 } satisfies React.CSSProperties;
 
 const headingTextStyle = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useCallback } from "react";
+import { useState, useTransition, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   DndContext,
@@ -141,6 +141,13 @@ export function CalendarGrid({ blocks, panels, patientNames, date, options }: Ca
                 onClick={setSelectedId}
               />
             ))}
+
+            {/* Current time indicator */}
+            <CurrentTimeIndicator
+              dayStartHour={dayStartHour}
+              dayEndHour={options.dayEndHour ?? 21}
+              pixelsPerMinute={pixelsPerMinute}
+            />
           </div>
         </div>
       </DndContext>
@@ -187,6 +194,62 @@ function DroppableSlot({ id, dayStartHour, totalMinutes, pixelsPerMinute }: Drop
         transition: "background 80ms",
       }}
     />
+  );
+}
+
+// ─── Current time indicator ──────────────────────────────────────────────────
+
+function CurrentTimeIndicator({
+  dayStartHour,
+  dayEndHour,
+  pixelsPerMinute,
+}: {
+  dayStartHour: number;
+  dayEndHour: number;
+  pixelsPerMinute: number;
+}) {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const totalMinutes = (dayEndHour - dayStartHour) * 60;
+  const containerHeight = totalMinutes * pixelsPerMinute;
+
+  const minutesSinceStart = (now.getUTCHours() * 60 + now.getUTCMinutes()) - (dayStartHour * 60);
+  const topPx = minutesSinceStart * pixelsPerMinute;
+
+  // Only render if within the visible grid range
+  if (topPx < 0 || topPx > containerHeight) return null;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: topPx,
+        left: 0,
+        right: 0,
+        height: "2px",
+        background: "#dc2626",
+        zIndex: 10,
+        pointerEvents: "none",
+      }}
+      aria-hidden="true"
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: "-3px",
+          width: "8px",
+          height: "8px",
+          borderRadius: "50%",
+          background: "#dc2626",
+        }}
+      />
+    </div>
   );
 }
 
