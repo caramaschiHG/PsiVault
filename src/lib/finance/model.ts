@@ -156,3 +156,41 @@ export function deriveMonthlyFinancialSummary(charges: SessionCharge[]): Monthly
     totalPendingCents,
   };
 }
+
+/**
+ * Enrich charges with auto-computed overdue status.
+ *
+ * If a charge has an associated appointment whose startsAt is in the past
+ * and the charge status is still "pendente", it is marked as "atrasado".
+ *
+ * This is a pure transformation — does not persist to the database.
+ * The returned charges have the correct status for display purposes.
+ */
+export function autoMarkOverdue(
+  charges: SessionCharge[],
+  appointmentDateMap: Map<string, Date>,
+  now: Date = new Date(),
+): SessionCharge[] {
+  return charges.map((charge) => {
+    if (charge.status !== "pendente" || !charge.appointmentId) {
+      return charge;
+    }
+    const appointmentDate = appointmentDateMap.get(charge.appointmentId);
+    if (appointmentDate && appointmentDate < now) {
+      return { ...charge, status: "atrasado" as const };
+    }
+    return charge;
+  });
+}
+
+/**
+ * Compute overdue status for a single charge (used in patient profile).
+ */
+export function isChargeOverdue(
+  charge: SessionCharge,
+  appointmentDate: Date | null,
+  now: Date = new Date(),
+): boolean {
+  if (charge.status !== "pendente" || !appointmentDate) return false;
+  return appointmentDate < now;
+}

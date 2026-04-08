@@ -8,7 +8,10 @@ import { createSessionCharge } from "@/lib/finance/model";
 
 const createId = () => `chg_${crypto.randomUUID().slice(0, 12)}`;
 
-export async function markChargeAsPaidAction(chargeId: string): Promise<{ ok: boolean; error?: string }> {
+export async function markChargeAsPaidAction(
+  chargeId: string,
+  paymentMethod?: string,
+): Promise<{ ok: boolean; error?: string }> {
   try {
     const { workspaceId } = await resolveSession();
     const financeRepo = getFinanceRepository();
@@ -18,13 +21,45 @@ export async function markChargeAsPaidAction(chargeId: string): Promise<{ ok: bo
       return { ok: false, error: "Cobrança não encontrada." };
     }
 
-    const updated = { ...charge, status: "pago" as const };
+    const updated = {
+      ...charge,
+      status: "pago" as const,
+      paymentMethod: paymentMethod ?? charge.paymentMethod,
+      paidAt: new Date(),
+    };
     await financeRepo.save(updated);
     revalidatePath("/financeiro");
     return { ok: true };
   } catch (err) {
     console.error("[markChargeAsPaidAction]", err);
     return { ok: false, error: "Erro ao marcar como pago." };
+  }
+}
+
+export async function undoChargePaymentAction(
+  chargeId: string,
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const { workspaceId } = await resolveSession();
+    const financeRepo = getFinanceRepository();
+
+    const charge = await financeRepo.findById(chargeId, workspaceId);
+    if (!charge) {
+      return { ok: false, error: "Cobrança não encontrada." };
+    }
+
+    const updated = {
+      ...charge,
+      status: "pendente" as const,
+      paymentMethod: null,
+      paidAt: null,
+    };
+    await financeRepo.save(updated);
+    revalidatePath("/financeiro");
+    return { ok: true };
+  } catch (err) {
+    console.error("[undoChargePaymentAction]", err);
+    return { ok: false, error: "Erro ao desfazer pagamento." };
   }
 }
 

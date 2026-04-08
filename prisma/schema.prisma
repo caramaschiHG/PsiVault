@@ -188,6 +188,9 @@ model Patient {
   email String?
   phone String?
 
+  // Finance — session price override (falls back to PracticeProfile.defaultSessionPriceInCents)
+  sessionPriceInCents Int? @map("session_price_in_cents")
+
   // Guardian (optional — minor patients or caregiver contexts)
   guardianName  String? @map("guardian_name")
   guardianPhone String? @map("guardian_phone")

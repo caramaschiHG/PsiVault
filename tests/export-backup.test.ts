@@ -44,6 +44,7 @@ const patient: Patient = {
   archivedByAccountId: null,
   createdAt: now,
   updatedAt: now,
+  sessionPriceInCents: null,
 };
 
 const appointment: Appointment = {

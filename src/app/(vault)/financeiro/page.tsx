@@ -1,13 +1,13 @@
 /**
- * /financeiro — Server component. Loads data and delegates to FinanceiroPageClient.
+ * /financeiro — Server component. Loads data, computes overdue status, delegates to client.
  */
 
 import { getFinanceRepository } from "@/lib/finance/store";
 import { getPatientRepository } from "@/lib/patients/store";
-import { deriveMonthlyFinancialSummary } from "@/lib/finance/model";
+import { deriveMonthlyFinancialSummary, autoMarkOverdue } from "@/lib/finance/model";
 import { resolveSession } from "@/lib/supabase/session";
 import FinanceiroPageClient from "./page-client";
-import { EmptyState } from "../components/empty-state";
+import { db } from "@/lib/db";
 
 const MONTH_LABELS = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -55,10 +55,28 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
 
   const allPatients = [...activePatients, ...archivedPatients];
 
-  const summary = deriveMonthlyFinancialSummary(charges);
+  // Build appointment date map for overdue detection
+  const appointmentIds = charges
+    .filter((c) => c.appointmentId)
+    .map((c) => c.appointmentId as string);
+
+  let appointmentDateMap = new Map<string, Date>();
+  if (appointmentIds.length > 0) {
+    const appointments = await db.appointment.findMany({
+      where: { id: { in: appointmentIds } },
+      select: { id: true, startsAt: true },
+    });
+    appointmentDateMap = new Map(appointments.map((a) => [a.id, a.startsAt]));
+  }
+
+  // Auto-mark overdue based on appointment dates
+  const enrichedCharges = autoMarkOverdue(charges, appointmentDateMap, now);
+
+  const summary = deriveMonthlyFinancialSummary(enrichedCharges);
+  const overdueCount = enrichedCharges.filter((c) => c.status === "atrasado").length;
   const monthLabel = `${MONTH_LABELS[month - 1]} ${year}`;
 
-  // Load trend data (last 6 months)
+  // Trend data (last 6 months)
   const trendMonths: { year: number; month: number }[] = [];
   for (let i = 5; i >= 0; i--) {
     let y = year;
@@ -71,20 +89,35 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   const trendData: { monthLabel: string; totalReceived: number }[] = [];
   for (const tm of trendMonths) {
     const monthCharges = await financeRepo.listByWorkspaceAndMonth(workspaceId, tm.year, tm.month);
-    const totalReceived = monthCharges
+    // Also auto-mark overdue for trend months
+    const tmAppointmentIds = monthCharges
+      .filter((c) => c.appointmentId)
+      .map((c) => c.appointmentId as string);
+    let tmApptMap = new Map<string, Date>();
+    if (tmAppointmentIds.length > 0) {
+      const tmAppts = await db.appointment.findMany({
+        where: { id: { in: tmAppointmentIds } },
+        select: { id: true, startsAt: true },
+      });
+      tmApptMap = new Map(tmAppts.map((a) => [a.id, a.startsAt]));
+    }
+    const tmEnriched = autoMarkOverdue(monthCharges, tmApptMap, now);
+
+    const totalReceived = tmEnriched
       .filter((c) => c.status === "pago" && c.amountInCents !== null)
       .reduce((sum, c) => sum + (c.amountInCents ?? 0), 0);
     trendData.push({
       monthLabel: monthAbbr(tm.month),
-      totalReceived: totalReceived / 100, // convert to BRL for display
+      totalReceived: totalReceived / 100,
     });
   }
 
   return (
     <FinanceiroPageClient
-      initialCharges={charges.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())}
+      initialCharges={enrichedCharges.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())}
       patients={allPatients}
       summary={summary}
+      overdueCount={overdueCount}
       year={year}
       month={month}
       monthLabel={monthLabel}

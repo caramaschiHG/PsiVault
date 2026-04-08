@@ -24,6 +24,9 @@ export interface Patient {
   email: string | null;
   phone: string | null;
 
+  // Finance — session price override (falls back to PracticeProfile.defaultSessionPriceInCents)
+  sessionPriceInCents: number | null;
+
   // Guardian (optional — minor patients or caregiver contexts)
   guardianName: string | null;
   guardianPhone: string | null;
@@ -49,6 +52,7 @@ export interface CreatePatientInput {
   socialName?: string | null;
   email?: string | null;
   phone?: string | null;
+  sessionPriceInCents?: number | null;
   guardianName?: string | null;
   guardianPhone?: string | null;
   emergencyContactName?: string | null;
@@ -79,6 +83,7 @@ export function createPatient(input: CreatePatientInput, deps: CreatePatientDeps
     socialName: trimOrNull(input.socialName),
     email: trimOrNull(input.email),
     phone: trimOrNull(input.phone),
+    sessionPriceInCents: input.sessionPriceInCents ?? null,
     guardianName: trimOrNull(input.guardianName),
     guardianPhone: trimOrNull(input.guardianPhone),
     emergencyContactName: trimOrNull(input.emergencyContactName),
@@ -129,6 +134,8 @@ export function updatePatient(
     socialName: input.socialName !== undefined ? trimOrNull(input.socialName) : patient.socialName,
     email: input.email !== undefined ? trimOrNull(input.email) : patient.email,
     phone: input.phone !== undefined ? trimOrNull(input.phone) : patient.phone,
+    sessionPriceInCents:
+      input.sessionPriceInCents !== undefined ? input.sessionPriceInCents : patient.sessionPriceInCents,
     guardianName: input.guardianName !== undefined ? trimOrNull(input.guardianName) : patient.guardianName,
     guardianPhone: input.guardianPhone !== undefined ? trimOrNull(input.guardianPhone) : patient.guardianPhone,
     emergencyContactName:
@@ -145,4 +152,18 @@ export function updatePatient(
         : patient.importantObservations,
     updatedAt: deps.now,
   };
+}
+
+/**
+ * Resolve the effective session price for a patient.
+ * Falls back to the PracticeProfile default when the patient has no override.
+ */
+export function resolveSessionPrice(
+  patient: { sessionPriceInCents: number | null },
+  practiceProfile: { defaultSessionPriceInCents: number | null } | null,
+): number | null {
+  if (patient.sessionPriceInCents != null) return patient.sessionPriceInCents;
+  if (practiceProfile?.defaultSessionPriceInCents != null)
+    return practiceProfile.defaultSessionPriceInCents;
+  return null;
 }
