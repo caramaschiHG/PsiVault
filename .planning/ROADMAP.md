@@ -1,447 +1,105 @@
-# Execution Roadmap: PsiVault Launch Scope
-
-**Active milestone:** `v1.2 Lançamento`
-**Current unarchived launch scope:** phases `07`–`20`
-**Current planning focus:** Phase 15: Planning Metadata Realignment
-
-The roadmap below keeps the original v1.1 and v1.2 phase history, but the live launch scope is the combined unarchived sequence from infrastructure through launch sign-off.
-
-## Archived foundation carried into the active launch scope
-
-## Phase 7: Infrastructure Foundation
-**Goal:** Establish the production database and ORM layer connected to Supabase.
-**Requirements:** INFRA-01, INFRA-02, INFRA-03
-
-**Plans:** 2 plans
-
-Plans:
-- [ ] 07-01-PLAN.md — Provisionar Supabase e preencher .env com credenciais reais (checkpoint humano)
-- [ ] 07-02-PLAN.md — Aplicar migrações Prisma ao banco real e verificar conectividade (smoke test)
-
-**Success Criteria:**
-1. Supabase project is provisioned and connection strings are in local `.env`
-2. `schema.prisma` is fully defined and successfully migrated to the Supabase database
-3. Prisma client can connect via Supavisor pool without exhaustion in test scripts
-
----
-
-## Phase 8: Authentication & Workspaces
-**Goal:** Replace the v1.0 auth stub with real Supabase authentication.
-**Requirements:** AUTH-01, AUTH-02, AUTH-03, AUTH-04
-
-**Success Criteria:**
-1. Users can sign up and sign in using email/password via Supabase Auth
-2. `middleware.ts` correctly reads and refreshes the Supabase session cookie
-3. Protected routes correctly redirect unauthenticated users to the sign-in page
-4. The authenticated user ID maps correctly to a persistent `Workspace` and `Account` in the database
-
----
-
-## Phase 9: Patient & Agenda Persistence
-**Goal:** Replace in-memory patient and agenda repositories with Prisma implementations.
-**Requirements:** REPO-01, REPO-02
-
-**Success Criteria:**
-1. `PrismaPatientRepository` implements all methods of `PatientRepository`
-2. `PrismaAgendaRepository` implements all methods of `AgendaRepository`
-3. Creating, editing, and listing patients and appointments persists across server restarts
-4. All existing Patient and Agenda domain tests pass against the new Prisma implementations
-
----
-
-## Phase 10: Clinical & Document Persistence
-**Goal:** Replace in-memory clinical and document repositories with Prisma implementations.
-**Requirements:** REPO-03, REPO-04
-
-**Plans:** 3/3 plans complete
-
-Plans:
-- [ ] 10-01-PLAN.md — Extend schema.prisma with ClinicalNote + PracticeDocument models and run migration
-- [ ] 10-02-PLAN.md — Implement PrismaClinicalRepository and swap clinical store.ts
-- [ ] 10-03-PLAN.md — Implement PrismaDocumentRepository and swap document store.ts
-
-**Success Criteria:**
-1. `PrismaClinicalRepository` implements all methods of `ClinicalRepository`
-2. `PrismaDocumentRepository` implements all methods of `DocumentRepository`
-3. Clinical notes and generated documents persist across server restarts
-4. All existing Clinical and Document domain tests pass against the new Prisma implementations
-
----
-
-## Phase 11: Finance & Ops Persistence
-**Goal:** Replace in-memory finance and audit repositories with Prisma implementations.
-**Requirements:** REPO-05, REPO-06
-
-**Plans:** 3/3 plans complete
-
-Plans:
-- [ ] 11-01-PLAN.md — Extend schema.prisma with SessionCharge, AuditEvent, Reminder models; migrate interfaces to async
-- [ ] 11-02-PLAN.md — Implement PrismaFinanceRepository and PrismaReminderRepository; swap store.ts files
-- [ ] 11-03-PLAN.md — Implement PrismaAuditRepository; create centralized audit store; consolidate action file stubs; wire backup route
-
-**Success Criteria:**
-1. `PrismaFinanceRepository` implements all methods of `FinanceRepository`
-2. `PrismaAuditRepository` implements all methods of `AuditRepository`
-3. Financial charges and audit events persist across server restarts
-4. All existing Finance and Audit domain tests pass against the new Prisma implementations
-5. The application is fully functional end-to-end without any in-memory state leakage
-
----
-
-## v1.2 Launch continuation
-
-## Phase 12: Authentication UX
-**Goal:** Replace stub/minimal auth pages with a professional, user-friendly authentication experience using Supabase Auth.
-**Requirements:** AUTHUX-01, AUTHUX-02, AUTHUX-03, AUTHUX-04, AUTHUX-05
-
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 12-01-PLAN.md — Fundamentos: auth-errors.ts, SubmitButton, updateSession com user
-- [ ] 12-02-PLAN.md — Sign-in e sign-up com erros inline, erros por campo, SubmitButton
-- [ ] 12-03-PLAN.md — Reset-password dual-state + server actions requestPasswordReset/updatePassword
-- [ ] 12-04-PLAN.md — Middleware AUTHUX-05: redirect de autenticados em rotas de auth
-
-**Success Criteria:**
-1. A polished sign-in page with email/password form, validation, and Portuguese error messages is live at `/login`
-2. A sign-up page guides new users through account creation with clear feedback
-3. A password reset flow allows users to request a reset email and set a new password
-4. Authenticated users visiting `/login` or `/signup` are redirected to `/inicio`
-5. Supabase Auth errors are caught and displayed as human-readable Portuguese messages
-
----
-
-## Phase 13: UI/UX Polish
-**Goal:** Apply a professional, consistent design system across all views so the product feels production-ready.
-**Requirements:** UIUX-01, UIUX-02, UIUX-03, UIUX-04, UIUX-05, UIUX-06
-
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 13-01-PLAN.md — Tokens tipográficos, espaçamento, skeleton-pulse e classes responsivas em globals.css
-- [ ] 13-02-PLAN.md — Sidebar dark redesign, BottomNav mobile, atualização de layout.tsx
-- [ ] 13-03-PLAN.md — loading.tsx e error.tsx para 5 rotas vault (inicio, agenda, patients, patients/[patientId], financeiro)
-- [ ] 13-04-PLAN.md — EmptyState component e polish visual das 5 views primárias + checkpoint de verificação
-
-**Success Criteria:**
-1. A design system document (tokens: typography, color, spacing, radius) is defined and applied consistently across all pages
-2. All primary views (inicio, agenda, patients list, patient profile, financeiro) have professional, polished layouts
-3. All pages are fully responsive and usable on mobile (375px) through desktop (1440px)
-4. All text and interactive elements meet WCAG 2.1 AA color contrast (4.5:1 for body, 3:1 for large/UI elements)
-5. Every data-dependent page has defined empty states, loading states, and error states
-6. Navigation has clear active-state indicators and smooth, professional transitions
-
----
-
-## Phase 14: Quality & Production Hardening
-**Goal:** Harden the application for real-world use — secure routes, robust error handling, complete audit trail, and verified deployment readiness.
-**Requirements:** QUAL-01, QUAL-02, QUAL-03, QUAL-04, QUAL-05, QUAL-06, DEPLOY-01, DEPLOY-02, DEPLOY-03
-
-**Plans:** 6/6 plans complete
-
-Plans:
-- [ ] 14-01-PLAN.md — Re-auth gate real: substituir stub por signInWithPassword em confirmBackupAuthAction e exportPatientAuthAction
-- [ ] 14-02-PLAN.md — Error boundaries: criar error.tsx em sessions/[appointmentId] e patients/[patientId]/documents
-- [ ] 14-03-PLAN.md — Try/catch em todas as server actions de mutação (7 arquivos)
-- [ ] 14-04-PLAN.md — Auditoria QUAL-04/05/06 + postinstall para migrations Vercel
-- [ ] 14-05-PLAN.md — Build verification, .env.example, e checkpoint de lançamento
-
-**Success Criteria:**
-1. The export/backup re-auth gate uses the real `evaluateSensitiveAction` flow (no cookie stub)
-2. All route segments have error boundaries preventing white-screen crashes
-3. All server actions validate inputs and return typed error responses for Prisma and auth failures
-4. Workspace backup includes a real audit trail (no `auditEvents: never[]` stub)
-5. SECU-05 audit confirms no sensitive clinical or financial data leaks to search, audit, or dashboard surfaces
-6. All domain tests pass against Prisma implementations with zero in-memory repository usage
-7. `next build` completes without errors and the app starts cleanly in production mode
-8. Production environment variables are documented and configured for Supabase and Next.js
-
----
-
-## Phase 15: Planning Metadata Realignment
-**Goal:** Normalize milestone metadata and phase locations so GSD can audit, plan, and archive the current launch scope consistently.
-**Requirements:** —
-**Gap Closure:** Closes audit integration gap "Planning metadata -> Milestone completion workflow" and flow "Milestone closure / archive"
-
-**Success Criteria:**
-1. The active milestone version is consistent across `PROJECT.md`, `STATE.md`, and `ROADMAP.md`
-2. Phase artifacts 07 and 08 are available in the active `.planning/phases/` tree or a documented equivalent recognized by GSD
-3. GSD phase discovery and next-phase resolution no longer conflict with roadmap reality
-4. The milestone boundary for the current launch scope is documented unambiguously
-
----
-
-## Phase 16: Infrastructure Verification Closure
-**Goal:** Convert Phase 07 infrastructure work from summary-only evidence into verified milestone closure.
-**Requirements:** INFRA-01, INFRA-02, INFRA-03
-**Gap Closure:** Closes audit requirement gaps `INFRA-01`, `INFRA-02`, `INFRA-03`
-
-**Success Criteria:**
-1. Supabase project and local environment configuration are re-verified with current evidence
-2. Prisma schema and migration state are verified against the real database state
-3. Connection pooling and connectivity checks are captured in compliant validation/verification artifacts
-4. Requirements traceability can mark all infrastructure requirements complete with structured evidence
-
----
-
-## Phase 17: Authentication Verification Closure
-**Goal:** Convert Phase 08 authentication implementation from summary-only evidence into verified milestone closure.
-**Requirements:** AUTH-01, AUTH-02, AUTH-03
-**Gap Closure:** Closes audit requirement gaps `AUTH-01`, `AUTH-02`, `AUTH-03`
-
-**Success Criteria:**
-1. Cookie-based Supabase session management is re-verified in the live app
-2. `middleware.ts` route protection and session refresh behavior are verified end-to-end
-3. Sign-in and sign-up flows are verified against current Supabase Auth behavior
-4. Compliant validation/verification artifacts exist for Phase 08 and requirements can be closed structurally
-
----
-
-## Phase 18: Workspace Identity & Persistence Integrity
-**Goal:** Remove hardcoded workspace identity from the live app and verify patient/agenda persistence under authenticated workspace scope.
-**Requirements:** AUTH-04, REPO-01, REPO-02
-**Gap Closure:** Closes audit requirement gaps `AUTH-04`, `REPO-01`, `REPO-02`; closes integration gap "Supabase Auth -> Workspace-scoped vault data access"; closes flow "Authenticated professional sees only their own workspace data"
-
-**Success Criteria:**
-1. Vault routes, server actions, search, backup, and export resolve workspace/account from the authenticated Supabase user instead of `ws_1`
-2. Workspace/account binding is enforced consistently across repository entry points
-3. Patient and agenda persistence are verified under the real workspace-scoped access model
-4. Structured verification artifacts prove end-to-end multi-user-safe behavior for auth plus persistence flows
-
----
-
-## Phase 19: UI Launch Verification
-**Goal:** Produce independent verification for the production UI/UX layer so launch polish requirements are auditable.
-**Requirements:** UIUX-01, UIUX-02, UIUX-03, UIUX-04, UIUX-05, UIUX-06
-**Gap Closure:** Closes audit requirement gaps `UIUX-01`–`UIUX-06`; closes flow "UI/UX launch sign-off"
-
-**Success Criteria:**
-1. Phase 13 has compliant validation and verification artifacts covering all six UIUX requirements
-2. Responsive behavior is verified across mobile and desktop launch breakpoints
-3. Accessibility and contrast checks are documented with requirement-level evidence
-4. Loading, error, empty-state, and navigation polish are verified on the primary vault surfaces
-
----
-
-## Phase 20: Production Readiness Sign-off
-**Goal:** Close the remaining human-needed runtime and deployment confidence checks before milestone archival.
-**Requirements:** DEPLOY-02
-**Gap Closure:** Closes audit requirement gap `DEPLOY-02`; closes flow "Production readiness sign-off"
-
-**Success Criteria:**
-1. Build and production-start verification are rerun and captured with current evidence
-2. Remaining runtime auth/error-boundary checks from Phase 14 are completed or replaced with executable verification
-3. Phase 14 verification no longer depends on unresolved human-needed launch gates
-4. Requirements traceability can mark `DEPLOY-02` complete with structured supporting evidence
-
----
-
-## v2.0 Reposicionamento Psicanalítico
-
-## Phases
-
-- [x] **Phase 21: Brand Foundation** — Documenta o posicionamento psicanalítico e os tokens visuais como ground truth para todas as superfícies do produto (completed 2026-03-28)
-- [ ] **Phase 22: Landing Page** — Reescreve a landing page com hero, módulos, trust e FAQ direcionados ao psicólogo de orientação psicanalítica
-- [x] **Phase 23: Copy Interna** — Alinha navegação, dashboard e onboarding com vocabulário e tom de marca psicanalítico (completed 2026-04-02)
-- [x] **Phase 24: Continuidade e Fluxo** — Garante que prontuário, hierarquia e empty states comuniquem acompanhamento ao longo do tempo (completed 2026-04-03)
-- [x] **Phase 25: Plano Premium (UI/conceito)** — Apresenta o Assistente de Pesquisa Psicanalítica com configuração por pensador e limites claros (completed 2026-04-03)
-
-## Phase Details
-
-### Phase 21: Brand Foundation
-**Goal:** O posicionamento psicanalítico e a direção visual estão documentados como referência canônica e aplicados aos tokens globais do produto.
-**Depends on:** Nothing (first v2.0 phase)
-**Requirements:** BRAND-01, BRAND-02
-**Success Criteria** (what must be TRUE):
-  1. CLAUDE.md contém vocabulário obrigatório, anti-padrões de tom, regras do plano premium e limites de copyright — qualquer contribuidor pode ler e saber como soar
-  2. globals.css define tokens de paleta (off-white, charcoal, sage), escala tipográfica editorial e espaçamento generoso como variáveis CSS nomeadas
-  3. As variáveis de cor e tipografia são aplicadas de forma coerente em pelo menos uma superfície de produto (sidebar ou dashboard) — o produto visualmente comunica a marca
-**Plans:** 2/2 plans complete
-
-Plans:
-- [ ] 21-01-PLAN.md — Adicionar seção "Posicionamento Psicanalítico" ao CLAUDE.md
-- [ ] 21-02-PLAN.md — Refinar tokens CSS (globals.css) e aplicar na sidebar
-
----
-
-### Phase 22: Landing Page
-**Goal:** A landing page convence o psicólogo de orientação psicanalítica de que o PsiVault foi feito para sua prática — por meio de copy específica, vocabulário de nicho e ausência de qualquer ruído genérico.
-**Depends on:** Phase 21
-**Requirements:** LAND-01, LAND-02, LAND-03, LAND-04
-**Success Criteria** (what must be TRUE):
-  1. O hero identifica explicitamente o nicho psicanalítico, usa vocabulário de prontuário/escuta/continuidade/sigilo, e tem CTA para cadastro — um psicólogo ao ler sabe que é para ele
-  2. A seção de módulos apresenta Pacientes, Agenda, Prontuário, Documentos e Financeiro com framing de prática clínica analítica — sem linguagem SaaS genérica
-  3. A seção de trust comunica sigilo e preservação de longo prazo com linguagem de responsabilidade operacional — sem promessas legais vagas como "em conformidade com CFP"
-  4. O FAQ responde dúvidas reais do psicólogo autônomo de consultório privado (dados, acesso, funcionamento offline, exportação, cancelamento, conformidade ética)
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 22-01-PLAN.md — Hero (eyebrow, H1, lead, bullets, mockup prontuário) + features reordenadas (Prontuário primeiro)
-- [x] 22-02-PLAN.md — Trust points, pains, security, FAQ e ajuste fino das seções secundárias
-
----
-
-### Phase 23: Copy Interna
-**Goal:** Toda a navegação, dashboard e onboarding do produto usam vocabulário e tom de marca psicanalítico — o psicólogo que entra no app sente a mesma coerência que viu na landing.
-**Depends on:** Phase 21
-**Requirements:** NAV-01, NAV-02, NAV-03
-**Success Criteria** (what must be TRUE):
-  1. Todos os itens da sidebar e navegação estão em pt-BR com vocabulário clínico correto (Prontuário, Agenda, Pacientes, Documentos, Financeiro) — nenhum label em inglês ou SaaS genérico visível
-  2. O dashboard exibe labels e métricas de prática clínica (próximas sessões, registros pendentes, documentos recentes) — sem termos de "engajamento", "usuários ativos" ou painéis de analytics genéricos
-  3. O onboarding acolhe o clínico com tom calmo e específico, sem jargão de startup ou hype — o psicólogo sente que está entrando em um ambiente feito para seu trabalho
-**Plans:** 2/2 plans complete
-
-Plans:
-- [ ] 23-01-PLAN.md — Audit de copy: Prontuário na sidebar/bottom-nav, labels do dashboard e h1 do onboarding
-- [ ] 23-02-PLAN.md — Nova rota /prontuario com lista clínica de pacientes e loading skeleton
-
----
-
-### Phase 24: Continuidade e Fluxo
-**Goal:** A experiência do prontuário comunica acompanhamento ao longo do tempo — o psicólogo navega pelo histórico de um paciente e sente a continuidade do trabalho analítico, não uma lista de registros isolados.
-**Depends on:** Phase 21
-**Requirements:** CONT-01, CONT-02, CONT-03, CONT-04
-**Success Criteria** (what must be TRUE):
-  1. A página do prontuário exibe sessões em ordem cronológica navegável — o psicólogo pode percorrer o histórico sem perder o contexto temporal
-  2. O fluxo sessão → registro → documento gerado é percorrível em sequência lógica — o psicólogo nunca precisa sair do contexto de uma sessão para localizar o documento dela
-  3. A hierarquia paciente → sessões → registros → documentos é visualmente coerente e orientada em todas as telas relevantes — o usuário sempre sabe onde está na estrutura clínica
-  4. Empty states, títulos e mensagens usam linguagem de acompanhamento ("nenhuma sessão registrada ainda", "o histórico deste paciente aparecerá aqui") — nunca de tabelas ou registros isolados
-**Plans:** 3/3 plans complete
-
-Plans:
-- [ ] 24-01-PLAN.md — Scaffold de testes (Wave 0): prontuario-timeline.test.ts
-- [ ] 24-02-PLAN.md — Nova rota /prontuario/[patientId]: view clínica focada com timeline cronológica
-- [ ] 24-03-PLAN.md — Ajustes em /prontuario/page.tsx: link correto e badge Novo acompanhamento
-
----
-
-### Phase 25: Plano Premium (UI/conceito)
-**Goal:** O Assistente de Pesquisa Psicanalítica existe como conceito tangível no produto — o psicólogo entende o que é, pode configurar seu pensador de preferência, e sabe exatamente o que o assistente faz e não faz.
-**Depends on:** Phase 21
-**Requirements:** PREM-01, PREM-02, PREM-03
-**Success Criteria** (what must be TRUE):
-  1. A página de apresentação do assistente descreve com clareza: o que faz (literatura, referências por pensador, bibliografias anotadas) e o que não faz (diagnóstico, conclusões clínicas, distribuição de obras protegidas) — o psicólogo não tem expectativas erradas
-  2. O psicólogo pode selecionar seu pensador de preferência e linha psicanalítica nas configurações de perfil (Freud, Lacan, Winnicott, Klein, Bion e outros) — a configuração persiste e seria usada pelo assistente real em v3.0
-  3. Todo o copy do plano premium usa linguagem de pesquisa e estudo — sem mencionar "IA revolucionária", sem implicar acesso irrestrito a obras protegidas, sem qualquer tom de gimmick ou hype
-**Plans:** 2/2 plans complete
-
-Plans:
-- [x] 25-01-PLAN.md — Configuração de Linha Teórica e Pensador
-- [x] 25-02-PLAN.md — Apresentação do Plano Premium e Assistente
-
----
-
----
-
-## v3.0 Refinamento de UX e Fluidez
-
-**Active milestone:** `v3.0 Refinamento de UX e Fluidez`
-**Problem:** Buttons feel dead. No feedback on click. No page transitions. Finance page is read-only. The product works but doesn't *feel* alive.
-
-## Phases
-
-- [x] **Phase 26: Button System & Form Feedback** — Unificar SubmitButton, criar `<Button>` genérico com variantes, feedback visual em pending/disabled/active (completed 2026-04-08)
-- [x] **Phase 27: Loading States Unificação** — Padrão único de skeleton (shimmer), componente `<Skeleton>`, loading.tsx para rotas faltantes (completed 2026-04-08)
-- [x] **Phase 28: Transições e Fluidez** — Page transitions, toast slide-in, FAB animations, search dropdown fade, limpar CSS morto (completed 2026-04-08)
-- [x] **Phase 29: Finance Page Upgrade** — Marcar como pago, adicionar cobrança, filtro por paciente, exportação CSV, gráfico de tendência mensal (completed 2026-04-08)
-
-## Phase Details
-
-### Phase 26: Button System & Form Feedback
-**Goal:** Every button in the product follows a single, consistent system with clear visual feedback for hover, active, disabled, and pending states. No more "click and nothing happens."
-**Depends on:** Nothing (first v3.0 phase)
-**Requirements:** BTN-01, BTN-02, BTN-03, BTN-04
-
-**Success Criteria** (what must be TRUE):
-  1. Existe um único componente `<Button>` em `src/components/ui/button.tsx` com variantes `primary`, `secondary`, `ghost`, `danger` — todos via classes CSS existentes em globals.css
-  2. O componente `SubmitButton` (UI) é refatorado para usar `<Button>` internamente — spinner, pending state, e labels padronizadas
-  3. O `SubmitButton` de auth é removido e substituído pelo componente unificado de UI
-  4. Todos os inline `submitButtonStyle` / `primaryButtonStyle` em formulários são migrados para o componente `<Button>` (agenda, appointments, patients, sessions, reminders, documents)
-  5. Estados disabled e pending são visualmente distintos: `opacity: 0.6` + `cursor: not-allowed` para disabled, spinner + label alternativo para pending, cor de fundo sutil muda durante submit
-  6. `:disabled` global é estilizado em globals.css com `opacity: 0.6` + `cursor: not-allowed`
-  7. Nenhum style inline de botão permanece nos arquivos migrados
-
-**Plans:**
-- [ ] 26-01-PLAN.md — Criar componente `<Button>` genérico com variantes e migrar SubmitButton UI
-- [ ] 26-02-PLAN.md — Remover SubmitButton de auth, unificar com componente de UI
-- [ ] 26-03-PLAN.md — Migrar todos os inline button styles para `<Button>` (7+ arquivos)
-
----
-
-### Phase 27: Loading States Unificação
-**Goal:** Consistent loading experience across the entire product — one skeleton pattern, one shimmer effect, loading states for every route.
-**Depends on:** Phase 26 (shared CSS/token discipline)
-**Requirements:** LOAD-01, LOAD-02, LOAD-03, LOAD-04
-
-**Success Criteria** (what must be TRUE):
-  1. Existe um componente `<Skeleton>` em `src/components/ui/skeleton.tsx` — aceita variant `shimmer` (padrão) e props para width/height/borderRadius
-  2. O padrão `skeleton-shimmer` é o único usado — `skeleton-pulse` é removido do CSS e todos os loading.tsx migrados
-  3. Todos os 7 loading.tsx existentes usam o componente `<Skeleton>` com shimmer — estrutura espelha a página real
-  4. Loading states adicionados para rotas faltantes: `settings/profile`, `settings/dados-e-privacidade`, `vault-plus`
-  5. Keyframes mortos (`auth-progress-bar`, `progress-slide`) removidos do globals.css
-  6. Nenhum style inline de skeleton permanece — tudo via componente `<Skeleton>`
-
-**Plans:**
-- [ ] 27-01-PLAN.md — Criar componente `<Skeleton>` e adotar shimmer como padrão único
-- [ ] 27-02-PLAN.md — Migrar todos os loading.tsx para `<Skeleton>` + adicionar loading.tsx faltantes
-- [ ] 27-03-PLAN.md — Limpar CSS morto (skeleton-pulse, auth-progress-bar, progress-slide)
-
----
-
-### Phase 28: Transições e Fluidez
-**Goal:** The product feels alive — page transitions, animated toasts, FAB entrance/exit, search dropdown fade. Every interaction has a visual response.
-**Depends on:** Phase 26, 27
-**Requirements:** TRANS-01, TRANS-02, TRANS-03, TRANS-04, TRANS-05
-
-**Success Criteria** (what must be TRUE):
-  1. Navegação entre páginas tem transição de fade — conteúdo da página anterior faz fade-out enquanto a nova faz fade-in (via Next.js transitions ou CSS)
-  2. Toast tem animação de slide-in da direita ao aparecer (além do fade-out existente) — `translateX(100%)` → `translateX(0)` em 200ms ease-out
-  3. FAB tem animação de scale + opacity ao aparecer — `scale(0.8) + opacity: 0` → `scale(1) + opacity: 1` em 200ms ease-out
-  4. Dropdown de busca na sidebar tem fade-in + slide-up ao abrir — 150ms ease-out
-  5. Sidebar active indicator tem transição suave — o box-shadow lateral aparece com transition de 150ms
-  6. Sidebar collapse tem transição de opacidade no conteúdo além do width — conteúdo faz fade-out enquanto sidebar encolhe
-  7. Todos os botões têm `:active` com `scale(0.97)` consistente — incluindo `.btn-primary`
-  8. `prefers-reduced-motion` continua respeitado — todas as animações reduzidas a 0.01ms
-
-**Plans:**
-- [ ] 28-01-PLAN.md — Page transitions (Next.js transitions ou CSS-based fade entre rotas vault)
-- [ ] 28-02-PLAN.md — Toast slide-in, FAB animation, search dropdown fade
-- [ ] 28-03-PLAN.md — Polish: btn :active consistente, sidebar transitions, reduced-motion check
-
----
-
-### Phase 29: Finance Page Upgrade
-**Goal:** The finance page becomes a usable tool — actions on charges, patient filter, manual charge entry, CSV export, and a simple monthly trend chart.
-**Depends on:** Phase 26 (Button component for actions), Phase 27 (loading state)
-**Requirements:** FIN-01, FIN-02, FIN-03, FIN-04, FIN-05
-
-**Success Criteria** (what must be TRUE):
-  1. Cada cobrança na lista tem botão "Marcar como pago" (para pendentes/atrasados) — ação via server action com feedback visual imediato (toast + revalidate)
-  2. Existe um formulário inline ou modal para "Adicionar cobrança" manualmente — seleciona paciente, data, valor, status
-  3. Filtro por paciente acima da lista — dropdown com todos os pacientes do workspace, filtra a lista de cobranças sem recarregar a página
-  4. Botão "Exportar CSV" no header — exporta todas as cobranças do mês atual como CSV (paciente, data, status, valor)
-  5. Gráfico de tendência mensal simples (barras CSS puras) — últimos 6 meses de receita total, visualização rápida da tendência
-  6. Cobranças são agrupadas por paciente — nome do paciente como header, lista de sessões abaixo
-  7. Loading state usa `<Skeleton>` consistente com o resto do produto
-  8. Empty state tem CTA "Adicionar primeira cobrança"
-
-**Plans:**
-- [ ] 29-01-PLAN.md — Server actions: marcar como pago, adicionar cobrança manual, filtro por paciente
-- [ ] 29-02-PLAN.md — UI: ações na lista de cobranças, formulário inline, filtro dropdown
-- [ ] 29-03-PLAN.md — Exportação CSV + gráfico de tendência mensal (CSS puro)
-
----
-
-## Progress Table
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 21. Brand Foundation | 2/2 | Complete    | 2026-03-28 |
-| 22. Landing Page | 2/2 | **Complete**| **2026-04-07** |
-| 23. Copy Interna | 2/2 | Complete    | 2026-04-02 |
-| 24. Continuidade e Fluxo | 3/3 | Complete    | 2026-04-03 |
-| 25. Plano Premium (UI/conceito) | 2/2 | Complete | 2026-04-03 |
-| 26. Button System & Form Feedback | 3/3 | **Complete** | **2026-04-08** |
-| 27. Loading States Unificação | 3/3 | **Complete** | **2026-04-08** |
-| 28. Transições e Fluidez | 3/3 | **Complete** | **2026-04-08** |
-| 29. Finance Page Upgrade | 3/3 | **Complete** | **2026-04-08** |
+# PsiLock — Roadmap
+
+## Objetivo
+
+Transformar o módulo financeiro do PsiVault em uma ferramenta **útil, prática e não burocrática** para psicólogos gerenciarem cobranças de sessões com seus pacientes.
+
+## Princípios
+
+1. **Não complicar** — O financeiro deve ajudar, não atrapalhar. Psicólogo não é contador.
+2. **Registro rápido** — Marcar pagamento deve levar 2 cliques.
+3. **Visão clara** — Saber rapidamente: quem deve, quanto deve, há quanto tempo.
+4. **Sem burocracia fiscal** — Sem emissão de NF, sem integração com contador. Apenas controle prático do dia a dia.
+
+## Fases
+
+### Phase 1 — Financeiro Core Melhorado
+**Número: 01**  
+**Objetivo:** Melhorar o que já existe e adicionar o que realmente importa no dia a dia.
+
+**Entradas:**
+- Módulo financeiro atual com `SessionCharge`, `deriveMonthlyFinancialSummary()`
+- Página `/financeiro` básica
+- Seção financeira no perfil do paciente
+
+**Saídas esperadas:**
+- [ ] Dashboard financeiro claro e direto (resumo do mês, inadimplentes, trends)
+- [ ] Marcar pagamento como "pago" com 1 clique direto na lista
+- [ ] Filtros úteis: por status (pendente/pago/atrasado), por paciente, por período
+- [ ] Indicador visual de inadimplência (dias em atraso)
+- [ ] Resumo por paciente (total devido, total pago no mês/ano)
+- [ ] Exportar relatório simples (CSV/PDF) — "quem pagou e quem deve este mês"
+- [ ] Atualizar status "atrasado" automaticamente baseado na data da sessão
+- [ ] Configurar preço padrão da sessão por paciente
+
+**Critérios de aceitação:**
+- Psicólogo consegue ver quem deve em < 5 segundos
+- Psicólogo consegue marcar pagamento em < 3 segundos
+- Relatório exportado é legível e útil
+
+**Dependências:** Nenhuma
+
+### Phase 2 — Conveniências e Automações
+**Número: 02**  
+**Objetivo:** Reduzir trabalho manual com automações inteligentes.
+
+**Entradas:**
+- Phase 1 completa
+
+**Saídas esperadas:**
+- [ ] Geração automática de cobrança ao criar sessão
+- [ ] Alerta visual de paciente com múltiplas sessões pendentes
+- [ ] Lembrete de cobrança pendente (in-app, não email)
+- [ ] Pacote de sessões (ex: comprou 4, usa ao longo do mês)
+- [ ] Desconto por sessão configurável (ex: preço social)
+- [ ] Histórico anual simplificado (total recebido vs pendente por mês)
+
+**Critérios de aceitação:**
+- Ao criar sessão, cobrança aparece automaticamente
+- Psicólogo vê alerta de inadimplência sem buscar
+- Pacote de sessões deduz corretamente
+
+**Dependências:** Phase 1
+
+### Phase 3 — Relatórios e Insights
+**Número: 03**  
+**Objetivo:** Dar visão estratégica sem complicar.
+
+**Entradas:**
+- Phase 2 completa
+
+**Saídas esperadas:**
+- [ ] Gráfico simples: receita mensal dos últimos 6-12 meses
+- [ ] Comparativo mês atual vs mês anterior (% variação)
+- [ ] Top pacientes por valor (quem mais paga)
+- [ ] Previsão de receita (baseado em sessões agendadas)
+- [ ] Resumo anual para declaração de IR do psicólogo (total recebido no ano)
+
+**Critérios de aceitação:**
+- Gráficos são claros e legíveis
+- Resumo anual é exportável
+- Previsão de receita é razoavelmente precisa
+
+**Dependências:** Phase 2
+
+## O que NÃO faremos (para não complicar)
+
+- ❌ Integração com gateway de pagamento (Stripe, etc.) — psicólogo recebe direto
+- ❌ Emissão de nota fiscal — fora do escopo do produto
+- ❌ Controle de despesas do consultório — não é o foco
+- ❌ Sistema de assinatura/mensalidade — cobrança é por sessão
+- ❌ Integração com contador — psicólogo exporta CSV se precisar
+- ❌ Múltiplas moedas — Brasil, BRL apenas
+- ❌ Split de pagamento — não se aplica
+
+## Estado Atual
+
+- [x] Modelo `SessionCharge` existe no Prisma
+- [x] Repository pattern implementado
+- [x] Página `/financeiro` básica funcional
+- [x] Seção financeira no perfil do paciente
+- [ ] Status "atrasado" não é atualizado automaticamente
+- [ ] UX de pagamento requer formulário (deveria ser 1 clique)
+- [ ] Sem filtros úteis
+- [ ] Sem exportação
+- [ ] Sem visão de inadimplência
