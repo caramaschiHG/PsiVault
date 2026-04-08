@@ -55,6 +55,9 @@ import { resolveSession } from "../../../lib/supabase/session";
 import { deriveMonthAgenda } from "../../../lib/appointments/agenda";
 import { createAppointmentQuickAction } from "../appointments/actions";
 import { QuickCreateWrapper } from "./components/quick-create-wrapper";
+import { getFinanceRepository } from "../../../lib/finance/store";
+import { autoMarkOverdue } from "../../../lib/finance/model";
+import { db } from "../../../lib/db";
 
 const TIMEZONE = "America/Sao_Paulo";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -193,6 +196,52 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   completedAppts.forEach((a, i) => {
     if (agendaNoteResults[i]) notedAppointmentIds.add(a.id);
   });
+
+  // Collect unique patient IDs that have sessions today
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayPatientIds = [...new Set(appointments
+    .filter((a) => a.startsAt.toISOString().slice(0, 10) === todayStr)
+    .map((a) => a.patientId))];
+
+  // Check for overdue charges for today's patients
+  let overduePatientIds = new Set<string>();
+  let overdueDetails: { patientId: string; count: number; totalCents: number }[] = [];
+  if (todayPatientIds.length > 0) {
+    const financeRepo = getFinanceRepository();
+    const nowDate = new Date();
+    const currentMonth = nowDate.getMonth() + 1;
+    const currentYear = nowDate.getFullYear();
+    const allCharges = await financeRepo.listByWorkspaceAndMonth(workspaceId, currentYear, currentMonth);
+
+    const apptIds = allCharges.filter((c) => c.appointmentId).map((c) => c.appointmentId as string);
+    let apptMap = new Map<string, Date>();
+    if (apptIds.length > 0) {
+      const appts = await db.appointment.findMany({
+        where: { id: { in: apptIds } },
+        select: { id: true, startsAt: true },
+      });
+      apptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
+    }
+
+    const enriched = autoMarkOverdue(allCharges, apptMap, nowDate);
+    const overdueCharges = enriched.filter((c) => c.status === "atrasado" && todayPatientIds.includes(c.patientId));
+
+    const overdueMap = new Map<string, { count: number; totalCents: number }>();
+    for (const charge of overdueCharges) {
+      const existing = overdueMap.get(charge.patientId) ?? { count: 0, totalCents: 0 };
+      existing.count++;
+      existing.totalCents += charge.amountInCents ?? 0;
+      overdueMap.set(charge.patientId, existing);
+    }
+
+    overduePatientIds = new Set(overdueMap.keys());
+    overdueDetails = Array.from(overdueMap.entries()).map(([patientId, data]) => ({
+      patientId,
+      ...data,
+    }));
+  }
+
+  const currencyFmt = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
   // Build nextSessionActions map for appointment cards.
   // COMPLETED entries include next-session action and clinical note entry point.
@@ -470,6 +519,26 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             </Link>
           </div>
         </div>
+
+        {/* Overdue patients alert */}
+        {overduePatientIds.size > 0 && (
+          <div style={overdueAlertStyle}>
+            <span style={overdueIconStyle}>⚠</span>
+            <div style={overdueContentStyle}>
+              <span style={overdueTextStyle}>
+                Pacientes com cobranças atrasadas:
+              </span>
+              <span style={overdueNamesStyle}>
+                {overdueDetails
+                  .map((d) => {
+                    const name = patientNames[d.patientId] ?? "Paciente";
+                    return `${name} (${d.count}x — ${currencyFmt.format(d.totalCents / 100)})`;
+                  })
+                  .join(" · ")}
+              </span>
+            </div>
+          </div>
+        )}
 
       {/* Toolbar */}
       <AgendaToolbar
@@ -897,4 +966,40 @@ const sidebarStyle = {
   flexDirection: "column" as const,
   gap: "1rem",
   paddingTop: "0.5rem",
+} satisfies React.CSSProperties;
+
+// Overdue alert
+const overdueAlertStyle = {
+  display: "flex",
+  alignItems: "flex-start",
+  gap: "0.75rem",
+  padding: "0.75rem 1rem",
+  borderRadius: "var(--radius-md)",
+  background: "#fef2f2",
+  border: "1px solid #fecaca",
+  marginBottom: "0.5rem",
+} satisfies React.CSSProperties;
+
+const overdueIconStyle = {
+  fontSize: "1.1rem",
+  flexShrink: 0,
+  marginTop: "0.1rem",
+} satisfies React.CSSProperties;
+
+const overdueContentStyle = {
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: "0.2rem",
+  flex: 1,
+} satisfies React.CSSProperties;
+
+const overdueTextStyle = {
+  fontSize: "0.82rem",
+  fontWeight: 600,
+  color: "#991b1b",
+} satisfies React.CSSProperties;
+
+const overdueNamesStyle = {
+  fontSize: "0.78rem",
+  color: "#b91c1c",
 } satisfies React.CSSProperties;

@@ -52,7 +52,12 @@ interface FinanceiroPageProps {
   monthLabel: string;
   prevHref: string;
   nextHref: string;
-  trends: { monthLabel: string; totalReceived: number }[];
+  trends: { monthLabel: string; totalReceived: number; totalPending: number; totalSessions: number }[];
+  prevMonthReceived: number;
+  yearSummary: { month: number; monthLabel: string; received: number; pending: number; overdue: number; sessions: number }[];
+  topPatients: { name: string; received: number; sessions: number }[];
+  forecast: number;
+  scheduledCount: number;
 }
 
 export default function FinanceiroPageClient({
@@ -66,6 +71,11 @@ export default function FinanceiroPageClient({
   prevHref,
   nextHref,
   trends,
+  prevMonthReceived,
+  yearSummary,
+  topPatients,
+  forecast,
+  scheduledCount,
 }: FinanceiroPageProps) {
   const [charges, setCharges] = useState(initialCharges);
   const [filterPatient, setFilterPatient] = useState("");
@@ -76,6 +86,8 @@ export default function FinanceiroPageClient({
   const [payingCharge, setPayingCharge] = useState<string | null>(null);
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [showYearView, setShowYearView] = useState(false);
+  const [showTopPatients, setShowTopPatients] = useState(false);
 
   const patientMap = useMemo(() => {
     const map = new Map<string, Patient>();
@@ -191,6 +203,30 @@ export default function FinanceiroPageClient({
     }
   }
 
+  function handleExportIR(yearSummary: { month: number; monthLabel: string; received: number; pending: number; overdue: number; sessions: number }[], year: number) {
+    const header = "Mês,Total Recebido,Qtd Sessões,Média por Sessão";
+    const rows = yearSummary
+      .filter((m) => m.received > 0)
+      .map((m) => {
+        const avg = m.sessions > 0 ? m.received / m.sessions : 0;
+        return `${m.monthLabel},${currency.format(m.received)},${m.sessions},${currency.format(avg)}`;
+      });
+    const totalReceived = yearSummary.reduce((s, m) => s + m.received, 0);
+    const totalSessions = yearSummary.reduce((s, m) => s + m.sessions, 0);
+    rows.push("");
+    rows.push(`TOTAL ANO,${currency.format(totalReceived)},${totalSessions},`);
+
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ir-psivault-${year}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Resumo IR exportado ✓");
+  }
+
   const maxTrend = Math.max(...trends.map((t) => t.totalReceived), 1);
 
   return (
@@ -220,6 +256,16 @@ export default function FinanceiroPageClient({
         <div style={{ ...miniCardStyle, borderLeft: "3px solid #166534" }}>
           <p style={miniCardLabelStyle}>Recebido</p>
           <p style={miniCardValueStyle}>{currency.format(summary.totalReceivedCents / 100)}</p>
+          {prevMonthReceived > 0 && (
+            <p style={variationStyle}>
+              {summary.totalReceivedCents / 100 >= prevMonthReceived ? (
+                <span style={{ color: "#166534" }}>↑ +{Math.round(((summary.totalReceivedCents / 100 - prevMonthReceived) / prevMonthReceived) * 100)}%</span>
+              ) : (
+                <span style={{ color: "#991b1b" }}>↓ -{Math.round(((prevMonthReceived - summary.totalReceivedCents / 100) / prevMonthReceived) * 100)}%</span>
+              )}
+              <span style={{ color: "#999", marginLeft: "0.25rem" }}>vs {MONTH_LABELS[month === 1 ? 11 : month - 2]}</span>
+            </p>
+          )}
         </div>
         <div style={{ ...miniCardStyle, borderLeft: "3px solid #92400e" }}>
           <p style={miniCardLabelStyle}>Pendente</p>
@@ -231,6 +277,15 @@ export default function FinanceiroPageClient({
             {overdueCount} {overdueCount === 1 ? "cobrança" : "cobranças"}
           </p>
         </div>
+        {forecast > 0 && (
+          <div style={{ ...miniCardStyle, borderLeft: "3px solid #2563eb" }}>
+            <p style={miniCardLabelStyle}>Previsão</p>
+            <p style={miniCardValueStyle}>{currency.format(forecast)}</p>
+            <p style={{ ...variationStyle, color: "#999" }}>
+              {scheduledCount} sess{scheduledCount === 1 ? "ão" : "ões"}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Trend chart */}
@@ -469,6 +524,100 @@ export default function FinanceiroPageClient({
           })}
         </div>
       )}
+
+      {/* ─── Top patients section ─────────────────────────────────────────── */}
+      {topPatients.length > 0 && (
+        <div style={insightSectionStyle}>
+          <button
+            style={insightToggleStyle}
+            onClick={() => setShowTopPatients((v) => !v)}
+          >
+            {showTopPatients ? "▾" : "▸"} Top pacientes por receita
+          </button>
+          {showTopPatients && (
+            <div style={insightContentStyle}>
+              {topPatients.map((p, i) => (
+                <div key={i} style={topPatientRowStyle}>
+                  <span style={topPatientRankStyle}>{i + 1}</span>
+                  <span style={topPatientNameStyle}>{p.name}</span>
+                  <span style={topPatientValueStyle}>
+                    {currency.format(p.received)}
+                  </span>
+                  <span style={topPatientSessionsStyle}>
+                    {p.sessions} sess{p.sessions === 1 ? "ão" : "ões"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── Year summary section ─────────────────────────────────────────── */}
+      <div style={insightSectionStyle}>
+        <button
+          style={insightToggleStyle}
+          onClick={() => setShowYearView((v) => !v)}
+        >
+          {showYearView ? "▾" : "▸"} Ver ano completo ({year})
+        </button>
+        {showYearView && (
+          <div style={insightContentStyle}>
+            <div style={yearTableStyle}>
+              <div style={yearTableHeaderStyle}>
+                <span style={{ flex: 2 }}>Mês</span>
+                <span style={yearTableColStyle}>Recebido</span>
+                <span style={yearTableColStyle}>Pendente</span>
+                <span style={yearTableColStyle}>Atrasado</span>
+                <span style={yearTableColStyle}>Sessões</span>
+              </div>
+              {yearSummary.map((m) => (
+                <div
+                  key={m.month}
+                  style={{
+                    ...yearTableRowStyle,
+                    ...(m.month === month ? yearTableCurrentMonthStyle : {}),
+                  }}
+                >
+                  <span style={{ flex: 2, fontWeight: m.month === month ? 700 : 400 }}>
+                    {m.monthLabel}
+                  </span>
+                  <span style={{ ...yearTableColStyle, color: "#166534" }}>
+                    {m.received > 0 ? currency.format(m.received) : "—"}
+                  </span>
+                  <span style={{ ...yearTableColStyle, color: "#92400e" }}>
+                    {m.pending > 0 ? currency.format(m.pending) : "—"}
+                  </span>
+                  <span style={{ ...yearTableColStyle, color: "#991b1b" }}>
+                    {m.overdue > 0 ? currency.format(m.overdue) : "—"}
+                  </span>
+                  <span style={yearTableColStyle}>{m.sessions || "—"}</span>
+                </div>
+              ))}
+              <div style={yearTableTotalStyle}>
+                <span style={{ flex: 2, fontWeight: 700 }}>Total</span>
+                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "#166534" }}>
+                  {currency.format(yearSummary.reduce((s, m) => s + m.received, 0))}
+                </span>
+                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "#92400e" }}>
+                  {currency.format(yearSummary.reduce((s, m) => s + m.pending, 0))}
+                </span>
+                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "#991b1b" }}>
+                  {currency.format(yearSummary.reduce((s, m) => s + m.overdue, 0))}
+                </span>
+                <span style={{ ...yearTableColStyle, fontWeight: 700 }}>
+                  {yearSummary.reduce((s, m) => s + (m.sessions || 0), 0)}
+                </span>
+              </div>
+            </div>
+            <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
+              <Button variant="ghost" size="sm" onClick={() => handleExportIR(yearSummary, year)}>
+                📄 Exportar resumo IR
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </main>
   );
 }
@@ -895,4 +1044,115 @@ const formErrorStyle: React.CSSProperties = {
   margin: "0.5rem 0 0",
   fontSize: "0.8rem",
   color: "#dc2626",
+};
+
+const variationStyle = {
+  margin: "0.375rem 0 0",
+  fontSize: "0.75rem",
+  fontWeight: 500,
+};
+
+// Insight sections
+const insightSectionStyle: React.CSSProperties = {
+  padding: "1rem 1.25rem",
+  borderRadius: "var(--radius-md, 8px)",
+  background: "var(--color-surface-1, #fafaf8)",
+  border: "1px solid var(--color-border, #e5e5e5)",
+  display: "grid",
+  gap: "0.75rem",
+};
+
+const insightToggleStyle: React.CSSProperties = {
+  background: "none",
+  border: "none",
+  fontSize: "0.85rem",
+  fontWeight: 600,
+  color: "var(--color-accent, #2d7d6f)",
+  cursor: "pointer",
+  textAlign: "left",
+  padding: 0,
+};
+
+const insightContentStyle: React.CSSProperties = {
+  display: "grid",
+  gap: "0.5rem",
+};
+
+// Top patients
+const topPatientRowStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.75rem",
+  padding: "0.5rem 0",
+  borderBottom: "1px solid var(--color-border, #e5e5e5)",
+};
+
+const topPatientRankStyle: React.CSSProperties = {
+  fontSize: "0.75rem",
+  fontWeight: 700,
+  color: "#888",
+  width: 20,
+  textAlign: "center",
+};
+
+const topPatientNameStyle: React.CSSProperties = {
+  flex: 1,
+  fontSize: "0.85rem",
+  fontWeight: 500,
+  color: "#333",
+};
+
+const topPatientValueStyle: React.CSSProperties = {
+  fontSize: "0.9rem",
+  fontWeight: 600,
+  color: "#166534",
+  fontVariantNumeric: "tabular-nums",
+};
+
+const topPatientSessionsStyle: React.CSSProperties = {
+  fontSize: "0.75rem",
+  color: "#888",
+};
+
+// Year table
+const yearTableStyle: React.CSSProperties = {
+  display: "grid",
+  gap: 0,
+};
+
+const yearTableHeaderStyle: React.CSSProperties = {
+  display: "flex",
+  padding: "0.5rem 0.75rem",
+  borderBottom: "2px solid var(--color-border, #e5e5e5)",
+  fontSize: "0.75rem",
+  fontWeight: 600,
+  color: "#666",
+  textTransform: "uppercase",
+};
+
+const yearTableColStyle: React.CSSProperties = {
+  flex: 1,
+  textAlign: "right" as const,
+  fontSize: "0.82rem",
+  fontVariantNumeric: "tabular-nums",
+};
+
+const yearTableRowStyle: React.CSSProperties = {
+  display: "flex",
+  padding: "0.5rem 0.75rem",
+  borderBottom: "1px solid var(--color-border, #e5e5e5)",
+  alignItems: "center",
+};
+
+const yearTableCurrentMonthStyle: React.CSSProperties = {
+  background: "rgba(45, 125, 111, 0.05)",
+  borderRadius: "var(--radius-sm, 4px)",
+};
+
+const yearTableTotalStyle: React.CSSProperties = {
+  display: "flex",
+  padding: "0.75rem",
+  borderTop: "2px solid var(--color-border, #e5e5e5)",
+  marginTop: "0.25rem",
+  alignItems: "center",
 };

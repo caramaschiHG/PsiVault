@@ -26,11 +26,13 @@ import {
   countPendingCharges,
   deriveMonthlySnapshot,
 } from "../../../lib/dashboard/aggregation";
+import { autoMarkOverdue } from "../../../lib/finance/model";
 import { RemindersSection } from "./components/reminders-section";
 import { QuickActionFab } from "./components/quick-action-fab";
 import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 import { UpdateNotification } from "../../components/update-notification";
+import { db } from "../../../lib/db";
 
 export default async function InicioPage() {
   const route = "vault.inicio";
@@ -92,6 +94,39 @@ export default async function InicioPage() {
     monthlyCharges,
     monthlyAppointments,
   });
+
+  // Recent pending/overdue charges for dashboard
+  const pendingOverdueCharges = monthlyCharges.filter(
+    (c) => c.status === "pendente" || c.status === "atrasado",
+  );
+
+  // Enrich with overdue status
+  const pendingApptIds = pendingOverdueCharges
+    .filter((c) => c.appointmentId)
+    .map((c) => c.appointmentId as string);
+  let pendingApptMap = new Map<string, Date>();
+  if (pendingApptIds.length > 0) {
+    const appts = await db.appointment.findMany({
+      where: { id: { in: pendingApptIds } },
+      select: { id: true, startsAt: true },
+    });
+    pendingApptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
+  }
+  const enrichedPendingOverdue = autoMarkOverdue(pendingOverdueCharges, pendingApptMap, now)
+    .filter((c) => c.status === "pendente" || c.status === "atrasado")
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 3);
+
+  const patientNameMap = new Map<string, string>(
+    allPatients.map((p) => [p.id, p.socialName ?? p.fullName]),
+  );
+
+  const currencyFmt = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+  const statusLabel = (s: string) => (s === "atrasado" ? "Atrasado" : "Pendente");
 
   // Contextual header message based on next upcoming appointment today
   const nextAppt = todayAppointments
@@ -223,6 +258,42 @@ export default async function InicioPage() {
           </div>
         </div>
       </section>
+
+      {/* ─── Section 4: Cobranças pendentes ─────────────────────────────── */}
+      {enrichedPendingOverdue.length > 0 && (
+        <section style={sectionStyle}>
+          <div style={sectionHeadingRowStyle}>
+            <h2 style={sectionTitleStyle}>A receber</h2>
+            <a href="/financeiro" className="link-subtle" style={sectionActionLinkStyle}>
+              Ver financeiro →
+            </a>
+          </div>
+
+          <ul style={chargeListStyle}>
+            {enrichedPendingOverdue.map((charge) => (
+              <li key={charge.id} style={chargeItemStyle}>
+                <span
+                  style={{
+                    ...chargeStatusBadgeStyle,
+                    background: charge.status === "atrasado" ? "#fee2e2" : "#fef3c7",
+                    color: charge.status === "atrasado" ? "#991b1b" : "#92400e",
+                  }}
+                >
+                  {statusLabel(charge.status)}
+                </span>
+                <span style={chargePatientStyle}>
+                  {patientNameMap.get(charge.patientId) ?? "Paciente"}
+                </span>
+                <span style={chargeAmountStyle}>
+                  {charge.amountInCents !== null
+                    ? currencyFmt.format(charge.amountInCents / 100)
+                    : "—"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <QuickActionFab />
       <UpdateNotification />
@@ -419,4 +490,45 @@ const pendingBadgeLabelStyle = {
   color: "var(--color-accent)",
   textDecoration: "underline",
   textDecorationColor: "rgba(154, 52, 18, 0.3)",
+} satisfies React.CSSProperties;
+
+// Pending charges section
+const chargeListStyle = {
+  listStyle: "none",
+  margin: 0,
+  padding: 0,
+  display: "grid",
+  gap: "0.5rem",
+} satisfies React.CSSProperties;
+
+const chargeItemStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.75rem",
+  padding: "0.625rem 1rem",
+  borderRadius: "var(--radius-md)",
+  background: "rgba(255, 247, 237, 0.5)",
+  border: "1px solid var(--color-border)",
+  flexWrap: "wrap" as const,
+} satisfies React.CSSProperties;
+
+const chargeStatusBadgeStyle = {
+  fontSize: "0.72rem",
+  padding: "0.2rem 0.5rem",
+  borderRadius: "var(--radius-sm)",
+  fontWeight: 600,
+} satisfies React.CSSProperties;
+
+const chargePatientStyle = {
+  fontSize: "0.88rem",
+  fontWeight: 500,
+  color: "var(--color-text-1)",
+  flex: 1,
+} satisfies React.CSSProperties;
+
+const chargeAmountStyle = {
+  fontSize: "0.9rem",
+  fontWeight: 600,
+  color: "var(--color-text-2)",
+  fontVariantNumeric: "tabular-nums",
 } satisfies React.CSSProperties;
