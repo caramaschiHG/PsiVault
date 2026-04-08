@@ -6,16 +6,24 @@ interface EmptyStateProps {
   description?: string;
   actionLabel?: string;
   actionHref?: string;
+  compact?: boolean;
 }
 
-export function EmptyState({ icon, title, description, actionLabel, actionHref }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  title,
+  description,
+  actionLabel,
+  actionHref,
+  compact = false,
+}: EmptyStateProps) {
   const containerStyle = {
     display: "flex",
     flexDirection: "column" as const,
     alignItems: "center",
     justifyContent: "center",
     gap: "0.75rem",
-    padding: "3rem 1.5rem",
+    padding: compact ? "1.5rem 1rem" : "3rem 1.5rem",
     textAlign: "center" as const,
     color: "var(--color-text-2)",
   } satisfies React.CSSProperties;
@@ -24,22 +32,15 @@ export function EmptyState({ icon, title, description, actionLabel, actionHref }
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "3.5rem",
-    height: "3.5rem",
+    width: compact ? "2.5rem" : "3.5rem",
+    height: compact ? "2.5rem" : "3.5rem",
     borderRadius: "var(--radius-pill)",
     background: "var(--color-accent-light)",
-    marginBottom: "0.25rem",
     flexShrink: 0,
   } satisfies React.CSSProperties;
 
-  const iconStyle = {
-    width: "1.75rem",
-    height: "1.75rem",
-    opacity: 0.55,
-  } satisfies React.CSSProperties;
-
   const titleStyle = {
-    fontSize: "var(--font-size-body)",
+    fontSize: compact ? "var(--font-size-body)" : "var(--font-size-body)",
     fontWeight: 600,
     color: "var(--color-text-1)",
     margin: 0,
@@ -54,10 +55,8 @@ export function EmptyState({ icon, title, description, actionLabel, actionHref }
   } satisfies React.CSSProperties;
 
   return (
-    <div style={containerStyle}>
-      <div style={iconWrapStyle}>
-        <div style={iconStyle}>{icon}</div>
-      </div>
+    <div role="status" aria-live="polite" style={containerStyle}>
+      <div style={iconWrapStyle}>{icon}</div>
       <p style={titleStyle}>{title}</p>
       {description && <p style={descStyle}>{description}</p>}
       {actionLabel && actionHref && (

@@ -135,11 +135,11 @@ export function VaultSidebarNav() {
       {/* Divider before footer */}
       <div style={dividerStyle} />
 
-      {/* Footer: avatar + nome + sair */}
+      {/* Footer: avatar + settings link */}
       <div style={footerStyle}>
-        <div style={avatarStyle}>PS</div>
+        <div style={avatarStyle}>PV</div>
         <div style={footerInfoStyle}>
-          <span style={footerNameStyle}>Profissional</span>
+          <a href="/settings/profile" style={settingsLinkStyle}>Meu perfil</a>
           <a href="/api/auth/signout" style={signoutStyle}>Sair</a>
         </div>
       </div>
@@ -198,16 +198,21 @@ const footerInfoStyle: React.CSSProperties = {
   minWidth: 0,
 };
 
-const footerNameStyle: React.CSSProperties = {
+const settingsLinkStyle: React.CSSProperties = {
   fontSize: "var(--font-size-meta)",
   color: "rgba(255,255,255,0.75)",
+  textDecoration: "none",
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
+  transition: "color 120ms ease",
 };
+
+const settingsLinkStyle_hover = "rgba(255,255,255,0.95)";
 
 const signoutStyle: React.CSSProperties = {
   fontSize: "var(--font-size-meta)",
   color: "rgba(255,255,255,0.5)",
   textDecoration: "none",
+  transition: "color 120ms ease",
 };

@@ -11,17 +11,22 @@
   --color-surface-0:    #ffffff;
   --color-surface-1:    #fffcf7;
   --color-surface-2:    rgba(255, 252, 247, 0.95);
+  --color-surface-3:    #f5f0e8;
   --color-border:       rgba(146, 64, 14, 0.12);
   --color-border-med:   rgba(146, 64, 14, 0.2);
   --color-text-1:       #1c1917;
   --color-text-2:       #57534e;
-  --color-text-3:       #57534e; /* WCAG AA: 5.9:1 on --color-bg, 6.1:1 on white */
+  --color-text-3:       #78716c;
   --color-text-4:       #a8a29e;
   --color-accent:       #9a3412;
   --color-accent-light: rgba(154, 52, 18, 0.08);
   --color-brown-mid:    #b45309;
-  --color-sidebar-bg:   #f0ebe2;
-  --color-sidebar-active: rgba(154, 52, 18, 0.1);
+  --color-focus-ring:   rgba(154, 52, 18, 0.25);
+  --color-sidebar-bg:   #2d1810;
+  --color-sidebar-bg-light: #f0ebe2;
+  --color-sidebar-active: rgba(253, 186, 116, 0.15);
+  --color-warning-bg:   rgba(245, 158, 11, 0.1);
+  --color-warning-text: #92400e;
 
   /* Radii */
   --radius-sm:   8px;
@@ -41,15 +46,29 @@
 
   --font-size-page-title:    1.5rem;    /* 24px — h1 de página */
   --font-size-section-title: 1rem;      /* 16px — h2 de seção */
+  --font-size-display:       1.75rem;   /* 28px — números grandes em cards */
   --font-size-body:          0.9375rem; /* 15px — texto corrido */
   --font-size-meta:          0.8125rem; /* 13px — metadados, datas, status */
   --font-size-label:         0.75rem;   /* 12px — eyebrow uppercase */
+  --font-size-xs:            0.75rem;   /* 12px — timestamps, captions */
+  --font-size-sm:            0.8125rem; /* 13px — labels, badges */
 
   /* Espaçamento */
   --space-page-padding-x: 2.5rem;
   --space-page-padding-y: 2rem;
   --space-section-gap:    2rem;
   --space-row-height:     4rem; /* 64px mínimo */
+  --space-card-padding:   1.5rem;
+  --space-hero-padding:   1.75rem 2rem;
+  --space-inline-sm:      0.5rem;
+  --space-inline-md:      0.75rem;
+  --space-inline-lg:      1.25rem;
+  --space-inline-xl:      1.5rem;
+
+  /* Transições */
+  --transition-fast:      80ms ease;
+  --transition-normal:    150ms ease;
+  --transition-slow:      250ms ease;
 
   /* Auth pages */
   --auth-card-width: min(460px, 100%);
@@ -93,10 +112,6 @@
   --charge-pending-text: #92400e;
   --charge-overdue-bg:   rgba(239, 68, 68, 0.1);
   --charge-overdue-text: #991b1b;
-
-  /* Font size tokens */
-  --font-size-xs: 0.8125rem; /* 13px — meta, timestamps */
-  --font-size-sm: 0.875rem;  /* 14px — labels, badges */
 }
 
 /* ─── WCAG AA Contrast Verification (2026-03-21) ──────────────────────────────────

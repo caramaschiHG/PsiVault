@@ -16,6 +16,8 @@
 import { useTransition, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SnapshotCard } from "@/components/ui/snapshot-card";
+import { StatusBadge } from "@/components/ui/status-badge";
 import type { SessionCharge, Patient } from "./domain-types";
 
 const ptBRDate = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" });
@@ -134,29 +136,36 @@ export default function FinanceiroPageClient({
 
       {/* Summary cards */}
       <div style={summaryCardsStyle}>
-        <div style={summaryCardStyle}>
-          <p style={cardLabelStyle}>Sessões</p>
-          <p style={cardValueStyle}>{summary.totalSessions}</p>
-        </div>
-        <div style={summaryCardStyle}>
-          <p style={cardLabelStyle}>Recebido</p>
-          <p style={{ ...cardValueStyle, color: "#166534" }}>
-            {currency.format(summary.totalReceivedCents / 100)}
-          </p>
-        </div>
-        <div style={summaryCardStyle}>
-          <p style={cardLabelStyle}>Pendente / Atrasado</p>
-          <p style={{ ...cardValueStyle, color: "#92400e" }}>
-            {currency.format(summary.totalPendingCents / 100)}
-          </p>
-        </div>
+        <SnapshotCard label="Sessões" value={summary.totalSessions} />
+        <SnapshotCard label="Recebido" value={currency.format(summary.totalReceivedCents / 100)} accentColor="#166534" />
+        <SnapshotCard label="Pendente / Atrasado" value={currency.format(summary.totalPendingCents / 100)} accentColor="#92400e" />
       </div>
 
       {/* Trend chart */}
       {trends.length > 0 && (
         <div style={trendCardStyle}>
-          <p style={trendLabelStyle}>Receita mensal</p>
+          <div style={trendHeaderStyle}>
+            <p style={trendLabelStyle}>Receita mensal</p>
+            <span style={trendTotalStyle}>
+              {currency.format(trends.reduce((s, t) => s + t.totalReceived, 0))}
+            </span>
+          </div>
           <div style={chartContainerStyle}>
+            {/* Grid lines */}
+            {[0, 25, 50, 75, 100].map((pct) => (
+              <div
+                key={pct}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: `${pct}%`,
+                  borderTop: "1px solid var(--color-border)",
+                  opacity: 0.5,
+                }}
+              />
+            ))}
+            {/* Bars */}
             {trends.map((t) => (
               <div key={t.monthLabel} style={barWrapperStyle}>
                 <div
@@ -257,8 +266,6 @@ export default function FinanceiroPageClient({
                 <h3 style={patientNameHeadingStyle}>{patientName}</h3>
                 {patientCharges.map((charge) => {
                   const canMarkPaid = charge.status !== "pago";
-                  const statusColors = CHARGE_COLORS[charge.status] ?? CHARGE_COLORS.pendente;
-
                   return (
                     <div key={charge.id} className="row-interactive" style={rowStyle}>
                       <div style={rowInfoStyle}>
@@ -267,15 +274,7 @@ export default function FinanceiroPageClient({
                         </span>
                       </div>
                       <div style={rowRightStyle}>
-                        <span
-                          style={{
-                            ...statusBadgeStyle,
-                            background: statusColors.background,
-                            color: statusColors.color,
-                          }}
-                        >
-                          {CHARGE_LABELS[charge.status] ?? charge.status}
-                        </span>
+                        <StatusBadge status={charge.status as "pago" | "pendente" | "atrasado"} variant="charge" />
                         <span style={amountLabelStyle}>
                           {charge.amountInCents !== null
                             ? currency.format(charge.amountInCents / 100)
@@ -302,20 +301,6 @@ export default function FinanceiroPageClient({
     </main>
   );
 }
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const CHARGE_LABELS: Record<string, string> = {
-  pago: "Pago",
-  pendente: "Pendente",
-  atrasado: "Atrasado",
-};
-
-const CHARGE_COLORS: Record<string, { background: string; color: string }> = {
-  pago: { background: "rgba(34, 197, 94, 0.1)", color: "#166534" },
-  pendente: { background: "rgba(245, 158, 11, 0.1)", color: "#92400e" },
-  atrasado: { background: "rgba(239, 68, 68, 0.1)", color: "#991b1b" },
-};
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -371,33 +356,6 @@ const summaryCardsStyle = {
   gap: "0.75rem",
 } satisfies React.CSSProperties;
 
-const summaryCardStyle = {
-  padding: "1.25rem 1.5rem",
-  borderRadius: "var(--radius-lg)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  boxShadow: "var(--shadow-md)",
-  display: "grid",
-  gap: "0.4rem",
-} satisfies React.CSSProperties;
-
-const cardLabelStyle = {
-  margin: 0,
-  fontSize: "0.72rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.1em",
-  color: "var(--color-text-4)",
-  fontWeight: 600,
-} satisfies React.CSSProperties;
-
-const cardValueStyle = {
-  margin: 0,
-  fontSize: "1.625rem",
-  fontWeight: 700,
-  fontFamily: "'IBM Plex Serif', serif",
-  lineHeight: 1,
-} satisfies React.CSSProperties;
-
 // Trend chart
 const trendCardStyle = {
   padding: "1.25rem 1.5rem",
@@ -406,6 +364,12 @@ const trendCardStyle = {
   border: "1px solid var(--color-border)",
   display: "grid",
   gap: "1rem",
+} satisfies React.CSSProperties;
+
+const trendHeaderStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
 } satisfies React.CSSProperties;
 
 const trendLabelStyle = {
@@ -417,11 +381,20 @@ const trendLabelStyle = {
   fontWeight: 600,
 } satisfies React.CSSProperties;
 
+const trendTotalStyle = {
+  fontSize: "var(--font-size-display)",
+  fontWeight: 700,
+  fontFamily: "'IBM Plex Serif', serif",
+  color: "var(--color-text-1)",
+  lineHeight: 1,
+} satisfies React.CSSProperties;
+
 const chartContainerStyle = {
+  position: "relative",
   display: "flex",
   alignItems: "flex-end",
   gap: "0.75rem",
-  height: "100px",
+  height: "120px",
 } satisfies React.CSSProperties;
 
 const barWrapperStyle = {
@@ -534,14 +507,6 @@ const rowRightStyle = {
   display: "flex",
   alignItems: "center",
   gap: "0.75rem",
-} satisfies React.CSSProperties;
-
-const statusBadgeStyle = {
-  display: "inline-block",
-  fontSize: "0.72rem",
-  fontWeight: 600,
-  padding: "0.2rem 0.625rem",
-  borderRadius: "var(--radius-pill)",
 } satisfies React.CSSProperties;
 
 const amountLabelStyle = {
