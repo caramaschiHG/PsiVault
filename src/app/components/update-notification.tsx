@@ -2,48 +2,65 @@
 
 import { useState, useEffect } from "react";
 
-const STORAGE_KEY = "psivault_update_seen_v1";
+const STORAGE_KEY = "psivault_update_seen_v3";
 
 const FEATURES = [
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width="18" height="18">
         <rect x="3" y="4" width="18" height="18" rx="2" />
-        <path d="M16 2v4M8 2v4M3 10h18" />
+        <path d="M9 14l2 2 4-4" />
       </svg>
     ),
-    title: "Visão mensal",
-    desc: "Nova aba Mês na agenda para visualizar sessões do mês inteiro de relance.",
+    title: "Botões com feedback visual",
+    desc: "Todo clique agora tem resposta visual: spinner durante envio, estado disabled visível, e animação suave de feedback.",
   },
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width="18" height="18">
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7v5l3 3" />
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path d="M3 9h18M9 3v18" />
       </svg>
     ),
-    title: "Agendamento rápido",
-    desc: "Clique em qualquer horário vazio da agenda para criar uma sessão sem preencher o formulário completo.",
+    title: "Carregamento consistente",
+    desc: "Todos os loading states agora usam o mesmo efeito shimmer — visual unificado em toda a aplicação.",
   },
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width="18" height="18">
-        <rect x="2" y="3" width="20" height="18" rx="2" />
-        <path d="M8 7h.01M12 7h.01M16 7h.01" />
-        <path d="M7 12h10M7 16h6" />
+        <path d="M12 2v20M2 12h20" />
       </svg>
     ),
-    title: "Mini calendário",
-    desc: "Barra lateral com mini calendário — navegue entre dias com os horários marcados.",
+    title: "Financeiro com ações",
+    desc: "Marque cobranças como pagas, adicione cobranças manuais, filtre por paciente e exporte CSV com um clique.",
   },
   {
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width="18" height="18">
-        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
       </svg>
     ),
-    title: "Atalhos de teclado",
-    desc: "← → para navegar, T para hoje, D/W/M para trocar de visão. Veja atalhos disponíveis pressionando ?",
+    title: "Transições de página",
+    desc: "Navegação entre páginas agora tem transição suave — o conteúdo aparece com fade sutil.",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width="18" height="18">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+    ),
+    title: "Toasts animados",
+    desc: "Notificações deslizam pela lateral ao aparecer — mais natural e menos brusco.",
+  },
+  {
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width="18" height="18">
+        <rect x="1" y="4" width="22" height="16" rx="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+      </svg>
+    ),
+    title: "Gráfico de tendência",
+    desc: "Financeiro agora mostra receita dos últimos 6 meses com grid lines e total acumulado.",
   },
 ];
 
@@ -90,7 +107,9 @@ export function UpdateNotification() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "min(420px, 90vw)",
+          width: "min(460px, 90vw)",
+          maxHeight: "85vh",
+          overflowY: "auto",
           background: "var(--color-surface-0, #fff)",
           borderRadius: "var(--radius-xl, 16px)",
           border: "1px solid var(--color-border, #e7e5e4)",
@@ -104,10 +123,10 @@ export function UpdateNotification() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
           <div>
             <p style={{ margin: 0, fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-brown-mid, #92400e)" }}>
-              Atualização
+              Novidades
             </p>
             <h2 style={{ margin: "0.25rem 0 0", fontSize: "1.15rem", fontWeight: 700, fontFamily: "var(--font-serif, serif)", color: "var(--color-text-1, #1c1917)" }}>
-              Agenda renovada
+              PsiVault ficou mais fluido
             </h2>
           </div>
           <button
@@ -178,7 +197,7 @@ export function UpdateNotification() {
             fontFamily: "inherit",
           }}
         >
-          Explorar a agenda
+          Explorar novidades
         </button>
       </div>
 
