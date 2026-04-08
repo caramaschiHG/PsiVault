@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { signUp } from "../actions";
 import { translateAuthError } from "../auth-errors";
 import { AuthForm } from "../components/auth-form";
-import { SubmitButton } from "../components/submit-button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { PasswordInput } from "../components/password-input";
 import { MaskedInput } from "@/components/ui/masked-input";
 
@@ -124,7 +124,7 @@ export default async function SignUpPage({
                 )}
               </label>
 
-              <SubmitButton label="Continuar para verificação" />
+              <SubmitButton label="Continuar para verificação" fullWidth />
 
               {errorMessage && !errorField && (
                 <div className="auth-alert auth-alert--error">{errorMessage}</div>

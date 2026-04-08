@@ -69,6 +69,7 @@ export function QuickActionFab() {
       <button
         onClick={() => setOpen((o) => !o)}
         style={fabButtonStyle}
+        className="fab-enter"
         aria-label={open ? "Fechar menu de ações" : "Abrir menu de ações rápidas"}
       >
         {open ? "✕" : "+"}

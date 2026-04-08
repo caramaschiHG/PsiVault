@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "skills": {
+    "docs-audit-and-refresh": {
+      "source": "QwenLM/qwen-code",
+      "sourceType": "github",
+      "computedHash": "10cfc7fe5ab78928668a721db6df33bf563c93ea32dc0dbcd08494ae95c20b33"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "computedHash": "9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
+    },
+    "pr-review": {
+      "source": "QwenLM/qwen-code",
+      "sourceType": "github",
+      "computedHash": "0a8644ffdb82c98216b2c93d608c98176805a0ad5198372a91ef767987fc904d"
+    },
+    "qwen-code-claw": {
+      "source": "QwenLM/qwen-code",
+      "sourceType": "github",
+      "computedHash": "da3813a1abef6140d4bd88a7ab8b797bd8cbe1d3c6d3f95e13ea5ea1379695a3"
+    },
+    "terminal-capture": {
+      "source": "QwenLM/qwen-code",
+      "sourceType": "github",
+      "computedHash": "969911516c600861c8494054eb6e855aa61869d31f1070143caaeeb25a34852e"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "575757e3e25761c8c562d6e395d29f0b76c98b1273c0bd72d88e6ab1bc9c7d42"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "43ca6c197f8ec13055079da7053232d477068b03ca443f9ac1bc819b95cdd432"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    }
+  }
+}

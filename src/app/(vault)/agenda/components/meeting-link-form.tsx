@@ -9,7 +9,6 @@ interface MeetingLinkFormProps {
   meetingLink: string | null;
   urlInputStyle?: React.CSSProperties;
   inlineFormStyle?: React.CSSProperties;
-  submitButtonStyle?: React.CSSProperties;
 }
 
 export function MeetingLinkForm({
@@ -17,7 +16,6 @@ export function MeetingLinkForm({
   meetingLink,
   urlInputStyle,
   inlineFormStyle,
-  submitButtonStyle,
 }: MeetingLinkFormProps) {
   const [state, formAction] = useActionState(editMeetingLinkAction, null);
 
@@ -32,7 +30,7 @@ export function MeetingLinkForm({
           placeholder="https://meet.google.com/..."
           style={urlInputStyle}
         />
-        <SubmitButton label="Salvar link" pendingLabel="Salvando..." style={submitButtonStyle} />
+        <SubmitButton label="Salvar link" pendingLabel="Salvando..." />
       </form>
       {state?.success && (
         <span style={successStyle}>✓ Link salvo</span>

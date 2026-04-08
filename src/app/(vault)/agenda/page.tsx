@@ -285,7 +285,6 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           meetingLink={appt.meetingLink ?? null}
           urlInputStyle={urlInputStyle}
           inlineFormStyle={inlineFormStyle}
-          submitButtonStyle={submitButtonStyle}
         />
         <details style={detailsStyle}>
           <summary style={detailsSummaryStyle}>Problemas de conexão</summary>
@@ -297,7 +296,6 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             remoteIssueNote={appt.remoteIssueNote ?? null}
             inlineFormStyle={inlineFormStyle}
             textareaStyle={textareaStyle}
-            submitButtonStyle={submitButtonStyle}
           />
         </details>
       </section>
@@ -859,18 +857,6 @@ const textareaStyle = {
   color: "var(--color-text-1)",
   resize: "vertical" as const,
   minHeight: "4rem",
-} satisfies React.CSSProperties;
-
-const submitButtonStyle = {
-  padding: "0.3rem 0.75rem",
-  borderRadius: "6px",
-  border: "none",
-  background: "var(--color-accent)",
-  color: "#fff7ed",
-  fontSize: "0.82rem",
-  fontWeight: 600,
-  cursor: "pointer",
-  fontFamily: "inherit",
 } satisfies React.CSSProperties;
 
 const detailsStyle = {

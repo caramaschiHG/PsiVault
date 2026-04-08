@@ -190,7 +190,6 @@ export function PatientForm({ patient }: PatientFormProps) {
       <div style={actionsStyle}>
         <SubmitButton
           label={isEdit ? "Salvar alterações" : "Criar paciente"}
-          style={primaryButtonStyle}
         />
       </div>
     </form>
@@ -265,14 +264,4 @@ const textareaStyle = {
 const actionsStyle = {
   display: "flex",
   gap: "0.75rem",
-} satisfies React.CSSProperties;
-
-const primaryButtonStyle = {
-  border: 0,
-  borderRadius: "16px",
-  padding: "0.95rem 1.6rem",
-  background: "#9a3412",
-  color: "#fff7ed",
-  fontWeight: 700,
-  cursor: "pointer",
 } satisfies React.CSSProperties;

@@ -331,6 +331,107 @@ Plans:
 
 ---
 
+---
+
+## v3.0 Refinamento de UX e Fluidez
+
+**Active milestone:** `v3.0 Refinamento de UX e Fluidez`
+**Problem:** Buttons feel dead. No feedback on click. No page transitions. Finance page is read-only. The product works but doesn't *feel* alive.
+
+## Phases
+
+- [x] **Phase 26: Button System & Form Feedback** — Unificar SubmitButton, criar `<Button>` genérico com variantes, feedback visual em pending/disabled/active (completed 2026-04-08)
+- [x] **Phase 27: Loading States Unificação** — Padrão único de skeleton (shimmer), componente `<Skeleton>`, loading.tsx para rotas faltantes (completed 2026-04-08)
+- [x] **Phase 28: Transições e Fluidez** — Page transitions, toast slide-in, FAB animations, search dropdown fade, limpar CSS morto (completed 2026-04-08)
+- [x] **Phase 29: Finance Page Upgrade** — Marcar como pago, adicionar cobrança, filtro por paciente, exportação CSV, gráfico de tendência mensal (completed 2026-04-08)
+
+## Phase Details
+
+### Phase 26: Button System & Form Feedback
+**Goal:** Every button in the product follows a single, consistent system with clear visual feedback for hover, active, disabled, and pending states. No more "click and nothing happens."
+**Depends on:** Nothing (first v3.0 phase)
+**Requirements:** BTN-01, BTN-02, BTN-03, BTN-04
+
+**Success Criteria** (what must be TRUE):
+  1. Existe um único componente `<Button>` em `src/components/ui/button.tsx` com variantes `primary`, `secondary`, `ghost`, `danger` — todos via classes CSS existentes em globals.css
+  2. O componente `SubmitButton` (UI) é refatorado para usar `<Button>` internamente — spinner, pending state, e labels padronizadas
+  3. O `SubmitButton` de auth é removido e substituído pelo componente unificado de UI
+  4. Todos os inline `submitButtonStyle` / `primaryButtonStyle` em formulários são migrados para o componente `<Button>` (agenda, appointments, patients, sessions, reminders, documents)
+  5. Estados disabled e pending são visualmente distintos: `opacity: 0.6` + `cursor: not-allowed` para disabled, spinner + label alternativo para pending, cor de fundo sutil muda durante submit
+  6. `:disabled` global é estilizado em globals.css com `opacity: 0.6` + `cursor: not-allowed`
+  7. Nenhum style inline de botão permanece nos arquivos migrados
+
+**Plans:**
+- [ ] 26-01-PLAN.md — Criar componente `<Button>` genérico com variantes e migrar SubmitButton UI
+- [ ] 26-02-PLAN.md — Remover SubmitButton de auth, unificar com componente de UI
+- [ ] 26-03-PLAN.md — Migrar todos os inline button styles para `<Button>` (7+ arquivos)
+
+---
+
+### Phase 27: Loading States Unificação
+**Goal:** Consistent loading experience across the entire product — one skeleton pattern, one shimmer effect, loading states for every route.
+**Depends on:** Phase 26 (shared CSS/token discipline)
+**Requirements:** LOAD-01, LOAD-02, LOAD-03, LOAD-04
+
+**Success Criteria** (what must be TRUE):
+  1. Existe um componente `<Skeleton>` em `src/components/ui/skeleton.tsx` — aceita variant `shimmer` (padrão) e props para width/height/borderRadius
+  2. O padrão `skeleton-shimmer` é o único usado — `skeleton-pulse` é removido do CSS e todos os loading.tsx migrados
+  3. Todos os 7 loading.tsx existentes usam o componente `<Skeleton>` com shimmer — estrutura espelha a página real
+  4. Loading states adicionados para rotas faltantes: `settings/profile`, `settings/dados-e-privacidade`, `vault-plus`
+  5. Keyframes mortos (`auth-progress-bar`, `progress-slide`) removidos do globals.css
+  6. Nenhum style inline de skeleton permanece — tudo via componente `<Skeleton>`
+
+**Plans:**
+- [ ] 27-01-PLAN.md — Criar componente `<Skeleton>` e adotar shimmer como padrão único
+- [ ] 27-02-PLAN.md — Migrar todos os loading.tsx para `<Skeleton>` + adicionar loading.tsx faltantes
+- [ ] 27-03-PLAN.md — Limpar CSS morto (skeleton-pulse, auth-progress-bar, progress-slide)
+
+---
+
+### Phase 28: Transições e Fluidez
+**Goal:** The product feels alive — page transitions, animated toasts, FAB entrance/exit, search dropdown fade. Every interaction has a visual response.
+**Depends on:** Phase 26, 27
+**Requirements:** TRANS-01, TRANS-02, TRANS-03, TRANS-04, TRANS-05
+
+**Success Criteria** (what must be TRUE):
+  1. Navegação entre páginas tem transição de fade — conteúdo da página anterior faz fade-out enquanto a nova faz fade-in (via Next.js transitions ou CSS)
+  2. Toast tem animação de slide-in da direita ao aparecer (além do fade-out existente) — `translateX(100%)` → `translateX(0)` em 200ms ease-out
+  3. FAB tem animação de scale + opacity ao aparecer — `scale(0.8) + opacity: 0` → `scale(1) + opacity: 1` em 200ms ease-out
+  4. Dropdown de busca na sidebar tem fade-in + slide-up ao abrir — 150ms ease-out
+  5. Sidebar active indicator tem transição suave — o box-shadow lateral aparece com transition de 150ms
+  6. Sidebar collapse tem transição de opacidade no conteúdo além do width — conteúdo faz fade-out enquanto sidebar encolhe
+  7. Todos os botões têm `:active` com `scale(0.97)` consistente — incluindo `.btn-primary`
+  8. `prefers-reduced-motion` continua respeitado — todas as animações reduzidas a 0.01ms
+
+**Plans:**
+- [ ] 28-01-PLAN.md — Page transitions (Next.js transitions ou CSS-based fade entre rotas vault)
+- [ ] 28-02-PLAN.md — Toast slide-in, FAB animation, search dropdown fade
+- [ ] 28-03-PLAN.md — Polish: btn :active consistente, sidebar transitions, reduced-motion check
+
+---
+
+### Phase 29: Finance Page Upgrade
+**Goal:** The finance page becomes a usable tool — actions on charges, patient filter, manual charge entry, CSV export, and a simple monthly trend chart.
+**Depends on:** Phase 26 (Button component for actions), Phase 27 (loading state)
+**Requirements:** FIN-01, FIN-02, FIN-03, FIN-04, FIN-05
+
+**Success Criteria** (what must be TRUE):
+  1. Cada cobrança na lista tem botão "Marcar como pago" (para pendentes/atrasados) — ação via server action com feedback visual imediato (toast + revalidate)
+  2. Existe um formulário inline ou modal para "Adicionar cobrança" manualmente — seleciona paciente, data, valor, status
+  3. Filtro por paciente acima da lista — dropdown com todos os pacientes do workspace, filtra a lista de cobranças sem recarregar a página
+  4. Botão "Exportar CSV" no header — exporta todas as cobranças do mês atual como CSV (paciente, data, status, valor)
+  5. Gráfico de tendência mensal simples (barras CSS puras) — últimos 6 meses de receita total, visualização rápida da tendência
+  6. Cobranças são agrupadas por paciente — nome do paciente como header, lista de sessões abaixo
+  7. Loading state usa `<Skeleton>` consistente com o resto do produto
+  8. Empty state tem CTA "Adicionar primeira cobrança"
+
+**Plans:**
+- [ ] 29-01-PLAN.md — Server actions: marcar como pago, adicionar cobrança manual, filtro por paciente
+- [ ] 29-02-PLAN.md — UI: ações na lista de cobranças, formulário inline, filtro dropdown
+- [ ] 29-03-PLAN.md — Exportação CSV + gráfico de tendência mensal (CSS puro)
+
+---
+
 ## Progress Table
 
 | Phase | Plans Complete | Status | Completed |
@@ -340,3 +441,7 @@ Plans:
 | 23. Copy Interna | 2/2 | Complete    | 2026-04-02 |
 | 24. Continuidade e Fluxo | 3/3 | Complete    | 2026-04-03 |
 | 25. Plano Premium (UI/conceito) | 2/2 | Complete | 2026-04-03 |
+| 26. Button System & Form Feedback | 3/3 | **Complete** | **2026-04-08** |
+| 27. Loading States Unificação | 3/3 | **Complete** | **2026-04-08** |
+| 28. Transições e Fluidez | 3/3 | **Complete** | **2026-04-08** |
+| 29. Finance Page Upgrade | 3/3 | **Complete** | **2026-04-08** |

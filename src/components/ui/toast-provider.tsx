@@ -63,10 +63,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           {toasts.map((t) => (
             <div
               key={t.id}
+              className={t.fading ? "" : "toast-enter"}
               style={{
                 ...toastStyle,
                 borderLeftColor: borderColors[t.type],
                 opacity: t.fading ? 0 : 1,
+                transition: t.fading ? "opacity 0.5s ease" : "none",
               }}
               role="status"
             >

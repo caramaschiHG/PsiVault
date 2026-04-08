@@ -33,7 +33,7 @@ function SearchDropdown({ results, onClose }: SearchDropdownProps) {
     charges.length === 0;
 
   return (
-    <div style={dropdownStyle}>
+    <div className="search-dropdown-enter" style={dropdownStyle}>
       {isEmpty ? (
         <p style={emptyStyle}>Nenhum resultado encontrado</p>
       ) : (

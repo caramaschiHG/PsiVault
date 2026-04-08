@@ -1,4 +1,4 @@
-import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const shellStyle = {
   padding: "2rem 2.5rem",
@@ -9,39 +9,14 @@ const shellStyle = {
   alignContent: "start",
 } satisfies React.CSSProperties;
 
-const skeletonTitleStyle = {
-  height: "2rem",
-  width: "40%",
-  borderRadius: "var(--radius-md)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  animation: "skeleton-pulse 1.5s ease-in-out infinite",
-} satisfies React.CSSProperties;
-
-const skeletonBlockStyle = {
-  height: "180px",
-  borderRadius: "var(--radius-xl)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  animation: "skeleton-pulse 1.5s ease-in-out infinite",
-} satisfies React.CSSProperties;
-
-const skeletonCardStyle = {
-  height: "80px",
-  borderRadius: "var(--radius-lg)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  animation: "skeleton-pulse 1.5s ease-in-out infinite",
-} satisfies React.CSSProperties;
-
 export default function AgendaLoading() {
   return (
     <main style={shellStyle}>
-      <div style={skeletonTitleStyle} />
-      <div style={skeletonBlockStyle} />
-      <div style={skeletonCardStyle} />
-      <div style={skeletonCardStyle} />
-      <div style={skeletonCardStyle} />
+      <Skeleton height="2rem" width="40%" borderRadius="var(--radius-md)" delay={0} />
+      <Skeleton height="180px" borderRadius="var(--radius-xl)" delay={100} />
+      <Skeleton height="80px" borderRadius="var(--radius-lg)" delay={200} />
+      <Skeleton height="80px" borderRadius="var(--radius-lg)" delay={300} />
+      <Skeleton height="80px" borderRadius="var(--radius-lg)" delay={400} />
     </main>
   );
 }

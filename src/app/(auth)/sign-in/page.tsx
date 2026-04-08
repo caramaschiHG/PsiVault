@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { signIn } from "../actions";
 import { translateAuthError } from "../auth-errors";
 import { AuthForm } from "../components/auth-form";
-import { SubmitButton } from "../components/submit-button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { PasswordInput } from "../components/password-input";
 
 export default async function SignInPage({
@@ -93,7 +93,7 @@ export default async function SignInPage({
                 </a>
               </div>
 
-              <SubmitButton label="Entrar" />
+              <SubmitButton label="Entrar" fullWidth />
 
               {errorMessage && !errorField && (
                 <div className="auth-alert auth-alert--error">{errorMessage}</div>

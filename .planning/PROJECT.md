@@ -12,17 +12,18 @@ PsiVault is a digital vault for Brazilian psychologists who run their own practi
 
 ---
 
-## Current Milestone: v2.0 Reposicionamento Psicanalítico
+## Current Milestone: v3.0 Refinamento de UX e Fluidez
 
-**Goal:** Reposition PsiVault as a premium platform specifically for psychoanalytic clinicians in Brazil — rewrite product identity, landing page, UI copy, module framing, and introduce the premium AI research assistant concept tied to psychoanalytic literature.
+**Goal:** Transform PsiVault from a functional product into a fluid, polished, professional experience — unified button system, consistent loading states, page transitions, toast animations, and a robust finance page with real actions.
 
 **Target features:**
-- Product repositioning: clear psychoanalytic niche identity across all surfaces
-- Landing page rewrite: hero, features, pricing, FAQ in pt-BR with psychoanalytic vocabulary
-- UI/UX copy refinement: module names, empty states, onboarding, dashboard labels — all aligned to psychoanalytic practice language
-- Premium plan concept: personalized AI research assistant for psychoanalytic literature (no diagnostics, no copyright violation)
-- Visual direction: editorial, discreet, premium — strong typography, restrained palette, calm hierarchy
-- Brand consistency: CLAUDE.md updated with new positioning as ground truth for all future work
+- Unified `<Button>` component with variants (primary, secondary, ghost, danger) and consistent pending/feedback states
+- Consistent skeleton loading pattern (shimmer) with reusable `<Skeleton>` component
+- Page navigation transitions (fade/slide between routes)
+- Toast slide-in animations, FAB entrance/exit animations, search dropdown fade
+- Robust finance page: mark as paid, manual charges, patient filter, CSV export, monthly trend chart
+- Remove dead code (unused keyframes, duplicate components)
+- Every interactive element must communicate state clearly — no more "click and nothing happens"
 
 ## Core Value
 
@@ -117,5 +118,17 @@ PsiVault is a digital vault for Brazilian psychologists who run their own practi
 - Does NOT: diagnose, replace clinical judgment, make case conclusions, freely distribute copyrighted texts
 - Copyright rule: full-text only for public domain, licensed, or user-uploaded material; otherwise metadata + citation + excerpt + legal access path
 
+## v3.0 Product Experience Goals
+
+**Problem:** Buttons feel dead — click and nothing happens. No loading feedback, no transitions, no fluidity. The finance page is read-only. The product works but doesn't *feel* alive.
+
+**Target feeling:** Every click has a response. Every form shows progress. Pages flow into each other. The finance page is a tool the psychologist actually uses, not just a report.
+
+**UX principles for v3.0:**
+- Feedback is immediate — click → visual response, submit → loading indicator, done → confirmation
+- States are visible — disabled, pending, error, success are all visually distinct
+- Transitions are fast — 120-200ms max, ease-out, no bounce
+- The finance page has *actions*, not just data — mark as paid, add adjustments, filter, export
+
 ---
-*Last updated: 2026-03-26 after v2.0 milestone defined*
+*Last updated: 2026-04-08 after v3.0 milestone defined*

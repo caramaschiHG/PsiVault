@@ -14,6 +14,7 @@
  */
 
 import { useActionState, useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
 import type { Reminder } from "../../../../../lib/reminders/model";
 
 interface RemindersSectionProps {
@@ -70,14 +71,15 @@ export function RemindersSection({
                   </span>
                 )}
               </div>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 onClick={() => handleComplete(reminder.id)}
-                disabled={isPending}
-                style={completeButtonStyle}
+                isLoading={isPending}
+                loadingLabel="..."
+                size="sm"
               >
-                {isPending ? "..." : "Concluir"}
-              </button>
+                Concluir
+              </Button>
             </li>
           ))}
         </ul>
@@ -101,9 +103,9 @@ export function RemindersSection({
             name="dueAt"
             style={dateInputStyle}
           />
-          <button type="submit" style={submitButtonStyle}>
+          <Button type="submit" variant="primary" size="sm">
             Adicionar
-          </button>
+          </Button>
         </form>
       </div>
 
@@ -113,7 +115,8 @@ export function RemindersSection({
           <button
             type="button"
             onClick={() => setCompletedOpen((prev) => !prev)}
-            style={completedToggleButtonStyle}
+            className="btn-ghost"
+            style={{ fontSize: "0.82rem" }}
           >
             {completedOpen ? "▲" : "▶"} Concluídas ({completedReminders.length})
           </button>
@@ -211,19 +214,6 @@ const reminderDueDateStyle = {
   color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
-const completeButtonStyle = {
-  padding: "0.3rem 0.75rem",
-  borderRadius: "8px",
-  border: "1px solid var(--color-border-med)",
-  background: "var(--color-accent-light)",
-  color: "var(--color-accent)",
-  fontSize: "0.8rem",
-  fontWeight: 500,
-  cursor: "pointer",
-  whiteSpace: "nowrap" as const,
-  fontFamily: "inherit",
-} satisfies React.CSSProperties;
-
 const newReminderFormContainerStyle = {
   paddingTop: "0.75rem",
   borderTop: "1px solid rgba(146, 64, 14, 0.08)",
@@ -265,35 +255,11 @@ const dateInputStyle = {
   background: "#fff",
 } satisfies React.CSSProperties;
 
-const submitButtonStyle = {
-  padding: "0.4rem 0.9rem",
-  borderRadius: "8px",
-  border: "none",
-  background: "var(--color-accent)",
-  color: "#fff7ed",
-  fontSize: "0.88rem",
-  fontWeight: 600,
-  cursor: "pointer",
-  fontFamily: "inherit",
-} satisfies React.CSSProperties;
-
 const completedSectionStyle = {
   paddingTop: "0.5rem",
   borderTop: "1px solid rgba(146, 64, 14, 0.08)",
   display: "grid",
   gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const completedToggleButtonStyle = {
-  alignSelf: "start",
-  background: "none",
-  border: "none",
-  cursor: "pointer",
-  fontSize: "0.85rem",
-  fontWeight: 500,
-  color: "var(--color-text-3)",
-  padding: "0.2rem 0",
-  textAlign: "left" as const,
 } satisfies React.CSSProperties;
 
 const completedListStyle = {

@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Reposicionamento Psicanalítico
+milestone: v3.0
+milestone_name: Refinamento de UX e Fluidez
 status: complete
-stopped_at: "v2.0 milestone complete — all 16/16 requirements verified"
-last_updated: "2026-04-07T21:50:00.000Z"
-last_activity: 2026-04-07 — Phase 22 complete (LAND-03, LAND-04 verified in code)
+stopped_at: "v3.0 milestone complete — all 4 phases, 12 plans executed"
+last_updated: "2026-04-08T14:30:00.000Z"
+last_activity: 2026-04-08 — Phase 29 complete, build + tests green
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
+  total_phases: 4
+  completed_phases: 4
+  total_plans: 12
+  completed_plans: 12
   percent: 100
 ---
 
@@ -18,33 +18,31 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-26 after v2.0 milestone defined)
+See: .planning/PROJECT.md (updated 2026-04-08 after v3.0 milestone defined)
 
 **Core value:** PsiVault é o cofre digital da prática psicanalítica — um ambiente seguro, elegante e estruturado para o clínico que leva a sério o registro, a continuidade e a preservação do trabalho analítico.
-**Current focus:** v2.0 — Reposicionamento Psicanalítico (roadmap defined, ready to plan)
+**Current focus:** v3.0 — Refinamento de UX e Fluidez (4 phases planned, ready to execute)
 
 **Note:** v1.2 technical milestone (phases 07–20) continues independently in parallel.
 
 ## Current Position
 
-Phase: 22 — Landing Page ✅ complete
-Plan: 22-02 complete
-Status: Phase 22 done — v2.0 milestone COMPLETE
-Last activity: 2026-04-07 — LAND-03 and LAND-04 verified in code
+Phase: 29 — Finance Page Upgrade ✅ complete
+Status: v3.0 milestone COMPLETE
+Last activity: 2026-04-08 — All phases executed, build + tests verified
 
-Progress: [██████████] 100% (5/5 v2.0 phases)
+Progress: [██████████] 100% (4/4 v3.0 phases)
 
-## v2.0 Roadmap Summary
+## v3.0 Roadmap Summary
 
 | Phase | Goal | Requirements |
 |-------|------|--------------|
-| 21 - Brand Foundation | Posicionamento psicanalítico e tokens visuais como ground truth | BRAND-01, BRAND-02 |
-| 22 - Landing Page | Landing page com hero, módulos, trust e FAQ para nicho psicanalítico | LAND-01, LAND-02, LAND-03, LAND-04 |
-| 23 - Copy Interna | Navegação, dashboard e onboarding com vocabulário e tom de marca | NAV-01, NAV-02, NAV-03 |
-| 24 - Continuidade e Fluxo | Prontuário, hierarquia e empty states comunicando acompanhamento | CONT-01, CONT-02, CONT-03, CONT-04 |
-| 25 - Plano Premium (UI/conceito) | Assistente de Pesquisa configurável com limites claros | PREM-01, PREM-02, PREM-03 |
+| 26 - Button System & Form Feedback | Componente Button único, SubmitButton unificado, inline styles migrados | BTN-01, BTN-02, BTN-03, BTN-04 |
+| 27 - Loading States Unificação | Skeleton component, shimmer padrão, loading.tsx completos | LOAD-01, LOAD-02, LOAD-03, LOAD-04 |
+| 28 - Transições e Fluidez | Page transitions, toast slide-in, FAB animation, search fade | TRANS-01–TRANS-05 |
+| 29 - Finance Page Upgrade | Ações em cobranças, filtro, CSV export, trend chart | FIN-01, FIN-02, FIN-03, FIN-04, FIN-05 |
 
-**Coverage:** 16/16 v2.0 requirements mapped
+**Coverage:** 17 requirements mapped across 4 phases
 
 ## Performance Metrics
 
@@ -210,6 +208,15 @@ Progress: [██████████] 100% (5/5 v2.0 phases)
 - [Phase 24-continuidade-e-fluxo]: Funções puras de timeline em arquivo .ts separado do Server Component — testabilidade sem acoplamento à rota
 - [Phase 24-continuidade-e-fluxo]: details/summary HTML nativo para seções recolhidas (dismissed, completedHidden) — zero JS adicional
 - [Phase 24-continuidade-e-fluxo]: Badge 'Novo acompanhamento' é texto simples itálico sem background — não é chip colorido (anti-padrão visual do produto)
+- [v3.0-01]: Shimmer é o padrão único de skeleton — pulse será removido após migração completa
+- [v3.0-02]: Componente `<Button>` é canônico — todos os inline button styles devem ser migrados
+- [v3.0-03]: Finance page terá ações reais — marcar como pago, adicionar cobrança, filtro, export CSV
+- [v3.0-04]: Page transitions via template.tsx (App Router) — CSS-based, 200ms ease-out
+- [v3.0-05]: Gráfico de tendência mensal é CSS puro — sem bibliotecas externas
+- [v3.0-06]: Componente `<Button>` é o único padrão de botão — inline styles removidos
+- [v3.0-07]: `<Skeleton>` com shimmer é o único padrão de loading — pulse removido
+- [v3.0-08]: Page transitions via template.tsx com fadeIn 180ms
+- [v3.0-09]: Finance page é client component com ações reais — mark as paid, add charge, filter, CSV export, trend chart
 
 ### Pending Todos
 
@@ -218,13 +225,22 @@ Progress: [██████████] 100% (5/5 v2.0 phases)
 - ~~Plan and execute Phase 23 (Copy Interna)~~ ✅
 - ~~Plan and execute Phase 24 (Continuidade e Fluxo)~~ ✅
 - ~~Plan and execute Phase 25 (Plano Premium UI/conceito)~~ ✅
+- [x] Execute Phase 26: Button System & Form Feedback (3 plans)
+- [x] Execute Phase 27: Loading States Unificação (3 plans)
+- [x] Execute Phase 28: Transições e Fluidez (3 plans)
+- [x] Execute Phase 29: Finance Page Upgrade (3 plans)
 
 ### Next Milestone Decisions
 
-O milestone v2.0 está **COMPLETO** (16/16 requirements). Próximas opções:
-1. **Agenda Upgrade** — reescrever agenda estilo Google Calendar (plano existente em `.planning/agenda-upgrade.md`)
-2. **v1.2 Verification artifacts** — criar VERIFICATION.md para phases 07, 08, 13
-3. **v3.0 Planning** — AI Assistant integration (Claude API) + Pricing page
+O milestone v3.0 está **COMPLETO** (4/4 phases, 12/12 plans).
+
+**v3.0 delivered:**
+- Button system unificado (Button + SubmitButton)
+- Skeleton loading consistente com shimmer
+- Page transitions, toast slide-in, FAB animation, search dropdown fade
+- Finance page com ações reais (mark paid, add charge, filter, CSV export, trend chart)
+- CSS morto removido (skeleton-pulse, auth-progress-bar, progress-slide)
+- 351 testes passing, build limpo, TypeScript limpo
 
 ### Blockers/Concerns
 
@@ -233,6 +249,6 @@ O milestone v2.0 está **COMPLETO** (16/16 requirements). Próximas opções:
 
 ## Session Continuity
 
-Last session: 2026-04-03T18:45:00.000Z
-Stopped at: Verified Phase 25
-Resume: The v2.0 milestone is complete. Await user instruction for next milestone or archive.
+Last session: 2026-04-07T21:50:00.000Z
+Stopped at: v2.0 milestone complete
+Resume: 2026-04-08 — v3.0 COMPLETE. All 4 phases executed, 351 tests green, build clean.

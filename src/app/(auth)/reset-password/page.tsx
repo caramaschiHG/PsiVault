@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { requestPasswordReset, updatePassword } from "../actions";
 import { translateAuthError } from "../auth-errors";
 import { AuthForm } from "../components/auth-form";
-import { SubmitButton } from "../components/submit-button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { PasswordInput } from "../components/password-input";
 
 function LockIcon() {
@@ -96,7 +96,7 @@ export default async function ResetPasswordPage({
                 )}
               </label>
 
-              <SubmitButton label="Atualizar senha" />
+              <SubmitButton label="Atualizar senha" fullWidth />
 
               {errorMessage && !errorField && !isTokenExpired && (
                 <div className="auth-alert auth-alert--error">{errorMessage}</div>
@@ -170,7 +170,7 @@ export default async function ResetPasswordPage({
               />
             </label>
 
-            <SubmitButton label="Enviar link de recuperação" />
+            <SubmitButton label="Enviar link de recuperação" fullWidth />
 
             {errorMessage && !errorField && (
               <div className="auth-alert auth-alert--error">{errorMessage}</div>

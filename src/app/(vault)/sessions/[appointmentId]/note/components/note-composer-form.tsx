@@ -303,7 +303,7 @@ export function NoteComposerForm({
 
       {/* Form actions */}
       <div style={formActionsStyle}>
-        <SubmitButton label={submitLabel} style={submitButtonStyle} />
+        <SubmitButton label={submitLabel} />
         <Link href={backHref} style={cancelLinkStyle} onClick={handleCancelClick}>
           Cancelar
         </Link>
@@ -405,18 +405,6 @@ const formActionsStyle = {
   alignItems: "center",
   gap: "1.25rem",
   paddingTop: "0.5rem",
-} satisfies React.CSSProperties;
-
-const submitButtonStyle = {
-  padding: "0.75rem 1.5rem",
-  borderRadius: "16px",
-  background: "#9a3412",
-  color: "#fff7ed",
-  border: "none",
-  fontWeight: 700,
-  fontSize: "0.95rem",
-  cursor: "pointer",
-  fontFamily: "inherit",
 } satisfies React.CSSProperties;
 
 const cancelLinkStyle = {

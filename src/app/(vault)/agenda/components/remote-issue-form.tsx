@@ -9,7 +9,6 @@ interface RemoteIssueFormProps {
   remoteIssueNote: string | null;
   inlineFormStyle?: React.CSSProperties;
   textareaStyle?: React.CSSProperties;
-  submitButtonStyle?: React.CSSProperties;
 }
 
 export function RemoteIssueForm({
@@ -17,7 +16,6 @@ export function RemoteIssueForm({
   remoteIssueNote,
   inlineFormStyle,
   textareaStyle,
-  submitButtonStyle,
 }: RemoteIssueFormProps) {
   const [state, formAction] = useActionState(addRemoteIssueNoteAction, null);
 
@@ -31,7 +29,7 @@ export function RemoteIssueForm({
           placeholder="Descreva o problema..."
           style={textareaStyle}
         />
-        <SubmitButton label="Registrar" pendingLabel="Registrando..." style={submitButtonStyle} />
+        <SubmitButton label="Registrar" pendingLabel="Registrando..." />
       </form>
       {state?.success && (
         <span style={successStyle}>✓ Registrado</span>

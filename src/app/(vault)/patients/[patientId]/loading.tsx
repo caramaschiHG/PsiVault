@@ -1,4 +1,4 @@
-import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const shellStyle = {
   padding: "2rem 2.5rem",
@@ -9,29 +9,13 @@ const shellStyle = {
   alignContent: "start",
 } satisfies React.CSSProperties;
 
-const skeletonHeaderStyle = {
-  height: "120px",
-  borderRadius: "var(--radius-xl)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  animation: "skeleton-pulse 1.5s ease-in-out infinite",
-} satisfies React.CSSProperties;
-
-const skeletonSectionStyle = {
-  height: "200px",
-  borderRadius: "var(--radius-xl)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  animation: "skeleton-pulse 1.5s ease-in-out infinite",
-} satisfies React.CSSProperties;
-
 export default function PatientProfileLoading() {
   return (
     <main style={shellStyle}>
-      <div style={skeletonHeaderStyle} />
-      <div style={skeletonSectionStyle} />
-      <div style={skeletonSectionStyle} />
-      <div style={skeletonSectionStyle} />
+      <Skeleton height="120px" borderRadius="var(--radius-xl)" delay={0} />
+      <Skeleton height="200px" borderRadius="var(--radius-xl)" delay={100} />
+      <Skeleton height="200px" borderRadius="var(--radius-xl)" delay={200} />
+      <Skeleton height="200px" borderRadius="var(--radius-xl)" delay={300} />
     </main>
   );
 }

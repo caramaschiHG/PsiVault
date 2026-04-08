@@ -161,7 +161,7 @@ export default async function ProfileSettingsPage() {
             </div>
           </div>
 
-          <SubmitButton label="Salvar perfil e padrões" style={buttonStyle} />
+          <SubmitButton label="Salvar perfil e padrões" />
         </form>
 
         <aside style={sidebarStyle}>
@@ -353,15 +353,6 @@ const checkboxCardStyle = {
   borderRadius: "var(--radius-md)",
   background: "var(--color-surface-0)",
   border: "1px solid var(--color-border)",
-} satisfies React.CSSProperties;
-
-const buttonStyle = {
-  border: 0,
-  borderRadius: "var(--radius-md)",
-  padding: "0.95rem 1.1rem",
-  background: "var(--color-accent)",
-  color: "#fff7ed",
-  fontWeight: 700,
 } satisfies React.CSSProperties;
 
 const sideCopyStyle = {

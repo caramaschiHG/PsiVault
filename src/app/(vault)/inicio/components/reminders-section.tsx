@@ -57,8 +57,7 @@ export function RemindersSection({ reminders, workspaceId }: RemindersSectionPro
                 <SubmitButton
                   label="Concluir"
                   pendingLabel="..."
-                  className="btn-ghost"
-                  style={completeButtonStyle}
+                  variant="ghost"
                 />
               </form>
             </li>
@@ -144,12 +143,6 @@ const reminderTitleStyle = {
 const reminderDueDateStyle = {
   fontSize: "0.78rem",
   color: "var(--color-text-3)",
-} satisfies React.CSSProperties;
-
-const completeButtonStyle = {
-  fontSize: "0.8rem",
-  padding: "0.3rem 0.75rem",
-  whiteSpace: "nowrap" as const,
 } satisfies React.CSSProperties;
 
 const newReminderFormContainerStyle = {
