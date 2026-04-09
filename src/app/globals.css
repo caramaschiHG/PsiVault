@@ -1,12 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
 
-/* ─── Design tokens ──────────────────────────────────────────────────────────── */
+/* ─── Design tokens — Refatorado (UI/UX Polish 2026-04) ─────────────────────── */
 
 :root {
   color-scheme: light;
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
 
-  /* Colors */
+  /* ═══════════════════════════════════════════════════════════════
+     COLORS — mantidos e organizados
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* Core palette */
   --color-bg:           #f7f3ed;
   --color-surface-0:    #ffffff;
   --color-surface-1:    #fffcf7;
@@ -19,53 +23,126 @@
   --color-text-3:       #78716c;
   --color-text-4:       #a8a29e;
   --color-accent:       #9a3412;
+  --color-accent-hover: #7c2a0e;
   --color-accent-light: rgba(154, 52, 18, 0.08);
   --color-brown-mid:    #b45309;
   --color-focus-ring:   rgba(154, 52, 18, 0.25);
+
+  /* Sidebar */
   --color-sidebar-bg:   #2d1810;
   --color-sidebar-bg-light: #f0ebe2;
   --color-sidebar-active: rgba(253, 186, 116, 0.15);
+
+  /* Semantic */
   --color-warning-bg:   rgba(245, 158, 11, 0.1);
   --color-warning-text: #92400e;
+  --color-success-bg:   #dcfce7;
+  --color-success-border: #86efac;
+  --color-success-text: #166534;
+  --color-error-bg:     rgba(239, 68, 68, 0.08);
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-error-text:   #dc2626;
 
-  /* Radii */
+  /* Landing (shared palette) */
+  --landing-bg: #f4f0ea;
+  --landing-surface: #fdfaf5;
+  --landing-surface-strong: #ede8de;
+  --landing-text: #1c1917;
+  --landing-muted: #57534e;
+  --landing-soft: #57534e;
+  --landing-accent: #9a3412;
+  --landing-accent-strong: #7c2910;
+  --landing-border: rgba(146, 64, 14, 0.1);
+  --landing-border-strong: rgba(146, 64, 14, 0.2);
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY — Escala de 6 níveis + fluid sizing
+     ═══════════════════════════════════════════════════════════════ */
+
+  --font-serif: "IBM Plex Serif", Georgia, serif;
+  --font-sans:  "IBM Plex Sans", "Segoe UI", sans-serif;
+
+  /* Hierarchy (desktop base → fluid with clamp) */
+  --font-size-h1:       clamp(1.5rem, 3.5vw, 1.875rem);   /* 24→30px — page title */
+  --font-size-h2:       clamp(1.125rem, 2.5vw, 1.25rem);  /* 18→20px — section title */
+  --font-size-h3:       1.0625rem;  /* 17px — subsection */
+  --font-size-body:     1rem;       /* 16px — body text (base) */
+  --font-size-body-sm:  0.9375rem;  /* 15px — secondary body */
+  --font-size-meta:     0.875rem;   /* 14px — metadata, dates, status */
+  --font-size-label:    0.75rem;    /* 12px — eyebrow uppercase */
+  --font-size-xs:       0.75rem;    /* 12px — timestamps, captions */
+  --font-size-sm:       0.8125rem;  /* 13px — labels, badges */
+  --font-size-display:  1.875rem;   /* 30px — large numbers in stat cards */
+
+  /* Line heights */
+  --line-height-tight:  1.1;
+  --line-height-base:   1.5;
+  --line-height-relaxed: 1.65;
+  --line-height-loose:  1.75;
+
+  /* Letter spacing */
+  --letter-spacing-tight:  -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide:   0.05em;
+  --letter-spacing-wider:  0.12em;
+  --letter-spacing-widest: 0.18em;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SPACING — Sistema de 8 tokens (base 4px)
+     ═══════════════════════════════════════════════════════════════ */
+
+  --space-1:  0.25rem;   /* 4px   */
+  --space-2:  0.5rem;    /* 8px   */
+  --space-3:  0.75rem;   /* 12px  */
+  --space-4:  1rem;      /* 16px  */
+  --space-6:  1.5rem;    /* 24px  */
+  --space-8:  2rem;      /* 32px  */
+  --space-12: 3rem;      /* 48px  */
+  --space-16: 4rem;      /* 64px  */
+
+  /* ═══════════════════════════════════════════════════════════════
+     SHADOWS — 5 níveis de elevação
+     ═══════════════════════════════════════════════════════════════ */
+
+  --shadow-xs:  0 1px 2px rgba(120, 53, 15, 0.04);
+  --shadow-sm:  0 2px 6px rgba(120, 53, 15, 0.07), 0 1px 3px rgba(120, 53, 15, 0.05);
+  --shadow-md:  0 4px 16px rgba(120, 53, 15, 0.08), 0 2px 6px rgba(120, 53, 15, 0.04);
+  --shadow-lg:  0 12px 40px rgba(120, 53, 15, 0.12), 0 4px 12px rgba(120, 53, 15, 0.06);
+  --shadow-xl:  0 24px 60px rgba(120, 53, 15, 0.16), 0 8px 20px rgba(120, 53, 15, 0.08);
+
+  /* ═══════════════════════════════════════════════════════════════
+     SURFACES — 3 níveis de elevação visual
+     ═══════════════════════════════════════════════════════════════ */
+
+  --surface-base:      var(--color-surface-1);       /* cards normais */
+  --surface-raised:    var(--color-surface-0);       /* cards elevados */
+  --surface-overlay:   var(--color-surface-0);       /* dropdowns, modals */
+
+  /* ═══════════════════════════════════════════════════════════════
+     RADII
+     ═══════════════════════════════════════════════════════════════ */
+
   --radius-sm:   8px;
   --radius-md:   14px;
   --radius-lg:   20px;
   --radius-xl:   28px;
   --radius-pill: 999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(120, 53, 15, 0.08);
-  --shadow-lg: 0 12px 40px rgba(120, 53, 15, 0.12);
+  /* ═══════════════════════════════════════════════════════════════
+     PAGE LAYOUT
+     ═══════════════════════════════════════════════════════════════ */
 
-  /* Tipografia — escala fase 13 */
-  --font-serif: "IBM Plex Serif", Georgia, serif;
-  --font-sans:  "IBM Plex Sans", "Segoe UI", sans-serif;
-
-  --font-size-page-title:    1.5rem;    /* 24px — h1 de página */
-  --font-size-section-title: 1rem;      /* 16px — h2 de seção */
-  --font-size-display:       1.75rem;   /* 28px — números grandes em cards */
-  --font-size-body:          0.9375rem; /* 15px — texto corrido */
-  --font-size-meta:          0.8125rem; /* 13px — metadados, datas, status */
-  --font-size-label:         0.75rem;   /* 12px — eyebrow uppercase */
-  --font-size-xs:            0.75rem;   /* 12px — timestamps, captions */
-  --font-size-sm:            0.8125rem; /* 13px — labels, badges */
-
-  /* Espaçamento */
-  --space-page-padding-x: 2.5rem;
-  --space-page-padding-y: 2rem;
+  --space-page-padding-x: clamp(1.25rem, 4vw, 2.5rem);
+  --space-page-padding-y: clamp(1.25rem, 3vw, 2rem);
   --space-section-gap:    2rem;
   --space-row-height:     4rem; /* 64px mínimo */
   --space-card-padding:   1.5rem;
   --space-hero-padding:   1.75rem 2rem;
-  --space-inline-sm:      0.5rem;
-  --space-inline-md:      0.75rem;
-  --space-inline-lg:      1.25rem;
-  --space-inline-xl:      1.5rem;
 
-  /* Transições */
+  /* ═══════════════════════════════════════════════════════════════
+     TRANSITIONS
+     ═══════════════════════════════════════════════════════════════ */
+
   --transition-fast:      80ms ease;
   --transition-normal:    150ms ease;
   --transition-slow:      250ms ease;
@@ -74,24 +151,6 @@
   --auth-card-width: min(460px, 100%);
   --auth-card-width-wide: min(520px, 100%);
   --auth-card-padding: 2.5rem;
-  --color-success-bg: #dcfce7;
-  --color-success-border: #86efac;
-  --color-success-text: #166534;
-  --color-error-bg: rgba(239, 68, 68, 0.08);
-  --color-error-border: rgba(239, 68, 68, 0.3);
-  --color-error-text: #dc2626;
-
-  /* Landing — mesma paleta do app */
-  --landing-bg: #f4f0ea;
-  --landing-surface: #fdfaf5;
-  --landing-surface-strong: #ede8de;
-  --landing-text: #1c1917;
-  --landing-muted: #57534e;
-  --landing-soft: #57534e; /* Updated for WCAG AA compliance */
-  --landing-accent: #9a3412;
-  --landing-accent-strong: #7c2910;
-  --landing-border: rgba(146, 64, 14, 0.1);
-  --landing-border-strong: rgba(146, 64, 14, 0.2);
 
   /* Appointment Status Colors */
   --status-scheduled-bg:     rgba(255, 247, 237, 0.9);
@@ -500,6 +559,115 @@ label[for], .nav-link, summary {
   outline: none;
 }
 
+/* ─── Vault shell ──────────────────────────────────────────────────────────────── */
+
+.vault-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* Sidebar — desktop */
+.vault-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background-color: var(--color-sidebar-bg);
+  display: flex;
+  flex-direction: "column";
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.vault-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-4) var(--space-4);
+}
+
+.vault-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vault-brand-icon svg {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.vault-brand-text {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.vault-brand-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.2;
+}
+
+.vault-brand-tagline {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1;
+}
+
+.vault-sidebar-search {
+  padding: var(--space-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+}
+
+/* Content area */
+.vault-content {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-bg);
+}
+
+/* Page enter animation */
+.vault-page-enter {
+  animation: vaultPageIn 200ms ease-out both;
+}
+
+@keyframes vaultPageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Sidebar dark context ───────────────────────────────────────────────────── */
+
+.vault-sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  transition: background-color 150ms ease, color 150ms ease;
+  line-height: 1.4;
+  letter-spacing: 0.005em;
+}
+
+.vault-sidebar .nav-link:hover {
+  color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.vault-sidebar .nav-link.active {
+  color: rgba(255, 255, 255, 0.98);
+  background-color: rgba(255, 255, 255, 0.12);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 rgba(253, 186, 116, 0.7);
+}
+
 /* ─── Focus mode ─────────────────────────────────────────────────────────────── */
 
 .vault-sidebar.collapsed {
@@ -512,17 +680,32 @@ label[for], .nav-link, summary {
 
 @media (max-width: 767px) {
   .vault-sidebar {
-    display: none !important;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 200;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-xl);
   }
+
+  .vault-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .vault-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 199;
+  }
+
   .vault-bottom-nav {
     display: flex !important;
   }
+
   .vault-content {
     padding-bottom: 6rem;
-  }
-  .vault-content > * {
-    padding-left: 1.25rem !important;
-    padding-right: 1.25rem !important;
   }
 }
 
@@ -1165,5 +1348,110 @@ label[for], .nav-link, summary {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+}
+
+/* ─── Micro-interactions & Polish ───────────────────────────────────────────── */
+
+/* Card hover elevation */
+.card-hover:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  transition: box-shadow var(--transition-normal), transform var(--transition-normal);
+}
+
+/* Button active press feedback */
+.btn-primary:active,
+.btn-secondary:active,
+.btn-ghost:active,
+.btn-danger:active {
+  transform: scale(0.97);
+  transition: transform 60ms ease;
+}
+
+/* Row interactive hover */
+.row-interactive:hover {
+  background-color: rgba(146, 64, 14, 0.04);
+}
+
+.row-interactive:active {
+  background-color: rgba(146, 64, 14, 0.07);
+}
+
+/* Link hover with underline offset */
+.link-subtle:hover {
+  text-underline-offset: 3px;
+}
+
+/* Focus visible — elevated */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Input focus glow */
+.input-field:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+/* Sidebar link hover */
+.vault-sidebar .nav-link {
+  position: relative;
+}
+
+/* Badge dot pulse for warning */
+@keyframes badgeDotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Toast slide-in animation */
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.toast-enter {
+  animation: toastSlideIn 200ms ease-out;
+}
+
+/* FAB enter animation */
+@keyframes fabEnter {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.fab-enter {
+  animation: fabEnter 200ms ease-out;
+}
+
+/* Search dropdown enter */
+@keyframes searchDropdownIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.search-dropdown-enter {
+  animation: searchDropdownIn 150ms ease-out;
+}
+
+/* Skeleton shimmer */
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f0ebe2 25%, #e8e2d9 50%, #f0ebe2 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* Spin animation for loading spinners */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

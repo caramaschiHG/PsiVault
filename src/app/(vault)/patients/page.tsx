@@ -1,8 +1,8 @@
 /**
  * Active patients list — privacy-safe.
  *
- * Shows only identity and minimal contact context.
- * importantObservations is explicitly excluded.
+ * Refatorado com componentes UI unificados (Phase 4 — UI/UX Polish).
+ * Usa: PageHeader, Section, List, ListItem, ListEmpty.
  */
 
 import Link from "next/link";
@@ -10,6 +10,11 @@ import { getPatientRepository } from "../../../lib/patients/store";
 import { PatientForm } from "./components/patient-form";
 import { EmptyState } from "../components/empty-state";
 import { resolveSession } from "../../../lib/supabase/session";
+import { PageHeader } from "@/components/ui/page-header";
+import { Section } from "@/components/ui/section";
+import { List, ListItem, ListEmpty } from "@/components/ui/list";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export default async function PatientsPage() {
   const { workspaceId } = await resolveSession();
@@ -18,26 +23,27 @@ export default async function PatientsPage() {
 
   return (
     <main style={shellStyle}>
-      <section style={heroStyle}>
-        <p style={eyebrowStyle}>Pacientes ativos</p>
-        <h1 style={titleStyle}>Pacientes</h1>
-        <p style={copyStyle}>
-          {patients.length === 0
+      {/* Page heading */}
+      <PageHeader
+        title="Pacientes"
+        description={
+          patients.length === 0
             ? "Nenhum paciente ativo ainda."
-            : `${patients.length} paciente${patients.length > 1 ? "s" : ""} ativo${patients.length > 1 ? "s" : ""}.`}
-        </p>
-        <div style={headerActionsStyle}>
+            : `${patients.length} paciente${patients.length > 1 ? "s" : ""} ativo${patients.length > 1 ? "s" : ""}.`
+        }
+        actions={
           <Link href="/patients/archive" className="btn-secondary">
             Ver arquivo
           </Link>
-        </div>
-      </section>
+        }
+      />
 
-      <section style={listSectionStyle}>
+      {/* Patient list */}
+      <Section title="">
         {patients.length === 0 ? (
-          <EmptyState
+          <ListEmpty
             icon={
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width="24" height="24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
               </svg>
             }
@@ -47,30 +53,29 @@ export default async function PatientsPage() {
             actionHref="#form"
           />
         ) : (
-          <ul style={listStyle}>
+          <List variant="bordered" aria-label="Lista de pacientes ativos">
             {patients.map((patient) => (
-              <li key={patient.id} className="card-hover row-interactive" style={listItemStyle}>
-                <Link href={`/patients/${patient.id}`} style={patientLinkStyle}>
+              <ListItem key={patient.id} href={`/patients/${patient.id}`}>
+                <div style={patientContentStyle}>
                   <div>
                     <strong style={patientNameStyle}>{patient.fullName}</strong>
                     {patient.socialName && (
                       <span style={socialNameStyle}> ({patient.socialName})</span>
                     )}
                   </div>
-                  {/* Privacy-safe: only show contact info, never importantObservations */}
                   {(patient.email || patient.phone) && (
                     <p style={patientMetaStyle}>
                       {[patient.email, patient.phone].filter(Boolean).join(" · ")}
                     </p>
                   )}
-                </Link>
-              </li>
+                </div>
+              </ListItem>
             ))}
-          </ul>
+          </List>
         )}
-      </section>
+      </Section>
 
-      {/* FAB mobile — visible only on mobile via CSS class */}
+      {/* FAB mobile */}
       <a
         href="#form"
         className="fab-mobile"
@@ -96,129 +101,48 @@ export default async function PatientsPage() {
         +
       </a>
 
-      <section id="form" style={formSectionStyle}>
-        <div style={formHeaderStyle}>
-          <p style={eyebrowStyle}>Novo paciente</p>
-          <h2 style={formTitleStyle}>Cadastrar paciente</h2>
-        </div>
+      {/* Form section */}
+      <Separator />
+      <Section
+        title="Cadastrar paciente"
+        variant="plain"
+      >
         <PatientForm />
-      </section>
+      </Section>
     </main>
   );
 }
 
-const shellStyle = {
-  padding: "2rem 2.5rem",
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
+const shellStyle: React.CSSProperties = {
+  padding: "var(--space-page-padding-y) var(--space-page-padding-x)",
   maxWidth: 960,
   width: "100%",
   display: "grid",
-  gap: "1.5rem",
+  gap: "var(--space-6)",
   alignContent: "start",
-} satisfies React.CSSProperties;
+};
 
-const heroStyle = {
-  padding: "1.75rem 2rem",
-  borderRadius: "var(--radius-xl)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  boxShadow: "var(--shadow-md)",
+const patientContentStyle: React.CSSProperties = {
   display: "grid",
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
+  gap: "var(--space-1)",
+};
 
-const eyebrowStyle = {
-  margin: 0,
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.12em",
-  fontSize: "0.7rem",
-  color: "var(--color-brown-mid)",
-  fontWeight: 600,
-} satisfies React.CSSProperties;
-
-const titleStyle = {
-  margin: "0.25rem 0 0",
-  fontSize: "var(--font-size-page-title)",
-  fontWeight: 700,
-  fontFamily: "var(--font-serif)",
+const patientNameStyle: React.CSSProperties = {
+  fontSize: "var(--font-size-body)",
   color: "var(--color-text-1)",
-  lineHeight: 1.1,
-} satisfies React.CSSProperties;
+};
 
-const copyStyle = {
-  margin: "0.25rem 0 0",
-  lineHeight: 1.6,
-  color: "var(--color-text-2)",
-  fontSize: "0.9rem",
-} satisfies React.CSSProperties;
-
-const headerActionsStyle = {
-  marginTop: "0.5rem",
-  display: "flex",
-  gap: "0.75rem",
-} satisfies React.CSSProperties;
-
-const listSectionStyle = {
-  maxWidth: "100%",
-} satisfies React.CSSProperties;
-
-const listStyle = {
-  margin: 0,
-  padding: 0,
-  listStyle: "none",
-  display: "grid",
-  borderRadius: "var(--radius-lg)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  boxShadow: "var(--shadow-sm)",
-  overflow: "hidden",
-} satisfies React.CSSProperties;
-
-const listItemStyle = {
-  minHeight: "var(--space-row-height)",
-  borderBottom: "1px solid var(--color-border)",
-} satisfies React.CSSProperties;
-
-const patientLinkStyle = {
-  display: "block",
-  padding: "1rem 1.25rem",
-  textDecoration: "none",
-  color: "inherit",
-} satisfies React.CSSProperties;
-
-const patientNameStyle = {
-  fontSize: "1rem",
-  color: "var(--color-text-1)",
-} satisfies React.CSSProperties;
-
-const socialNameStyle = {
+const socialNameStyle: React.CSSProperties = {
   fontWeight: 400,
   color: "var(--color-text-3)",
-  fontSize: "0.92rem",
-} satisfies React.CSSProperties;
+  fontSize: "var(--font-size-body-sm)",
+};
 
-const patientMetaStyle = {
-  margin: "0.25rem 0 0",
-  fontSize: "0.85rem",
+const patientMetaStyle: React.CSSProperties = {
+  margin: "var(--space-1) 0 0",
+  fontSize: "var(--font-size-sm)",
   color: "var(--color-text-3)",
-  lineHeight: 1.5,
-} satisfies React.CSSProperties;
-
-const formSectionStyle = {
-  maxWidth: "100%",
-  display: "grid",
-  gap: "1rem",
-  paddingTop: "0.5rem",
-  borderTop: "1px solid var(--color-border)",
-} satisfies React.CSSProperties;
-
-const formHeaderStyle = {
-  display: "grid",
-  gap: "0.25rem",
-} satisfies React.CSSProperties;
-
-const formTitleStyle = {
-  margin: 0,
-  fontSize: "1.4rem",
-  fontWeight: 600,
-  color: "var(--color-text-1)",
-} satisfies React.CSSProperties;
+  lineHeight: "var(--line-height-base)",
+};

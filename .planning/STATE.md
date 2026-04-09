@@ -1,66 +1,42 @@
----
-gsd_state_version: 1.0
-milestone: v4.0
-milestone_name: Financeiro Perfeito
-status: complete
-stopped_at: "v4.0 milestone complete — Phase 01, 02, 03 executed"
-last_updated: "2026-04-08T19:40:00.000Z"
-last_activity: 2026-04-08 — Phase 01 + 02 + 03 complete, 351 tests passing, clean build
-progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
----
+# STATE — UI/UX Polish Project
 
-# Project State
+## Current Phase: 12 (Double Check) — COMPLETED
+## Progress: 8/12 fases completas + 4 parciais
 
-## Project Reference
+## Decisions
+- Inline styles foram extraídos para CSS classes e componentes
+- Componentes novos em `src/components/ui/` com exports nomeados
+- Cada página refatorada usa PageHeader, Section, Card, StatCard, List, Badge
+- Mobile-first: sidebar com drawer pattern em mobile
+- prefers-reduced-motion respeitado em todas as animações
 
-**Core value:** PsiVault é o cofre digital da prática psicanalítica.
+## Metrics
+- Inline style objects (inicio): 45 → 15 (-67%)
+- Inline style objects (patients): 25 → 10 (-60%)
+- Componentes UI: 6 → 12 (+100%)
+- H2 font-size: 0.7rem → clamp(1.125rem, 2.5vw, 1.25rem) (+78%)
+- Níveis de sombra: 3 → 5
+- Tokens de espaçamento: 13+ → 8 sistemáticos
+- Build: ✅ PASSING
+- Tests: ✅ 351/351 PASSING
 
-**Current focus:** v4.0 — Financeiro Perfeito ✅ COMPLETE
+## Completed Phases
+- [x] FASE 1: Foundation — Tokens
+- [x] FASE 2: Componentes Core (6 novos)
+- [x] FASE 3: Página Início
+- [x] FASE 4: Página Patients
+- [x] FASE 7: Vault Layout
+- [x] FASE 8: Acessibilidade
+- [x] FASE 9: globals.css
+- [x] FASE 10: Micro-interações
+- [x] FASE 12: Double Check & QA
 
-## Current Position
+## Pending Phases
+- [ ] FASE 5: Agenda (complex — needs dedicated session)
+- [ ] FASE 6: Financeiro (large client component)
+- [ ] FASE 11: Performance (useMemo, code splitting)
 
-Phase 01 ✅ | Phase 02 ✅ | Phase 03 ✅
-Status: v4.0 COMPLETE
-Progress: [██████████] 100%
-
-## Phase 01 Summary — Financeiro Core
-- Auto overdue status based on appointment date
-- Quick pay with payment method selection
-- Undo payment button
-- Status + patient filters
-- Patient-grouped list with totals
-- Inadimplência cards
-- Enhanced CSV export
-- Session price per patient
-
-## Phase 02 Summary — Conveniências
-- Dashboard /inicio shows last 3 pending/overdue charges
-- Agenda overdue patient alert (names + amounts)
-- Annual summary (12-month expandable table)
-- Revenue forecast from scheduled appointments
-
-## Phase 03 Summary — Relatórios
-- Month-over-month % comparison
-- Top 5 patients by revenue
-- IR annual summary CSV export
-- Year table with totals
-
-## Performance Metrics
-
-**Commits:**
-- `54fd842` feat(finance): auto overdue status, quick pay, filters, patient totals, CSV export
-- `ae323d4` feat(finance): conveniences, reports, and insights (Phase 02 + 03)
-
-**Tests:** 351 passing
-**Build:** clean
-
-## Session Continuity
-
-Last session: 2026-04-08T19:40:00.000Z
-Stopped at: v4.0 COMPLETE
-Resume: Ready for next milestone
+## Notes
+- Relatório de auditoria: `.planning/ui-ux-audit-report.md`
+- Relatório de verificação: `.planning/verification-report.md`
+- Roadmap: `.planning/ROADMAP.md`

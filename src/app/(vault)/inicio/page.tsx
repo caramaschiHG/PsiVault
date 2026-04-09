@@ -1,20 +1,8 @@
 /**
  * /inicio — the professional's morning orientation screen.
  *
- * Aggregates 4 domains at page load:
- * 1. Appointments — today's sessions via UTC day boundary filter
- * 2. Reminders    — all active workspace reminders
- * 3. Finance      — this month's charges (pending count badge only — SECU-05)
- * 4. Patients     — active + archived for monthly snapshot
- *
- * Security policy (SECU-05):
- * - NO payment amounts displayed on this surface.
- * - Finance section shows only a pending count badge linking to /financeiro.
- *
- * Layout:
- * - Section 1: "Hoje" — today's sessions with time, patient name, care mode
- * - Section 2: "Lembretes ativos" — active reminders + inline creation form
- * - Section 3: "Resumo do mês" — monthly snapshot numbers (count-only for finance)
+ * Refatorado com componentes UI unificados (Phase 3 — UI/UX Polish).
+ * Usa: PageHeader, Section, Card, StatCard, List, ListItem, Badge, Separator.
  */
 
 import { getAppointmentRepository } from "../../../lib/appointments/store";
@@ -33,6 +21,13 @@ import { observeServerStage } from "../../../lib/observability/server-render";
 import { resolveSession } from "../../../lib/supabase/session";
 import { UpdateNotification } from "../../components/update-notification";
 import { db } from "../../../lib/db";
+import { PageHeader } from "@/components/ui/page-header";
+import { Section } from "@/components/ui/section";
+import { Card, CardContent } from "@/components/ui/card";
+import { StatCard } from "@/components/ui/stat-card";
+import { List, ListItem, ListEmpty } from "@/components/ui/list";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export default async function InicioPage() {
   const route = "vault.inicio";
@@ -49,7 +44,6 @@ export default async function InicioPage() {
   const reminderRepo = getReminderRepository();
   const financeRepo = getFinanceRepository();
 
-  // All 4 data sources are independent — load in parallel
   const year = now.getUTCFullYear();
   const month = now.getUTCMonth() + 1;
   const monthFrom = new Date(Date.UTC(year, month - 1, 1));
@@ -82,7 +76,7 @@ export default async function InicioPage() {
   const todayAppointments = filterTodayAppointments(rawAppointments, from);
   const allPatients = [...activePatients, ...archivedPatients];
 
-  // Build patient name map for session cards
+  // Build patient name map
   const patientMap = new Map<string, string>();
   for (const p of allPatients) {
     patientMap.set(p.id, p.socialName ? `${p.fullName} (${p.socialName})` : p.fullName);
@@ -95,12 +89,11 @@ export default async function InicioPage() {
     monthlyAppointments,
   });
 
-  // Recent pending/overdue charges for dashboard
+  // Recent pending/overdue charges
   const pendingOverdueCharges = monthlyCharges.filter(
     (c) => c.status === "pendente" || c.status === "atrasado",
   );
 
-  // Enrich with overdue status
   const pendingApptIds = pendingOverdueCharges
     .filter((c) => c.appointmentId)
     .map((c) => c.appointmentId as string);
@@ -128,7 +121,7 @@ export default async function InicioPage() {
 
   const statusLabel = (s: string) => (s === "atrasado" ? "Atrasado" : "Pendente");
 
-  // Contextual header message based on next upcoming appointment today
+  // Contextual header message
   const nextAppt = todayAppointments
     .filter((a) => ["SCHEDULED", "CONFIRMED"].includes(a.status))
     .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())[0];
@@ -140,21 +133,7 @@ export default async function InicioPage() {
   const contextualMessage =
     minutesUntilNext !== null && minutesUntilNext > 0 && minutesUntilNext <= 60
       ? `Seu próximo atendimento começa em ${minutesUntilNext} min`
-      : "Sua rotina clínica está organizada";
-
-  await observeServerStage(
-    route,
-    "renderPreparation",
-    async () => undefined,
-    {
-      workspaceId,
-      todayAppointmentCount: todayAppointments.length,
-      activePatientCount: activePatients.length,
-      archivedPatientCount: archivedPatients.length,
-      reminderCount: activeReminders.length,
-      monthlyChargeCount: monthlyCharges.length,
-    },
-  );
+      : `${todayAppointments.length > 0 ? `${todayAppointments.length} atendimentos` : "Nenhum atendimento"} agendados para hoje`;
 
   // Format helpers
   const timeFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -169,55 +148,49 @@ export default async function InicioPage() {
   return (
     <main style={shellStyle}>
       {/* Page heading */}
-      <div style={headingRowStyle}>
-        <div style={headingTextStyle}>
-          <p style={eyebrowStyle}>Consultório</p>
-          <h1 style={titleStyle}>Início</h1>
-          <p style={contextualMessageStyle}>{contextualMessage}</p>
-        </div>
-      </div>
+      <PageHeader
+        title="Início"
+        description={contextualMessage}
+      />
 
       {/* ─── Section 1: Hoje ─────────────────────────────────────────────── */}
-      <section style={sectionStyle}>
-        <div style={sectionHeadingRowStyle}>
-          <h2 style={sectionTitleStyle}>Hoje</h2>
-          <a href="/agenda" className="link-subtle" style={sectionActionLinkStyle}>
-            Ver agenda completa
+      <Section
+        title="Hoje"
+        action={
+          <a href="/agenda" className="link-subtle" style={{ fontSize: "var(--font-size-sm)" }}>
+            Ver agenda completa →
           </a>
-        </div>
-
+        }
+      >
         {todayAppointments.length === 0 ? (
-          <div style={emptyStateStyle}>
-            <p style={emptyStateTextStyle}>Sem atendimentos hoje.</p>
-            <a href="/appointments/new" className="btn-secondary" style={emptyStateActionStyle}>
-              Agendar consulta
-            </a>
-          </div>
+          <ListEmpty
+            title="Sem atendimentos hoje."
+            actionLabel="Agendar consulta"
+            actionHref="/appointments/new"
+          />
         ) : (
-          <ul style={cardListStyle}>
+          <List variant="separated">
             {todayAppointments.map((appt) => (
-              <li key={appt.id} className="card-hover" style={sessionCardStyle}>
-                <span style={sessionTimeStyle}>
-                  {timeFormatter.format(appt.startsAt)}
-                </span>
-                <span style={sessionPatientStyle}>
-                  {patientMap.get(appt.patientId) ?? "Paciente"}
-                </span>
-                <span style={sessionCareModeStyle}>
-                  {careModeLabel(appt.careMode)}
-                </span>
-              </li>
+              <ListItem key={appt.id} divider={false}>
+                <Card variant="interactive" padding="sm" style={sessionCardInnerStyle}>
+                  <span style={sessionTimeStyle}>
+                    {timeFormatter.format(appt.startsAt)}
+                  </span>
+                  <span style={sessionPatientStyle}>
+                    {patientMap.get(appt.patientId) ?? "Paciente"}
+                  </span>
+                  <Badge variant="neutral" size="sm">
+                    {careModeLabel(appt.careMode)}
+                  </Badge>
+                </Card>
+              </ListItem>
             ))}
-          </ul>
+          </List>
         )}
-      </section>
+      </Section>
 
       {/* ─── Section 2: Lembretes ativos ─────────────────────────────────── */}
-      <section style={sectionStyle}>
-        <div style={sectionHeadingRowStyle}>
-          <h2 style={sectionTitleStyle}>Lembretes ativos</h2>
-        </div>
-
+      <Section title="Lembretes ativos">
         <RemindersSection
           reminders={activeReminders.map((r) => ({
             id: r.id,
@@ -226,73 +199,62 @@ export default async function InicioPage() {
           }))}
           workspaceId={workspaceId}
         />
-      </section>
+      </Section>
 
       {/* ─── Section 3: Resumo do mês ─────────────────────────────────────── */}
-      <section style={sectionStyle}>
-        <div style={sectionHeadingRowStyle}>
-          <h2 style={sectionTitleStyle}>Resumo do mês</h2>
-        </div>
-
+      <Section title="Resumo do mês">
         <div style={snapshotGridStyle}>
-          {/* Active patients */}
-          <div style={snapshotCardStyle}>
-            <span style={snapshotNumberStyle}>{snapshot.activePatientCount}</span>
-            <span style={snapshotLabelStyle}>Pacientes ativos</span>
-          </div>
-
-          {/* Completed sessions this month */}
-          <div style={snapshotCardStyle}>
-            <span style={snapshotNumberStyle}>{snapshot.completedSessionCount}</span>
-            <span style={snapshotLabelStyle}>Atendimentos realizados</span>
-          </div>
-
-          {/* Pending charges — count badge only (SECU-05) */}
-          <div style={snapshotCardStyle}>
-            <a href="/financeiro" style={pendingBadgeLinkStyle}>
-              <span style={pendingBadgeNumberStyle}>{pendingChargeCount}</span>
-              <span style={pendingBadgeLabelStyle}>
-                {"A receber"}
-              </span>
-            </a>
-          </div>
+          <StatCard
+            label="Pacientes ativos"
+            value={snapshot.activePatientCount}
+          />
+          <StatCard
+            label="Atendimentos realizados"
+            value={snapshot.completedSessionCount}
+          />
+          <StatCard
+            label="A receber"
+            value={pendingChargeCount}
+            accent
+            href="/financeiro"
+          />
         </div>
-      </section>
+      </Section>
 
       {/* ─── Section 4: Cobranças pendentes ─────────────────────────────── */}
       {enrichedPendingOverdue.length > 0 && (
-        <section style={sectionStyle}>
-          <div style={sectionHeadingRowStyle}>
-            <h2 style={sectionTitleStyle}>A receber</h2>
-            <a href="/financeiro" className="link-subtle" style={sectionActionLinkStyle}>
+        <Section
+          title="A receber"
+          action={
+            <a href="/financeiro" className="link-subtle" style={{ fontSize: "var(--font-size-sm)" }}>
               Ver financeiro →
             </a>
-          </div>
-
-          <ul style={chargeListStyle}>
-            {enrichedPendingOverdue.map((charge) => (
-              <li key={charge.id} style={chargeItemStyle}>
-                <span
-                  style={{
-                    ...chargeStatusBadgeStyle,
-                    background: charge.status === "atrasado" ? "#fee2e2" : "#fef3c7",
-                    color: charge.status === "atrasado" ? "#991b1b" : "#92400e",
-                  }}
-                >
-                  {statusLabel(charge.status)}
-                </span>
-                <span style={chargePatientStyle}>
-                  {patientNameMap.get(charge.patientId) ?? "Paciente"}
-                </span>
-                <span style={chargeAmountStyle}>
-                  {charge.amountInCents !== null
-                    ? currencyFmt.format(charge.amountInCents / 100)
-                    : "—"}
-                </span>
-              </li>
+          }
+        >
+          <List variant="separated">
+            {enrichedPendingOverdue.map((charge, idx) => (
+              <ListItem key={charge.id} divider={idx < enrichedPendingOverdue.length - 1}>
+                <div style={chargeItemStyle}>
+                  <Badge
+                    variant={charge.status === "atrasado" ? "danger" : "warning"}
+                    size="sm"
+                    dot
+                  >
+                    {statusLabel(charge.status)}
+                  </Badge>
+                  <span style={chargePatientStyle}>
+                    {patientNameMap.get(charge.patientId) ?? "Paciente"}
+                  </span>
+                  <span style={chargeAmountStyle}>
+                    {charge.amountInCents !== null
+                      ? currencyFmt.format(charge.amountInCents / 100)
+                      : "—"}
+                  </span>
+                </div>
+              </ListItem>
             ))}
-          </ul>
-        </section>
+          </List>
+        </Section>
       )}
 
       <QuickActionFab />
@@ -303,232 +265,61 @@ export default async function InicioPage() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const shellStyle = {
-  padding: "2rem 2.5rem",
+const shellStyle: React.CSSProperties = {
+  padding: "var(--space-page-padding-y) var(--space-page-padding-x)",
   maxWidth: 960,
   width: "100%",
   display: "grid",
-  gap: "1.5rem",
+  gap: "var(--space-6)",
   alignContent: "start",
-} satisfies React.CSSProperties;
+};
 
-const headingRowStyle = {
-  display: "flex",
-  alignItems: "flex-end",
-  justifyContent: "space-between",
-  gap: "1rem",
-} satisfies React.CSSProperties;
-
-const headingTextStyle = {
-  display: "grid",
-  gap: "0.2rem",
-} satisfies React.CSSProperties;
-
-const contextualMessageStyle = {
-  margin: 0,
-  fontSize: "0.875rem",
-  color: "var(--color-text-3)",
-  fontWeight: 400,
-} satisfies React.CSSProperties;
-
-const eyebrowStyle = {
-  margin: 0,
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.12em",
-  fontSize: "0.7rem",
-  color: "var(--color-brown-mid)",
-  fontWeight: 600,
-} satisfies React.CSSProperties;
-
-const titleStyle = {
-  margin: 0,
-  fontSize: "var(--font-size-page-title)",
-  fontWeight: 700,
-  fontFamily: "var(--font-serif)",
-  color: "var(--color-text-1)",
-} satisfies React.CSSProperties;
-
-const sectionStyle = {
-  padding: "1.5rem",
-  borderRadius: "var(--radius-xl)",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  boxShadow: "var(--shadow-sm)",
-  display: "grid",
-  gap: "1rem",
-} satisfies React.CSSProperties;
-
-const sectionHeadingRowStyle = {
+const sessionCardInnerStyle: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between",
-  gap: "0.75rem",
-} satisfies React.CSSProperties;
+  gap: "var(--space-3)",
+  gridTemplateColumns: "unset",
+};
 
-const sectionTitleStyle = {
-  margin: 0,
-  fontSize: "var(--font-size-label)",
-  fontWeight: 600,
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.06em",
-  color: "var(--color-text-2)",
-} satisfies React.CSSProperties;
-
-const sectionActionLinkStyle = {
-  fontSize: "0.82rem",
-} satisfies React.CSSProperties;
-
-const emptyStateStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.75rem",
-  padding: "1rem",
-  borderRadius: "var(--radius-md)",
-  background: "rgba(245, 245, 244, 0.5)",
-} satisfies React.CSSProperties;
-
-const emptyStateTextStyle = {
-  margin: 0,
-  fontSize: "0.88rem",
-  color: "var(--color-text-3)",
-  flex: 1,
-} satisfies React.CSSProperties;
-
-const emptyStateActionStyle = {
-  fontSize: "0.85rem",
-  padding: "0.35rem 0.875rem",
-} satisfies React.CSSProperties;
-
-const cardListStyle = {
-  listStyle: "none",
-  margin: 0,
-  padding: 0,
-  display: "grid",
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const sessionCardStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.75rem",
-  padding: "0.75rem 1rem",
-  borderRadius: "var(--radius-md)",
-  background: "rgba(255, 247, 237, 0.6)",
-  border: "1px solid var(--color-border)",
-  cursor: "default",
-} satisfies React.CSSProperties;
-
-const sessionTimeStyle = {
-  fontSize: "1rem",
+const sessionTimeStyle: React.CSSProperties = {
+  fontSize: "var(--font-size-body)",
   fontWeight: 700,
   color: "var(--color-accent)",
   minWidth: "3.5rem",
   fontVariantNumeric: "tabular-nums",
-} satisfies React.CSSProperties;
+};
 
-const sessionPatientStyle = {
-  fontSize: "0.9rem",
+const sessionPatientStyle: React.CSSProperties = {
+  fontSize: "var(--font-size-body-sm)",
   fontWeight: 500,
   color: "var(--color-text-1)",
   flex: 1,
-} satisfies React.CSSProperties;
+};
 
-const sessionCareModeStyle = {
-  fontSize: "0.75rem",
-  color: "var(--color-text-3)",
-  padding: "0.2rem 0.55rem",
-  borderRadius: "var(--radius-sm)",
-  background: "rgba(245, 245, 244, 0.8)",
-  border: "1px solid var(--color-border)",
-} satisfies React.CSSProperties;
-
-const snapshotGridStyle = {
+const snapshotGridStyle: React.CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-  gap: "0.75rem",
-} satisfies React.CSSProperties;
+  gap: "var(--space-3)",
+};
 
-const snapshotCardStyle = {
-  padding: "1.1rem 1.2rem",
-  borderRadius: "var(--radius-lg)",
-  background: "var(--color-surface-0)",
-  border: "1px solid var(--color-border)",
-  boxShadow: "var(--shadow-sm)",
-  display: "grid",
-  gap: "0.25rem",
-} satisfies React.CSSProperties;
-
-const snapshotNumberStyle = {
-  fontSize: "1.875rem",
-  fontWeight: 700,
-  color: "var(--color-text-1)",
-  fontFamily: "'IBM Plex Serif', serif",
-  lineHeight: 1,
-} satisfies React.CSSProperties;
-
-const snapshotLabelStyle = {
-  fontSize: "0.8rem",
-  color: "var(--color-text-3)",
-} satisfies React.CSSProperties;
-
-const pendingBadgeLinkStyle = {
-  textDecoration: "none",
-  display: "grid",
-  gap: "0.25rem",
-} satisfies React.CSSProperties;
-
-const pendingBadgeNumberStyle = {
-  fontSize: "1.875rem",
-  fontWeight: 700,
-  color: "var(--color-accent)",
-  fontFamily: "'IBM Plex Serif', serif",
-  lineHeight: 1,
-} satisfies React.CSSProperties;
-
-const pendingBadgeLabelStyle = {
-  fontSize: "0.8rem",
-  color: "var(--color-accent)",
-  textDecoration: "underline",
-  textDecorationColor: "rgba(154, 52, 18, 0.3)",
-} satisfies React.CSSProperties;
-
-// Pending charges section
-const chargeListStyle = {
-  listStyle: "none",
-  margin: 0,
-  padding: 0,
-  display: "grid",
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const chargeItemStyle = {
+// Pending charges
+const chargeItemStyle: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
-  gap: "0.75rem",
-  padding: "0.625rem 1rem",
-  borderRadius: "var(--radius-md)",
-  background: "rgba(255, 247, 237, 0.5)",
-  border: "1px solid var(--color-border)",
-  flexWrap: "wrap" as const,
-} satisfies React.CSSProperties;
+  gap: "var(--space-3)",
+  flexWrap: "wrap",
+};
 
-const chargeStatusBadgeStyle = {
-  fontSize: "0.72rem",
-  padding: "0.2rem 0.5rem",
-  borderRadius: "var(--radius-sm)",
-  fontWeight: 600,
-} satisfies React.CSSProperties;
-
-const chargePatientStyle = {
-  fontSize: "0.88rem",
+const chargePatientStyle: React.CSSProperties = {
+  fontSize: "var(--font-size-body-sm)",
   fontWeight: 500,
   color: "var(--color-text-1)",
   flex: 1,
-} satisfies React.CSSProperties;
+};
 
-const chargeAmountStyle = {
-  fontSize: "0.9rem",
+const chargeAmountStyle: React.CSSProperties = {
+  fontSize: "var(--font-size-body-sm)",
   fontWeight: 600,
   color: "var(--color-text-2)",
   fontVariantNumeric: "tabular-nums",
-} satisfies React.CSSProperties;
+};

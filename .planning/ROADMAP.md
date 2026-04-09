@@ -1,105 +1,88 @@
-# PsiLock — Roadmap
+# ROADMAP — UI/UX Polish
 
-## Objetivo
+## Phase 1: Foundation — Design Tokens & Tipografia
+- 1.1 Refatorar tokens de tipografia (escala de 6 níveis)
+- 1.2 Refatorar tokens de espaçamento (escala de 4px, 8 tokens)
+- 1.3 Refatorar tokens de sombra (5 níveis de elevação)
+- 1.4 Adicionar tokens de superfície (3 níveis)
+- 1.5 Corrigir H1/H2 em todas as páginas
+- 1.6 Adicionar fluid typography (clamp)
 
-Transformar o módulo financeiro do PsiVault em uma ferramenta **útil, prática e não burocrática** para psicólogos gerenciarem cobranças de sessões com seus pacientes.
+## Phase 2: Componentes Core
+- 2.1 Criar `<Card>` unificado (4 variants)
+- 2.2 Criar `<Section>` unificado
+- 2.3 Criar `<StatCard>` (para métricas/números)
+- 2.4 Criar `<List>` e `<ListItem>` unificados
+- 2.5 Criar `<Separator>` component
+- 2.6 Criar `<Badge>` unificado (extender StatusBadge)
+- 2.7 Refatorar Button (adicionar variantes faltando)
 
-## Princípios
+## Phase 3: Refatorar Página Início
+- 3.1 Usar PageHeader
+- 3.2 Usar Section em todas as seções
+- 3.3 Usar Card para sessões de hoje
+- 3.4 Usar StatCard para resumo do mês
+- 3.5 Usar List para cobranças pendentes
+- 3.6 Melhorar mensagem contextual
+- 3.7 Verificar e polir responsividade
 
-1. **Não complicar** — O financeiro deve ajudar, não atrapalhar. Psicólogo não é contador.
-2. **Registro rápido** — Marcar pagamento deve levar 2 cliques.
-3. **Visão clara** — Saber rapidamente: quem deve, quanto deve, há quanto tempo.
-4. **Sem burocracia fiscal** — Sem emissão de NF, sem integração com contador. Apenas controle prático do dia a dia.
+## Phase 4: Refatorar Página Patients
+- 4.1 Usar PageHeader
+- 4.2 Usar List/PatientListItem
+- 4.3 Usar Section para formulário
+- 4.4 Verificar responsividade mobile
 
-## Fases
+## Phase 5: Refatorar Página Agenda
+- 5.1 Simplificar toolbar visual
+- 5.2 Usar PageHeader
+- 5.3 Reduzir cognitive load dos cards
+- 5.4 Overdue alert menos intrusivo
+- 5.5 WhatsApp panel integrado
+- 5.6 MiniCalendar sidebar refinamento
 
-### Phase 1 — Financeiro Core Melhorado
-**Número: 01**  
-**Objetivo:** Melhorar o que já existe e adicionar o que realmente importa no dia a dia.
+## Phase 6: Refatorar Página Financeiro
+- 6.1 Usar PageHeader
+- 6.2 Usar Card/List/StatCard
+- 6.3 Status badges consistentes
+- 6.4 Tabelas responsivas
 
-**Entradas:**
-- Módulo financeiro atual com `SessionCharge`, `deriveMonthlyFinancialSummary()`
-- Página `/financeiro` básica
-- Seção financeira no perfil do paciente
+## Phase 7: Refatorar Vault Layout
+- 7.1 Sidebar refinamentos visuais
+- 7.2 Mobile: drawer pattern
+- 7.3 Bottom nav refinado
+- 7.4 Search bar melhorias
+- 7.5 Transições de página
 
-**Saídas esperadas:**
-- [ ] Dashboard financeiro claro e direto (resumo do mês, inadimplentes, trends)
-- [ ] Marcar pagamento como "pago" com 1 clique direto na lista
-- [ ] Filtros úteis: por status (pendente/pago/atrasado), por paciente, por período
-- [ ] Indicador visual de inadimplência (dias em atraso)
-- [ ] Resumo por paciente (total devido, total pago no mês/ano)
-- [ ] Exportar relatório simples (CSV/PDF) — "quem pagou e quem deve este mês"
-- [ ] Atualizar status "atrasado" automaticamente baseado na data da sessão
-- [ ] Configurar preço padrão da sessão por paciente
+## Phase 8: Acessibilidade
+- 8.1 Keyboard navigation completa
+- 8.2 ARIA roles em todos os componentes
+- 8.3 prefers-reduced-motion
+- 8.4 Focus states consistentes
+- 8.5 Screen reader testing
 
-**Critérios de aceitação:**
-- Psicólogo consegue ver quem deve em < 5 segundos
-- Psicólogo consegue marcar pagamento em < 3 segundos
-- Relatório exportado é legível e útil
+## Phase 9: globals.css Refatoração
+- 9.1 Separar por domínios (tokens, components, pages, utilities)
+- 9.2 Remover código morto
+- 9.3 Organizar imports
+- 9.4 Landing page CSS cleanup
 
-**Dependências:** Nenhuma
+## Phase 10: Polish & Micro-interações
+- 10.1 Hover states em cards
+- 10.2 Active states com feedback
+- 10.3 Loading states (skeletons)
+- 10.4 Empty states refinados
+- 10.5 Toast notifications polish
+- 10.6 Page transitions
 
-### Phase 2 — Conveniências e Automações
-**Número: 02**  
-**Objetivo:** Reduzir trabalho manual com automações inteligentes.
+## Phase 11: Performance
+- 11.1 useMemo em style objects
+- 11.2 Code splitting
+- 11.3 CLS reduction
+- 11.4 Bundle size check
 
-**Entradas:**
-- Phase 1 completa
-
-**Saídas esperadas:**
-- [ ] Geração automática de cobrança ao criar sessão
-- [ ] Alerta visual de paciente com múltiplas sessões pendentes
-- [ ] Lembrete de cobrança pendente (in-app, não email)
-- [ ] Pacote de sessões (ex: comprou 4, usa ao longo do mês)
-- [ ] Desconto por sessão configurável (ex: preço social)
-- [ ] Histórico anual simplificado (total recebido vs pendente por mês)
-
-**Critérios de aceitação:**
-- Ao criar sessão, cobrança aparece automaticamente
-- Psicólogo vê alerta de inadimplência sem buscar
-- Pacote de sessões deduz corretamente
-
-**Dependências:** Phase 1
-
-### Phase 3 — Relatórios e Insights
-**Número: 03**  
-**Objetivo:** Dar visão estratégica sem complicar.
-
-**Entradas:**
-- Phase 2 completa
-
-**Saídas esperadas:**
-- [ ] Gráfico simples: receita mensal dos últimos 6-12 meses
-- [ ] Comparativo mês atual vs mês anterior (% variação)
-- [ ] Top pacientes por valor (quem mais paga)
-- [ ] Previsão de receita (baseado em sessões agendadas)
-- [ ] Resumo anual para declaração de IR do psicólogo (total recebido no ano)
-
-**Critérios de aceitação:**
-- Gráficos são claros e legíveis
-- Resumo anual é exportável
-- Previsão de receita é razoavelmente precisa
-
-**Dependências:** Phase 2
-
-## O que NÃO faremos (para não complicar)
-
-- ❌ Integração com gateway de pagamento (Stripe, etc.) — psicólogo recebe direto
-- ❌ Emissão de nota fiscal — fora do escopo do produto
-- ❌ Controle de despesas do consultório — não é o foco
-- ❌ Sistema de assinatura/mensalidade — cobrança é por sessão
-- ❌ Integração com contador — psicólogo exporta CSV se precisar
-- ❌ Múltiplas moedas — Brasil, BRL apenas
-- ❌ Split de pagamento — não se aplica
-
-## Estado Atual
-
-- [x] Modelo `SessionCharge` existe no Prisma
-- [x] Repository pattern implementado
-- [x] Página `/financeiro` básica funcional
-- [x] Seção financeira no perfil do paciente
-- [ ] Status "atrasado" não é atualizado automaticamente
-- [ ] UX de pagamento requer formulário (deveria ser 1 clique)
-- [ ] Sem filtros úteis
-- [ ] Sem exportação
-- [ ] Sem visão de inadimplência
+## Phase 12: Double Check & QA
+- 12.1 Visual review de todas as páginas
+- 12.2 Mobile testing completo
+- 12.3 Accessibility audit
+- 12.4 Performance metrics
+- 12.5 Build e teste final
