@@ -124,13 +124,13 @@ function ComunicacaoGroup({ patientName, patientPhone, startsAt }: {
       <div style={{ display: "grid", gap: "0.4rem", marginTop: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
           <span style={{ fontSize: "0.75rem", color: "var(--color-warm-brown)", minWidth: "6rem" }}>Lembrete</span>
-          <a href={reminderWA} target="_blank" rel="noreferrer" style={commLinkStyle}>WhatsApp</a>
-          <a href={reminderMail} target="_blank" rel="noreferrer" style={commLinkStyle}>Email</a>
+          <a href={reminderWA} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">WhatsApp</a>
+          <a href={reminderMail} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">Email</a>
         </div>
         <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
           <span style={{ fontSize: "0.75rem", color: "var(--color-warm-brown)", minWidth: "6rem" }}>Reagendamento</span>
-          <a href={rescheduleWA} target="_blank" rel="noreferrer" style={commLinkStyle}>WhatsApp</a>
-          <a href={rescheduleMail} target="_blank" rel="noreferrer" style={commLinkStyle}>Email</a>
+          <a href={rescheduleWA} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">WhatsApp</a>
+          <a href={rescheduleMail} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">Email</a>
         </div>
       </div>
     </details>

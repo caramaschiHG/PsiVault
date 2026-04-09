@@ -296,19 +296,19 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         <p style={comunicacaoLabelStyle}>Comunicação</p>
         <div style={comunicacaoRowStyle}>
           <span style={comunicacaoItemLabelStyle}>Lembrete</span>
-          <a href={reminderWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          <a href={reminderWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">
             WhatsApp
           </a>
-          <a href={reminderMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          <a href={reminderMailto} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">
             Email
           </a>
         </div>
         <div style={comunicacaoRowStyle}>
           <span style={comunicacaoItemLabelStyle}>Reagendamento</span>
-          <a href={rescheduleWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          <a href={rescheduleWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">
             WhatsApp
           </a>
-          <a href={rescheduleMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
+          <a href={rescheduleMailto} target="_blank" rel="noreferrer" style={commLinkStyle} className="external-link">
             Email
           </a>
         </div>
@@ -325,6 +325,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             target="_blank"
             rel="noreferrer"
             style={openLinkStyle}
+            className="external-link"
           >
             Abrir link
           </a>

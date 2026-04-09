@@ -217,7 +217,7 @@ const resultItemStyle: React.CSSProperties = {
   color: "var(--color-text-1)",
   textDecoration: "none",
   cursor: "pointer",
-  transition: "background 0.1s",
+  transition: "background 100ms ease",
 };
 
 const patientNameStyle: React.CSSProperties = {

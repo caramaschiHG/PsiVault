@@ -79,8 +79,8 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
               borderRadius: "var(--radius-sm)", background: "var(--color-surface-0)", border: "1px solid rgba(146,64,14,0.15)",
               boxShadow: "var(--shadow-dropdown)",
             }}>
-              <a href={waUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>WhatsApp</a>
-              <a href={mailtoUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>Email</a>
+              <a href={waUrl} target="_blank" rel="noreferrer" className="external-link" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>WhatsApp</a>
+              <a href={mailtoUrl} target="_blank" rel="noreferrer" className="external-link" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>Email</a>
             </div>
           </details>
         )}

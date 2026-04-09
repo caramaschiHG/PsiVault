@@ -202,5 +202,5 @@ const buttonStyle = {
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "0.95rem",
-  transition: "background 0.2s",
+  transition: "background 200ms ease",
 } satisfies React.CSSProperties;

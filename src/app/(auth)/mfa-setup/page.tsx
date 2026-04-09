@@ -131,7 +131,7 @@ export default function MfaSetupPage() {
                 <span className="auth-app-card-name">Authy</span>
                 <span className="auth-app-badge">Recomendado</span>
                 <a
-                  className="auth-app-link"
+                  className="auth-app-link external-link"
                   href="https://apps.apple.com/br/app/twilio-authy/id494168017"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -139,7 +139,7 @@ export default function MfaSetupPage() {
                   iOS
                 </a>
                 <a
-                  className="auth-app-link"
+                  className="auth-app-link external-link"
                   href="https://play.google.com/store/apps/details?id=com.authy.authy"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -150,7 +150,7 @@ export default function MfaSetupPage() {
               <div className="auth-app-card">
                 <span className="auth-app-card-name">Google Auth</span>
                 <a
-                  className="auth-app-link"
+                  className="auth-app-link external-link"
                   href="https://apps.apple.com/br/app/google-authenticator/id388497605"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -158,7 +158,7 @@ export default function MfaSetupPage() {
                   iOS
                 </a>
                 <a
-                  className="auth-app-link"
+                  className="auth-app-link external-link"
                   href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -169,7 +169,7 @@ export default function MfaSetupPage() {
               <div className="auth-app-card">
                 <span className="auth-app-card-name">Microsoft Auth</span>
                 <a
-                  className="auth-app-link"
+                  className="auth-app-link external-link"
                   href="https://apps.apple.com/br/app/microsoft-authenticator/id983156458"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -177,7 +177,7 @@ export default function MfaSetupPage() {
                   iOS
                 </a>
                 <a
-                  className="auth-app-link"
+                  className="auth-app-link external-link"
                   href="https://play.google.com/store/apps/details?id=com.azure.authenticator"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -196,7 +196,7 @@ export default function MfaSetupPage() {
                 href="https://apps.apple.com/br/app/twilio-authy/id494168017"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary"
+                className="btn-secondary external-link"
                 style={{ flex: 1, textAlign: "center" } satisfies React.CSSProperties}
               >
                 Ver aplicativos

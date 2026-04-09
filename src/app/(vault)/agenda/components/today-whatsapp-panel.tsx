@@ -328,7 +328,7 @@ const listStyle = {
 
 const listItemStyle = {
   borderRadius: "var(--radius-sm)",
-  transition: "background 0.1s",
+  transition: "background 100ms ease",
 } satisfies React.CSSProperties;
 
 const checkboxLabelStyle = {

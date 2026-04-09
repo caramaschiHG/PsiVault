@@ -1361,3 +1361,24 @@ label[for], .nav-link, summary {
 .template-card:active {
   transform: scale(0.98);
 }
+
+/* ─── External link indicator ─────────────────────────────────────────── */
+.external-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.external-link::after {
+  content: "";
+  display: inline-block;
+  width: 0.65em;
+  height: 0.65em;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a3412' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 120ms ease;
+}
+.external-link:hover::after { opacity: 0.8; }
