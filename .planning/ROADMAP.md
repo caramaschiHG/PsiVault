@@ -86,3 +86,55 @@
 - 12.3 Accessibility audit
 - 12.4 Performance metrics
 - 12.5 Build e teste final
+
+## Phase 13: UX Round 3 — Design System Hardening (Score 6.2 → 9.6+)
+### Fase 13: Foundation Tokens (6.2 → 7.2)
+- 13.1 Criar z-index token system (8 tokens)
+- 13.2 Adicionar spacing tokens faltando (--space-1.5, --space-5, --space-7)
+- 13.3 Corrigir redundância font-size (unificar xs/label, adicionar 2xs)
+- 13.4 Corrigir contraste --color-text-3 (#57534e)
+- 13.5 Corrigir :focus-visible border-radius fixo
+- 13.6 Limpar @keyframes duplicados (~40 lines)
+- 13.7 Limpar CSS declarations duplicadas (~20 blocos)
+- 13.8 Criar tokens de cores semânticas faltando (kbd, template cards, etc.)
+
+### Fase 14: Inline Styles → Token Migration (7.2 → 8.4)
+- 14.1 Cores inline → CSS variables (TODOS os arquivos)
+- 14.2 Border-radius inline → tokens (TODOS os arquivos)
+- 14.3 Padding/margin inline → tokens (TODOS os arquivos)
+- 14.4 Font-size inline → tokens (TODOS os arquivos)
+- 14.5 Shadow inline → tokens (TODOS os arquivos)
+- 14.6 Transition inline → tokens (TODOS os arquivos)
+
+### Fase 15: Component Polish & Acessibilidade (8.4 → 9.0)
+- 15.1 RichTextEditor toolbar: focus/hover/active/aria-pressed
+- 15.2 RichTextEditor: emojis → SVG icons (17 botões)
+- 15.3 AutoSaveIndicator: emojis → SVG icons
+- 15.4 ClinicalTimeline NoteBadge: emoji → SVG icon
+- 15.5 AutoSaveIndicator: transition específica (não "all")
+- 15.6 Tab: adicionar hover state
+- 15.7 ListItem: adicionar hover visual
+- 15.8 Template cards: hover/press feedback
+- 15.9 KeyboardShortcutsModal: focus trap
+- 15.10 Toast: dismiss button
+- 15.11 NoteComposer focus mode: React state (não DOM)
+- 15.12 Card variants: unificar radius/shadow
+
+### Fase 16: UX Flow & Interaction Polish (9.0 → 9.4)
+- 16.1 Inline validation em PatientForm
+- 16.2 Auto-save em PatientForm
+- 16.3 DocumentsSection "Enviar": keyboard support
+- 16.4 External link indicator (communication links)
+- 16.5 Shell page padding → tokens
+- 16.6 ClinicalTimeline: month jump nav
+- 16.7 RichTextEditor: paste formatting toggle
+
+### Fase 17: Performance & QA Final (9.4 → 9.6+)
+- 17.1 useMemo em style objects repetidos
+- 17.2 RichTextEditor: reduzir re-renders
+- 17.3 CLS audit (CLS < 0.05)
+- 17.4 Bundle size check
+- 17.5 Lighthouse audit completo
+- 17.6 Build + tests finais
+- 17.7 Atualizar ROADMAP e STATE
+- 17.8 Commit atômico final
