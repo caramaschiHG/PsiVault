@@ -68,7 +68,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 ...toastStyle,
                 borderLeftColor: borderColors[t.type],
                 opacity: t.fading ? 0 : 1,
-                transition: t.fading ? "opacity 0.5s ease" : "none",
+                transition: t.fading ? "opacity 500ms ease" : "none",
                 position: "relative",
                 pointerEvents: "auto",
               }}
@@ -112,7 +112,7 @@ const toastStyle = {
   fontSize: "0.875rem",
   borderLeft: "3px solid transparent",
   boxShadow: "var(--shadow-md)",
-  transition: "opacity 0.5s ease",
+  transition: "opacity 500ms ease",
   maxWidth: "320px",
   lineHeight: 1.4,
 } satisfies React.CSSProperties;

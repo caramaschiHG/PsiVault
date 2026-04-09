@@ -134,7 +134,7 @@ const badgeStyle: React.CSSProperties = {
   right: "2px",
   minWidth: "16px",
   height: "16px",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   background: "var(--color-rose)",
   color: "#fff",
   fontSize: "0.6rem",
