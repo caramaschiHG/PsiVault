@@ -1,19 +1,20 @@
 "use client";
 
 /**
- * DocumentComposerForm — client component for document composition.
+ * DocumentComposerForm — redesigned: unified RichTextEditor for ALL types.
  *
- * Handles:
- * - Pre-filled textarea with defaultContent (generated server-side from template)
- * - Dirty tracking (isDirty) to guard against unsaved drafts
- * - Unsaved-draft guard: beforeunload event for browser tab/window close
- * - Submit via server action (createDocumentAction)
- * - Hidden fields: patientId, documentType passed through form
+ * Improvements:
+ * - ALL document types use RichTextEditor (consistent experience)
+ * - Visible auto-save indicator
+ * - Word count
+ * - Cleaner layout
  */
 
 import { useEffect, useRef, useState } from "react";
 import type { DocumentType } from "../../../../../../../lib/documents/model";
+import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { AutoSaveIndicator, useAutoSave } from "@/components/ui/auto-save-indicator";
 
 interface DocumentComposerFormProps {
   defaultContent: string;
@@ -23,253 +24,89 @@ interface DocumentComposerFormProps {
 }
 
 export function DocumentComposerForm({
-  defaultContent,
-  patientId,
-  documentType,
-  createDocumentAction,
+  defaultContent, patientId, documentType, createDocumentAction,
 }: DocumentComposerFormProps) {
-  const [isDirty, setIsDirty] = useState(false);
-  const [wordCount, setWordCount] = useState(() => countWords(defaultContent));
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typeLabel = DOCUMENT_TYPE_LABELS[documentType];
   const isSessionRecord = documentType === "session_record";
 
-  // Unsaved-draft guard: warn on browser close / refresh
+  const [contentValue, setContentValue] = useState(defaultContent);
+  const [wordCount, setWordCount] = useState(0);
+  const { status, lastSaved, markDirty } = useAutoSave(
+    `doc-draft-${patientId}-${documentType}`,
+    contentValue,
+    2000,
+  );
+
+  // Warn on browser close
+  const isDirty = status !== "idle";
   useEffect(() => {
     if (!isDirty) return;
-
-    function handleBeforeUnload(event: BeforeUnloadEvent) {
-      event.preventDefault();
-      event.returnValue = "";
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", h);
+    return () => window.removeEventListener("beforeunload", h);
   }, [isDirty]);
 
-  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    setIsDirty(true);
-    setWordCount(countWords(e.target.value));
-    autoResize(e.target);
-  }
-
   function handleSubmitStart() {
-    setIsDirty(false);
-  }
-
-  function applyToolbar(action: "uppercase" | "separator" | "bullet" | "indent") {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const value = textarea.value;
-
-    if (action === "uppercase") {
-      const selected = value.slice(start, end);
-      if (!selected) return;
-      textarea.setRangeText(selected.toUpperCase(), start, end, "select");
-    } else if (action === "separator") {
-      textarea.setRangeText("\n\n————————————————————\n\n", start, end, "end");
-    } else if (action === "bullet") {
-      const lineStart = value.lastIndexOf("\n", start - 1) + 1;
-      textarea.setRangeText("• ", lineStart, lineStart, "end");
-    } else if (action === "indent") {
-      textarea.setRangeText("    ", start, start, "end");
-    }
-
-    setIsDirty(true);
-    setWordCount(countWords(textarea.value));
-    textarea.focus();
+    markDirty(); // Reset indicator
   }
 
   return (
     <form action={createDocumentAction} onSubmit={handleSubmitStart} style={formStyle}>
-      {/* Hidden fields */}
       <input type="hidden" name="patientId" value={patientId} />
       <input type="hidden" name="documentType" value={documentType} />
 
-      {/* Main document content area */}
-      <div style={fieldGroupStyle}>
-        <div style={labelRowStyle}>
-          <label htmlFor="content" style={labelStyle}>
-            {isSessionRecord ? "Registro de sessão" : "Conteúdo do documento"}
-          </label>
-          <span style={wordCountStyle}>{wordCount} palavras</span>
+      {/* Hidden field with content for form submission */}
+      <input type="hidden" name="content" value={contentValue} />
+
+      {/* Toolbar: type label + auto-save + word count */}
+      <div style={toolbarStyle}>
+        <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--color-text-2)" }}>
+          {typeLabel}
+          {isSessionRecord && (
+            <span style={{
+              display: "inline-block", marginLeft: "0.4rem", padding: "0.08rem 0.4rem",
+              borderRadius: "999px", background: "rgba(146,64,14,0.1)", color: "#92400e",
+              fontSize: "0.68rem", fontWeight: 600, textTransform: "uppercase",
+            }}>Privado</span>
+          )}
+        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <AutoSaveIndicator status={status} lastSaved={lastSaved} />
+          <span style={{ fontSize: "0.72rem", color: "var(--color-text-3)" }}>{wordCount} palavras</span>
         </div>
-
-        {isSessionRecord ? (
-          <RichTextEditor
-            name="content"
-            initialHtml={defaultContent}
-            placeholder="Escreva livremente o que for necessário para seu uso clínico privado."
-            minHeight={520}
-            onDirtyChange={setIsDirty}
-            onWordCountChange={setWordCount}
-          />
-        ) : (
-          <>
-            {/* Toolbar */}
-            <div style={toolbarStyle}>
-              <button
-                type="button"
-                title="Converter seleção para maiúsculas"
-                style={toolbarBtnStyle}
-                onClick={() => applyToolbar("uppercase")}
-              >
-                A→A↑
-              </button>
-              <button
-                type="button"
-                title="Inserir separador"
-                style={toolbarBtnStyle}
-                onClick={() => applyToolbar("separator")}
-              >
-                ———
-              </button>
-              <button
-                type="button"
-                title="Inserir item com marcador"
-                style={toolbarBtnStyle}
-                onClick={() => applyToolbar("bullet")}
-              >
-                •
-              </button>
-              <button
-                type="button"
-                title="Indentar (4 espaços)"
-                style={toolbarBtnStyle}
-                onClick={() => applyToolbar("indent")}
-              >
-                ⇥
-              </button>
-            </div>
-
-            <textarea
-              ref={textareaRef}
-              id="content"
-              name="content"
-              defaultValue={defaultContent}
-              rows={24}
-              onChange={handleChange}
-              required
-              style={composerTextareaStyle}
-            />
-          </>
-        )}
       </div>
 
-      {/* Form actions */}
+      {/* Rich text editor for ALL types */}
+      <div style={fieldGroupStyle}>
+        <RichTextEditor
+          name="content"
+          initialHtml={defaultContent}
+          placeholder={
+            isSessionRecord
+              ? "Escreva livremente o que for necessário para seu uso clínico privado."
+              : `Escreva o conteúdo do(a) ${typeLabel}...`
+          }
+          minHeight={480}
+          onWordCountChange={setWordCount}
+          onContentChange={(html) => { setContentValue(html); markDirty(); }}
+        />
+      </div>
+
+      {/* Submit */}
       <div style={formActionsStyle}>
-        <button type="submit" style={submitButtonStyle}>
-          Salvar documento
-        </button>
+        <button type="submit" style={submitButtonStyle}>Salvar documento</button>
       </div>
     </form>
   );
 }
 
-function countWords(text: string): number {
-  return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
-}
-
-function autoResize(el: HTMLTextAreaElement) {
-  el.style.height = "auto";
-  el.style.height = `${el.scrollHeight}px`;
-}
-
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const formStyle = {
-  display: "grid",
-  gap: "1.5rem",
-} satisfies React.CSSProperties;
-
-const fieldGroupStyle = {
-  display: "grid",
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const labelRowStyle = {
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "space-between",
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const labelStyle = {
-  fontSize: "0.875rem",
-  fontWeight: 600,
-  color: "#1c1917",
-  letterSpacing: "0.01em",
-} satisfies React.CSSProperties;
-
-const wordCountStyle = {
-  fontSize: "0.74rem",
-  color: "var(--color-text-3)",
-  letterSpacing: "0.03em",
-  textTransform: "uppercase" as const,
-} satisfies React.CSSProperties;
-
-const toolbarStyle = {
-  display: "flex",
-  flexWrap: "wrap" as const,
-  gap: "0.35rem",
-  padding: "0.55rem 0.6rem",
-  borderRadius: "14px",
-  background: "rgba(248, 245, 241, 0.96)",
-  border: "1px solid rgba(120, 53, 15, 0.1)",
-} satisfies React.CSSProperties;
-
-const toolbarBtnStyle = {
-  padding: "0.32rem 0.62rem",
-  borderRadius: "999px",
-  border: "1px solid rgba(120, 53, 15, 0.12)",
-  background: "rgba(255, 253, 250, 0.98)",
-  color: "#57534e",
-  fontSize: "0.75rem",
-  fontWeight: 600,
-  cursor: "pointer",
-  fontFamily: "inherit",
-  lineHeight: 1.4,
-  letterSpacing: "0.01em",
-} satisfies React.CSSProperties;
-
-const composerTextareaStyle = {
-  width: "100%",
-  minHeight: "32rem",
-  padding: "1.2rem 1.3rem",
-  borderRadius: "18px",
-  border: "1px solid rgba(120, 53, 15, 0.12)",
-  background: "linear-gradient(180deg, rgba(255, 253, 250, 0.99) 0%, rgba(252, 249, 246, 0.99) 100%)",
-  fontSize: "0.95rem",
-  color: "#1c1917",
-  resize: "vertical" as const,
-  fontFamily: "ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace",
-  lineHeight: "1.75",
-  outline: "none",
-  boxSizing: "border-box" as const,
-  whiteSpace: "pre-wrap" as const,
-  overflowY: "auto" as const,
-  boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.65)",
-} satisfies React.CSSProperties;
-
-const formActionsStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "1.25rem",
-  paddingTop: "0.5rem",
-} satisfies React.CSSProperties;
-
-const submitButtonStyle = {
-  padding: "0.75rem 1.5rem",
-  borderRadius: "16px",
-  background: "#9a3412",
-  color: "#fff7ed",
-  border: "none",
-  fontWeight: 700,
-  fontSize: "0.95rem",
-  cursor: "pointer",
-  fontFamily: "inherit",
-} satisfies React.CSSProperties;
+const formStyle: React.CSSProperties = { display: "grid", gap: "1.25rem" };
+const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap", padding: "0.5rem 0.75rem", borderRadius: "12px", background: "rgba(248,250,252,0.5)" };
+const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.5rem" };
+const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
+const submitButtonStyle: React.CSSProperties = {
+  padding: "0.75rem 1.5rem", borderRadius: "16px", background: "#9a3412", color: "#fff7ed",
+  border: "none", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", fontFamily: "inherit",
+};

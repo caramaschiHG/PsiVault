@@ -1,23 +1,37 @@
 "use client";
 
 /**
- * NoteComposerForm — client component for clinical note creation and editing.
+ * NoteComposerForm — redesigned with visible auto-save, template cards, word count.
  *
- * Handles:
- * - Form state and dirty tracking (isDirty)
- * - Controlled freeText with localStorage auto-save (2 s debounce)
- * - Draft restore on mount (new notes only)
- * - Template selector (SOAP / BIRP)
- * - Focus mode toggle (collapses vault sidebar)
- * - Unsaved-draft guard: beforeunload event for browser tab/window close
- * - In-app cancel guard: confirm dialog on the cancel link when isDirty
- * - Switches between createAction / updateAction based on whether an existing note exists
+ * Improvements:
+ * - AutoSaveIndicator visible at top toolbar
+ * - Template cards (SOAP/BIRP/Livre) as clickable cards, not dropdown
+ * - Word count display
+ * - Focus mode toggle
+ * - Dirty tracking + localStorage auto-save
  */
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { ClinicalNote } from "../../../../../../lib/clinical/model";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { AutoSaveIndicator, useAutoSave } from "@/components/ui/auto-save-indicator";
+
+const TEMPLATES = [
+  { id: "livre", label: "Livre", desc: "Texto livre" },
+  { id: "soap", label: "SOAP", desc: "Subjetivo · Objetivo · Avaliação · Plano" },
+  { id: "birp", label: "BIRP", desc: "Comportamento · Intervenção · Resposta · Plano" },
+] as const;
+
+const TEMPLATE_CONTENT: Record<string, string> = {
+  livre: "",
+  soap: "**S (Subjetivo):**\n\n**O (Objetivo):**\n\n**A (Avaliação):**\n\n**P (Plano):**\n",
+  birp: "**B (Comportamento):**\n\n**I (Intervenção):**\n\n**R (Resposta):**\n\n**P (Plano):**\n",
+};
+
+function countWords(text: string): number {
+  return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+}
 
 interface NoteComposerFormProps {
   existingNote: ClinicalNote | null;
@@ -28,285 +42,141 @@ interface NoteComposerFormProps {
   updateAction: (formData: FormData) => Promise<void>;
 }
 
-const TEMPLATES = {
-  livre: "",
-  soap: "**S (Subjetivo):**\n\n**O (Objetivo):**\n\n**A (Avaliação):**\n\n**P (Plano):**\n",
-  birp: "**B (Comportamento):**\n\n**I (Intervenção):**\n\n**R (Resposta):**\n\n**P (Plano):**\n",
-} as const;
-
-function formatRelativeTime(date: Date): string {
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return "agora mesmo";
-  const minutes = Math.floor(seconds / 60);
-  return `há ${minutes} min`;
-}
-
 export function NoteComposerForm({
-  existingNote,
-  appointmentId,
-  patientId,
-  backHref,
-  createAction,
-  updateAction,
+  existingNote, appointmentId, patientId, backHref, createAction, updateAction,
 }: NoteComposerFormProps) {
   const [freeTextValue, setFreeTextValue] = useState(existingNote?.freeText ?? "");
   const [isDirty, setIsDirty] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [focusMode, setFocusMode] = useState(false);
-  // Tracks interval for auto-save indicator re-renders
-  const indicatorTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [showTemplates, setShowTemplates] = useState(!existingNote?.freeText);
 
-  // Draft restore on mount (new notes only)
+  const { status, lastSaved, markDirty } = useAutoSave(
+    `note-draft-${appointmentId}`,
+    freeTextValue,
+    2000,
+  );
+
+  // Restore draft on mount
   useEffect(() => {
     if (!existingNote) {
       const draft = localStorage.getItem(`note-draft-${appointmentId}`);
-      if (draft) setFreeTextValue(draft);
+      if (draft) { setFreeTextValue(draft); setIsDirty(true); }
     }
   }, [appointmentId, existingNote]);
 
-  // Auto-save debounce
+  // Warn on browser close
   useEffect(() => {
     if (!isDirty) return;
-    const t = setTimeout(() => {
-      localStorage.setItem(`note-draft-${appointmentId}`, freeTextValue);
-      setLastSaved(new Date());
-    }, 2000);
-    return () => clearTimeout(t);
-  }, [freeTextValue, isDirty, appointmentId]);
-
-  // Re-render indicator every 30 s so relative time stays accurate
-  useEffect(() => {
-    if (!lastSaved) return;
-    if (indicatorTimerRef.current) clearInterval(indicatorTimerRef.current);
-    indicatorTimerRef.current = setInterval(() => {
-      setLastSaved((d) => (d ? new Date(d) : null));
-    }, 30_000);
-    return () => {
-      if (indicatorTimerRef.current) clearInterval(indicatorTimerRef.current);
-    };
-  }, [lastSaved]);
-
-  // Unsaved-draft guard: warn on browser close / refresh
-  useEffect(() => {
-    if (!isDirty) return;
-
-    function handleBeforeUnload(event: BeforeUnloadEvent) {
-      event.preventDefault();
-      event.returnValue = "";
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", h);
+    return () => window.removeEventListener("beforeunload", h);
   }, [isDirty]);
 
   const action = existingNote ? updateAction : createAction;
   const submitLabel = existingNote ? "Atualizar prontuário" : "Salvar prontuário";
+  const wordCount = countWords(freeTextValue);
 
   function handleFreeTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setFreeTextValue(e.target.value);
-    setIsDirty(true);
-  }
-
-  function handleChange() {
-    setIsDirty(true);
+    markDirty();
   }
 
   function handleSubmitStart() {
-    // Reset dirty flag before submission so beforeunload doesn't fire on redirect
     setIsDirty(false);
     localStorage.removeItem(`note-draft-${appointmentId}`);
   }
 
   function handleCancelClick(event: React.MouseEvent<HTMLAnchorElement>) {
     if (!isDirty) return;
-    const confirmed = window.confirm(
-      "Você tem alterações não salvas. Deseja sair?",
-    );
-    if (!confirmed) {
-      event.preventDefault();
-    }
+    if (!window.confirm("Você tem alterações não salvas. Deseja sair?")) event.preventDefault();
   }
 
-  function handleToggleFocusMode() {
-    setFocusMode((f) => !f);
-    const sidebar = document.querySelector<HTMLElement>(".vault-sidebar");
-    if (sidebar) sidebar.classList.toggle("collapsed");
+  function applyTemplate(templateId: string) {
+    const content = TEMPLATE_CONTENT[templateId];
+    if (!content && isDirty && !window.confirm("Isso substituirá o texto atual. Confirmar?")) return;
+    setFreeTextValue(content ?? "");
+    markDirty();
+    setShowTemplates(false);
   }
 
   return (
     <form action={action} onSubmit={handleSubmitStart} style={formStyle}>
-      {/* Hidden fields */}
       <input type="hidden" name="appointmentId" value={appointmentId} />
       <input type="hidden" name="patientId" value={patientId} />
-      {existingNote && (
-        <input type="hidden" name="noteId" value={existingNote.id} />
-      )}
+      {existingNote && <input type="hidden" name="noteId" value={existingNote.id} />}
 
-      {/* Toolbar: focus mode */}
+      {/* Toolbar: auto-save + focus mode */}
       <div style={toolbarStyle}>
-        <button
-          type="button"
-          onClick={handleToggleFocusMode}
-          style={focusButtonStyle}
-        >
+        <AutoSaveIndicator status={status} lastSaved={lastSaved} />
+        <span style={{ fontSize: "0.72rem", color: "var(--color-text-3)" }}>{wordCount} palavras</span>
+        <button type="button" onClick={() => { setFocusMode((f) => !f); document.querySelector<HTMLElement>(".vault-sidebar")?.classList.toggle("collapsed"); }} style={focusBtnStyle}>
           {focusMode ? "Sair do modo foco" : "Modo foco"}
         </button>
       </div>
 
+      {/* Template cards (shown when empty or on click) */}
+      {showTemplates && (
+        <div style={templateGridStyle}>
+          <p style={{ gridColumn: "1/-1", margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+            Escolha um template
+          </p>
+          {TEMPLATES.map((t) => (
+            <button key={t.id} type="button" onClick={() => applyTemplate(t.id)} style={templateCardStyle}>
+              <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1c1917" }}>{t.label}</span>
+              <span style={{ fontSize: "0.78rem", color: "var(--color-text-3)" }}>{t.desc}</span>
+            </button>
+          ))}
+          {!existingNote && (
+            <button type="button" onClick={() => setShowTemplates(false)} style={{ ...templateCardStyle, opacity: 0.6 }}>
+              <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "#57534e" }}>Começar em branco</span>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Primary free-text area */}
       <div style={fieldGroupStyle}>
-        <label htmlFor="freeText" style={labelStyle}>
-          Registro principal do prontuário
-        </label>
-
-        {/* Template selector */}
-        <div style={{ marginBottom: "0.5rem" }}>
-          <label
-            style={{
-              fontSize: "0.8rem",
-              color: "var(--color-text-2, #57534e)",
-              marginRight: "0.5rem",
-            } satisfies React.CSSProperties}
-          >
-            Template:
-          </label>
-          <select
-            style={{
-              fontSize: "0.8rem",
-              border: "1px solid rgba(0,0,0,0.12)",
-              borderRadius: 8,
-              padding: "0.25rem 0.5rem",
-              background: "transparent",
-            } satisfies React.CSSProperties}
-            onChange={(e) => {
-              const t = TEMPLATES[e.target.value as keyof typeof TEMPLATES];
-              if (!t) return;
-              if (!isDirty || window.confirm("Isso substituirá o texto atual. Confirmar?")) {
-                setFreeTextValue(t);
-                setIsDirty(true);
-                e.target.value = "livre";
-              }
-            }}
-          >
-            <option value="livre">Evolução livre</option>
-            <option value="soap">SOAP</option>
-            <option value="birp">BIRP</option>
-          </select>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "0.5rem" }}>
+          <label htmlFor="freeText" style={labelStyle}>Registro principal do prontuário</label>
+          {!showTemplates && existingNote && (
+            <button type="button" onClick={() => setShowTemplates(true)} style={{ fontSize: "0.75rem", color: "var(--color-accent)", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}>
+              Templates
+            </button>
+          )}
         </div>
 
         <textarea
-          id="freeText"
-          name="freeText"
-          value={freeTextValue}
+          id="freeText" name="freeText" value={freeTextValue}
           placeholder="Escreva o registro clínico que deve compor o prontuário."
           onChange={handleFreeTextChange}
           style={primaryTextareaStyle}
           required
         />
-
-        {lastSaved && (
-          <p
-            style={{
-              margin: "0.25rem 0 0",
-              fontSize: "0.75rem",
-              color: "var(--color-text-3)",
-            } satisfies React.CSSProperties}
-          >
-            ✓ Auto-salvo {formatRelativeTime(lastSaved)}
-          </p>
-        )}
       </div>
 
       {/* Optional structured fields */}
       <section style={optionalSectionStyle}>
         <h2 style={optionalSectionHeadingStyle}>Campos opcionais</h2>
-
         <div style={optionalFieldsGridStyle}>
-          <div style={fieldGroupStyle}>
-            <label htmlFor="demand" style={labelStyle}>
-              Demanda / queixa
-            </label>
-            <textarea
-              id="demand"
-              name="demand"
-              defaultValue={existingNote?.demand ?? ""}
-              placeholder="O que trouxe o paciente nesta sessão..."
-              onChange={handleChange}
-              rows={3}
-              style={secondaryTextareaStyle}
-            />
-          </div>
-
-          <div style={fieldGroupStyle}>
-            <label htmlFor="observedMood" style={labelStyle}>
-              Humor observado
-            </label>
-            <textarea
-              id="observedMood"
-              name="observedMood"
-              defaultValue={existingNote?.observedMood ?? ""}
-              placeholder="Como o paciente se apresentou emocionalmente..."
-              onChange={handleChange}
-              rows={3}
-              style={secondaryTextareaStyle}
-            />
-          </div>
-
-          <div style={fieldGroupStyle}>
-            <label htmlFor="themes" style={labelStyle}>
-              Temas trabalhados
-            </label>
-            <textarea
-              id="themes"
-              name="themes"
-              defaultValue={existingNote?.themes ?? ""}
-              placeholder="Principais assuntos abordados na sessão..."
-              onChange={handleChange}
-              rows={3}
-              style={secondaryTextareaStyle}
-            />
-          </div>
-
-          <div style={fieldGroupStyle}>
-            <label htmlFor="clinicalEvolution" style={labelStyle}>
-              Evolução clínica
-            </label>
-            <textarea
-              id="clinicalEvolution"
-              name="clinicalEvolution"
-              defaultValue={existingNote?.clinicalEvolution ?? ""}
-              placeholder="Como o paciente progrediu em relação ao objetivo terapêutico..."
-              onChange={handleChange}
-              rows={3}
-              style={secondaryTextareaStyle}
-            />
-          </div>
-
-          <div style={fieldGroupStyle}>
-            <label htmlFor="nextSteps" style={labelStyle}>
-              Próximos passos
-            </label>
-            <textarea
-              id="nextSteps"
-              name="nextSteps"
-              defaultValue={existingNote?.nextSteps ?? ""}
-              placeholder="O que ficou combinado ou será retomado na próxima sessão..."
-              onChange={handleChange}
-              rows={3}
-              style={secondaryTextareaStyle}
-            />
-          </div>
+          {[
+            { id: "demand", label: "Demanda / queixa", placeholder: "O que trouxe o paciente nesta sessão...", default: existingNote?.demand },
+            { id: "observedMood", label: "Humor observado", placeholder: "Como o paciente se apresentou emocionalmente...", default: existingNote?.observedMood },
+            { id: "themes", label: "Temas trabalhados", placeholder: "Principais assuntos abordados na sessão...", default: existingNote?.themes },
+            { id: "clinicalEvolution", label: "Evolução clínica", placeholder: "Como o paciente progrediu em relação ao objetivo terapêutico...", default: existingNote?.clinicalEvolution },
+            { id: "nextSteps", label: "Próximos passos", placeholder: "O que ficou combinado ou será retomado na próxima sessão...", default: existingNote?.nextSteps },
+          ].map((f) => (
+            <div key={f.id} style={fieldGroupStyle}>
+              <label htmlFor={f.id} style={labelStyle}>{f.label}</label>
+              <textarea id={f.id} name={f.id} defaultValue={f.default ?? ""} placeholder={f.placeholder} onChange={() => markDirty()} rows={3} style={secondaryTextareaStyle} />
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Form actions */}
       <div style={formActionsStyle}>
         <SubmitButton label={submitLabel} />
-        <Link href={backHref} style={cancelLinkStyle} onClick={handleCancelClick}>
-          Cancelar
-        </Link>
+        <Link href={backHref} style={cancelLinkStyle} onClick={handleCancelClick}>Cancelar</Link>
       </div>
     </form>
   );
@@ -314,102 +184,21 @@ export function NoteComposerForm({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const formStyle = {
-  display: "grid",
-  gap: "1.5rem",
-} satisfies React.CSSProperties;
+const formStyle: React.CSSProperties = { display: "grid", gap: "1.25rem" };
+const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" };
+const focusBtnStyle: React.CSSProperties = { background: "transparent", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 8, padding: "0.3rem 0.65rem", fontSize: "0.78rem", cursor: "pointer", color: "var(--color-text-2)" };
 
-const toolbarStyle = {
-  display: "flex",
-  justifyContent: "flex-end",
-} satisfies React.CSSProperties;
+const templateGridStyle: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.5rem", padding: "1rem", borderRadius: "14px", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.7)" };
+const templateCardStyle: React.CSSProperties = { display: "grid", gap: "0.15rem", padding: "0.75rem 1rem", borderRadius: "12px", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.95)", cursor: "pointer", textAlign: "left", transition: "border-color 120ms ease, box-shadow 120ms ease" };
 
-const focusButtonStyle = {
-  background: "transparent",
-  border: "1px solid rgba(0,0,0,0.15)",
-  borderRadius: 8,
-  padding: "0.35rem 0.75rem",
-  fontSize: "0.8rem",
-  cursor: "pointer",
-  color: "var(--color-text-2, #57534e)",
-} satisfies React.CSSProperties;
+const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.4rem" };
+const labelStyle: React.CSSProperties = { fontSize: "0.875rem", fontWeight: 600, color: "#1c1917" };
+const primaryTextareaStyle: React.CSSProperties = { width: "100%", minHeight: "200px", padding: "0.875rem 1rem", borderRadius: "12px", border: "1px solid rgba(146,64,14,0.2)", background: "rgba(255,252,247,0.95)", fontSize: "0.95rem", color: "#1c1917", resize: "vertical", fontFamily: "inherit", lineHeight: "1.6", outline: "none", boxSizing: "border-box" };
 
-const fieldGroupStyle = {
-  display: "grid",
-  gap: "0.4rem",
-} satisfies React.CSSProperties;
+const optionalSectionStyle: React.CSSProperties = { display: "grid", gap: "1rem", padding: "1.25rem", borderRadius: "16px", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.8)" };
+const optionalSectionHeadingStyle: React.CSSProperties = { margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "#a8a29e", textTransform: "uppercase", letterSpacing: "0.1em" };
+const optionalFieldsGridStyle: React.CSSProperties = { display: "grid", gap: "1rem" };
+const secondaryTextareaStyle: React.CSSProperties = { width: "100%", padding: "0.75rem 0.875rem", borderRadius: "10px", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.9)", fontSize: "0.875rem", color: "#1c1917", resize: "vertical", fontFamily: "inherit", lineHeight: "1.55", outline: "none", boxSizing: "border-box" };
 
-const labelStyle = {
-  fontSize: "0.875rem",
-  fontWeight: 600,
-  color: "#1c1917",
-  letterSpacing: "0.01em",
-} satisfies React.CSSProperties;
-
-const primaryTextareaStyle = {
-  width: "100%",
-  minHeight: "180px",
-  padding: "0.875rem 1rem",
-  borderRadius: "12px",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "rgba(255, 252, 247, 0.95)",
-  fontSize: "0.95rem",
-  color: "#1c1917",
-  resize: "vertical" as const,
-  fontFamily: "inherit",
-  lineHeight: "1.6",
-  outline: "none",
-  boxSizing: "border-box" as const,
-} satisfies React.CSSProperties;
-
-const optionalSectionStyle = {
-  display: "grid",
-  gap: "1rem",
-  padding: "1.25rem",
-  borderRadius: "16px",
-  background: "rgba(248, 250, 252, 0.6)",
-  border: "1px solid rgba(226, 232, 240, 0.8)",
-} satisfies React.CSSProperties;
-
-const optionalSectionHeadingStyle = {
-  margin: 0,
-  fontSize: "0.78rem",
-  fontWeight: 600,
-  color: "#a8a29e",
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.1em",
-} satisfies React.CSSProperties;
-
-const optionalFieldsGridStyle = {
-  display: "grid",
-  gap: "1rem",
-} satisfies React.CSSProperties;
-
-const secondaryTextareaStyle = {
-  width: "100%",
-  padding: "0.75rem 0.875rem",
-  borderRadius: "10px",
-  border: "1px solid rgba(146, 64, 14, 0.15)",
-  background: "rgba(255, 252, 247, 0.9)",
-  fontSize: "0.875rem",
-  color: "#1c1917",
-  resize: "vertical" as const,
-  fontFamily: "inherit",
-  lineHeight: "1.55",
-  outline: "none",
-  boxSizing: "border-box" as const,
-} satisfies React.CSSProperties;
-
-const formActionsStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "1.25rem",
-  paddingTop: "0.5rem",
-} satisfies React.CSSProperties;
-
-const cancelLinkStyle = {
-  fontSize: "0.9rem",
-  color: "var(--color-text-3)",
-  textDecoration: "none",
-  fontWeight: 500,
-} satisfies React.CSSProperties;
+const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
+const cancelLinkStyle: React.CSSProperties = { fontSize: "0.9rem", color: "var(--color-text-3)", textDecoration: "none", fontWeight: 500 };

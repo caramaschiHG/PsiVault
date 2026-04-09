@@ -9,6 +9,7 @@ interface RichTextEditorProps {
   minHeight?: number;
   onDirtyChange?: (dirty: boolean) => void;
   onWordCountChange?: (count: number) => void;
+  onContentChange?: (html: string) => void;
 }
 
 type ToolbarAction =
@@ -76,6 +77,7 @@ export function RichTextEditor({
   placeholder = "Escreva aqui...",
   minHeight = 360,
   onDirtyChange,
+  onContentChange,
   onWordCountChange,
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -107,6 +109,7 @@ export function RichTextEditor({
     const nextHtml = editorRef.current?.innerHTML ?? "";
     setHtml(nextHtml);
     onDirtyChange?.(true);
+    onContentChange?.(nextHtml);
   }
 
   function exec(action: ToolbarAction) {
