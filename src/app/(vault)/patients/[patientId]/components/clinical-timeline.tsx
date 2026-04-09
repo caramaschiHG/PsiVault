@@ -1,12 +1,10 @@
 /**
- * ClinicalTimeline — session history for a single patient, split into sections.
+ * ClinicalTimeline — redesigned with simplified cards and visual timeline.
  *
- * Pure presentational server component: all data comes from props.
- *
- * Sections:
- * - Upcoming (SCHEDULED/CONFIRMED, future): next appointment only
- * - Sessions (COMPLETED): first 5 visible, rest collapsible
- * - Dismissed (CANCELED/NO_SHOW): always collapsible, count in summary
+ * Design principles:
+ * - Scannability first: date + session + status + note badge
+ * - Details on demand: communication collapsed in <details>
+ * - Visual narrative: sessions grouped by month with timeline line
  */
 
 import Link from "next/link";
@@ -31,183 +29,143 @@ interface TimelineEntry {
 
 interface ClinicalTimelineProps {
   patientId: string;
-  upcoming: TimelineEntry[];   // SCHEDULED/CONFIRMED future, sorted ASC
-  completed: TimelineEntry[];  // COMPLETED, sorted most-recent first
-  dismissed: TimelineEntry[];  // CANCELED/NO_SHOW
+  upcoming: TimelineEntry[];
+  completed: TimelineEntry[];
+  dismissed: TimelineEntry[];
   patientName: string;
   patientPhone: string | null;
 }
 
-const COMPLETED_VISIBLE = 5;
+const MONTH_NAMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  weekday: "long",
+  weekday: "short",
   day: "numeric",
-  month: "long",
+  month: "short",
   year: "numeric",
   timeZone: "UTC",
 });
 
 function formatDate(date: Date): string {
-  const formatted = dateFormatter.format(date);
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  const f = dateFormatter.format(date);
+  return f.charAt(0).toUpperCase() + f.slice(1);
 }
 
-function CareModeChip({ careMode }: { careMode: "IN_PERSON" | "ONLINE" }) {
+function getMonthKey(date: Date): string {
+  return `${MONTH_NAMES[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+}
+
+function groupByMonth(entries: TimelineEntry[]): [string, TimelineEntry[]][] {
+  const map = new Map<string, TimelineEntry[]>();
+  for (const e of entries) {
+    const key = getMonthKey(e.startsAt);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(e);
+  }
+  return Array.from(map.entries());
+}
+
+// ─── Badges ──────────────────────────────────────────────────────────────────
+
+function StatusBadge({ status }: { status: TimelineEntry["status"] }) {
+  const config = {
+    COMPLETED: { label: "Concluída", bg: "rgba(245,235,220,0.9)", color: "#92400e" },
+    SCHEDULED: { label: "Agendada", bg: "rgba(240,253,244,0.9)", color: "#166534" },
+    CONFIRMED: { label: "Confirmada", bg: "rgba(240,253,244,0.9)", color: "#166534" },
+    CANCELED: { label: "Cancelada", bg: "rgba(241,245,249,0.9)", color: "#64748b" },
+    NO_SHOW: { label: "Não compareceu", bg: "rgba(255,241,242,0.9)", color: "#9f1239" },
+  }[status];
+
   return (
-    <span style={careModeChipStyle}>
-      {careMode === "IN_PERSON" ? "Presencial" : "Online"}
+    <span style={{
+      display: "inline-block", padding: "0.15rem 0.55rem", borderRadius: "999px",
+      fontSize: "0.7rem", fontWeight: 500, background: config.bg, color: config.color,
+    }}>
+      {config.label}
     </span>
   );
 }
 
-function StatusChip({ status }: { status: TimelineEntry["status"] }) {
-  switch (status) {
-    case "COMPLETED":
-      return <span style={completedChipStyle}>Concluída</span>;
-    case "SCHEDULED":
-      return <span style={scheduledChipStyle}>Agendada</span>;
-    case "CONFIRMED":
-      return <span style={confirmedChipStyle}>Confirmada</span>;
-    case "CANCELED":
-      return <span style={canceledChipStyle}>Cancelada</span>;
-    case "NO_SHOW":
-      return <span style={noShowChipStyle}>Não compareceu</span>;
-  }
-}
-
-interface CommProps {
-  patientName: string;
-  patientPhone: string | null;
-  startsAt: Date;
-}
-
-function ComunicacaoGroup({ patientName, patientPhone, startsAt }: CommProps) {
-  const apptDate = new Intl.DateTimeFormat("pt-BR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "America/Sao_Paulo",
-  }).format(startsAt);
-
-  const apptTime = new Intl.DateTimeFormat("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "America/Sao_Paulo",
-  }).format(startsAt);
-
-  const reminderWhatsApp = buildReminderWhatsAppUrl({
-    patientName,
-    patientPhone,
-    appointmentDate: apptDate,
-    appointmentTime: apptTime,
-  });
-
-  const reminderMailto = buildReminderMailtoUrl({
-    patientName,
-    patientEmail: null,
-    appointmentDate: apptDate,
-    appointmentTime: apptTime,
-  });
-
-  const rescheduleWhatsApp = buildRescheduleWhatsAppUrl({
-    patientName,
-    patientPhone,
-    originalDate: apptDate,
-    originalTime: apptTime,
-  });
-
-  const rescheduleMailto = buildRescheduleMailtoUrl({
-    patientName,
-    patientEmail: null,
-    originalDate: apptDate,
-    originalTime: apptTime,
-  });
-
+function NoteBadge({ hasNote }: { hasNote: boolean }) {
+  if (!hasNote) return null;
   return (
-    <div style={comunicacaoGroupStyle}>
-      <p style={comunicacaoGroupLabelStyle}>Comunicação</p>
-      <div style={comunicacaoRowStyle}>
-        <span style={comunicacaoItemLabelStyle}>Lembrete</span>
-        <a href={reminderWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
-          WhatsApp
-        </a>
-        <a href={reminderMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
-          Email
-        </a>
-      </div>
-      <div style={comunicacaoRowStyle}>
-        <span style={comunicacaoItemLabelStyle}>Reagendamento</span>
-        <a href={rescheduleWhatsApp} target="_blank" rel="noreferrer" style={commLinkStyle}>
-          WhatsApp
-        </a>
-        <a href={rescheduleMailto} target="_blank" rel="noreferrer" style={commLinkStyle}>
-          Email
-        </a>
-      </div>
-    </div>
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: "0.2rem",
+      padding: "0.15rem 0.55rem", borderRadius: "999px",
+      fontSize: "0.7rem", fontWeight: 500,
+      background: "rgba(219,234,254,0.9)", color: "#1e40af",
+    }}>
+      <span style={{ fontSize: "0.65rem" }}>📝</span> Prontuário
+    </span>
   );
 }
 
-function CompletedEntryCard({
-  entry,
-  patientId,
-  isFirstCompleted = false,
-}: {
-  entry: TimelineEntry;
-  patientId: string;
-  isFirstCompleted?: boolean;
-}) {
-  const sessionLabel =
-    entry.sessionNumber !== null
-      ? `Sessão ${entry.sessionNumber}`
-      : "Consulta avulsa";
+// ─── Communication (collapsed) ───────────────────────────────────────────────
 
-  const cardStyle = isFirstCompleted
-    ? { ...completedCardStyle, ...mostRecentCardOverride }
-    : completedCardStyle;
+function ComunicacaoGroup({ patientName, patientPhone, startsAt }: {
+  patientName: string; patientPhone: string | null; startsAt: Date;
+}) {
+  const apptDate = new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Sao_Paulo" }).format(startsAt);
+  const apptTime = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }).format(startsAt);
+
+  const reminderWA = buildReminderWhatsAppUrl({ patientName, patientPhone, appointmentDate: apptDate, appointmentTime: apptTime });
+  const reminderMail = buildReminderMailtoUrl({ patientName, patientEmail: null, appointmentDate: apptDate, appointmentTime: apptTime });
+  const rescheduleWA = buildRescheduleWhatsAppUrl({ patientName, patientPhone, originalDate: apptDate, originalTime: apptTime });
+  const rescheduleMail = buildRescheduleMailtoUrl({ patientName, patientEmail: null, originalDate: apptDate, originalTime: apptTime });
 
   return (
-    <div style={cardStyle}>
-      {isFirstCompleted && (
-        <span style={mostRecentBadgeStyle}>Sessão mais recente</span>
-      )}
-      <div style={cardRowStyle}>
-        <div style={cardInfoStyle}>
-          <span style={sessionLabelStyle}>{sessionLabel}</span>
-          <span style={dateLabelStyle}>{formatDate(entry.startsAt)}</span>
+    <details style={{ marginTop: "0.5rem", padding: "0.5rem 0.75rem", borderRadius: "10px", background: "var(--color-surface-1)", border: "1px solid var(--color-border)" }}>
+      <summary style={{ cursor: "pointer", fontSize: "0.72rem", fontWeight: 600, color: "var(--color-brown-mid)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+        Comunicação
+      </summary>
+      <div style={{ display: "grid", gap: "0.4rem", marginTop: "0.5rem" }}>
+        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "0.75rem", color: "#44403c", minWidth: "6rem" }}>Lembrete</span>
+          <a href={reminderWA} target="_blank" rel="noreferrer" style={commLinkStyle}>WhatsApp</a>
+          <a href={reminderMail} target="_blank" rel="noreferrer" style={commLinkStyle}>Email</a>
         </div>
-        <div style={chipsRowStyle}>
-          <CareModeChip careMode={entry.careMode} />
-          {entry.hasNote ? (
-            <span style={completedChipStyle}>Concluída</span>
-          ) : (
-            <span style={noNoteChipStyle}>Sem registro</span>
-          )}
+        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "0.75rem", color: "#44403c", minWidth: "6rem" }}>Reagendamento</span>
+          <a href={rescheduleWA} target="_blank" rel="noreferrer" style={commLinkStyle}>WhatsApp</a>
+          <a href={rescheduleMail} target="_blank" rel="noreferrer" style={commLinkStyle}>Email</a>
         </div>
       </div>
-      <div style={actionRowStyle}>
+    </details>
+  );
+}
+
+// ─── Entry Cards ─────────────────────────────────────────────────────────────
+
+function CompletedEntryCard({ entry, patientId }: { entry: TimelineEntry; patientId: string }) {
+  const sessionLabel = entry.sessionNumber !== null ? `Sessão ${entry.sessionNumber}` : "Consulta avulsa";
+
+  return (
+    <div style={entryCardStyle}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.4rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+          <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "#1c1917" }}>{sessionLabel}</span>
+          <span style={{ fontSize: "0.85rem", color: "#57534e" }}>{formatDate(entry.startsAt)}</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+          <StatusBadge status="COMPLETED" />
+          <NoteBadge hasNote={entry.hasNote} />
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginTop: "0.35rem" }}>
+        <span style={{ fontSize: "0.75rem", color: "var(--color-text-3)" }}>
+          {entry.careMode === "IN_PERSON" ? "Presencial" : "Online"} · {entry.durationMinutes} min
+        </span>
+      </div>
+
+      <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
         {entry.hasNote ? (
-          <Link
-            href={`/sessions/${entry.appointmentId}/note`}
-            style={viewNoteLinkStyle}
-          >
+          <Link href={`/sessions/${entry.appointmentId}/note`} style={actionLinkStyle}>
             Ver / Editar prontuário →
           </Link>
         ) : (
-          <Link
-            href={`/sessions/${entry.appointmentId}/note`}
-            style={registerNoteLinkStyle}
-          >
+          <Link href={`/sessions/${entry.appointmentId}/note`} style={actionLinkPrimaryStyle}>
             Registrar prontuário →
-          </Link>
-        )}
-        {entry.hasNote && (
-          <Link
-            href={`/patients/${patientId}/documents/new?type=session_note`}
-            style={copyToNewNoteLinkStyle}
-          >
-            Copiar para nova nota →
           </Link>
         )}
       </div>
@@ -215,438 +173,157 @@ function CompletedEntryCard({
   );
 }
 
-function ScheduledEntryCard({
-  entry,
-  patientName,
-  patientPhone,
-}: {
-  entry: TimelineEntry;
-  patientName: string;
-  patientPhone: string | null;
-}) {
+function ScheduledEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
   return (
-    <div style={activeCardStyle}>
-      <div style={cardRowStyle}>
-        <div style={cardInfoStyle}>
-          <span style={dateLabelStyle}>{formatDate(entry.startsAt)}</span>
-          <span style={durationLabelStyle}>{entry.durationMinutes} min</span>
-        </div>
-        <div style={chipsRowStyle}>
-          <CareModeChip careMode={entry.careMode} />
-          <StatusChip status={entry.status} />
+    <div style={{ ...entryCardStyle, borderColor: "rgba(22,101,52,0.2)", background: "rgba(240,253,244,0.6)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.4rem" }}>
+        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "#1c1917" }}>{formatDate(entry.startsAt)}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+          <StatusBadge status={entry.status} />
         </div>
       </div>
-      <ComunicacaoGroup
-        patientName={patientName}
-        patientPhone={patientPhone}
-        startsAt={entry.startsAt}
-      />
+      <div style={{ fontSize: "0.75rem", color: "var(--color-text-3)", marginTop: "0.25rem" }}>
+        {entry.careMode === "IN_PERSON" ? "Presencial" : "Online"} · {entry.durationMinutes} min
+      </div>
+      <ComunicacaoGroup patientName={patientName} patientPhone={patientPhone} startsAt={entry.startsAt} />
     </div>
   );
 }
 
 function MutedEntryCard({ entry }: { entry: TimelineEntry }) {
   return (
-    <div style={mutedCardStyle}>
-      <div style={cardRowStyle}>
-        <div style={cardInfoStyle}>
-          <span style={mutedDateLabelStyle}>{formatDate(entry.startsAt)}</span>
-        </div>
-        <div style={chipsRowStyle}>
-          <StatusChip status={entry.status} />
-        </div>
+    <div style={{ ...entryCardStyle, opacity: 0.6, background: "rgba(248,246,243,0.6)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.4rem" }}>
+        <span style={{ fontSize: "0.85rem", color: "var(--color-text-3)" }}>{formatDate(entry.startsAt)}</span>
+        <StatusBadge status={entry.status} />
       </div>
     </div>
   );
 }
 
-export function ClinicalTimeline({
-  patientId,
-  upcoming,
-  completed,
-  dismissed,
-  patientName,
-  patientPhone,
-}: ClinicalTimelineProps) {
+// ─── Month Group ─────────────────────────────────────────────────────────────
+
+function MonthGroup({ month, entries, patientId, patientName, patientPhone, type }: {
+  month: string; entries: TimelineEntry[]; patientId: string;
+  patientName: string; patientPhone: string | null;
+  type: "completed" | "upcoming";
+}) {
+  return (
+    <div style={{ position: "relative" }}>
+      <p style={{
+        position: "sticky", top: 0, zIndex: 1,
+        margin: "0 0 0.5rem", padding: "0.25rem 0.5rem",
+        fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase",
+        letterSpacing: "0.1em", color: "var(--color-text-3)",
+        background: "var(--color-bg)", borderRadius: "6px",
+      }}>
+        {month}
+      </p>
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        {entries.map((entry) =>
+          type === "completed"
+            ? <CompletedEntryCard key={entry.appointmentId} entry={entry} patientId={patientId} />
+            : <ScheduledEntryCard key={entry.appointmentId} entry={entry} patientName={patientName} patientPhone={patientPhone} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
+
+export function ClinicalTimeline({ patientId, upcoming, completed, dismissed, patientName, patientPhone }: ClinicalTimelineProps) {
   const hasAny = upcoming.length > 0 || completed.length > 0 || dismissed.length > 0;
 
-  const completedVisible = completed.slice(0, COMPLETED_VISIBLE);
-  const completedHidden = completed.slice(COMPLETED_VISIBLE);
+  const completedByMonth = groupByMonth(completed);
+  const upcomingByMonth = groupByMonth(upcoming);
 
+  const dismissedCount = dismissed.length;
   const canceledCount = dismissed.filter((e) => e.status === "CANCELED").length;
   const noShowCount = dismissed.filter((e) => e.status === "NO_SHOW").length;
-
-  const dismissedSummary = [
+  const dismissedLabel = [
     canceledCount > 0 ? `${canceledCount} cancelada${canceledCount > 1 ? "s" : ""}` : "",
     noShowCount > 0 ? `${noShowCount} falta${noShowCount > 1 ? "s" : ""}` : "",
-  ]
-    .filter(Boolean)
-    .join(" e ");
+  ].filter(Boolean).join(" e ") || `${dismissedCount} dispensada${dismissedCount > 1 ? "s" : ""}`;
 
   return (
-    <section style={sectionStyle}>
-      <div style={headingBlockStyle}>
-        <p style={eyebrowStyle}>Histórico clínico</p>
-        <h2 style={titleStyle}>Linha do tempo</h2>
+    <section style={{ display: "grid", gap: "0.75rem" }}>
+      <div style={{ display: "grid", gap: "0.25rem" }}>
+        <p style={{ margin: 0, textTransform: "uppercase", letterSpacing: "0.14em", fontSize: "0.72rem", color: "#b45309" }}>Histórico clínico</p>
+        <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Linha do tempo</h2>
       </div>
 
       {!hasAny ? (
         <EmptyState
-          icon={
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-            </svg>
-          }
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>}
           title="Nenhuma sessão registrada ainda"
           description="As consultas aparecerão aqui conforme forem agendadas."
         />
       ) : (
-        <div style={entriesListStyle}>
-
-          {/* ── Upcoming ────────────────────────────────────────────── */}
+        <div style={{ display: "grid", gap: "1.5rem" }}>
+          {/* Upcoming */}
           {upcoming.length > 0 && (
-            <div style={subSectionStyle}>
-              <p style={subSectionLabelStyle}>Próximas consultas</p>
-              <div style={cardsGroupStyle}>
-                {upcoming.map((entry) => (
-                  <ScheduledEntryCard
-                    key={entry.appointmentId}
-                    entry={entry}
-                    patientName={patientName}
-                    patientPhone={patientPhone}
-                  />
-                ))}
-              </div>
+            <div style={{ display: "grid", gap: "1rem" }}>
+              <p style={{ margin: 0, fontSize: "0.78rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-text-3)" }}>
+                Próximas consultas
+              </p>
+              {upcomingByMonth.map(([month, entries]) => (
+                <MonthGroup key={month} month={month} entries={entries} patientId={patientId} patientName={patientName} patientPhone={patientPhone} type="upcoming" />
+              ))}
             </div>
           )}
 
-          {/* ── Completed ───────────────────────────────────────────── */}
+          {/* Completed */}
           {completed.length > 0 && (
-            <div style={subSectionStyle}>
-              <p style={subSectionLabelStyle}>Sessões realizadas</p>
-              <div style={cardsGroupStyle}>
-                {completedVisible.map((entry, index) => (
-                  <CompletedEntryCard
-                    key={entry.appointmentId}
-                    entry={entry}
-                    patientId={patientId}
-                    isFirstCompleted={index === 0}
-                  />
-                ))}
-                {completedHidden.length > 0 && (
-                  <details style={detailsStyle}>
-                    <summary style={detailsSummaryStyle}>
-                      Ver {completedHidden.length} sessão{completedHidden.length > 1 ? "ões" : ""} anterior{completedHidden.length > 1 ? "es" : ""}
-                    </summary>
-                    <div style={detailsContentStyle}>
-                      {completedHidden.map((entry) => (
-                        <CompletedEntryCard key={entry.appointmentId} entry={entry} patientId={patientId} />
-                      ))}
-                    </div>
-                  </details>
-                )}
-              </div>
+            <div style={{ display: "grid", gap: "1.25rem" }}>
+              <p style={{ margin: 0, fontSize: "0.78rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-text-3)" }}>
+                Sessões realizadas
+              </p>
+              {completedByMonth.map(([month, entries]) => (
+                <MonthGroup key={month} month={month} entries={entries} patientId={patientId} patientName={patientName} patientPhone={patientPhone} type="completed" />
+              ))}
             </div>
           )}
 
-          {/* ── Dismissed ───────────────────────────────────────────── */}
+          {/* Dismissed */}
           {dismissed.length > 0 && (
-            <details style={detailsStyle}>
-              <summary style={detailsSummaryStyle}>{dismissedSummary}</summary>
-              <div style={detailsContentStyle}>
-                {dismissed.map((entry) => (
-                  <MutedEntryCard key={entry.appointmentId} entry={entry} />
-                ))}
+            <details style={{ borderRadius: "12px", border: "1px solid rgba(146,64,14,0.12)", overflow: "hidden" }}>
+              <summary style={{ padding: "0.6rem 1rem", fontSize: "0.82rem", fontWeight: 500, color: "var(--color-text-3)", cursor: "pointer" }}>
+                {dismissedLabel}
+              </summary>
+              <div style={{ display: "grid", gap: "0.5rem", padding: "0 1rem 0.75rem" }}>
+                {dismissed.map((entry) => <MutedEntryCard key={entry.appointmentId} entry={entry} />)}
               </div>
             </details>
           )}
-
         </div>
       )}
     </section>
   );
 }
 
-const mostRecentCardOverride = {
-  borderColor: "rgba(154, 52, 18, 0.35)",
-  background: "rgba(255, 247, 237, 0.98)",
-  boxShadow: "0 2px 12px rgba(154, 52, 18, 0.1)",
-} satisfies React.CSSProperties;
+// ─── Styles ──────────────────────────────────────────────────────────────────
 
-const mostRecentBadgeStyle = {
-  display: "inline-block",
-  padding: "0.15rem 0.6rem",
-  borderRadius: 999,
-  fontSize: "0.7rem",
-  fontWeight: 600,
-  background: "rgba(154, 52, 18, 0.1)",
-  color: "#9a3412",
-  letterSpacing: "0.05em",
-  textTransform: "uppercase" as const,
-  marginBottom: "0.5rem",
-} satisfies React.CSSProperties;
-
-const copyToNewNoteLinkStyle = {
-  fontSize: "0.8rem",
-  color: "#9a3412",
-  textDecoration: "none",
-  opacity: 0.8,
-  marginLeft: "1rem",
-} satisfies React.CSSProperties;
-
-// --- Style objects ---
-
-const sectionStyle = {
-  display: "grid",
-  gap: "0.75rem",
-} satisfies React.CSSProperties;
-
-const headingBlockStyle = {
+const entryCardStyle: React.CSSProperties = {
+  borderRadius: "16px",
+  background: "rgba(255,252,247,0.95)",
+  border: "1px solid rgba(146,64,14,0.12)",
+  padding: "1rem 1.25rem",
   display: "grid",
   gap: "0.25rem",
-} satisfies React.CSSProperties;
+  transition: "box-shadow 150ms ease, border-color 150ms ease",
+};
 
-const eyebrowStyle = {
-  margin: 0,
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "#b45309",
-} satisfies React.CSSProperties;
+const actionLinkStyle: React.CSSProperties = {
+  fontSize: "0.85rem", fontWeight: 500, color: "#9a3412", textDecoration: "none",
+};
 
-const titleStyle = {
-  margin: 0,
-  fontSize: "1.4rem",
-} satisfies React.CSSProperties;
+const actionLinkPrimaryStyle: React.CSSProperties = {
+  fontSize: "0.85rem", fontWeight: 600, color: "#b45309", textDecoration: "none",
+};
 
-const entriesListStyle = {
-  display: "grid",
-  gap: "1.5rem",
-} satisfies React.CSSProperties;
-
-const subSectionStyle = {
-  display: "grid",
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const subSectionLabelStyle = {
-  margin: 0,
-  fontSize: "0.78rem",
-  fontWeight: 600,
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.1em",
-  color: "var(--color-text-3)",
-} satisfies React.CSSProperties;
-
-const cardsGroupStyle = {
-  display: "grid",
-  gap: "0.625rem",
-} satisfies React.CSSProperties;
-
-// Card base — rounded card pattern matching app conventions
-const baseCardStyle = {
-  borderRadius: "22px",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.16)",
-  padding: "1.25rem 1.5rem",
-  display: "grid",
-  gap: "0.75rem",
-} satisfies React.CSSProperties;
-
-const completedCardStyle = {
-  ...baseCardStyle,
-} satisfies React.CSSProperties;
-
-const activeCardStyle = {
-  ...baseCardStyle,
-} satisfies React.CSSProperties;
-
-const mutedCardStyle = {
-  ...baseCardStyle,
-  opacity: 0.6,
-  background: "rgba(248, 246, 243, 0.75)",
-} satisfies React.CSSProperties;
-
-const cardRowStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  flexWrap: "wrap" as const,
-  gap: "0.5rem",
-} satisfies React.CSSProperties;
-
-const cardInfoStyle = {
-  display: "flex",
-  flexDirection: "column" as const,
-  gap: "0.2rem",
-} satisfies React.CSSProperties;
-
-const sessionLabelStyle = {
-  fontWeight: 600,
-  fontSize: "0.95rem",
-  color: "#292524",
-} satisfies React.CSSProperties;
-
-const dateLabelStyle = {
-  fontSize: "0.88rem",
-  color: "#57534e",
-} satisfies React.CSSProperties;
-
-const mutedDateLabelStyle = {
-  fontSize: "0.88rem",
-  color: "var(--color-text-3)",
-} satisfies React.CSSProperties;
-
-const durationLabelStyle = {
-  fontSize: "0.8rem",
-  color: "var(--color-text-3)",
-} satisfies React.CSSProperties;
-
-const chipsRowStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.4rem",
-  flexWrap: "wrap" as const,
-} satisfies React.CSSProperties;
-
-const actionRowStyle = {
-  display: "flex",
-  alignItems: "center",
-} satisfies React.CSSProperties;
-
-// Chip base
-const baseChipStyle = {
-  display: "inline-block",
-  padding: "0.15rem 0.6rem",
-  borderRadius: "999px",
-  fontSize: "0.75rem",
-  fontWeight: 500,
-  lineHeight: 1.5,
-} satisfies React.CSSProperties;
-
-const careModeChipStyle = {
-  ...baseChipStyle,
-  background: "rgba(231,229,228,0.7)",
-  color: "#44403c",
-} satisfies React.CSSProperties;
-
-const completedChipStyle = {
-  ...baseChipStyle,
-  background: "rgba(245, 235, 220, 0.9)",
-  color: "var(--color-brown-mid)",
-} satisfies React.CSSProperties;
-
-const noNoteChipStyle = {
-  ...baseChipStyle,
-  background: "rgba(254,243,199,0.9)",
-  color: "#92400e",
-} satisfies React.CSSProperties;
-
-const scheduledChipStyle = {
-  ...baseChipStyle,
-  background: "rgba(240,253,244,0.9)",
-  color: "#166534",
-} satisfies React.CSSProperties;
-
-const confirmedChipStyle = {
-  ...baseChipStyle,
-  background: "rgba(240,253,244,0.9)",
-  color: "#166534",
-} satisfies React.CSSProperties;
-
-const canceledChipStyle = {
-  ...baseChipStyle,
-  background: "rgba(241,245,249,0.9)",
-  color: "#64748b",
-} satisfies React.CSSProperties;
-
-const noShowChipStyle = {
-  ...baseChipStyle,
-  background: "rgba(255,241,242,0.9)",
-  color: "#9f1239",
-} satisfies React.CSSProperties;
-
-const viewNoteLinkStyle = {
-  fontSize: "0.875rem",
-  fontWeight: 500,
-  color: "#9a3412",
-  textDecoration: "none",
-} satisfies React.CSSProperties;
-
-const registerNoteLinkStyle = {
-  fontSize: "0.875rem",
-  fontWeight: 500,
-  color: "#b45309",
-  textDecoration: "none",
-} satisfies React.CSSProperties;
-
-// ─── Details/summary styles ────────────────────────────────────────────────────
-
-const detailsStyle = {
-  borderRadius: "12px",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
-  overflow: "hidden",
-} satisfies React.CSSProperties;
-
-const detailsSummaryStyle = {
-  padding: "0.6rem 1rem",
-  fontSize: "0.82rem",
-  fontWeight: 500,
-  color: "var(--color-text-3)",
-  cursor: "pointer",
-  listStyle: "none",
-  display: "flex",
-  alignItems: "center",
-  gap: "0.35rem",
-  userSelect: "none" as const,
-} satisfies React.CSSProperties;
-
-const detailsContentStyle = {
-  display: "grid",
-  gap: "0.625rem",
-  padding: "0 0 0.625rem 0",
-} satisfies React.CSSProperties;
-
-// ─── Comunicacao group styles ──────────────────────────────────────────────────
-
-const comunicacaoGroupStyle = {
-  marginTop: "0.5rem",
-  padding: "0.625rem 0.75rem",
-  borderRadius: "10px",
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  display: "grid",
-  gap: "0.3rem",
-} satisfies React.CSSProperties;
-
-const comunicacaoGroupLabelStyle = {
-  margin: 0,
-  fontSize: "0.7rem",
-  fontWeight: 600,
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.1em",
-  color: "var(--color-brown-mid)",
-} satisfies React.CSSProperties;
-
-const comunicacaoRowStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.4rem",
-} satisfies React.CSSProperties;
-
-const comunicacaoItemLabelStyle = {
-  fontSize: "0.78rem",
-  color: "#44403c",
-  minWidth: "7rem",
-} satisfies React.CSSProperties;
-
-const commLinkStyle = {
-  fontSize: "0.78rem",
-  color: "#9a3412",
-  textDecoration: "none",
-  fontWeight: 500,
-  padding: "0.12rem 0.45rem",
-  borderRadius: "6px",
-  background: "rgba(255, 247, 237, 0.8)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-} satisfies React.CSSProperties;
+const commLinkStyle: React.CSSProperties = {
+  fontSize: "0.75rem", color: "#9a3412", textDecoration: "none", fontWeight: 500,
+  padding: "0.1rem 0.4rem", borderRadius: "6px",
+  background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.15)",
+};
