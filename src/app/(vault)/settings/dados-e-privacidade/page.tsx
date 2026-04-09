@@ -94,7 +94,7 @@ const heroStyle = {
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-2)",
   border: "1px solid var(--color-border-med)",
-  boxShadow: "0 28px 90px rgba(120, 53, 15, 0.12)",
+  boxShadow: "var(--shadow-2xl)",
 } satisfies React.CSSProperties;
 
 const eyebrowStyle = {

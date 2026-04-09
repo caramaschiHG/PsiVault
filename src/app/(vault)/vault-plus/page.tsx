@@ -119,7 +119,7 @@ const cardStyle = {
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-2)",
   border: "1px solid var(--color-border-med)",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.05)",
+  boxShadow: "var(--shadow-card-elevated)",
   display: "flex",
   flexDirection: "column",
   gap: "1.5rem",

@@ -113,7 +113,7 @@ export function UpdateNotification() {
           background: "var(--color-surface-0, #fff)",
           borderRadius: "var(--radius-xl, 16px)",
           border: "1px solid var(--color-border, #e7e5e4)",
-          boxShadow: "0 24px 48px rgba(0, 0, 0, 0.12)",
+          boxShadow: "var(--shadow-xl)",
           zIndex: "var(--z-toast)",
           padding: "1.5rem",
           animation: "slideUp 250ms ease-out",

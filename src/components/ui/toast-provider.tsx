@@ -100,7 +100,7 @@ const toastStyle = {
   color: "#fff7ed",
   fontSize: "0.875rem",
   borderLeft: "3px solid transparent",
-  boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+  boxShadow: "var(--shadow-md)",
   transition: "opacity 0.5s ease",
   maxWidth: "320px",
   lineHeight: 1.4,

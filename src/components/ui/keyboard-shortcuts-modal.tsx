@@ -40,7 +40,7 @@ export function KeyboardShortcutsModal({ groups, open, onOpenChange }: {
         onClick={(e) => e.stopPropagation()}
         style={{
           background: "var(--color-surface-1)", borderRadius: "20px", border: "1px solid rgba(146,64,14,0.15)",
-          boxShadow: "0 25px 60px rgba(0,0,0,0.2)", maxWidth: 540, width: "90vw",
+          boxShadow: "var(--shadow-xl)", maxWidth: 540, width: "90vw",
           maxHeight: "80vh", overflow: "auto", padding: "1.5rem",
         }}
       >

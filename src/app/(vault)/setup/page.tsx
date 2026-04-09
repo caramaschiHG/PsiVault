@@ -109,7 +109,7 @@ const copyBlockStyle = {
   background:
     "linear-gradient(145deg, rgba(255, 251, 245, 0.98), rgba(251, 241, 224, 0.96))",
   border: "1px solid rgba(146, 64, 14, 0.14)",
-  boxShadow: "0 28px 90px rgba(120, 53, 15, 0.14)",
+  boxShadow: "var(--shadow-2xl)",
 } satisfies React.CSSProperties;
 
 const contentGridStyle = {
@@ -126,7 +126,7 @@ const summaryCardStyle = {
   borderRadius: "var(--radius-xl)",
   background: "rgba(125, 53, 15, 0.94)",
   color: "#fff7ed",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.24)",
+  boxShadow: "var(--shadow-xl)",
   display: "grid",
   gap: "0.9rem",
 } satisfies React.CSSProperties;
@@ -192,7 +192,7 @@ const sidebarCardStyle = {
   borderRadius: "var(--radius-xl)",
   background: "rgba(255, 252, 247, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.14)",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
+  boxShadow: "var(--shadow-card-elevated)",
   display: "grid",
   gap: "0.9rem",
 } satisfies React.CSSProperties;

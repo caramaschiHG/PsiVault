@@ -113,6 +113,14 @@
   --shadow-md:  0 4px 16px rgba(120, 53, 15, 0.08), 0 2px 6px rgba(120, 53, 15, 0.04);
   --shadow-lg:  0 12px 40px rgba(120, 53, 15, 0.12), 0 4px 12px rgba(120, 53, 15, 0.06);
   --shadow-xl:  0 24px 60px rgba(120, 53, 15, 0.16), 0 8px 20px rgba(120, 53, 15, 0.08);
+  --shadow-2xl: 0 28px 90px rgba(120, 53, 15, 0.14);  /* Large modals, setup cards */
+
+  /* Component-specific shadows */
+  --shadow-side-panel: -4px 0 24px rgba(0,0,0,0.1);
+  --shadow-fab: 0 4px 16px rgba(154, 52, 18, 0.35);
+  --shadow-dropdown: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-card-subtle: 0 8px 24px rgba(120, 53, 15, 0.06);
+  --shadow-card-elevated: 0 22px 64px rgba(120, 53, 15, 0.1);
 
   /* ═══════════════════════════════════════════════════════════════
      SURFACES — 3 níveis de elevação visual

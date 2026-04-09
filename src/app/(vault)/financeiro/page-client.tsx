@@ -989,7 +989,7 @@ const paymentPopoverStyle: React.CSSProperties = {
   borderRadius: "var(--radius-md, 8px)",
   background: "#fff",
   border: "1px solid var(--color-border, #e5e5e5)",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+  boxShadow: "var(--shadow-dropdown)",
   minWidth: 200,
 };
 

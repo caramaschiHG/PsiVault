@@ -225,7 +225,7 @@ const heroStyle = {
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-2)",
   border: "1px solid var(--color-border-med)",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
+  boxShadow: "var(--shadow-card-elevated)",
 } satisfies React.CSSProperties;
 
 const gridStyle = {
@@ -240,7 +240,7 @@ const formCardStyle = {
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-2)",
   border: "1px solid var(--color-border-med)",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
+  boxShadow: "var(--shadow-card-elevated)",
   display: "grid",
   gap: "1.5rem",
 } satisfies React.CSSProperties;
@@ -255,7 +255,7 @@ const sideCardStyle = {
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-2)",
   border: "1px solid var(--color-border-med)",
-  boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
+  boxShadow: "var(--shadow-card-elevated)",
   display: "grid",
   gap: "1.5rem",
   alignContent: "start",

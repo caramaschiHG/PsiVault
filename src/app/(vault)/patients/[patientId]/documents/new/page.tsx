@@ -400,7 +400,7 @@ const typeCardStyle = {
   background: "linear-gradient(180deg, rgba(255, 253, 250, 0.98) 0%, rgba(250, 247, 243, 0.96) 100%)",
   border: "1px solid rgba(146, 64, 14, 0.1)",
   textDecoration: "none",
-  boxShadow: "0 10px 24px rgba(28, 25, 23, 0.04)",
+  boxShadow: "var(--shadow-card-subtle)",
   minHeight: "196px",
   alignContent: "start",
 } satisfies React.CSSProperties;
@@ -453,7 +453,7 @@ const gateNoticeStyle = {
   borderRadius: "var(--radius-lg)",
   background: "rgba(255, 252, 247, 0.95)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
-  boxShadow: "0 2px 8px rgba(120, 53, 15, 0.04)",
+  boxShadow: "var(--shadow-xs)",
   display: "grid",
   gap: "1rem",
 } satisfies React.CSSProperties;

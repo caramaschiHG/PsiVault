@@ -181,7 +181,7 @@ const sessionHeaderStyle = {
   borderRadius: "var(--radius-lg)",
   background: "rgba(255, 252, 247, 0.95)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
-  boxShadow: "0 2px 8px rgba(120, 53, 15, 0.04)",
+  boxShadow: "var(--shadow-card-subtle)",
   display: "grid",
   gap: "0.4rem",
 } satisfies React.CSSProperties;

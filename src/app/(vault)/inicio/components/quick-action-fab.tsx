@@ -25,7 +25,7 @@ const fabButtonStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  boxShadow: "0 4px 16px rgba(154, 52, 18, 0.35)",
+  boxShadow: "var(--shadow-fab)",
   transition: "transform 120ms ease",
 } satisfies React.CSSProperties;
 
@@ -44,7 +44,7 @@ const fabItemStyle = {
   fontSize: "0.875rem",
   color: "var(--color-text-1)",
   textDecoration: "none",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  boxShadow: "var(--shadow-sm)",
   whiteSpace: "nowrap" as const,
   transition: "background 120ms ease",
 } satisfies React.CSSProperties;
