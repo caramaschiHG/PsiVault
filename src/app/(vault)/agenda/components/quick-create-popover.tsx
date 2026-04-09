@@ -297,7 +297,7 @@ const careModeSelectedStyle = {
 
 const errorStyle = {
   fontSize: "0.75rem",
-  color: "#dc2626",
+  color: "var(--color-error-text)",
   margin: 0,
 } satisfies React.CSSProperties;
 
@@ -312,7 +312,7 @@ const submitButtonStyle = {
   borderRadius: "8px",
   border: "none",
   background: "var(--color-accent)",
-  color: "#fff7ed",
+  color: "var(--color-surface-0)",
   fontSize: "0.85rem",
   fontWeight: 600,
   cursor: "pointer",

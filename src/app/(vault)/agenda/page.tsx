@@ -791,7 +791,7 @@ const newApptButtonStyle = {
   padding: "0.625rem 1.25rem",
   borderRadius: "var(--radius-md)",
   background: "var(--color-accent)",
-  color: "#fff7ed",
+  color: "var(--color-surface-0)",
   textDecoration: "none",
   fontWeight: 700,
   fontSize: "0.9rem",
@@ -860,7 +860,7 @@ const comunicacaoItemLabelStyle = {
 
 const commLinkStyle = {
   fontSize: "0.8rem",
-  color: "#9a3412",
+  color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 500,
   padding: "0.15rem 0.55rem",
@@ -975,8 +975,8 @@ const overdueAlertStyle = {
   gap: "0.75rem",
   padding: "0.75rem 1rem",
   borderRadius: "var(--radius-md)",
-  background: "#fef2f2",
-  border: "1px solid #fecaca",
+  background: "var(--color-error-bg)",
+  border: "1px solid var(--color-error-border)",
   marginBottom: "0.5rem",
 } satisfies React.CSSProperties;
 
@@ -996,10 +996,10 @@ const overdueContentStyle = {
 const overdueTextStyle = {
   fontSize: "0.82rem",
   fontWeight: 600,
-  color: "#991b1b",
+  color: "var(--color-error-text)",
 } satisfies React.CSSProperties;
 
 const overdueNamesStyle = {
   fontSize: "0.78rem",
-  color: "#b91c1c",
+  color: "var(--color-error-text)",
 } satisfies React.CSSProperties;

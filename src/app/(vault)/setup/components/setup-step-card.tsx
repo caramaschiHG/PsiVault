@@ -37,7 +37,7 @@ export function SetupStepCard({
           <span
             style={{
               ...chipStyle,
-              color: step.required ? "#9a3412" : "#57534e",
+              color: step.required ? "var(--color-accent)" : "var(--color-text-2)",
               background: step.required
                 ? "rgba(251, 191, 36, 0.18)"
                 : "rgba(214, 211, 209, 0.4)",
@@ -80,8 +80,8 @@ const indexBadgeStyle = {
   width: "2.75rem",
   height: "2.75rem",
   borderRadius: "999px",
-  background: "#7c2d12",
-  color: "#fff7ed",
+  background: "var(--color-accent-hover)",
+  color: "var(--color-surface-0)",
   display: "grid",
   placeItems: "center",
   fontWeight: 700,
@@ -133,12 +133,12 @@ const missingTitleStyle = {
 const missingListStyle = {
   margin: "0.55rem 0 0",
   paddingLeft: "1.15rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
 const completeCopyStyle = {
   margin: 0,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;

@@ -40,7 +40,7 @@ export function PatientConfigTab({ patient, patientName }: PatientConfigTabProps
             Somente neste perfil
           </p>
           <h2 style={{ margin: 0, fontSize: "1.15rem" }}>Observações importantes</h2>
-          <p style={{ margin: 0, lineHeight: 1.7, color: "#44403c", whiteSpace: "pre-wrap" }}>
+          <p style={{ margin: 0, lineHeight: 1.7, color: "var(--color-warm-brown)", whiteSpace: "pre-wrap" }}>
             {patient.importantObservations}
           </p>
         </section>

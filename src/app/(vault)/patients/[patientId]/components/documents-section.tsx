@@ -55,7 +55,7 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
           {isPrivate && (
             <span style={{
               display: "inline-block", padding: "0.08rem 0.4rem", borderRadius: "999px",
-              background: "rgba(146,64,14,0.1)", color: "#92400e", fontSize: "0.68rem",
+              background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)", fontSize: "0.68rem",
               fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em",
             }}>Privado</span>
           )}
@@ -76,7 +76,7 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
             <div style={{
               position: "absolute", right: 0, top: "100%", zIndex: "var(--z-dropdown)",
               display: "flex", gap: "0.3rem", padding: "0.4rem",
-              borderRadius: "8px", background: "#fff", border: "1px solid rgba(146,64,14,0.15)",
+              borderRadius: "8px", background: "var(--color-surface-0)", border: "1px solid rgba(146,64,14,0.15)",
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
             }}>
               <a href={waUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "6px", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>WhatsApp</a>
@@ -106,7 +106,7 @@ function TypeGroup({ type, docs, patientName, patientPhone }: { type: DocumentTy
         <span style={{
           display: "inline-flex", alignItems: "center", justifyContent: "center",
           minWidth: "1.4rem", height: "1.4rem", padding: "0 0.35rem",
-          borderRadius: "999px", background: "rgba(146,64,14,0.1)", color: "#92400e",
+          borderRadius: "999px", background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)",
           fontSize: "0.7rem", fontWeight: 600,
         }}>
           {docs.length}

@@ -111,7 +111,7 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
           {doc.archivedAt && (
             <div style={metaRowStyle}>
               <span style={metaLabelStyle}>Arquivado em</span>
-              <span style={{ ...metaValueStyle, color: "#9f1239" }}>
+              <span style={{ ...metaValueStyle, color: "var(--color-rose)" }}>
                 {longDateFormatter.format(doc.archivedAt)}
               </span>
             </div>
@@ -227,19 +227,19 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   margin: 0,
   fontSize: "1.5rem",
-  color: "#292524",
+  color: "var(--color-kbd-text)",
 } satisfies React.CSSProperties;
 
 const privateNoticeStyle = {
   margin: 0,
   fontSize: "0.88rem",
-  color: "#92400e",
+  color: "var(--color-warning-text)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -261,7 +261,7 @@ const metaLabelStyle = {
 } satisfies React.CSSProperties;
 
 const metaValueStyle = {
-  color: "#292524",
+  color: "var(--color-kbd-text)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -277,13 +277,13 @@ const contentPreStyle = {
   fontFamily: "inherit",
   fontSize: "0.95rem",
   lineHeight: 1.75,
-  color: "#292524",
+  color: "var(--color-kbd-text)",
   whiteSpace: "pre-wrap" as const,
   wordBreak: "break-word" as const,
 } satisfies React.CSSProperties;
 
 const contentRichStyle = {
-  color: "#292524",
+  color: "var(--color-kbd-text)",
   fontSize: "0.95rem",
   lineHeight: 1.75,
 } satisfies React.CSSProperties;
@@ -298,7 +298,7 @@ const actionsStyle = {
 const downloadLinkStyle = {
   fontSize: "0.875rem",
   fontWeight: 500,
-  color: "#9a3412",
+  color: "var(--color-accent)",
   textDecoration: "none",
   padding: "0.45rem 1rem",
   borderRadius: "999px",

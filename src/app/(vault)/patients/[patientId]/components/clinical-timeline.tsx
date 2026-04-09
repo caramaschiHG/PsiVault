@@ -69,11 +69,11 @@ function groupByMonth(entries: TimelineEntry[]): [string, TimelineEntry[]][] {
 
 function StatusBadge({ status }: { status: TimelineEntry["status"] }) {
   const config = {
-    COMPLETED: { label: "Concluída", bg: "rgba(245,235,220,0.9)", color: "#92400e" },
-    SCHEDULED: { label: "Agendada", bg: "rgba(240,253,244,0.9)", color: "#166534" },
-    CONFIRMED: { label: "Confirmada", bg: "rgba(240,253,244,0.9)", color: "#166534" },
-    CANCELED: { label: "Cancelada", bg: "rgba(241,245,249,0.9)", color: "#64748b" },
-    NO_SHOW: { label: "Não compareceu", bg: "rgba(255,241,242,0.9)", color: "#9f1239" },
+    COMPLETED: { label: "Concluída", bg: "rgba(245,235,220,0.9)", color: "var(--color-warning-text)" },
+    SCHEDULED: { label: "Agendada", bg: "rgba(240,253,244,0.9)", color: "var(--color-success-text)" },
+    CONFIRMED: { label: "Confirmada", bg: "rgba(240,253,244,0.9)", color: "var(--color-success-text)" },
+    CANCELED: { label: "Cancelada", bg: "rgba(241,245,249,0.9)", color: "var(--color-slate)" },
+    NO_SHOW: { label: "Não compareceu", bg: "rgba(255,241,242,0.9)", color: "var(--color-rose)" },
   }[status];
 
   return (
@@ -93,7 +93,7 @@ function NoteBadge({ hasNote }: { hasNote: boolean }) {
       display: "inline-flex", alignItems: "center", gap: "0.2rem",
       padding: "0.15rem 0.55rem", borderRadius: "999px",
       fontSize: "0.7rem", fontWeight: 500,
-      background: "rgba(219,234,254,0.9)", color: "#1e40af",
+      background: "rgba(219,234,254,0.9)", color: "var(--color-note-blue)",
     }}>
       <span style={{ fontSize: "0.65rem" }}>📝</span> Prontuário
     </span>
@@ -120,12 +120,12 @@ function ComunicacaoGroup({ patientName, patientPhone, startsAt }: {
       </summary>
       <div style={{ display: "grid", gap: "0.4rem", marginTop: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "0.75rem", color: "#44403c", minWidth: "6rem" }}>Lembrete</span>
+          <span style={{ fontSize: "0.75rem", color: "var(--color-warm-brown)", minWidth: "6rem" }}>Lembrete</span>
           <a href={reminderWA} target="_blank" rel="noreferrer" style={commLinkStyle}>WhatsApp</a>
           <a href={reminderMail} target="_blank" rel="noreferrer" style={commLinkStyle}>Email</a>
         </div>
         <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "0.75rem", color: "#44403c", minWidth: "6rem" }}>Reagendamento</span>
+          <span style={{ fontSize: "0.75rem", color: "var(--color-warm-brown)", minWidth: "6rem" }}>Reagendamento</span>
           <a href={rescheduleWA} target="_blank" rel="noreferrer" style={commLinkStyle}>WhatsApp</a>
           <a href={rescheduleMail} target="_blank" rel="noreferrer" style={commLinkStyle}>Email</a>
         </div>
@@ -143,8 +143,8 @@ function CompletedEntryCard({ entry, patientId }: { entry: TimelineEntry; patien
     <div style={entryCardStyle}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.4rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
-          <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "#1c1917" }}>{sessionLabel}</span>
-          <span style={{ fontSize: "0.85rem", color: "#57534e" }}>{formatDate(entry.startsAt)}</span>
+          <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--color-text-1)" }}>{sessionLabel}</span>
+          <span style={{ fontSize: "0.85rem", color: "var(--color-text-2)" }}>{formatDate(entry.startsAt)}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
           <StatusBadge status="COMPLETED" />
@@ -177,7 +177,7 @@ function ScheduledEntryCard({ entry, patientName, patientPhone }: { entry: Timel
   return (
     <div style={{ ...entryCardStyle, borderColor: "rgba(22,101,52,0.2)", background: "rgba(240,253,244,0.6)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.4rem" }}>
-        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "#1c1917" }}>{formatDate(entry.startsAt)}</span>
+        <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--color-text-1)" }}>{formatDate(entry.startsAt)}</span>
         <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
           <StatusBadge status={entry.status} />
         </div>
@@ -249,7 +249,7 @@ export function ClinicalTimeline({ patientId, upcoming, completed, dismissed, pa
   return (
     <section style={{ display: "grid", gap: "0.75rem" }}>
       <div style={{ display: "grid", gap: "0.25rem" }}>
-        <p style={{ margin: 0, textTransform: "uppercase", letterSpacing: "0.14em", fontSize: "0.72rem", color: "#b45309" }}>Histórico clínico</p>
+        <p style={{ margin: 0, textTransform: "uppercase", letterSpacing: "0.14em", fontSize: "0.72rem", color: "var(--color-brown-mid)" }}>Histórico clínico</p>
         <h2 style={{ margin: 0, fontSize: "1.4rem" }}>Linha do tempo</h2>
       </div>
 
@@ -315,15 +315,15 @@ const entryCardStyle: React.CSSProperties = {
 };
 
 const actionLinkStyle: React.CSSProperties = {
-  fontSize: "0.85rem", fontWeight: 500, color: "#9a3412", textDecoration: "none",
+  fontSize: "0.85rem", fontWeight: 500, color: "var(--color-accent)", textDecoration: "none",
 };
 
 const actionLinkPrimaryStyle: React.CSSProperties = {
-  fontSize: "0.85rem", fontWeight: 600, color: "#b45309", textDecoration: "none",
+  fontSize: "0.85rem", fontWeight: 600, color: "var(--color-brown-mid)", textDecoration: "none",
 };
 
 const commLinkStyle: React.CSSProperties = {
-  fontSize: "0.75rem", color: "#9a3412", textDecoration: "none", fontWeight: 500,
+  fontSize: "0.75rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500,
   padding: "0.1rem 0.4rem", borderRadius: "6px",
   background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.15)",
 };

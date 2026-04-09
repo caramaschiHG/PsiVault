@@ -420,7 +420,7 @@ const cropAreaStyle = {
   height: "240px",
   borderRadius: "8px",
   overflow: "hidden",
-  background: "#1e1b18",
+  background: "var(--color-overlay-bg)",
 } satisfies React.CSSProperties;
 
 // Fix 1: spinner sutil, sem texto — completamente silencioso visualmente
@@ -430,7 +430,7 @@ const silentDetectStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: "#1e1b18",
+  background: "var(--color-overlay-bg)",
   zIndex: "var(--z-base)",
 } satisfies React.CSSProperties;
 
@@ -442,7 +442,7 @@ const loadingOverlayStyle = {
   alignItems: "center",
   justifyContent: "center",
   gap: "0.65rem",
-  background: "#1e1b18",
+  background: "var(--color-overlay-bg)",
   zIndex: "var(--z-base)",
 } satisfies React.CSSProperties;
 
@@ -467,7 +467,7 @@ const resultPanelBase = {
   alignItems: "center",
   minHeight: "130px",
   justifyContent: "center",
-  background: "#fffcf7",
+  background: "var(--color-surface-1)",
 } satisfies React.CSSProperties;
 
 // Painel "Original" — dashed border, fundo levemente cinza-quente
@@ -480,7 +480,7 @@ const resultPanelOriginalStyle = {
 // Painel "Digitalizada" — solid border + shadow: é o output, hierarquia visual superior
 const resultPanelDigitalStyle = {
   ...resultPanelBase,
-  background: "#fffcf7",
+  background: "var(--color-surface-1)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   boxShadow: "var(--shadow-sm)",
 } satisfies React.CSSProperties;
@@ -586,6 +586,6 @@ const warningStyle = {
 const errorStyle = {
   margin: 0,
   fontSize: "0.82rem",
-  color: "#9f1239",
+  color: "var(--color-rose)",
   fontWeight: 500,
 } satisfies React.CSSProperties;

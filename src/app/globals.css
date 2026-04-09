@@ -188,6 +188,32 @@
   --charge-pending-text: #92400e;
   --charge-overdue-bg:   rgba(239, 68, 68, 0.1);
   --charge-overdue-text: #991b1b;
+
+  /* Component-specific */
+  --color-rose:            #9f1239;
+  --color-warm-brown:      #44403c;
+  --color-kbd-text:        #292524;
+  --color-kbd-border:      #d6d3d1;
+  --color-kbd-bg:          #f5f5f4;
+  --color-slate:           #64748b;
+  --color-forest:          #2d6a4f;
+  --color-overlay-bg:      #1e1b18;
+  --color-deep-brown:      #3d2b1a;
+  --color-very-dark:       #1a0f00;
+  --color-taupe:           #d4c5b5;
+  --color-teal:            #2d7d6f;
+  --color-brown:           #7c5c3a;
+  --color-amber-dark:      #78350f;
+  --color-surface-warm:    #fafaf8;
+  --color-surface-warm2:   #f5f0eb;
+  --color-surface-peach:   #f5ebe0;
+  --color-border-light:    #e5e5e5;
+  --color-note-blue:       #1e40af;
+  --color-emerald:         #047857;
+  --color-warm-brown2:     #6b4c30;
+  --color-surface-cream:   #fffdf9;
+  --color-border-warm:     #e8ddd0;
+  --color-border-warm2:    #e7e5e4;
 }
 
 /* ─── WCAG AA Contrast Verification (2026-03-21) ──────────────────────────────────

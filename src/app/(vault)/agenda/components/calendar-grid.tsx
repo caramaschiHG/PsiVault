@@ -251,7 +251,7 @@ function CurrentTimeIndicator({
         left: 0,
         right: 0,
         height: "2px",
-        background: "#dc2626",
+        background: "var(--color-error-text)",
         zIndex: "var(--z-base)",
         pointerEvents: "none",
       }}
@@ -265,7 +265,7 @@ function CurrentTimeIndicator({
           width: "8px",
           height: "8px",
           borderRadius: "50%",
-          background: "#dc2626",
+          background: "var(--color-error-text)",
         }}
       />
     </div>

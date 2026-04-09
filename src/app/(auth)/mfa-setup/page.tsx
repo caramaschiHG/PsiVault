@@ -244,7 +244,7 @@ export default function MfaSetupPage() {
                   style={
                     {
                       padding: "0.75rem",
-                      background: "#fff",
+                      background: "var(--color-surface-0)",
                       borderRadius: "12px",
                       border: "1px solid var(--color-border)",
                       display: "inline-block",
@@ -269,7 +269,7 @@ export default function MfaSetupPage() {
                     {
                       width: 200,
                       height: 200,
-                      background: "#f5f0eb",
+                      background: "var(--color-surface-warm2)",
                       borderRadius: "12px",
                       display: "flex",
                       alignItems: "center",
@@ -415,7 +415,7 @@ export default function MfaSetupPage() {
                 style={
                   {
                     height: "100%",
-                    background: "#166534",
+                    background: "var(--color-success-text)",
                     borderRadius: "999px",
                     animation: "auth-progress-bar 1.5s ease forwards",
                   } satisfies React.CSSProperties

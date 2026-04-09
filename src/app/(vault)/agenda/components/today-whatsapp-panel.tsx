@@ -391,7 +391,7 @@ const sentBadgeStyle = {
 const noPhoneStyle = {
   margin: 0,
   fontSize: "0.775rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
   borderTop: "1px solid var(--color-border)",
   paddingTop: "0.75rem",
 } satisfies React.CSSProperties;

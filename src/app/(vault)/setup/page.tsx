@@ -202,7 +202,7 @@ const sidebarEyebrowStyle = {
   textTransform: "uppercase",
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const eyebrowStyle = {
@@ -210,7 +210,7 @@ const eyebrowStyle = {
   textTransform: "uppercase",
   letterSpacing: "0.18em",
   fontSize: "0.75rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -222,7 +222,7 @@ const titleStyle = {
 const copyStyle = {
   marginTop: 0,
   lineHeight: 1.6,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   maxWidth: "58ch",
 } satisfies React.CSSProperties;
 
@@ -235,7 +235,7 @@ const sidebarTitleStyle = {
 const sidebarCopyStyle = {
   margin: 0,
   lineHeight: 1.6,
-  color: "#57534e",
+  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const sidebarListStyle = {
@@ -248,7 +248,7 @@ const sidebarListItemStyle = {
   borderRadius: "16px",
   background: "rgba(255, 255, 255, 0.78)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
-  color: "#44403c",
+  color: "var(--color-warm-brown)",
 } satisfies React.CSSProperties;
 
 const sidebarLinkStyle = {
@@ -257,8 +257,8 @@ const sidebarLinkStyle = {
   alignItems: "center",
   padding: "0.95rem 1.1rem",
   borderRadius: "16px",
-  background: "#9a3412",
-  color: "#fff7ed",
+  background: "var(--color-accent)",
+  color: "var(--color-surface-0)",
   fontWeight: 700,
   textDecoration: "none",
 } satisfies React.CSSProperties;

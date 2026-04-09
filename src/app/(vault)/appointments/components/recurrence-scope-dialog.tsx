@@ -104,7 +104,7 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const sectionTitleStyle = {
@@ -131,7 +131,7 @@ const optionLabelStyle = {
   padding: "1rem 1.25rem",
   borderRadius: "16px",
   border: "1px solid rgba(120, 53, 15, 0.12)",
-  background: "#fff7ed",
+  background: "var(--color-surface-0)",
   cursor: "pointer",
 } satisfies React.CSSProperties;
 

@@ -65,7 +65,7 @@ const shellStyle = {
 const sidebarStyle = {
   width: "240px",
   minHeight: "100vh",
-  backgroundColor: "#2d1810",
+  backgroundColor: "var(--color-sidebar-bg)",
   borderRight: "none",
   display: "flex",
   flexDirection: "column",

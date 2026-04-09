@@ -161,7 +161,7 @@ const baseBtnStyle = {
 const dangerButtonStyle = {
   ...baseBtnStyle,
   background: "transparent",
-  color: "#9f1239",
+  color: "var(--color-rose)",
   borderColor: "rgba(159, 18, 57, 0.3)",
 } satisfies React.CSSProperties;
 

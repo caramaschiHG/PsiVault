@@ -42,7 +42,7 @@ const fabItemStyle = {
   borderRadius: 12,
   padding: "0.6rem 1rem",
   fontSize: "0.875rem",
-  color: "#1c1917",
+  color: "var(--color-text-1)",
   textDecoration: "none",
   boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
   whiteSpace: "nowrap" as const,

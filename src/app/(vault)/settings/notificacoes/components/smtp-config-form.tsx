@@ -265,7 +265,7 @@ const successMsgStyle = {
   background: "#f0fdf4",
   border: "1px solid #bbf7d0",
   fontSize: "0.85rem",
-  color: "#166534",
+  color: "var(--color-success-text)",
 } satisfies React.CSSProperties;
 
 const errorMsgStyle = {

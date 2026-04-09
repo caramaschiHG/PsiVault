@@ -67,35 +67,35 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
     paddingLeft: 42,
     fontSize: 11,
-    color: "#1c1917",
+    color: "var(--color-text-1)",
     fontFamily: "Helvetica",
-    backgroundColor: "#fffdf8",
+    backgroundColor: "var(--color-surface-1)",
   },
   header: {
     marginBottom: 20,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "#d6d3d1",
+    borderBottomColor: "var(--color-kbd-border)",
   },
   kicker: {
     marginBottom: 6,
     fontSize: 9,
     textTransform: "uppercase",
     letterSpacing: 1.2,
-    color: "#9a3412",
+    color: "var(--color-accent)",
   },
   title: {
     marginBottom: 10,
     fontSize: 18,
     fontFamily: "Helvetica-Bold",
-    color: "#292524",
+    color: "var(--color-kbd-text)",
   },
   metaBlock: {
     gap: 4,
   },
   metaLine: {
     fontSize: 10,
-    color: "#57534e",
+    color: "var(--color-text-2)",
     lineHeight: 1.4,
   },
   contentBlock: {
@@ -121,6 +121,6 @@ const styles = StyleSheet.create({
   },
   signatureCaption: {
     fontSize: 10,
-    color: "#44403c",
+    color: "var(--color-warm-brown)",
   },
 });

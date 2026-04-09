@@ -108,25 +108,25 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const cardTitleStyle = {
   margin: 0,
   fontSize: "1.1rem",
   fontWeight: 700,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const cardCopyStyle = {
   margin: 0,
   fontSize: "0.9rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
 const patientNameStyle = {
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const defaultsPreviewStyle = {
@@ -144,20 +144,20 @@ const previewLabelStyle = {
   fontSize: "0.72rem",
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const previewValueStyle = {
   fontSize: "0.93rem",
   fontWeight: 700,
-  color: "#78350f",
+  color: "var(--color-amber-dark)",
 } satisfies React.CSSProperties;
 
 const noDateNoteStyle = {
   margin: 0,
   fontSize: "0.8rem",
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   fontStyle: "italic" as const,
 } satisfies React.CSSProperties;
 
@@ -166,8 +166,8 @@ const ctaButtonStyle = {
   alignItems: "center",
   padding: "0.85rem 1.4rem",
   borderRadius: "16px",
-  background: "#9a3412",
-  color: "#fff7ed",
+  background: "var(--color-accent)",
+  color: "var(--color-surface-0)",
   textDecoration: "none",
   fontWeight: 700,
   fontSize: "0.93rem",

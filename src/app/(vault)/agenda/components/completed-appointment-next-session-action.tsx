@@ -55,7 +55,7 @@ const actionLinkStyle = {
   borderRadius: "12px",
   background: "rgba(255, 247, 237, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
-  color: "#92400e",
+  color: "var(--color-warning-text)",
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "0.85rem",

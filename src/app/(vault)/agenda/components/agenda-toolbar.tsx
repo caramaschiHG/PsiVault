@@ -119,7 +119,7 @@ const navButtonStyle = {
   borderRadius: "50%",
   background: "rgba(255, 247, 237, 0.8)",
   border: "1px solid rgba(146, 64, 14, 0.16)",
-  color: "#78350f",
+  color: "var(--color-amber-dark)",
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "1rem",
@@ -129,7 +129,7 @@ const navButtonStyle = {
 const periodLabelStyle = {
   fontWeight: 700,
   fontSize: "1.05rem",
-  color: "#1c1917",
+  color: "var(--color-text-1)",
   minWidth: "10rem",
   textAlign: "center" as const,
 } satisfies React.CSSProperties;
@@ -139,7 +139,7 @@ const todayButtonStyle = {
   borderRadius: "12px",
   background: "transparent",
   border: "1px solid rgba(146, 64, 14, 0.2)",
-  color: "#92400e",
+  color: "var(--color-warning-text)",
   textDecoration: "none",
   fontWeight: 600,
   fontSize: "0.85rem",
@@ -163,6 +163,6 @@ const viewTabStyle = {
 } satisfies React.CSSProperties;
 
 const activeViewTabStyle = {
-  background: "#9a3412",
-  color: "#fff7ed",
+  background: "var(--color-accent)",
+  color: "var(--color-surface-0)",
 } satisfies React.CSSProperties;

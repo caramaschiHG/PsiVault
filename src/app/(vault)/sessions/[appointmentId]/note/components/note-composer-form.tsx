@@ -122,13 +122,13 @@ export function NoteComposerForm({
           </p>
           {TEMPLATES.map((t) => (
             <button key={t.id} type="button" onClick={() => applyTemplate(t.id)} style={templateCardStyle}>
-              <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1c1917" }}>{t.label}</span>
+              <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--color-text-1)" }}>{t.label}</span>
               <span style={{ fontSize: "0.78rem", color: "var(--color-text-3)" }}>{t.desc}</span>
             </button>
           ))}
           {!existingNote && (
             <button type="button" onClick={() => setShowTemplates(false)} style={{ ...templateCardStyle, opacity: 0.6 }}>
-              <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "#57534e" }}>Começar em branco</span>
+              <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "var(--color-text-2)" }}>Começar em branco</span>
             </button>
           )}
         </div>
@@ -192,13 +192,13 @@ const templateGridStyle: React.CSSProperties = { display: "grid", gridTemplateCo
 const templateCardStyle: React.CSSProperties = { display: "grid", gap: "0.15rem", padding: "0.75rem 1rem", borderRadius: "12px", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.95)", cursor: "pointer", textAlign: "left", transition: "border-color 120ms ease, box-shadow 120ms ease" };
 
 const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.4rem" };
-const labelStyle: React.CSSProperties = { fontSize: "0.875rem", fontWeight: 600, color: "#1c1917" };
-const primaryTextareaStyle: React.CSSProperties = { width: "100%", minHeight: "200px", padding: "0.875rem 1rem", borderRadius: "12px", border: "1px solid rgba(146,64,14,0.2)", background: "rgba(255,252,247,0.95)", fontSize: "0.95rem", color: "#1c1917", resize: "vertical", fontFamily: "inherit", lineHeight: "1.6", outline: "none", boxSizing: "border-box" };
+const labelStyle: React.CSSProperties = { fontSize: "0.875rem", fontWeight: 600, color: "var(--color-text-1)" };
+const primaryTextareaStyle: React.CSSProperties = { width: "100%", minHeight: "200px", padding: "0.875rem 1rem", borderRadius: "12px", border: "1px solid rgba(146,64,14,0.2)", background: "rgba(255,252,247,0.95)", fontSize: "0.95rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.6", outline: "none", boxSizing: "border-box" };
 
 const optionalSectionStyle: React.CSSProperties = { display: "grid", gap: "1rem", padding: "1.25rem", borderRadius: "16px", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.8)" };
-const optionalSectionHeadingStyle: React.CSSProperties = { margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "#a8a29e", textTransform: "uppercase", letterSpacing: "0.1em" };
+const optionalSectionHeadingStyle: React.CSSProperties = { margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-4)", textTransform: "uppercase", letterSpacing: "0.1em" };
 const optionalFieldsGridStyle: React.CSSProperties = { display: "grid", gap: "1rem" };
-const secondaryTextareaStyle: React.CSSProperties = { width: "100%", padding: "0.75rem 0.875rem", borderRadius: "10px", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.9)", fontSize: "0.875rem", color: "#1c1917", resize: "vertical", fontFamily: "inherit", lineHeight: "1.55", outline: "none", boxSizing: "border-box" };
+const secondaryTextareaStyle: React.CSSProperties = { width: "100%", padding: "0.75rem 0.875rem", borderRadius: "10px", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.9)", fontSize: "0.875rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.55", outline: "none", boxSizing: "border-box" };
 
 const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
 const cancelLinkStyle: React.CSSProperties = { fontSize: "0.9rem", color: "var(--color-text-3)", textDecoration: "none", fontWeight: 500 };

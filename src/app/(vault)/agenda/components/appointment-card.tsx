@@ -17,27 +17,27 @@ import type { AgendaCard } from "../../../../lib/appointments/agenda";
 const STATUS_COLORS: Record<string, { background: string; color: string; border: string }> = {
   SCHEDULED: {
     background: "var(--status-scheduled-bg)",
-    color: "#92400e",
+    color: "var(--color-warning-text)",
     border: "var(--status-scheduled-border)",
   },
   CONFIRMED: {
     background: "var(--status-confirmed-bg)",
-    color: "#2d6a4f",
+    color: "var(--color-forest)",
     border: "var(--status-confirmed-border)",
   },
   COMPLETED: {
     background: "var(--status-completed-bg)",
-    color: "#92400e",
+    color: "var(--color-warning-text)",
     border: "var(--status-completed-border)",
   },
   CANCELED: {
     background: "var(--status-canceled-bg)",
-    color: "#64748b",
+    color: "var(--color-slate)",
     border: "var(--status-canceled-border)",
   },
   NO_SHOW: {
     background: "var(--status-no-show-bg)",
-    color: "#9f1239",
+    color: "var(--color-rose)",
     border: "var(--status-no-show-border)",
   },
 };

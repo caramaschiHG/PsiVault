@@ -191,7 +191,7 @@ const sessionEyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.12em",
   fontSize: "0.68rem",
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   fontWeight: 600,
 } satisfies React.CSSProperties;
 
@@ -205,16 +205,16 @@ const sessionMetaRowStyle = {
 const sessionLabelStyle = {
   fontWeight: 700,
   fontSize: "0.95rem",
-  color: "#1c1917",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const sessionMetaSepStyle = {
-  color: "#d6d3d1",
+  color: "var(--color-kbd-border)",
   fontSize: "0.9rem",
 } satisfies React.CSSProperties;
 
 const sessionMetaValueStyle = {
   fontSize: "0.9rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   fontWeight: 500,
 } satisfies React.CSSProperties;

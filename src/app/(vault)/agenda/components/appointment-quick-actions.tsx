@@ -242,25 +242,25 @@ const baseBtnStyle = {
 
 const confirmBtnStyle = {
   ...baseBtnStyle,
-  color: "#2d6a4f",
+  color: "var(--color-forest)",
   borderColor: "rgba(45, 106, 79, 0.35)",
 } satisfies React.CSSProperties;
 
 const completeBtnStyle = {
   ...baseBtnStyle,
-  color: "#92400e",
+  color: "var(--color-warning-text)",
   borderColor: "rgba(146, 64, 14, 0.3)",
 } satisfies React.CSSProperties;
 
 const noShowBtnStyle = {
   ...baseBtnStyle,
-  color: "#9f1239",
+  color: "var(--color-rose)",
   borderColor: "rgba(159, 18, 57, 0.3)",
 } satisfies React.CSSProperties;
 
 const cancelBtnStyle = {
   ...baseBtnStyle,
-  color: "#64748b",
+  color: "var(--color-slate)",
   borderColor: "rgba(100, 116, 139, 0.3)",
 } satisfies React.CSSProperties;
 
@@ -286,7 +286,7 @@ const completeFormStyle = {
 const completeLabelStyle = {
   fontSize: "0.82rem",
   fontWeight: 600,
-  color: "#44403c",
+  color: "var(--color-warm-brown)",
 } satisfies React.CSSProperties;
 
 const completeTextareaStyle = {
@@ -298,7 +298,7 @@ const completeTextareaStyle = {
   fontSize: "0.85rem",
   lineHeight: 1.6,
   resize: "vertical" as const,
-  color: "#1c1917",
+  color: "var(--color-text-1)",
   boxSizing: "border-box" as const,
   fontFamily: "inherit",
 } satisfies React.CSSProperties;
@@ -315,7 +315,7 @@ const cancelConfirmBtnStyle = {
   borderRadius: "10px",
   border: "1px solid rgba(159, 18, 57, 0.3)",
   background: "transparent",
-  color: "#9f1239",
+  color: "var(--color-rose)",
   fontWeight: 600,
   fontSize: "0.85rem",
   cursor: "pointer",
@@ -323,7 +323,7 @@ const cancelConfirmBtnStyle = {
 
 const completeConfirmBtnStyle = {
   ...cancelConfirmBtnStyle,
-  color: "#92400e",
+  color: "var(--color-warning-text)",
   borderColor: "rgba(146, 64, 14, 0.28)",
 } satisfies React.CSSProperties;
 
@@ -332,7 +332,7 @@ const cancelDismissBtnStyle = {
   borderRadius: "10px",
   border: "1px solid rgba(100, 116, 139, 0.25)",
   background: "transparent",
-  color: "#64748b",
+  color: "var(--color-slate)",
   fontWeight: 500,
   fontSize: "0.85rem",
   cursor: "pointer",

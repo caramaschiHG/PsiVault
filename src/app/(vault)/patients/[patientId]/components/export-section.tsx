@@ -148,7 +148,7 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -160,7 +160,7 @@ const titleStyle = {
 const descStyle = {
   margin: 0,
   fontSize: "0.875rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.65,
 } satisfies React.CSSProperties;
 
@@ -170,7 +170,7 @@ const buttonStyle = {
   borderRadius: "10px",
   border: "1px solid rgba(146, 64, 14, 0.3)",
   background: "transparent",
-  color: "#9a3412",
+  color: "var(--color-accent)",
   fontWeight: 600,
   fontSize: "0.875rem",
   cursor: "pointer",
@@ -185,7 +185,7 @@ const formStyle = {
 const formNoteStyle = {
   margin: 0,
   fontSize: "0.875rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
@@ -193,17 +193,17 @@ const labelStyle = {
   display: "grid",
   gap: "0.3rem",
   fontSize: "0.875rem",
-  color: "#44403c",
+  color: "var(--color-warm-brown)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const inputStyle = {
   padding: "0.5rem 0.75rem",
   borderRadius: "8px",
-  border: "1px solid #d4c5b5",
+  border: "1px solid var(--color-taupe)",
   fontSize: "0.9rem",
   outline: "none",
-  background: "#fffcf7",
+  background: "var(--color-surface-1)",
 } satisfies React.CSSProperties;
 
 const actionsStyle = {
@@ -216,7 +216,7 @@ const primaryButtonStyle = {
   padding: "0.5rem 1.1rem",
   borderRadius: "10px",
   border: "none",
-  background: "#9a3412",
+  background: "var(--color-accent)",
   color: "#fff",
   fontWeight: 600,
   fontSize: "0.875rem",
@@ -226,9 +226,9 @@ const primaryButtonStyle = {
 const secondaryButtonStyle = {
   padding: "0.5rem 1rem",
   borderRadius: "10px",
-  border: "1px solid #d4c5b5",
+  border: "1px solid var(--color-taupe)",
   background: "transparent",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   fontWeight: 500,
   fontSize: "0.875rem",
   cursor: "pointer",
@@ -237,5 +237,5 @@ const secondaryButtonStyle = {
 const errorStyle = {
   margin: 0,
   fontSize: "0.83rem",
-  color: "#b91c1c",
+  color: "var(--color-error-text)",
 } satisfies React.CSSProperties;

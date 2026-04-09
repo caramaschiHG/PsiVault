@@ -461,7 +461,7 @@ const gateNoticeStyle = {
 const gateNoticeTextStyle = {
   margin: 0,
   fontSize: "1rem",
-  color: "#1c1917",
+  color: "var(--color-text-1)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -469,8 +469,8 @@ const gateNoticeLinkStyle = {
   display: "inline-block",
   padding: "0.75rem 1.5rem",
   borderRadius: "12px",
-  background: "#9a3412",
-  color: "#fff7ed",
+  background: "var(--color-accent)",
+  color: "var(--color-surface-0)",
   textDecoration: "none",
   fontWeight: 700,
   fontSize: "0.95rem",

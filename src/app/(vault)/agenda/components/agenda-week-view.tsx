@@ -112,7 +112,7 @@ const todayHeadingStyle = {
 const dayNameStyle = {
   fontSize: "0.75rem",
   fontWeight: 600,
-  color: "#a8a29e",
+  color: "var(--color-text-4)",
   textTransform: "uppercase" as const,
   letterSpacing: "0.08em",
 } satisfies React.CSSProperties;
@@ -120,12 +120,12 @@ const dayNameStyle = {
 const dayNumberStyle = {
   fontSize: "1.25rem",
   fontWeight: 700,
-  color: "#44403c",
+  color: "var(--color-warm-brown)",
   lineHeight: 1.2,
 } satisfies React.CSSProperties;
 
 const todayDayNumberStyle = {
-  color: "#9a3412",
+  color: "var(--color-accent)",
 } satisfies React.CSSProperties;
 
 const dayCardsStyle = {

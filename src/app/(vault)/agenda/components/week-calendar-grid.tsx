@@ -325,7 +325,7 @@ const dayNumberStyle = {
 } satisfies React.CSSProperties;
 
 const todayDayNumberStyle = {
-  color: "#9a3412",
+  color: "var(--color-accent)",
 } satisfies React.CSSProperties;
 
 const axisStyle = {

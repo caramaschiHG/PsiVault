@@ -19,8 +19,8 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 
 const CHARGE_STATUS_COLORS: Record<ChargeStatus, { background: string; color: string }> = {
   pago: { background: "rgba(20, 83, 45, 0.1)", color: "#14532d" },
-  pendente: { background: "rgba(120, 53, 15, 0.1)", color: "#78350f" },
-  atrasado: { background: "rgba(153, 27, 27, 0.1)", color: "#991b1b" },
+  pendente: { background: "rgba(120, 53, 15, 0.1)", color: "var(--color-amber-dark)" },
+  atrasado: { background: "rgba(153, 27, 27, 0.1)", color: "var(--color-error-text)" },
 };
 
 const CHARGE_STATUS_LABELS: Record<ChargeStatus, string> = {
@@ -190,7 +190,7 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -227,7 +227,7 @@ const rowInfoStyle = {
 const sessionLabelStyle = {
   fontWeight: 500,
   fontSize: "0.9rem",
-  color: "#292524",
+  color: "var(--color-kbd-text)",
 } satisfies React.CSSProperties;
 
 const metaRowStyle = {
@@ -247,7 +247,7 @@ const statusBadgeStyle = {
 
 const amountStyle = {
   fontSize: "0.875rem",
-  color: "#44403c",
+  color: "var(--color-warm-brown)",
 } satisfies React.CSSProperties;
 
 const methodStyle = {
@@ -262,7 +262,7 @@ const detailsStyle = {
 const summaryStyle = {
   cursor: "pointer",
   fontSize: "0.825rem",
-  color: "#9a3412",
+  color: "var(--color-accent)",
   fontWeight: 500,
   userSelect: "none" as const,
 } satisfies React.CSSProperties;
@@ -285,7 +285,7 @@ const fieldGroupStyle = {
 const labelStyle = {
   fontSize: "0.8rem",
   fontWeight: 500,
-  color: "#44403c",
+  color: "var(--color-warm-brown)",
 } satisfies React.CSSProperties;
 
 const selectStyle = {
@@ -294,7 +294,7 @@ const selectStyle = {
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "rgba(255, 252, 247, 0.95)",
   fontSize: "0.875rem",
-  color: "#292524",
+  color: "var(--color-kbd-text)",
 } satisfies React.CSSProperties;
 
 const inputStyle = {
@@ -303,7 +303,7 @@ const inputStyle = {
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "rgba(255, 252, 247, 0.95)",
   fontSize: "0.875rem",
-  color: "#292524",
+  color: "var(--color-kbd-text)",
   width: "100%",
   boxSizing: "border-box" as const,
 } satisfies React.CSSProperties;
@@ -314,7 +314,7 @@ const submitStyle = {
   borderRadius: "999px",
   border: "1px solid rgba(146, 64, 14, 0.3)",
   background: "rgba(255, 247, 237, 0.6)",
-  color: "#9a3412",
+  color: "var(--color-accent)",
   fontSize: "0.875rem",
   fontWeight: 500,
   cursor: "pointer",

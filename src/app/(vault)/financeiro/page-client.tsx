@@ -35,9 +35,9 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  pago: { bg: "#dcfce7", text: "#166534", label: "Pago" },
-  pendente: { bg: "#fef3c7", text: "#92400e", label: "Pendente" },
-  atrasado: { bg: "#fee2e2", text: "#991b1b", label: "Atrasado" },
+  pago: { bg: "var(--color-success-bg)", text: "var(--color-success-text)", label: "Pago" },
+  pendente: { bg: "var(--color-warning-bg)", text: "var(--color-warning-text)", label: "Pendente" },
+  atrasado: { bg: "var(--color-error-bg)", text: "var(--color-error-text)", label: "Atrasado" },
 };
 
 type FilterStatus = "todos" | "pendente" | "pago" | "atrasado";
@@ -253,27 +253,27 @@ export default function FinanceiroPageClient({
 
       {/* Inadimplência cards */}
       <div style={summaryCardsStyle}>
-        <div style={{ ...miniCardStyle, borderLeft: "3px solid #166534" }}>
+        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-success-text)" }}>
           <p style={miniCardLabelStyle}>Recebido</p>
           <p style={miniCardValueStyle}>{currency.format(summary.totalReceivedCents / 100)}</p>
           {prevMonthReceived > 0 && (
             <p style={variationStyle}>
               {summary.totalReceivedCents / 100 >= prevMonthReceived ? (
-                <span style={{ color: "#166534" }}>↑ +{Math.round(((summary.totalReceivedCents / 100 - prevMonthReceived) / prevMonthReceived) * 100)}%</span>
+                <span style={{ color: "var(--color-success-text)" }}>↑ +{Math.round(((summary.totalReceivedCents / 100 - prevMonthReceived) / prevMonthReceived) * 100)}%</span>
               ) : (
-                <span style={{ color: "#991b1b" }}>↓ -{Math.round(((prevMonthReceived - summary.totalReceivedCents / 100) / prevMonthReceived) * 100)}%</span>
+                <span style={{ color: "var(--color-error-text)" }}>↓ -{Math.round(((prevMonthReceived - summary.totalReceivedCents / 100) / prevMonthReceived) * 100)}%</span>
               )}
               <span style={{ color: "#999", marginLeft: "0.25rem" }}>vs {MONTH_LABELS[month === 1 ? 11 : month - 2]}</span>
             </p>
           )}
         </div>
-        <div style={{ ...miniCardStyle, borderLeft: "3px solid #92400e" }}>
+        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-warning-text)" }}>
           <p style={miniCardLabelStyle}>Pendente</p>
           <p style={miniCardValueStyle}>{currency.format(summary.totalPendingCents / 100)}</p>
         </div>
-        <div style={{ ...miniCardStyle, borderLeft: "3px solid #991b1b" }}>
+        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-error-text)" }}>
           <p style={miniCardLabelStyle}>Atrasado</p>
-          <p style={{ ...miniCardValueStyle, color: "#991b1b" }}>
+          <p style={{ ...miniCardValueStyle, color: "var(--color-error-text)" }}>
             {overdueCount} {overdueCount === 1 ? "cobrança" : "cobranças"}
           </p>
         </div>
@@ -408,17 +408,17 @@ export default function FinanceiroPageClient({
                   <h3 style={patientNameHeadingStyle}>{patientName}</h3>
                   <div style={patientTotalsRowStyle}>
                     {totals.paid > 0 && (
-                      <span style={{ ...totalBadgeStyle, background: "#dcfce7", color: "#166534" }}>
+                      <span style={{ ...totalBadgeStyle, background: "var(--color-success-bg)", color: "var(--color-success-text)" }}>
                         Recebido: {currency.format(totals.paid / 100)}
                       </span>
                     )}
                     {totals.pending > 0 && (
-                      <span style={{ ...totalBadgeStyle, background: "#fef3c7", color: "#92400e" }}>
+                      <span style={{ ...totalBadgeStyle, background: "var(--color-warning-bg)", color: "var(--color-warning-text)" }}>
                         Pendente: {currency.format(totals.pending / 100)}
                       </span>
                     )}
                     {totals.overdue > 0 && (
-                      <span style={{ ...totalBadgeStyle, background: "#fee2e2", color: "#991b1b" }}>
+                      <span style={{ ...totalBadgeStyle, background: "var(--color-error-bg)", color: "var(--color-error-text)" }}>
                         Atrasado: {currency.format(totals.overdue / 100)}
                       </span>
                     )}
@@ -582,13 +582,13 @@ export default function FinanceiroPageClient({
                   <span style={{ flex: 2, fontWeight: m.month === month ? 700 : 400 }}>
                     {m.monthLabel}
                   </span>
-                  <span style={{ ...yearTableColStyle, color: "#166534" }}>
+                  <span style={{ ...yearTableColStyle, color: "var(--color-success-text)" }}>
                     {m.received > 0 ? currency.format(m.received) : "—"}
                   </span>
-                  <span style={{ ...yearTableColStyle, color: "#92400e" }}>
+                  <span style={{ ...yearTableColStyle, color: "var(--color-warning-text)" }}>
                     {m.pending > 0 ? currency.format(m.pending) : "—"}
                   </span>
-                  <span style={{ ...yearTableColStyle, color: "#991b1b" }}>
+                  <span style={{ ...yearTableColStyle, color: "var(--color-error-text)" }}>
                     {m.overdue > 0 ? currency.format(m.overdue) : "—"}
                   </span>
                   <span style={yearTableColStyle}>{m.sessions || "—"}</span>
@@ -596,13 +596,13 @@ export default function FinanceiroPageClient({
               ))}
               <div style={yearTableTotalStyle}>
                 <span style={{ flex: 2, fontWeight: 700 }}>Total</span>
-                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "#166534" }}>
+                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "var(--color-success-text)" }}>
                   {currency.format(yearSummary.reduce((s, m) => s + m.received, 0))}
                 </span>
-                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "#92400e" }}>
+                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "var(--color-warning-text)" }}>
                   {currency.format(yearSummary.reduce((s, m) => s + m.pending, 0))}
                 </span>
-                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "#991b1b" }}>
+                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "var(--color-error-text)" }}>
                   {currency.format(yearSummary.reduce((s, m) => s + m.overdue, 0))}
                 </span>
                 <span style={{ ...yearTableColStyle, fontWeight: 700 }}>
@@ -639,7 +639,7 @@ const toastStyle: React.CSSProperties = {
   right: "1.5rem",
   padding: "0.75rem 1.25rem",
   borderRadius: "var(--radius-md, 8px)",
-  background: "#166534",
+  background: "var(--color-success-text)",
   color: "#fff",
   fontSize: "0.875rem",
   fontWeight: 600,
@@ -715,7 +715,7 @@ const miniCardValueStyle: React.CSSProperties = {
   margin: "0.25rem 0 0",
   fontSize: "1.25rem",
   fontWeight: 700,
-  color: "#222",
+  color: "var(--color-text-1)",
 };
 
 const trendCardStyle: React.CSSProperties = {
@@ -811,7 +811,7 @@ const filterBtnStyle: React.CSSProperties = {
 };
 
 const filterBtnActiveStyle: React.CSSProperties = {
-  background: "#2d7d6f",
+  background: "var(--color-teal)",
   color: "#fff",
   fontWeight: 600,
 };
@@ -964,7 +964,7 @@ const payBtnStyle: React.CSSProperties = {
   padding: "0.3rem 0.75rem",
   border: "none",
   borderRadius: "var(--radius-sm, 4px)",
-  background: "#166534",
+  background: "var(--color-success-text)",
   color: "#fff",
   cursor: "pointer",
   fontWeight: 600,
@@ -1004,7 +1004,7 @@ const methodBtnStyle: React.CSSProperties = {
   padding: "0.3rem 0.625rem",
   border: "1px solid var(--color-border, #e5e5e5)",
   borderRadius: "var(--radius-sm, 4px)",
-  background: "#fafaf8",
+  background: "var(--color-surface-warm)",
   cursor: "pointer",
   fontWeight: 500,
 };
@@ -1043,7 +1043,7 @@ const showLessStyle: React.CSSProperties = {
 const formErrorStyle: React.CSSProperties = {
   margin: "0.5rem 0 0",
   fontSize: "0.8rem",
-  color: "#dc2626",
+  color: "var(--color-error-text)",
 };
 
 const variationStyle = {
@@ -1105,7 +1105,7 @@ const topPatientNameStyle: React.CSSProperties = {
 const topPatientValueStyle: React.CSSProperties = {
   fontSize: "0.9rem",
   fontWeight: 600,
-  color: "#166534",
+  color: "var(--color-success-text)",
   fontVariantNumeric: "tabular-nums",
 };
 

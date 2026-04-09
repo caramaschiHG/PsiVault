@@ -180,7 +180,7 @@ const footerContentStyle = {
 const footerTitleStyle = {
   margin: 0,
   fontSize: "1.1rem",
-  color: "#92400e",
+  color: "var(--color-warning-text)",
 } satisfies React.CSSProperties;
 
 const footerCopyStyle = {

@@ -15,7 +15,7 @@ const STATUS_BAR_COLORS: Record<string, string> = {
   SCHEDULED: "var(--color-brown-mid)",
   CONFIRMED: "var(--color-sage)",
   COMPLETED: "var(--color-text-2)",
-  CANCELED: "#b91c1c",
+  CANCELED: "var(--color-error-text)",
   NO_SHOW: "var(--color-text-3)",
 };
 

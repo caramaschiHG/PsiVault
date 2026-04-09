@@ -221,7 +221,7 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const sectionTitleStyle = {
@@ -244,14 +244,14 @@ const labelStyle = {
 } satisfies React.CSSProperties;
 
 const requiredMarkStyle = {
-  color: "#9a3412",
+  color: "var(--color-accent)",
 } satisfies React.CSSProperties;
 
 const inputStyle = {
   borderRadius: "16px",
   border: "1px solid rgba(120, 53, 15, 0.16)",
   padding: "0.9rem 1rem",
-  background: "#fffdfa",
+  background: "var(--color-surface-0)",
   fontWeight: 400,
 } satisfies React.CSSProperties;
 

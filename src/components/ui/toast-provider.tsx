@@ -50,9 +50,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const borderColors: Record<ToastType, string> = {
-    success: "#2d6a4f",
-    error: "#9f1239",
-    info: "#b45309",
+    success: "var(--color-forest)",
+    error: "var(--color-rose)",
+    info: "var(--color-brown-mid)",
   };
 
   return (

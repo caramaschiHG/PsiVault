@@ -117,17 +117,17 @@ const navStyle = {
 } satisfies React.CSSProperties;
 
 const navLinkStyle = {
-  color: "#9a3412",
+  color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const navSepStyle = {
-  color: "#d4c5b5",
+  color: "var(--color-taupe)",
 } satisfies React.CSSProperties;
 
 const navCurrentStyle = {
-  color: "#57534e",
+  color: "var(--color-text-2)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -141,13 +141,13 @@ const eyebrowStyle = {
   textTransform: "uppercase" as const,
   letterSpacing: "0.14em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
   margin: 0,
   fontSize: "1.5rem",
-  color: "#292524",
+  color: "var(--color-kbd-text)",
 } satisfies React.CSSProperties;
 
 const formStyle = {
@@ -164,7 +164,7 @@ const textareaStyle = {
   borderRadius: "16px",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "rgba(255, 252, 247, 0.95)",
-  color: "#292524",
+  color: "var(--color-kbd-text)",
   resize: "vertical" as const,
   boxSizing: "border-box" as const,
 } satisfies React.CSSProperties;
@@ -183,7 +183,7 @@ const submitButtonStyle = {
   padding: "0.55rem 1.25rem",
   borderRadius: "999px",
   border: "none",
-  background: "#9a3412",
+  background: "var(--color-accent)",
 } satisfies React.CSSProperties;
 
 const cancelLinkStyle = {

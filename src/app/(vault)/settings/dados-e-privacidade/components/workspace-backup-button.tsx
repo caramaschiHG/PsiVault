@@ -130,7 +130,7 @@ const formStyle = {
 const formNoteStyle = {
   margin: 0,
   fontSize: "0.9rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
@@ -138,17 +138,17 @@ const labelStyle = {
   display: "grid",
   gap: "0.35rem",
   fontSize: "0.875rem",
-  color: "#44403c",
+  color: "var(--color-warm-brown)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const inputStyle = {
   padding: "0.5rem 0.75rem",
   borderRadius: "8px",
-  border: "1px solid #d4c5b5",
+  border: "1px solid var(--color-taupe)",
   fontSize: "0.9rem",
   outline: "none",
-  background: "#fffcf7",
+  background: "var(--color-surface-1)",
 } satisfies React.CSSProperties;
 
 const actionsStyle = {
@@ -161,7 +161,7 @@ const primaryButtonStyle = {
   padding: "0.55rem 1.25rem",
   borderRadius: "10px",
   border: "none",
-  background: "#9a3412",
+  background: "var(--color-accent)",
   color: "#fff",
   fontWeight: 600,
   fontSize: "0.9rem",
@@ -171,9 +171,9 @@ const primaryButtonStyle = {
 const secondaryButtonStyle = {
   padding: "0.55rem 1.1rem",
   borderRadius: "10px",
-  border: "1px solid #d4c5b5",
+  border: "1px solid var(--color-taupe)",
   background: "transparent",
-  color: "#57534e",
+  color: "var(--color-text-2)",
   fontWeight: 500,
   fontSize: "0.9rem",
   cursor: "pointer",
@@ -182,5 +182,5 @@ const secondaryButtonStyle = {
 const errorStyle = {
   margin: 0,
   fontSize: "0.85rem",
-  color: "#b91c1c",
+  color: "var(--color-error-text)",
 } satisfies React.CSSProperties;

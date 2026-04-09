@@ -44,12 +44,12 @@ export function MeetingLinkForm({
 
 const successStyle = {
   fontSize: "0.8rem",
-  color: "#2d6a4f",
+  color: "var(--color-forest)",
   fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const errorStyle = {
   fontSize: "0.8rem",
-  color: "#9f1239",
+  color: "var(--color-rose)",
   fontWeight: 500,
 } satisfies React.CSSProperties;

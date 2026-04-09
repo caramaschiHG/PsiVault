@@ -316,7 +316,7 @@ const previewCardStyle = {
   gap: "0.5rem",
   padding: "1.1rem 1.25rem",
   borderRadius: "10px",
-  background: "#fffcf7",
+  background: "var(--color-surface-1)",
   border: "1px solid rgba(146, 64, 14, 0.15)",
   boxShadow: "var(--shadow-md)",
 } satisfies React.CSSProperties;
@@ -384,7 +384,7 @@ const removeBtnStyle = {
 const errorStyle = {
   margin: 0,
   fontSize: "0.82rem",
-  color: "#9f1239",
+  color: "var(--color-rose)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
@@ -405,7 +405,7 @@ const progressBarStyle = {
 
 const savedLabelStyle = {
   fontSize: "0.85rem",
-  color: "#2d6a4f",
+  color: "var(--color-forest)",
   fontWeight: 600,
   alignSelf: "center",
 } satisfies React.CSSProperties;

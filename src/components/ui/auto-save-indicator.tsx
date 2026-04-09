@@ -12,10 +12,10 @@ import { useEffect, useRef, useState } from "react";
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 const CONFIG: Record<SaveStatus, { icon: string; color: string; bg: string }> = {
-  idle: { icon: "✓", color: "#15803d", bg: "rgba(240,253,244,0.95)" },
-  saving: { icon: "⟳", color: "#a16207", bg: "rgba(254,243,199,0.95)" },
-  saved: { icon: "✓", color: "#15803d", bg: "rgba(240,253,244,0.95)" },
-  error: { icon: "!", color: "#dc2626", bg: "rgba(254,226,226,0.95)" },
+  idle: { icon: "✓", color: "var(--color-success-text)", bg: "rgba(240,253,244,0.95)" },
+  saving: { icon: "⟳", color: "var(--color-brown-mid)", bg: "rgba(254,243,199,0.95)" },
+  saved: { icon: "✓", color: "var(--color-success-text)", bg: "rgba(240,253,244,0.95)" },
+  error: { icon: "!", color: "var(--color-error-text)", bg: "rgba(254,226,226,0.95)" },
 };
 
 function formatRelative(date: Date): string {

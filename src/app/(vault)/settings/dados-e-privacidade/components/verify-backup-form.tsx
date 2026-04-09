@@ -83,11 +83,11 @@ const fileInputLabelStyle = {
   alignItems: "center",
   padding: "0.65rem 1rem",
   borderRadius: "10px",
-  border: "1px dashed #d4c5b5",
+  border: "1px dashed var(--color-taupe)",
   background: "rgba(255, 252, 247, 0.7)",
   cursor: "pointer",
   fontSize: "0.875rem",
-  color: "#57534e",
+  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const fileInputTextStyle = {
@@ -122,7 +122,7 @@ const invalidResultStyle = {
   borderRadius: "10px",
   background: "rgba(255, 251, 235, 0.9)",
   border: "1px solid rgba(180, 83, 9, 0.25)",
-  color: "#92400e",
+  color: "var(--color-warning-text)",
   fontSize: "0.9rem",
   fontWeight: 500,
 } satisfies React.CSSProperties;
@@ -133,7 +133,7 @@ const errorResultStyle = {
   borderRadius: "10px",
   background: "rgba(254, 242, 242, 0.9)",
   border: "1px solid rgba(185, 28, 28, 0.2)",
-  color: "#b91c1c",
+  color: "var(--color-error-text)",
   fontSize: "0.9rem",
   fontWeight: 500,
 } satisfies React.CSSProperties;

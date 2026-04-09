@@ -53,7 +53,7 @@ const eyebrowStyle = {
   textTransform: "uppercase",
   letterSpacing: "0.16em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -63,7 +63,7 @@ const titleStyle = {
 
 const copyStyle = {
   margin: 0,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 

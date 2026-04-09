@@ -11,11 +11,11 @@ interface AppointmentBlockProps {
 }
 
 const STATUS_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  SCHEDULED:  { bg: "rgba(246, 246, 244, 0.96)", border: "rgba(120, 53, 15, 0.22)", text: "#44403c" },
-  CONFIRMED:  { bg: "rgba(236, 253, 245, 0.96)", border: "rgba(16, 185, 129, 0.3)",  text: "#065f46" },
-  COMPLETED:  { bg: "rgba(241, 245, 249, 0.96)", border: "rgba(100, 116, 139, 0.3)", text: "#475569" },
-  CANCELED:   { bg: "rgba(254, 242, 242, 0.96)", border: "rgba(220, 38, 38, 0.2)",   text: "#991b1b" },
-  NO_SHOW:    { bg: "rgba(255, 247, 237, 0.96)", border: "rgba(234, 88, 12, 0.3)",   text: "#9a3412" },
+  SCHEDULED:  { bg: "rgba(246, 246, 244, 0.96)", border: "rgba(120, 53, 15, 0.22)", text: "var(--color-warm-brown)" },
+  CONFIRMED:  { bg: "rgba(236, 253, 245, 0.96)", border: "rgba(16, 185, 129, 0.3)",  text: "var(--color-success-text)" },
+  COMPLETED:  { bg: "rgba(241, 245, 249, 0.96)", border: "rgba(100, 116, 139, 0.3)", text: "var(--color-slate)" },
+  CANCELED:   { bg: "rgba(254, 242, 242, 0.96)", border: "rgba(220, 38, 38, 0.2)",   text: "var(--color-error-text)" },
+  NO_SHOW:    { bg: "rgba(255, 247, 237, 0.96)", border: "rgba(234, 88, 12, 0.3)",   text: "var(--color-accent)" },
 };
 
 export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlockProps) {

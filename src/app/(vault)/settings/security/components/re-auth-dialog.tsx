@@ -51,7 +51,7 @@ const eyebrowStyle = {
   textTransform: "uppercase",
   letterSpacing: "0.16em",
   fontSize: "0.72rem",
-  color: "#b45309",
+  color: "var(--color-brown-mid)",
 } satisfies React.CSSProperties;
 
 const titleStyle = {
@@ -61,22 +61,22 @@ const titleStyle = {
 
 const copyStyle = {
   margin: 0,
-  color: "#57534e",
+  color: "var(--color-text-2)",
   lineHeight: 1.6,
 } satisfies React.CSSProperties;
 
 const bodyStyle = {
   margin: 0,
-  color: "#292524",
+  color: "var(--color-kbd-text)",
   lineHeight: 1.55,
 } satisfies React.CSSProperties;
 
 const approvedStyle = {
   margin: 0,
-  color: "#047857",
+  color: "var(--color-emerald)",
 } satisfies React.CSSProperties;
 
 const warningStyle = {
   margin: 0,
-  color: "#9a3412",
+  color: "var(--color-accent)",
 } satisfies React.CSSProperties;

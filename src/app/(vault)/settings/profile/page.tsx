@@ -196,7 +196,7 @@ export default async function ProfileSettingsPage() {
                 const done = step.status === "complete";
                 return (
                   <li key={step.id} style={{ ...statusItemStyle, opacity: done ? 1 : 0.55 }}>
-                    <span style={{ color: done ? "#047857" : "var(--color-text-3)", fontWeight: 600 }}>
+                    <span style={{ color: done ? "var(--color-emerald)" : "var(--color-text-3)", fontWeight: 600 }}>
                       {done ? "✓" : "✗"}
                     </span>
                     <span>{step.title}</span>

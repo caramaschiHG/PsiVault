@@ -190,7 +190,7 @@ export function UpdateNotification() {
             borderRadius: "10px",
             border: "none",
             background: "var(--color-accent, #9a3412)",
-            color: "#fff7ed",
+            color: "var(--color-surface-0)",
             fontSize: "0.88rem",
             fontWeight: 600,
             cursor: "pointer",
