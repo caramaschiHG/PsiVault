@@ -372,7 +372,7 @@ export default function FinanceiroPageClient({
               ))}
             </select>
             <input type="date" name="date" defaultValue={new Date().toISOString().split("T")[0]} style={inputStyle} />
-            <input type="number" name="amountInCents" placeholder="Valor (centavos)" required min="1" style={inputStyle} />
+            <input type="number" name="amountBrl" placeholder="Valor (R$)" required min="0.01" step="0.01" style={inputStyle} />
             <Button type="submit" variant="primary" isLoading={isPending}>Adicionar</Button>
           </form>
           {formError && <p style={formErrorStyle}>{formError}</p>}

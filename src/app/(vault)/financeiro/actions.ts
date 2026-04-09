@@ -72,11 +72,13 @@ export async function createManualChargeAction(
     const patientRepo = getPatientRepository();
 
     const patientId = formData.get("patientId") as string;
-    const amountInCents = parseInt(formData.get("amountInCents") as string, 10);
+    const amountBrl = parseFloat(formData.get("amountBrl") as string);
     const dateStr = formData.get("date") as string;
 
     if (!patientId) return { ok: false, error: "Selecione um paciente." };
-    if (isNaN(amountInCents) || amountInCents <= 0) return { ok: false, error: "Valor inválido." };
+    if (isNaN(amountBrl) || amountBrl <= 0) return { ok: false, error: "Valor inválido." };
+
+    const amountInCents = Math.round(amountBrl * 100);
 
     const patients = await patientRepo.listActive(workspaceId);
     const patient = patients.find((p) => p.id === patientId);
