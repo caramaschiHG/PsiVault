@@ -21,7 +21,31 @@ export function KeyboardShortcutsModal({ groups, open, onOpenChange }: {
     if (!open) return;
     const h = (e: KeyboardEvent) => { if (e.key === "Escape") onOpenChange(false); };
     window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
+
+    // Focus trap
+    const modal = document.querySelector<HTMLElement>("[data-modal-content]");
+    if (modal) {
+      const focusable = modal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const elements = Array.from(focusable);
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      first?.focus();
+
+      const trap = (e: KeyboardEvent) => {
+        if (e.key !== "Tab") return;
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last?.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first?.focus(); }
+        }
+      };
+      modal.addEventListener("keydown", trap);
+      return () => { window.removeEventListener("keydown", h); modal.removeEventListener("keydown", trap); };
+    }
+
+    return () => { window.removeEventListener("keydown", h); };
   }, [open, onOpenChange]);
 
   if (!open) return null;
@@ -37,6 +61,7 @@ export function KeyboardShortcutsModal({ groups, open, onOpenChange }: {
       role="dialog" aria-modal="true" aria-label="Atalhos de teclado"
     >
       <div
+        data-modal-content
         onClick={(e) => e.stopPropagation()}
         style={{
           background: "var(--color-surface-1)", borderRadius: "20px", border: "1px solid rgba(146,64,14,0.15)",

@@ -1352,3 +1352,12 @@ label[for], .nav-link, summary {
 
 .kbd-overlay { animation: kbdFadeIn 120ms ease-out; }
 @keyframes kbdFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─── Template card hover ───────────────────────────────────────────── */
+.template-card:hover {
+  border-color: rgba(146, 64, 14, 0.3);
+  box-shadow: var(--shadow-xs);
+}
+.template-card:active {
+  transform: scale(0.98);
+}

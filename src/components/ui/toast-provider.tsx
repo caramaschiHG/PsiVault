@@ -69,10 +69,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 borderLeftColor: borderColors[t.type],
                 opacity: t.fading ? 0 : 1,
                 transition: t.fading ? "opacity 0.5s ease" : "none",
+                position: "relative",
+                pointerEvents: "auto",
               }}
               role="status"
             >
               {t.message}
+              <button
+                onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
+                style={toastDismissStyle}
+                aria-label="Fechar notificação"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
             </div>
           ))}
         </div>,
@@ -104,4 +115,20 @@ const toastStyle = {
   transition: "opacity 0.5s ease",
   maxWidth: "320px",
   lineHeight: 1.4,
+} satisfies React.CSSProperties;
+
+const toastDismissStyle = {
+  position: "absolute",
+  top: "0.35rem",
+  right: "0.35rem",
+  background: "transparent",
+  border: "none",
+  cursor: "pointer",
+  color: "rgba(255,255,255,0.5)",
+  padding: "0.2rem",
+  borderRadius: "var(--radius-xs)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  transition: "color 120ms ease",
 } satisfies React.CSSProperties;
