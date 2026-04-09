@@ -761,7 +761,7 @@ const sessionBadgeStyle = {
   color: "var(--color-text-2)",
   background: "var(--color-surface-0)",
   border: "1px solid var(--color-border)",
-  borderRadius: "9999px",
+  borderRadius: "var(--radius-pill)",
   padding: "0.2rem 0.6rem",
 } satisfies React.CSSProperties;
 
@@ -802,7 +802,7 @@ const registerNoteStyle = {
   alignItems: "center",
   marginTop: "0.5rem",
   padding: "0.38rem 0.875rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "var(--color-accent-light)",
   border: "1px solid var(--color-border-med)",
   color: "var(--color-accent)",
@@ -816,7 +816,7 @@ const viewNoteStyle = {
   alignItems: "center",
   marginTop: "0.5rem",
   padding: "0.38rem 0.875rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(245, 235, 220, 0.6)",
   border: "1px solid rgba(146, 64, 14, 0.15)",
   color: "var(--color-brown-mid)",
@@ -830,7 +830,7 @@ const viewNoteStyle = {
 const comunicacaoSectionStyle = {
   marginTop: "0.75rem",
   padding: "0.75rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "var(--color-surface-1)",
   border: "1px solid var(--color-border)",
   display: "grid",
@@ -864,7 +864,7 @@ const commLinkStyle = {
   textDecoration: "none",
   fontWeight: 500,
   padding: "0.15rem 0.55rem",
-  borderRadius: "6px",
+  borderRadius: "var(--radius-xs)",
   background: "rgba(255, 247, 237, 0.8)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
 } satisfies React.CSSProperties;
@@ -872,7 +872,7 @@ const commLinkStyle = {
 const onlineSectionStyle = {
   marginTop: "0.75rem",
   padding: "0.75rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "var(--color-surface-1)",
   border: "1px solid var(--color-border)",
   display: "grid",
@@ -907,7 +907,7 @@ const urlInputStyle = {
   minWidth: "12rem",
   padding: "0.3rem 0.5rem",
   fontSize: "0.82rem",
-  borderRadius: "6px",
+  borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-0)",
   fontFamily: "inherit",
@@ -919,7 +919,7 @@ const textareaStyle = {
   minWidth: "12rem",
   padding: "0.3rem 0.5rem",
   fontSize: "0.82rem",
-  borderRadius: "6px",
+  borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-0)",
   fontFamily: "inherit",
@@ -945,7 +945,7 @@ const remoteIssueNoteStyle = {
   color: "var(--color-text-2)",
   background: "var(--color-accent-light)",
   padding: "0.4rem 0.6rem",
-  borderRadius: "6px",
+  borderRadius: "var(--radius-xs)",
   whiteSpace: "pre-wrap" as const,
 } satisfies React.CSSProperties;
 

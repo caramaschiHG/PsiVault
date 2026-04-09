@@ -205,7 +205,7 @@ const sectionStyle = {
   display: "grid",
   gap: "1rem",
   padding: "1.5rem",
-  borderRadius: "24px",
+  borderRadius: "var(--radius-xl)",
   background: "rgba(255, 252, 247, 0.92)",
   border: "1px solid rgba(146, 64, 14, 0.14)",
   boxShadow: "0 8px 24px rgba(120, 53, 15, 0.06)",
@@ -248,7 +248,7 @@ const requiredMarkStyle = {
 } satisfies React.CSSProperties;
 
 const inputStyle = {
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   border: "1px solid rgba(120, 53, 15, 0.16)",
   padding: "0.9rem 1rem",
   background: "var(--color-surface-0)",

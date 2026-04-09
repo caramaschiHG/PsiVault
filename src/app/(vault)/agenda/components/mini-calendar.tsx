@@ -181,7 +181,7 @@ const arrowButtonStyle = {
   cursor: "pointer",
   fontSize: "0.85rem",
   color: "var(--color-text-2)",
-  borderRadius: "4px",
+  borderRadius: "var(--radius-xs)",
 } satisfies React.CSSProperties;
 
 const headerLabelStyle = {
@@ -221,7 +221,7 @@ const dayCellStyle = {
   padding: "1px",
   border: "none",
   cursor: "pointer",
-  borderRadius: "4px",
+  borderRadius: "var(--radius-xs)",
   lineHeight: 1,
   transition: "background 80ms",
 } satisfies React.CSSProperties;

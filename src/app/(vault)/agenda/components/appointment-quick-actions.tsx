@@ -231,7 +231,7 @@ const inlineFormStyle = {
 
 const baseBtnStyle = {
   padding: "0.28rem 0.7rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid",
   fontSize: "0.78rem",
   fontWeight: 600,
@@ -273,7 +273,7 @@ const completeContainerStyle = {
   display: "grid",
   gap: "0.75rem",
   padding: "0.8rem",
-  borderRadius: "14px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(255, 252, 247, 0.95)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
 } satisfies React.CSSProperties;
@@ -292,7 +292,7 @@ const completeLabelStyle = {
 const completeTextareaStyle = {
   width: "100%",
   padding: "0.75rem 0.9rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   border: "1px solid rgba(146, 64, 14, 0.16)",
   background: "rgba(255,255,255,0.98)",
   fontSize: "0.85rem",
@@ -312,7 +312,7 @@ const cancelActionsStyle = {
 
 const cancelConfirmBtnStyle = {
   padding: "0.5rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(159, 18, 57, 0.3)",
   background: "transparent",
   color: "var(--color-rose)",
@@ -329,7 +329,7 @@ const completeConfirmBtnStyle = {
 
 const cancelDismissBtnStyle = {
   padding: "0.5rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(100, 116, 139, 0.25)",
   background: "transparent",
   color: "var(--color-slate)",

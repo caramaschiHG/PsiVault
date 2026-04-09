@@ -45,7 +45,7 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
   return (
     <div style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0.75rem 1rem", borderRadius: "12px",
+      padding: "0.75rem 1rem", borderRadius: "var(--radius-md)",
       background: "rgba(255,252,247,0.95)", border: "1px solid rgba(146,64,14,0.1)",
       gap: "0.5rem",
     }}>
@@ -54,7 +54,7 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
           {DOCUMENT_TYPE_LABELS[doc.type]}
           {isPrivate && (
             <span style={{
-              display: "inline-block", padding: "0.08rem 0.4rem", borderRadius: "999px",
+              display: "inline-block", padding: "0.08rem 0.4rem", borderRadius: "var(--radius-pill)",
               background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)", fontSize: "0.68rem",
               fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em",
             }}>Privado</span>
@@ -70,17 +70,17 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
           <details style={{ position: "relative" }}>
             <summary style={{
               cursor: "pointer", fontSize: "0.8rem", fontWeight: 500, color: "var(--color-accent)",
-              padding: "0.15rem 0.5rem", borderRadius: "6px",
+              padding: "0.15rem 0.5rem", borderRadius: "var(--radius-xs)",
               background: "rgba(255,247,237,0.6)", border: "1px solid rgba(146,64,14,0.2)",
             }}>Enviar</summary>
             <div style={{
               position: "absolute", right: 0, top: "100%", zIndex: "var(--z-dropdown)",
               display: "flex", gap: "0.3rem", padding: "0.4rem",
-              borderRadius: "8px", background: "var(--color-surface-0)", border: "1px solid rgba(146,64,14,0.15)",
+              borderRadius: "var(--radius-sm)", background: "var(--color-surface-0)", border: "1px solid rgba(146,64,14,0.15)",
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
             }}>
-              <a href={waUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "6px", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>WhatsApp</a>
-              <a href={mailtoUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "6px", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>Email</a>
+              <a href={waUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>WhatsApp</a>
+              <a href={mailtoUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500, padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)", background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.2)" }}>Email</a>
             </div>
           </details>
         )}
@@ -95,7 +95,7 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
 function TypeGroup({ type, docs, patientName, patientPhone }: { type: DocumentType; docs: PracticeDocument[]; patientName: string; patientPhone: string | null }) {
   return (
     <details open style={{
-      borderRadius: "12px", border: "1px solid rgba(146,64,14,0.12)", overflow: "hidden",
+      borderRadius: "var(--radius-md)", border: "1px solid rgba(146,64,14,0.12)", overflow: "hidden",
     }}>
       <summary style={{
         padding: "0.7rem 1rem", cursor: "pointer", display: "flex", alignItems: "center",
@@ -106,7 +106,7 @@ function TypeGroup({ type, docs, patientName, patientPhone }: { type: DocumentTy
         <span style={{
           display: "inline-flex", alignItems: "center", justifyContent: "center",
           minWidth: "1.4rem", height: "1.4rem", padding: "0 0.35rem",
-          borderRadius: "999px", background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)",
+          borderRadius: "var(--radius-pill)", background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)",
           fontSize: "0.7rem", fontWeight: 600,
         }}>
           {docs.length}
@@ -133,7 +133,7 @@ export function DocumentsSection({ documents, patientId, patientName, patientPho
         </div>
         <Link href={`/patients/${patientId}/documents/new`} style={{
           fontSize: "0.85rem", fontWeight: 500, color: "var(--color-accent)", textDecoration: "none",
-          padding: "0.35rem 0.85rem", borderRadius: "999px",
+          padding: "0.35rem 0.85rem", borderRadius: "var(--radius-pill)",
           border: "1px solid rgba(146,64,14,0.3)", background: "rgba(255,247,237,0.6)",
         }}>
           Novo documento +

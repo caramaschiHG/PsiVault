@@ -82,7 +82,7 @@ const fileInputLabelStyle = {
   display: "flex",
   alignItems: "center",
   padding: "0.65rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px dashed var(--color-taupe)",
   background: "rgba(255, 252, 247, 0.7)",
   cursor: "pointer",
@@ -108,7 +108,7 @@ const hiddenInputStyle = {
 const validResultStyle = {
   margin: 0,
   padding: "0.65rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(220, 252, 231, 0.8)",
   border: "1px solid rgba(22, 163, 74, 0.25)",
   color: "#15803d",
@@ -119,7 +119,7 @@ const validResultStyle = {
 const invalidResultStyle = {
   margin: 0,
   padding: "0.65rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(255, 251, 235, 0.9)",
   border: "1px solid rgba(180, 83, 9, 0.25)",
   color: "var(--color-warning-text)",
@@ -130,7 +130,7 @@ const invalidResultStyle = {
 const errorResultStyle = {
   margin: 0,
   padding: "0.65rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(254, 242, 242, 0.9)",
   border: "1px solid rgba(185, 28, 28, 0.2)",
   color: "var(--color-error-text)",

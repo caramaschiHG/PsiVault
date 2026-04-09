@@ -32,7 +32,7 @@ const dialogStyle = {
   display: "grid",
   gap: "0.9rem",
   padding: "1.4rem",
-  borderRadius: "24px",
+  borderRadius: "var(--radius-xl)",
   background: "rgba(255, 252, 247, 0.96)",
   border: "1px solid rgba(146, 64, 14, 0.16)",
 } satisfies React.CSSProperties;
@@ -41,7 +41,7 @@ const panelStyle = {
   display: "grid",
   gap: "0.45rem",
   padding: "0.95rem 1rem",
-  borderRadius: "18px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 255, 255, 0.88)",
   border: "1px solid rgba(146, 64, 14, 0.1)",
 } satisfies React.CSSProperties;

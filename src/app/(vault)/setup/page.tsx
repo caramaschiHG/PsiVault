@@ -105,7 +105,7 @@ const heroStyle = {
 
 const copyBlockStyle = {
   padding: "2rem",
-  borderRadius: "32px",
+  borderRadius: "var(--radius-xl)",
   background:
     "linear-gradient(145deg, rgba(255, 251, 245, 0.98), rgba(251, 241, 224, 0.96))",
   border: "1px solid rgba(146, 64, 14, 0.14)",
@@ -123,7 +123,7 @@ const contentGridStyle = {
 
 const summaryCardStyle = {
   padding: "1.6rem",
-  borderRadius: "28px",
+  borderRadius: "var(--radius-xl)",
   background: "rgba(125, 53, 15, 0.94)",
   color: "#fff7ed",
   boxShadow: "0 22px 64px rgba(120, 53, 15, 0.24)",
@@ -152,14 +152,14 @@ const summaryCopyStyle = {
 
 const meterTrackStyle = {
   height: "0.8rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   background: "rgba(255, 237, 213, 0.18)",
   overflow: "hidden",
 } satisfies React.CSSProperties;
 
 const meterFillStyle = {
   height: "100%",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   background: "linear-gradient(90deg, #fdba74, #fde68a)",
 } satisfies React.CSSProperties;
 
@@ -171,7 +171,7 @@ const totalsGridStyle = {
 
 const totalsCardStyle = {
   padding: "0.9rem 1rem",
-  borderRadius: "18px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 247, 237, 0.1)",
   border: "1px solid rgba(255, 237, 213, 0.16)",
   display: "grid",
@@ -189,7 +189,7 @@ const totalsValueStyle = {
 
 const sidebarCardStyle = {
   padding: "1.5rem",
-  borderRadius: "28px",
+  borderRadius: "var(--radius-xl)",
   background: "rgba(255, 252, 247, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.14)",
   boxShadow: "0 22px 64px rgba(120, 53, 15, 0.1)",
@@ -245,7 +245,7 @@ const sidebarListStyle = {
 
 const sidebarListItemStyle = {
   padding: "0.9rem 1rem",
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 255, 255, 0.78)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
   color: "var(--color-warm-brown)",
@@ -256,7 +256,7 @@ const sidebarLinkStyle = {
   justifyContent: "center",
   alignItems: "center",
   padding: "0.95rem 1.1rem",
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   background: "var(--color-accent)",
   color: "var(--color-surface-0)",
   fontWeight: 700,

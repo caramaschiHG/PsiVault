@@ -91,7 +91,7 @@ function DefaultPreviewItem({ label, value }: { label: string; value: string }) 
 
 const cardStyle = {
   padding: "1.35rem 1.5rem",
-  borderRadius: "22px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 247, 237, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.18)",
   display: "grid",
@@ -165,7 +165,7 @@ const ctaButtonStyle = {
   display: "inline-flex",
   alignItems: "center",
   padding: "0.85rem 1.4rem",
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   background: "var(--color-accent)",
   color: "var(--color-surface-0)",
   textDecoration: "none",

@@ -136,7 +136,7 @@ const periodLabelStyle = {
 
 const todayButtonStyle = {
   padding: "0.38rem 0.9rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "transparent",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   color: "var(--color-warning-text)",
@@ -147,7 +147,7 @@ const todayButtonStyle = {
 
 const viewSwitcherStyle = {
   display: "flex",
-  borderRadius: "14px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(255, 247, 237, 0.7)",
   border: "1px solid rgba(146, 64, 14, 0.14)",
   overflow: "hidden",

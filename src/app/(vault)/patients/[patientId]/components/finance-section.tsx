@@ -175,7 +175,7 @@ const sectionStyle = {
   display: "grid",
   gap: "0.75rem",
   padding: "1.35rem 1.5rem",
-  borderRadius: "22px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 247, 237, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.16)",
 } satisfies React.CSSProperties;
@@ -214,7 +214,7 @@ const rowStyle = {
   display: "grid",
   gap: "0.5rem",
   padding: "0.875rem 1.1rem",
-  borderRadius: "14px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(255, 252, 247, 0.95)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
 } satisfies React.CSSProperties;
@@ -242,7 +242,7 @@ const statusBadgeStyle = {
   fontSize: "0.75rem",
   fontWeight: 600,
   padding: "0.15rem 0.55rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
 } satisfies React.CSSProperties;
 
 const amountStyle = {
@@ -272,7 +272,7 @@ const formStyle = {
   gap: "0.75rem",
   marginTop: "0.75rem",
   padding: "0.875rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(255, 247, 237, 0.6)",
   border: "1px solid rgba(146, 64, 14, 0.1)",
 } satisfies React.CSSProperties;
@@ -290,7 +290,7 @@ const labelStyle = {
 
 const selectStyle = {
   padding: "0.4rem 0.6rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "rgba(255, 252, 247, 0.95)",
   fontSize: "0.875rem",
@@ -299,7 +299,7 @@ const selectStyle = {
 
 const inputStyle = {
   padding: "0.4rem 0.6rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "rgba(255, 252, 247, 0.95)",
   fontSize: "0.875rem",
@@ -311,7 +311,7 @@ const inputStyle = {
 const submitStyle = {
   justifySelf: "start",
   padding: "0.4rem 1rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   border: "1px solid rgba(146, 64, 14, 0.3)",
   background: "rgba(255, 247, 237, 0.6)",
   color: "var(--color-accent)",

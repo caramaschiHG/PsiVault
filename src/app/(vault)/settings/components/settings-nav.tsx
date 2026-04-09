@@ -46,7 +46,7 @@ const tabLinkStyle = {
   color: "var(--color-text-2)",
   textDecoration: "none",
   padding: "0.45rem 1rem",
-  borderRadius: "12px 12px 0 0",
+  borderRadius: "var(--radius-md) var(--radius-md) 0 0",
   border: "1px solid transparent",
   transition: "background 0.15s",
 } satisfies React.CSSProperties;

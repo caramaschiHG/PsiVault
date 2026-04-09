@@ -52,7 +52,7 @@ const actionLinkStyle = {
   alignItems: "center",
   gap: "0.4rem",
   padding: "0.48rem 1rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(255, 247, 237, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   color: "var(--color-warning-text)",

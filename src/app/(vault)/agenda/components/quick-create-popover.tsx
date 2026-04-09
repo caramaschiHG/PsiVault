@@ -237,7 +237,7 @@ const closeButtonStyle = {
   cursor: "pointer",
   fontSize: "1rem",
   color: "var(--color-text-3)",
-  borderRadius: "4px",
+  borderRadius: "var(--radius-xs)",
 } satisfies React.CSSProperties;
 
 const formStyle = {
@@ -256,7 +256,7 @@ const labelStyle = {
 const selectStyle = {
   padding: "0.35rem 0.5rem",
   fontSize: "0.82rem",
-  borderRadius: "6px",
+  borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-1)",
   fontFamily: "inherit",
@@ -266,7 +266,7 @@ const selectStyle = {
 const inputStyle = {
   padding: "0.35rem 0.5rem",
   fontSize: "0.82rem",
-  borderRadius: "6px",
+  borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   fontFamily: "inherit",
 } satisfies React.CSSProperties;
@@ -280,7 +280,7 @@ const careModeOptionStyle = {
   flex: 1,
   padding: "0.3rem 0.5rem",
   fontSize: "0.78rem",
-  borderRadius: "6px",
+  borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-1)",
   textAlign: "center" as const,
@@ -309,7 +309,7 @@ const actionsStyle = {
 
 const submitButtonStyle = {
   padding: "0.45rem 0.75rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "none",
   background: "var(--color-accent)",
   color: "var(--color-surface-0)",

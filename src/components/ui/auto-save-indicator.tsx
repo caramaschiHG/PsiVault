@@ -47,7 +47,7 @@ export function AutoSaveIndicator({ status, lastSaved, className = "" }: {
         alignItems: "center",
         gap: "0.3rem",
         padding: "0.2rem 0.6rem",
-        borderRadius: "999px",
+        borderRadius: "var(--radius-pill)",
         background: cfg.bg,
         color: cfg.color,
         fontSize: "0.72rem",

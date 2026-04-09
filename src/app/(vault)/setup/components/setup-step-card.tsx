@@ -68,7 +68,7 @@ export function SetupStepCard({
 
 const cardStyle = {
   padding: "1rem 1.1rem",
-  borderRadius: "22px",
+  borderRadius: "var(--radius-lg)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
   display: "grid",
   gridTemplateColumns: "auto minmax(0, 1fr)",
@@ -79,7 +79,7 @@ const cardStyle = {
 const indexBadgeStyle = {
   width: "2.75rem",
   height: "2.75rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   background: "var(--color-accent-hover)",
   color: "var(--color-surface-0)",
   display: "grid",
@@ -111,7 +111,7 @@ const statusStyle = {
 } satisfies React.CSSProperties;
 
 const chipStyle = {
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   padding: "0.35rem 0.7rem",
   fontSize: "0.8rem",
   fontWeight: 700,
@@ -119,7 +119,7 @@ const chipStyle = {
 } satisfies React.CSSProperties;
 
 const missingStyle = {
-  borderRadius: "18px",
+  borderRadius: "var(--radius-lg)",
   padding: "0.85rem 0.95rem",
   background: "rgba(255, 255, 255, 0.76)",
   border: "1px solid rgba(146, 64, 14, 0.08)",

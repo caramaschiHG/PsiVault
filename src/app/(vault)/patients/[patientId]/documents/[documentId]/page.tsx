@@ -215,7 +215,7 @@ const navCurrentStyle = {
 
 const provenanceStyle = {
   padding: "1.35rem 1.5rem",
-  borderRadius: "22px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 247, 237, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.16)",
   display: "grid",
@@ -267,7 +267,7 @@ const metaValueStyle = {
 
 const contentSectionStyle = {
   padding: "1.5rem",
-  borderRadius: "22px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 252, 247, 0.95)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
 } satisfies React.CSSProperties;
@@ -301,7 +301,7 @@ const downloadLinkStyle = {
   color: "var(--color-accent)",
   textDecoration: "none",
   padding: "0.45rem 1rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   border: "1px solid rgba(146, 64, 14, 0.3)",
   background: "rgba(255, 247, 237, 0.6)",
 } satisfies React.CSSProperties;
@@ -312,7 +312,7 @@ const editLinkStyle = {
   color: "var(--color-accent)",
   textDecoration: "none",
   padding: "0.45rem 1rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-accent-light)",
 } satisfies React.CSSProperties;
@@ -338,7 +338,7 @@ const archiveButtonStyle = {
   color: "var(--color-text-3)",
   cursor: "pointer",
   padding: "0.45rem 1rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   border: "1px solid rgba(120, 113, 108, 0.3)",
   background: "rgba(248, 246, 243, 0.8)",
 } satisfies React.CSSProperties;

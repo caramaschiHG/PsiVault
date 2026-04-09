@@ -145,7 +145,7 @@ export function RemindersSection({
 
 const sectionStyle = {
   padding: "1.35rem 1.5rem",
-  borderRadius: "22px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 252, 247, 0.9)",
   border: "1px solid rgba(146, 64, 14, 0.1)",
   display: "grid",
@@ -192,7 +192,7 @@ const reminderCardStyle = {
   justifyContent: "space-between",
   gap: "0.75rem",
   padding: "0.75rem 1rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(255, 247, 237, 0.7)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
 } satisfies React.CSSProperties;
@@ -242,7 +242,7 @@ const titleInputStyle = {
   minWidth: "12rem",
   padding: "0.4rem 0.6rem",
   fontSize: "0.88rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "#fff",
 } satisfies React.CSSProperties;
@@ -250,7 +250,7 @@ const titleInputStyle = {
 const dateInputStyle = {
   padding: "0.4rem 0.6rem",
   fontSize: "0.88rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "#fff",
 } satisfies React.CSSProperties;
@@ -276,7 +276,7 @@ const completedCardStyle = {
   justifyContent: "space-between",
   gap: "0.75rem",
   padding: "0.6rem 0.875rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(245, 245, 244, 0.7)",
   border: "1px solid rgba(120, 113, 108, 0.15)",
 } satisfies React.CSSProperties;

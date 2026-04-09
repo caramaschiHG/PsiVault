@@ -44,7 +44,7 @@ export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlo
 
   const innerStyle: React.CSSProperties = {
     height: "100%",
-    borderRadius: "8px",
+    borderRadius: "var(--radius-sm)",
     border: `1px solid ${colors.border}`,
     background: colors.bg,
     padding: "3px 6px",

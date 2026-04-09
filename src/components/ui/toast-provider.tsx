@@ -95,7 +95,7 @@ const containerStyle = {
 
 const toastStyle = {
   padding: "0.75rem 1rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(28, 25, 23, 0.92)",
   color: "#fff7ed",
   fontSize: "0.875rem",

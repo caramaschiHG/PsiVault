@@ -150,7 +150,7 @@ const formsRowStyle = {
 
 const baseBtnStyle = {
   padding: "0.6rem 1.1rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   border: "1px solid",
   fontWeight: 600,
   fontSize: "0.9rem",

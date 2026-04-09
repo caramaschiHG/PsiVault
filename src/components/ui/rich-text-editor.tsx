@@ -185,14 +185,14 @@ const toolbarStyle = {
   flexWrap: "wrap" as const,
   gap: "0.35rem",
   padding: "0.55rem 0.6rem",
-  borderRadius: "14px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(248, 245, 241, 0.96)",
   border: "1px solid rgba(120, 53, 15, 0.1)",
 } satisfies React.CSSProperties;
 
 const toolbarButtonStyle = {
   padding: "0.35rem 0.62rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(120, 53, 15, 0.12)",
   background: "rgba(255, 253, 250, 0.98)",
   color: "var(--color-text-2)",
@@ -207,7 +207,7 @@ const toolbarButtonStyle = {
 const editorShellStyle = {
   width: "100%",
   padding: "1.2rem 1.3rem",
-  borderRadius: "18px",
+  borderRadius: "var(--radius-lg)",
   border: "1px solid rgba(120, 53, 15, 0.12)",
   background: "linear-gradient(180deg, rgba(255, 253, 250, 0.99) 0%, rgba(252, 249, 246, 0.99) 100%)",
   fontSize: "0.95rem",

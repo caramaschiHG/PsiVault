@@ -144,7 +144,7 @@ const labelStyle = {
 
 const inputStyle = {
   padding: "0.5rem 0.75rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid var(--color-taupe)",
   fontSize: "0.9rem",
   outline: "none",
@@ -159,7 +159,7 @@ const actionsStyle = {
 
 const primaryButtonStyle = {
   padding: "0.55rem 1.25rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "none",
   background: "var(--color-accent)",
   color: "#fff",
@@ -170,7 +170,7 @@ const primaryButtonStyle = {
 
 const secondaryButtonStyle = {
   padding: "0.55rem 1.1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid var(--color-taupe)",
   background: "transparent",
   color: "var(--color-text-2)",

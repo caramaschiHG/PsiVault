@@ -86,7 +86,7 @@ const brandStyle = {
 const brandLockStyle = {
   width: "36px",
   height: "36px",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(255,255,255,0.1)",
   display: "flex",
   alignItems: "center",

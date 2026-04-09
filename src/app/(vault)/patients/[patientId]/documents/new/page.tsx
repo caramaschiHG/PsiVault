@@ -396,7 +396,7 @@ const typeCardStyle = {
   display: "grid",
   gap: "0.75rem",
   padding: "1.2rem 1.25rem",
-  borderRadius: "18px",
+  borderRadius: "var(--radius-lg)",
   background: "linear-gradient(180deg, rgba(255, 253, 250, 0.98) 0%, rgba(250, 247, 243, 0.96) 100%)",
   border: "1px solid rgba(146, 64, 14, 0.1)",
   textDecoration: "none",
@@ -450,7 +450,7 @@ const typeCardActionStyle = {
 
 const gateNoticeStyle = {
   padding: "2rem",
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 252, 247, 0.95)",
   border: "1px solid rgba(146, 64, 14, 0.12)",
   boxShadow: "0 2px 8px rgba(120, 53, 15, 0.04)",
@@ -468,7 +468,7 @@ const gateNoticeTextStyle = {
 const gateNoticeLinkStyle = {
   display: "inline-block",
   padding: "0.75rem 1.5rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "var(--color-accent)",
   color: "var(--color-surface-0)",
   textDecoration: "none",

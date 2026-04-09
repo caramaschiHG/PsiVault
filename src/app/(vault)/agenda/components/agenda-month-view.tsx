@@ -163,7 +163,7 @@ const barsContainerStyle = {
 
 const barStyle = {
   height: "4px",
-  borderRadius: "2px",
+  borderRadius: "var(--radius-xs)",
   cursor: "pointer",
   transition: "opacity 80ms",
 } satisfies React.CSSProperties;

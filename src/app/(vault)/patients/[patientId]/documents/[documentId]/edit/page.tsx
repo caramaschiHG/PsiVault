@@ -161,7 +161,7 @@ const textareaStyle = {
   fontSize: "0.9rem",
   lineHeight: 1.75,
   padding: "1.25rem",
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   border: "1px solid rgba(146, 64, 14, 0.2)",
   background: "rgba(255, 252, 247, 0.95)",
   color: "var(--color-kbd-text)",
@@ -181,7 +181,7 @@ const submitButtonStyle = {
   color: "#fff",
   cursor: "pointer",
   padding: "0.55rem 1.25rem",
-  borderRadius: "999px",
+  borderRadius: "var(--radius-pill)",
   border: "none",
   background: "var(--color-accent)",
 } satisfies React.CSSProperties;

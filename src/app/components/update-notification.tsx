@@ -142,7 +142,7 @@ export function UpdateNotification() {
               cursor: "pointer",
               fontSize: "1.25rem",
               color: "var(--color-text-3, #a8a29e)",
-              borderRadius: "6px",
+              borderRadius: "var(--radius-xs)",
             }}
             aria-label="Fechar"
           >
@@ -159,7 +159,7 @@ export function UpdateNotification() {
                   flexShrink: 0,
                   width: "2rem",
                   height: "2rem",
-                  borderRadius: "8px",
+                  borderRadius: "var(--radius-sm)",
                   background: "rgba(154, 52, 18, 0.08)",
                   display: "flex",
                   alignItems: "center",
@@ -187,7 +187,7 @@ export function UpdateNotification() {
           style={{
             width: "100%",
             padding: "0.6rem 0",
-            borderRadius: "10px",
+            borderRadius: "var(--radius-sm)",
             border: "none",
             background: "var(--color-accent, #9a3412)",
             color: "var(--color-surface-0)",

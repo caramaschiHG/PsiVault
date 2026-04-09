@@ -94,7 +94,7 @@ const actionsStyle = {
 const archivedBadgeStyle = {
   display: "inline-block",
   padding: "0.4rem 0.85rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "var(--color-accent-light)",
   color: "var(--color-accent)",
   fontWeight: 600,
@@ -103,7 +103,7 @@ const archivedBadgeStyle = {
 
 const archiveButtonStyle = {
   border: "1px solid var(--color-border-med)",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   padding: "0.55rem 1rem",
   background: "var(--color-surface-0)",
   color: "var(--color-accent)",
@@ -122,7 +122,7 @@ const contactRowStyle = {
 const contactChipStyle = {
   display: "inline-block",
   padding: "0.3rem 0.75rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   background: "var(--color-surface-0)",
   border: "1px solid var(--color-border)",
   fontSize: "0.87rem",

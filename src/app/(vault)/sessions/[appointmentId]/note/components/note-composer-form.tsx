@@ -188,17 +188,17 @@ const formStyle: React.CSSProperties = { display: "grid", gap: "1.25rem" };
 const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" };
 const focusBtnStyle: React.CSSProperties = { background: "transparent", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 8, padding: "0.3rem 0.65rem", fontSize: "0.78rem", cursor: "pointer", color: "var(--color-text-2)" };
 
-const templateGridStyle: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.5rem", padding: "1rem", borderRadius: "14px", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.7)" };
-const templateCardStyle: React.CSSProperties = { display: "grid", gap: "0.15rem", padding: "0.75rem 1rem", borderRadius: "12px", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.95)", cursor: "pointer", textAlign: "left", transition: "border-color 120ms ease, box-shadow 120ms ease" };
+const templateGridStyle: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.5rem", padding: "1rem", borderRadius: "var(--radius-md)", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.7)" };
+const templateCardStyle: React.CSSProperties = { display: "grid", gap: "0.15rem", padding: "0.75rem 1rem", borderRadius: "var(--radius-md)", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.95)", cursor: "pointer", textAlign: "left", transition: "border-color 120ms ease, box-shadow 120ms ease" };
 
 const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.4rem" };
 const labelStyle: React.CSSProperties = { fontSize: "0.875rem", fontWeight: 600, color: "var(--color-text-1)" };
-const primaryTextareaStyle: React.CSSProperties = { width: "100%", minHeight: "200px", padding: "0.875rem 1rem", borderRadius: "12px", border: "1px solid rgba(146,64,14,0.2)", background: "rgba(255,252,247,0.95)", fontSize: "0.95rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.6", outline: "none", boxSizing: "border-box" };
+const primaryTextareaStyle: React.CSSProperties = { width: "100%", minHeight: "200px", padding: "0.875rem 1rem", borderRadius: "var(--radius-md)", border: "1px solid rgba(146,64,14,0.2)", background: "rgba(255,252,247,0.95)", fontSize: "0.95rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.6", outline: "none", boxSizing: "border-box" };
 
-const optionalSectionStyle: React.CSSProperties = { display: "grid", gap: "1rem", padding: "1.25rem", borderRadius: "16px", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.8)" };
+const optionalSectionStyle: React.CSSProperties = { display: "grid", gap: "1rem", padding: "1.25rem", borderRadius: "var(--radius-lg)", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.8)" };
 const optionalSectionHeadingStyle: React.CSSProperties = { margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-4)", textTransform: "uppercase", letterSpacing: "0.1em" };
 const optionalFieldsGridStyle: React.CSSProperties = { display: "grid", gap: "1rem" };
-const secondaryTextareaStyle: React.CSSProperties = { width: "100%", padding: "0.75rem 0.875rem", borderRadius: "10px", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.9)", fontSize: "0.875rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.55", outline: "none", boxSizing: "border-box" };
+const secondaryTextareaStyle: React.CSSProperties = { width: "100%", padding: "0.75rem 0.875rem", borderRadius: "var(--radius-sm)", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.9)", fontSize: "0.875rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.55", outline: "none", boxSizing: "border-box" };
 
 const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
 const cancelLinkStyle: React.CSSProperties = { fontSize: "0.9rem", color: "var(--color-text-3)", textDecoration: "none", fontWeight: 500 };

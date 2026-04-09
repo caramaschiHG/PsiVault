@@ -100,7 +100,7 @@ const dayHeadingStyle = {
   display: "grid",
   placeItems: "center",
   padding: "0.6rem 0.5rem",
-  borderRadius: "14px",
+  borderRadius: "var(--radius-md)",
   background: "transparent",
 } satisfies React.CSSProperties;
 
@@ -136,6 +136,6 @@ const dayCardsStyle = {
 
 const emptyDayStyle = {
   height: "3rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   border: "1px dashed rgba(146, 64, 14, 0.1)",
 } satisfies React.CSSProperties;

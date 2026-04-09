@@ -272,7 +272,7 @@ const dropZoneStyle = {
   gap: "0.4rem",
   justifyItems: "center",
   padding: "1.75rem 1.25rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   border: "2px dashed rgba(146, 64, 14, 0.25)",
   background: "rgba(255, 247, 237, 0.5)",
   cursor: "pointer",
@@ -315,7 +315,7 @@ const previewCardStyle = {
   display: "grid",
   gap: "0.5rem",
   padding: "1.1rem 1.25rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "var(--color-surface-1)",
   border: "1px solid rgba(146, 64, 14, 0.15)",
   boxShadow: "var(--shadow-md)",
@@ -390,7 +390,7 @@ const errorStyle = {
 
 const progressTrackStyle = {
   height: "3px",
-  borderRadius: "2px",
+  borderRadius: "var(--radius-xs)",
   background: "rgba(154, 52, 18, 0.15)",
   overflow: "hidden",
 } satisfies React.CSSProperties;
@@ -399,7 +399,7 @@ const progressBarStyle = {
   height: "100%",
   width: "40%",
   background: "var(--color-accent)",
-  borderRadius: "2px",
+  borderRadius: "var(--radius-xs)",
   animation: "progress-slide 1.2s ease-in-out infinite",
 } satisfies React.CSSProperties;
 

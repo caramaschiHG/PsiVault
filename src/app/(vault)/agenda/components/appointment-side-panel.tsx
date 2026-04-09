@@ -72,7 +72,7 @@ const closeButtonStyle = {
   right: "0.75rem",
   width: "2rem",
   height: "2rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid var(--color-border)",
   background: "transparent",
   cursor: "pointer",

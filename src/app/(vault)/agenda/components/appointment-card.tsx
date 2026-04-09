@@ -171,7 +171,7 @@ const chipStyle = {
   display: "inline-flex",
   alignItems: "center",
   padding: "0.22rem 0.75rem",
-  borderRadius: "100px",
+  borderRadius: "var(--radius-pill)",
   border: "1px solid",
   fontSize: "0.78rem",
   fontWeight: 600,

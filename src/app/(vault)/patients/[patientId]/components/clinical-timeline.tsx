@@ -78,7 +78,7 @@ function StatusBadge({ status }: { status: TimelineEntry["status"] }) {
 
   return (
     <span style={{
-      display: "inline-block", padding: "0.15rem 0.55rem", borderRadius: "999px",
+      display: "inline-block", padding: "0.15rem 0.55rem", borderRadius: "var(--radius-pill)",
       fontSize: "0.7rem", fontWeight: 500, background: config.bg, color: config.color,
     }}>
       {config.label}
@@ -91,7 +91,7 @@ function NoteBadge({ hasNote }: { hasNote: boolean }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: "0.2rem",
-      padding: "0.15rem 0.55rem", borderRadius: "999px",
+      padding: "0.15rem 0.55rem", borderRadius: "var(--radius-pill)",
       fontSize: "0.7rem", fontWeight: 500,
       background: "rgba(219,234,254,0.9)", color: "var(--color-note-blue)",
     }}>
@@ -114,7 +114,7 @@ function ComunicacaoGroup({ patientName, patientPhone, startsAt }: {
   const rescheduleMail = buildRescheduleMailtoUrl({ patientName, patientEmail: null, originalDate: apptDate, originalTime: apptTime });
 
   return (
-    <details style={{ marginTop: "0.5rem", padding: "0.5rem 0.75rem", borderRadius: "10px", background: "var(--color-surface-1)", border: "1px solid var(--color-border)" }}>
+    <details style={{ marginTop: "0.5rem", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-sm)", background: "var(--color-surface-1)", border: "1px solid var(--color-border)" }}>
       <summary style={{ cursor: "pointer", fontSize: "0.72rem", fontWeight: 600, color: "var(--color-brown-mid)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
         Comunicação
       </summary>
@@ -215,7 +215,7 @@ function MonthGroup({ month, entries, patientId, patientName, patientPhone, type
         margin: "0 0 0.5rem", padding: "0.25rem 0.5rem",
         fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase",
         letterSpacing: "0.1em", color: "var(--color-text-3)",
-        background: "var(--color-bg)", borderRadius: "6px",
+        background: "var(--color-bg)", borderRadius: "var(--radius-xs)",
       }}>
         {month}
       </p>
@@ -287,7 +287,7 @@ export function ClinicalTimeline({ patientId, upcoming, completed, dismissed, pa
 
           {/* Dismissed */}
           {dismissed.length > 0 && (
-            <details style={{ borderRadius: "12px", border: "1px solid rgba(146,64,14,0.12)", overflow: "hidden" }}>
+            <details style={{ borderRadius: "var(--radius-md)", border: "1px solid rgba(146,64,14,0.12)", overflow: "hidden" }}>
               <summary style={{ padding: "0.6rem 1rem", fontSize: "0.82rem", fontWeight: 500, color: "var(--color-text-3)", cursor: "pointer" }}>
                 {dismissedLabel}
               </summary>
@@ -305,7 +305,7 @@ export function ClinicalTimeline({ patientId, upcoming, completed, dismissed, pa
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const entryCardStyle: React.CSSProperties = {
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255,252,247,0.95)",
   border: "1px solid rgba(146,64,14,0.12)",
   padding: "1rem 1.25rem",
@@ -324,6 +324,6 @@ const actionLinkPrimaryStyle: React.CSSProperties = {
 
 const commLinkStyle: React.CSSProperties = {
   fontSize: "0.75rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500,
-  padding: "0.1rem 0.4rem", borderRadius: "6px",
+  padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)",
   background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.15)",
 };

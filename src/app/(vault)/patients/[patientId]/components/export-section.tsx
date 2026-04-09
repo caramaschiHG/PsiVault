@@ -136,7 +136,7 @@ export function ExportSection({ patientId, patientName }: ExportSectionProps) {
 
 const sectionStyle = {
   padding: "1.35rem 1.5rem",
-  borderRadius: "22px",
+  borderRadius: "var(--radius-lg)",
   background: "rgba(255, 247, 237, 0.85)",
   border: "1px solid rgba(146, 64, 14, 0.14)",
   display: "grid",
@@ -167,7 +167,7 @@ const descStyle = {
 const buttonStyle = {
   justifySelf: "start",
   padding: "0.5rem 1.1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(146, 64, 14, 0.3)",
   background: "transparent",
   color: "var(--color-accent)",
@@ -199,7 +199,7 @@ const labelStyle = {
 
 const inputStyle = {
   padding: "0.5rem 0.75rem",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid var(--color-taupe)",
   fontSize: "0.9rem",
   outline: "none",
@@ -214,7 +214,7 @@ const actionsStyle = {
 
 const primaryButtonStyle = {
   padding: "0.5rem 1.1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "none",
   background: "var(--color-accent)",
   color: "#fff",
@@ -225,7 +225,7 @@ const primaryButtonStyle = {
 
 const secondaryButtonStyle = {
   padding: "0.5rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid var(--color-taupe)",
   background: "transparent",
   color: "var(--color-text-2)",

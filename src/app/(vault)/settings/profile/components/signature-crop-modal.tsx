@@ -262,7 +262,7 @@ export function SignatureCropModal({ imageUrl, onConfirm, onCancel }: SignatureC
                 onCropComplete={onCropComplete}
                 initialCroppedAreaPixels={initialCrop}
                 style={{
-                  containerStyle: { borderRadius: "8px", background: "#1e1b18" },
+                  containerStyle: { borderRadius: "var(--radius-sm)", background: "#1e1b18" },
                 }}
               />
             )}
@@ -418,7 +418,7 @@ const subtitleStyle = {
 const cropAreaStyle = {
   position: "relative",
   height: "240px",
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   overflow: "hidden",
   background: "var(--color-overlay-bg)",
 } satisfies React.CSSProperties;
@@ -459,7 +459,7 @@ const resultRowStyle = {
 } satisfies React.CSSProperties;
 
 const resultPanelBase = {
-  borderRadius: "8px",
+  borderRadius: "var(--radius-sm)",
   padding: "1rem",
   display: "flex",
   flexDirection: "column" as const,

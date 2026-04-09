@@ -65,7 +65,7 @@ export function DocumentComposerForm({
           {isSessionRecord && (
             <span style={{
               display: "inline-block", marginLeft: "0.4rem", padding: "0.08rem 0.4rem",
-              borderRadius: "999px", background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)",
+              borderRadius: "var(--radius-pill)", background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)",
               fontSize: "0.68rem", fontWeight: 600, textTransform: "uppercase",
             }}>Privado</span>
           )}
@@ -103,10 +103,10 @@ export function DocumentComposerForm({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const formStyle: React.CSSProperties = { display: "grid", gap: "1.25rem" };
-const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap", padding: "0.5rem 0.75rem", borderRadius: "12px", background: "rgba(248,250,252,0.5)" };
+const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-md)", background: "rgba(248,250,252,0.5)" };
 const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.5rem" };
 const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
 const submitButtonStyle: React.CSSProperties = {
-  padding: "0.75rem 1.5rem", borderRadius: "16px", background: "var(--color-accent)", color: "var(--color-surface-0)",
+  padding: "0.75rem 1.5rem", borderRadius: "var(--radius-lg)", background: "var(--color-accent)", color: "var(--color-surface-0)",
   border: "none", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", fontFamily: "inherit",
 };

@@ -296,7 +296,7 @@ const sectionStyle = {
   display: "grid",
   gap: "1rem",
   padding: "1.5rem",
-  borderRadius: "24px",
+  borderRadius: "var(--radius-xl)",
   background: "rgba(255, 252, 247, 0.92)",
   border: "1px solid rgba(146, 64, 14, 0.14)",
   boxShadow: "0 8px 24px rgba(120, 53, 15, 0.06)",
@@ -339,7 +339,7 @@ const requiredMarkStyle = {
 } satisfies React.CSSProperties;
 
 const inputStyle = {
-  borderRadius: "16px",
+  borderRadius: "var(--radius-lg)",
   border: "1px solid rgba(120, 53, 15, 0.16)",
   padding: "0.9rem 1rem",
   background: "var(--color-surface-0)",
@@ -363,7 +363,7 @@ const daysRowStyle = {
 
 const dayBtnStyle = {
   padding: "0.35rem 0.65rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   border: "1px solid rgba(120, 53, 15, 0.2)",
   background: "transparent",
   color: "var(--color-text-3)",
@@ -386,7 +386,7 @@ const dayBtnDisabledStyle = {
 const recurrenceInfoStyle = {
   margin: 0,
   padding: "0.75rem 1rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(120, 53, 15, 0.05)",
   border: "1px solid rgba(120, 53, 15, 0.14)",
   color: "var(--color-text-3)",
@@ -397,7 +397,7 @@ const recurrenceInfoStyle = {
 const conflictWarningStyle = {
   margin: 0,
   padding: "0.75rem 1rem",
-  borderRadius: "10px",
+  borderRadius: "var(--radius-sm)",
   background: "rgba(234, 179, 8, 0.1)",
   border: "1px solid rgba(234, 179, 8, 0.35)",
   fontSize: "0.875rem",
@@ -407,7 +407,7 @@ const conflictWarningStyle = {
 const errorMessageStyle = {
   margin: 0,
   padding: "0.75rem 1rem",
-  borderRadius: "12px",
+  borderRadius: "var(--radius-md)",
   background: "rgba(220, 38, 38, 0.06)",
   border: "1px solid rgba(220, 38, 38, 0.2)",
   color: "var(--color-error-text)",
