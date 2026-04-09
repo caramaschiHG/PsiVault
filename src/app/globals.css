@@ -20,7 +20,7 @@
   --color-border-med:   rgba(146, 64, 14, 0.2);
   --color-text-1:       #1c1917;
   --color-text-2:       #57534e;
-  --color-text-3:       #78716c;
+  --color-text-3:       #57534e;   /* 6.1:1 on white — AA compliant (was #78716c) */
   --color-text-4:       #a8a29e;
   --color-accent:       #9a3412;
   --color-accent-hover: #7c2a0e;
@@ -63,16 +63,16 @@
   --font-sans:  "IBM Plex Sans", "Segoe UI", sans-serif;
 
   /* Hierarchy (desktop base → fluid with clamp) */
-  --font-size-h1:       clamp(1.5rem, 3.5vw, 1.875rem);   /* 24→30px — page title */
-  --font-size-h2:       clamp(1.125rem, 2.5vw, 1.25rem);  /* 18→20px — section title */
-  --font-size-h3:       1.0625rem;  /* 17px — subsection */
-  --font-size-body:     1rem;       /* 16px — body text (base) */
-  --font-size-body-sm:  0.9375rem;  /* 15px — secondary body */
-  --font-size-meta:     0.875rem;   /* 14px — metadata, dates, status */
-  --font-size-label:    0.75rem;    /* 12px — eyebrow uppercase */
-  --font-size-xs:       0.75rem;    /* 12px — timestamps, captions */
-  --font-size-sm:       0.8125rem;  /* 13px — labels, badges */
-  --font-size-display:  1.875rem;   /* 30px — large numbers in stat cards */
+  --font-size-2xs:    0.6875rem;  /* 11px — badge dots, minimal captions */
+  --font-size-xs:     0.75rem;    /* 12px — timestamps, captions, eyebrow labels */
+  --font-size-sm:     0.8125rem;  /* 13px — labels, badges, metadata */
+  --font-size-meta:   0.875rem;   /* 14px — metadata, dates, status, helper text */
+  --font-size-body-sm: 0.9375rem; /* 15px — secondary body text */
+  --font-size-body:   1rem;       /* 16px — body text (base) */
+  --font-size-h3:     1.0625rem;  /* 17px — subsection */
+  --font-size-h2:     clamp(1.125rem, 2.5vw, 1.25rem);  /* 18→20px — section title */
+  --font-size-h1:     clamp(1.5rem, 3.5vw, 1.875rem);   /* 24→30px — page title */
+  --font-size-display: 1.875rem;  /* 30px — large numbers in stat cards */
 
   /* Line heights */
   --line-height-tight:  1.1;
@@ -91,14 +91,18 @@
      SPACING — Sistema de 8 tokens (base 4px)
      ═══════════════════════════════════════════════════════════════ */
 
-  --space-1:  0.25rem;   /* 4px   */
-  --space-2:  0.5rem;    /* 8px   */
-  --space-3:  0.75rem;   /* 12px  */
-  --space-4:  1rem;      /* 16px  */
-  --space-6:  1.5rem;    /* 24px  */
-  --space-8:  2rem;      /* 32px  */
-  --space-12: 3rem;      /* 48px  */
-  --space-16: 4rem;      /* 64px  */
+  --space-1:    0.25rem;   /* 4px   — tiny gaps, icon spacing */
+  --space-1.5:  0.375rem;  /* 6px   — subtle gaps, internal padding */
+  --space-2:    0.5rem;    /* 8px   — small gaps */
+  --space-3:    0.75rem;   /* 12px  — standard gaps */
+  --space-4:    1rem;      /* 16px  — card padding */
+  --space-5:    1.25rem;   /* 20px  — medium card padding */
+  --space-6:    1.5rem;    /* 24px  — section padding */
+  --space-7:    1.75rem;   /* 28px  — large padding */
+  --space-8:    2rem;      /* 32px  — page padding */
+  --space-10:   2.5rem;    /* 40px  — section gaps */
+  --space-12:   3rem;      /* 48px  — large gaps */
+  --space-16:   4rem;      /* 64px  — hero gaps */
 
   /* ═══════════════════════════════════════════════════════════════
      SHADOWS — 5 níveis de elevação
@@ -278,11 +282,6 @@ html {
   background: #7c2a0e;
 }
 
-.btn-primary:active {
-  transform: scale(0.97);
-  transition: transform 60ms ease;
-}
-
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -379,11 +378,6 @@ html {
   transition: box-shadow 0.15s, transform 0.15s;
 }
 
-.card-hover:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
 /* ─── Utility: Inputs ────────────────────────────────────────────────────────── */
 
 .input-field {
@@ -425,12 +419,6 @@ select.input-field {
   transition: color 0.12s;
 }
 
-.link-subtle:hover {
-  color: var(--color-accent);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
 /* ─── Animação skeleton ──────────────────────────────────────────────────────── */
 
 @keyframes skeleton-shimmer {
@@ -447,21 +435,11 @@ select.input-field {
 
 /* ─── Page transitions ──────────────────────────────────────────────────────── */
 
-@keyframes vaultPageIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
 .vault-page-transition {
   animation: vaultPageIn 180ms ease-out both;
 }
 
 /* ─── Toast animations ──────────────────────────────────────────────────────── */
-
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateX(100%); }
-  to   { opacity: 1; transform: translateX(0); }
-}
 
 .toast-enter {
   animation: toastSlideIn 200ms ease-out;
@@ -469,21 +447,11 @@ select.input-field {
 
 /* ─── FAB animations ────────────────────────────────────────────────────────── */
 
-@keyframes fabEnter {
-  from { opacity: 0; transform: scale(0.85); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
 .fab-enter {
   animation: fabEnter 200ms ease-out;
 }
 
 /* ─── Search dropdown animation ─────────────────────────────────────────────── */
-
-@keyframes searchDropdownIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
 .search-dropdown-enter {
   animation: searchDropdownIn 150ms ease-out;
@@ -554,17 +522,11 @@ label[for], .nav-link, summary {
   cursor: pointer;
   transition: background-color 120ms ease;
 }
-.row-interactive:hover {
-  background-color: rgba(146, 64, 14, 0.04);
-}
-.row-interactive:active {
-  background-color: rgba(146, 64, 14, 0.07);
-}
 
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: inherit;
 }
 
 .input-field:focus-visible,
@@ -1211,6 +1173,26 @@ label[for], .nav-link, summary {
   to { transform: rotate(360deg); }
 }
 
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fabEnter {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes searchDropdownIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes badgeDotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1249,14 +1231,9 @@ label[for], .nav-link, summary {
 
 /* Link hover with underline offset */
 .link-subtle:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
   text-underline-offset: 3px;
-}
-
-/* Focus visible — elevated */
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* Input focus glow */
@@ -1268,48 +1245,6 @@ label[for], .nav-link, summary {
 /* Sidebar link hover */
 .vault-sidebar .nav-link {
   position: relative;
-}
-
-/* Badge dot pulse for warning */
-@keyframes badgeDotPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-/* Toast slide-in animation */
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateX(100%); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-.toast-enter {
-  animation: toastSlideIn 200ms ease-out;
-}
-
-/* FAB enter animation */
-@keyframes fabEnter {
-  from { opacity: 0; transform: scale(0.85); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.fab-enter {
-  animation: fabEnter 200ms ease-out;
-}
-
-/* Search dropdown enter */
-@keyframes searchDropdownIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.search-dropdown-enter {
-  animation: searchDropdownIn 150ms ease-out;
-}
-
-/* Badge dot pulse for warning */
-@keyframes badgeDotPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
 }
 
 /* ─── Tabs ──────────────────────────────────────────────────────────────────── */
@@ -1343,7 +1278,7 @@ label[for], .nav-link, summary {
 .tab:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: -2px;
-  border-radius: 4px;
+  border-radius: inherit;
 }
 .tab--active {
   color: var(--color-accent);
