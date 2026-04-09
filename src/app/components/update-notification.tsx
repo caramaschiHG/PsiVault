@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useNotifications } from "@/components/ui/notification-context";
 
 const STORAGE_KEY = "psivault_update_seen_v3";
 
@@ -66,15 +67,26 @@ const FEATURES = [
 
 export function UpdateNotification() {
   const [visible, setVisible] = useState(false);
+  const { addNotification } = useNotifications();
 
   useEffect(() => {
     const seen = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
     if (!seen) {
+      // Register notification in context
+      addNotification({
+        title: "PsiVault ficou mais fluido",
+        description: "6 melhorias: botões com feedback, loading states, financeiro com ações, transições, toasts e gráfico.",
+        icon: (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+        ),
+      });
       // Small delay so it doesn't compete with initial paint
       const timer = setTimeout(() => setVisible(true), 800);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [addNotification]);
 
   const handleDismiss = () => {
     localStorage.setItem(STORAGE_KEY, "1");

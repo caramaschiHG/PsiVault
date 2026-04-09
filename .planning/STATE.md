@@ -46,13 +46,31 @@
 - [x] FASE 9: globals.css
 - [x] FASE 10: Micro-interações
 - [x] FASE 12: Double Check & QA
+- [x] FASE 13: Foundation Tokens (z-index, spacing, font-size, contrast, focus, cleanup)
+- [x] FASE 14.1: Colors → CSS variables (200+ migrated)
+- [x] FASE 14.2: Border-radius → tokens (146+ migrated)
+- [x] FASE 14.5: Shadows → tokens (25+ migrated)
+- [x] FASE 15: Component Polish (SVG icons, focus trap, toast dismiss, hover states)
 
-## Planned Phases (Round 3)
-- [ ] FASE 13: Foundation Tokens (6.2 → 7.2) — 8 tasks
-- [ ] FASE 14: Inline Styles → Token Migration (7.2 → 8.4) — 6 tasks
-- [ ] FASE 15: Component Polish & Acessibilidade (8.4 → 9.0) — 12 tasks
-- [ ] FASE 16: UX Flow & Interaction Polish (9.0 → 9.4) — 7 tasks
-- [ ] FASE 17: Performance & QA Final (9.4 → 9.6+) — 8 tasks
+## Pending Phases (Round 3)
+- [ ] FASE 14.3: Padding/margin → tokens (iterative)
+- [ ] FASE 14.4: Font-size → tokens (iterative)
+- [ ] FASE 14.6: Transition → tokens (iterative)
+- [ ] FASE 15.2: RTE SVG icons (17 buttons — deferred)
+- [ ] FASE 15.11: Focus mode React state (deferred)
+- [ ] FASE 16: UX Flow Polish
+- [ ] FASE 17: Performance & QA Final
+
+## Commits Round 3
+- 3ed1e5c ux(tokens): add z-index token system, migrate all hardcoded values
+- 0a82025 ux(tokens): harden foundation tokens, clean duplicate CSS
+- f4a61a1 ux(colors): migrate hex colors to CSS variables (200+ colors, 53 files)
+- 187d796 ux(radius): migrate border-radius to tokens (146+ values, 48 files)
+- ed52cf2 docs(planning): add UX Round 3 phase plans and discussion docs
+- 03754ac ux(shadows): migrate shadows to tokens (25+ shadows, 20 files)
+- ac1240a ux(icons): replace emojis with SVG icons in AutoSaveIndicator, NoteBadge
+- 41bc4d4 ux(components): polish hover states, focus trap, toast dismiss
+- 6079b7c ux(rte): replace text labels with SVG icons in toolbar, add hover states
 
 ## Pending Phases (legacy)
 - [ ] FASE 5: Agenda (complex — needs dedicated session)
