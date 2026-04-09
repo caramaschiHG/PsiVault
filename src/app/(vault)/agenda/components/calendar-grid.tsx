@@ -252,7 +252,7 @@ function CurrentTimeIndicator({
         right: 0,
         height: "2px",
         background: "#dc2626",
-        zIndex: 10,
+        zIndex: "var(--z-base)",
         pointerEvents: "none",
       }}
       aria-hidden="true"

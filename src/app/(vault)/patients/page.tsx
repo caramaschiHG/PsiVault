@@ -94,7 +94,7 @@ export default async function PatientsPage() {
           boxShadow: "var(--shadow-lg)",
           fontSize: "1.5rem",
           textDecoration: "none",
-          zIndex: 90,
+          zIndex: "var(--z-dropdown)",
         } satisfies React.CSSProperties}
         aria-label="Adicionar paciente"
       >

@@ -209,7 +209,7 @@ const popoverStyle = {
   borderRadius: "var(--radius-lg)",
   boxShadow: "var(--shadow-md)",
   padding: "1rem",
-  zIndex: 200,
+  zIndex: "var(--z-dropdown)",
   fontSize: "0.85rem",
 } satisfies React.CSSProperties;
 

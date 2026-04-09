@@ -37,7 +37,7 @@ export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlo
     boxSizing: "border-box",
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 100 : 1,
+    zIndex: isDragging ? "var(--z-dropdown)" : "var(--z-base)",
     cursor: isFinalized ? "default" : "grab",
     touchAction: "none",
   };

@@ -211,7 +211,7 @@ function MonthGroup({ month, entries, patientId, patientName, patientPhone, type
   return (
     <div style={{ position: "relative" }}>
       <p style={{
-        position: "sticky", top: 0, zIndex: 1,
+        position: "sticky", top: 0, zIndex: "var(--z-base)",
         margin: "0 0 0.5rem", padding: "0.25rem 0.5rem",
         fontSize: "0.7rem", fontWeight: 600, textTransform: "uppercase",
         letterSpacing: "0.1em", color: "var(--color-text-3)",

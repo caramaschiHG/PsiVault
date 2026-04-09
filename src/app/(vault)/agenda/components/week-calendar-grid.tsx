@@ -287,7 +287,7 @@ const headerRowStyle = {
   borderBottom: "1px solid var(--color-border)",
   position: "sticky" as const,
   top: 0,
-  zIndex: 10,
+  zIndex: "var(--z-base)",
   background: "var(--color-surface-1)",
 } satisfies React.CSSProperties;
 

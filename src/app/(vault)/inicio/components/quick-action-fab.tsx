@@ -7,7 +7,7 @@ const fabContainerStyle = {
   position: "fixed",
   bottom: "5rem",
   right: "1.5rem",
-  zIndex: 50,
+  zIndex: "var(--z-overlay)",
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-end",

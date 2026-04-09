@@ -643,7 +643,7 @@ const toastStyle: React.CSSProperties = {
   color: "#fff",
   fontSize: "0.875rem",
   fontWeight: 600,
-  zIndex: 9999,
+  zIndex: "var(--z-toast)",
   animation: "fadeIn 0.2s ease-out",
 };
 
@@ -984,7 +984,7 @@ const paymentPopoverStyle: React.CSSProperties = {
   position: "absolute",
   right: 0,
   top: "100%",
-  zIndex: 100,
+  zIndex: "var(--z-dropdown)",
   padding: "0.75rem",
   borderRadius: "var(--radius-md, 8px)",
   background: "#fff",

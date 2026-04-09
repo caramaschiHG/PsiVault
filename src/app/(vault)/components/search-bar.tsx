@@ -190,7 +190,7 @@ const dropdownStyle: React.CSSProperties = {
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-md)",
   boxShadow: "var(--shadow-lg)",
-  zIndex: 50,
+  zIndex: "var(--z-dropdown)",
   padding: "0.375rem 0",
   maxHeight: "380px",
   overflowY: "auto",

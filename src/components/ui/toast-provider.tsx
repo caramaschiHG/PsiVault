@@ -89,7 +89,7 @@ const containerStyle = {
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
-  zIndex: 9999,
+  zIndex: "var(--z-toast)",
   pointerEvents: "none",
 } satisfies React.CSSProperties;
 

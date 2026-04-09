@@ -47,7 +47,7 @@ export function AppointmentSidePanel({ appointmentId, panels, onClose }: Appoint
 const overlayStyle = {
   position: "fixed",
   inset: 0,
-  zIndex: 199,
+  zIndex: "var(--z-sticky)",
   background: "rgba(0, 0, 0, 0.18)",
 } satisfies React.CSSProperties;
 
@@ -58,7 +58,7 @@ const drawerStyle = {
   height: "100%",
   width: "22rem",
   maxWidth: "100vw",
-  zIndex: 200,
+  zIndex: "var(--z-sticky)",
   background: "var(--color-surface-1)",
   borderLeft: "1px solid var(--color-border)",
   boxShadow: "-4px 0 24px rgba(0,0,0,0.1)",

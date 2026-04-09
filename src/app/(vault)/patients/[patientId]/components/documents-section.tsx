@@ -74,7 +74,7 @@ function DocumentRow({ doc, patientName, patientPhone }: { doc: PracticeDocument
               background: "rgba(255,247,237,0.6)", border: "1px solid rgba(146,64,14,0.2)",
             }}>Enviar</summary>
             <div style={{
-              position: "absolute", right: 0, top: "100%", zIndex: 10,
+              position: "absolute", right: 0, top: "100%", zIndex: "var(--z-dropdown)",
               display: "flex", gap: "0.3rem", padding: "0.4rem",
               borderRadius: "8px", background: "#fff", border: "1px solid rgba(146,64,14,0.15)",
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",

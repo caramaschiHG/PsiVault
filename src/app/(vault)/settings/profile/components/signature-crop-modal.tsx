@@ -369,7 +369,7 @@ const overlayStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  zIndex: 1000,
+  zIndex: "var(--z-modal)",
   padding: "1rem",
 } satisfies React.CSSProperties;
 
@@ -431,7 +431,7 @@ const silentDetectStyle = {
   alignItems: "center",
   justifyContent: "center",
   background: "#1e1b18",
-  zIndex: 1,
+  zIndex: "var(--z-base)",
 } satisfies React.CSSProperties;
 
 const loadingOverlayStyle = {
@@ -443,7 +443,7 @@ const loadingOverlayStyle = {
   justifyContent: "center",
   gap: "0.65rem",
   background: "#1e1b18",
-  zIndex: 1,
+  zIndex: "var(--z-base)",
 } satisfies React.CSSProperties;
 
 const loadingLabelStyle = {

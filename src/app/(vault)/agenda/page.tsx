@@ -644,7 +644,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           boxShadow: "var(--shadow-lg)",
           fontSize: "1.5rem",
           textDecoration: "none",
-          zIndex: 90,
+          zIndex: "var(--z-dropdown)",
         } satisfies React.CSSProperties}
         aria-label="Agendar sessão"
       >

@@ -91,7 +91,7 @@ export function UpdateNotification() {
           position: "fixed",
           inset: 0,
           background: "rgba(0, 0, 0, 0.3)",
-          zIndex: 1000,
+          zIndex: "var(--z-modal)",
           transition: "opacity 200ms",
         }}
         onClick={handleDismiss}
@@ -114,7 +114,7 @@ export function UpdateNotification() {
           borderRadius: "var(--radius-xl, 16px)",
           border: "1px solid var(--color-border, #e7e5e4)",
           boxShadow: "0 24px 48px rgba(0, 0, 0, 0.12)",
-          zIndex: 1001,
+          zIndex: "var(--z-toast)",
           padding: "1.5rem",
           animation: "slideUp 250ms ease-out",
         }}

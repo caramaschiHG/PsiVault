@@ -147,6 +147,19 @@
   --transition-normal:    150ms ease;
   --transition-slow:      250ms ease;
 
+  /* ═══════════════════════════════════════════════════════════════
+     Z-INDEX — Escala de elevação (8 níveis)
+     ═══════════════════════════════════════════════════════════════ */
+
+  --z-base:       1;      /* Sticky headers dentro de content, calendar layers */
+  --z-dropdown:   100;    /* Dropdown menus, popovers, search results */
+  --z-sticky:     200;    /* Side panels, bottom nav, sticky elements */
+  --z-overlay:    300;    /* Overlays especiais, FAB actions */
+  --z-modal:      400;    /* Modals, dialogs, sheets, crop modals */
+  --z-toast:      500;    /* Toast notifications, update banners */
+  --z-skip-link:  900;    /* Skip link (accessibility emergency) */
+  --z-max:        9999;   /* Emergências apenas — evitar uso direto */
+
   /* Auth pages */
   --auth-card-width: min(460px, 100%);
   --auth-card-width-wide: min(520px, 100%);
@@ -511,7 +524,7 @@ select.input-field {
   padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
   font-weight: 600;
-  z-index: 9999;
+  z-index: var(--z-skip-link);
   text-decoration: none;
   border: 1px solid var(--color-border-med);
 }
@@ -583,7 +596,7 @@ label[for], .nav-link, summary {
   display: none; /* oculto por padrão em desktop */
   align-items: center;
   justify-content: space-around;
-  z-index: 100;
+  z-index: var(--z-sticky);
   padding: 0 0.5rem;
 }
 
