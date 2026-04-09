@@ -161,30 +161,53 @@ interface ListEmptyProps {
   style?: CSSProperties;
 }
 
+const defaultIcon = (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="17 8 12 3 7 8"/>
+    <line x1="12" y1="3" x2="12" y2="15"/>
+  </svg>
+);
+
 const emptyStyle: CSSProperties = {
   display: "flex",
+  flexDirection: "column",
   alignItems: "center",
+  textAlign: "center",
   gap: "var(--space-3)",
-  padding: "var(--space-6)",
-  borderRadius: "var(--radius-md)",
+  padding: "var(--space-8) var(--space-6)",
+  borderRadius: "var(--radius-lg)",
   background: "var(--color-surface-3)",
-  flexWrap: "wrap",
+  border: "1px dashed var(--color-border)",
 };
 
-const emptyTextStyle: CSSProperties = {
+const emptyIconStyle: CSSProperties = {
+  color: "var(--color-text-4)",
+  opacity: 0.5,
+};
+
+const emptyTitleStyle: CSSProperties = {
   margin: 0,
+  fontSize: "var(--font-size-body)",
+  fontWeight: 600,
+  color: "var(--color-text-2)",
+};
+
+const emptyDescStyle: CSSProperties = {
+  margin: "var(--space-1) 0 0",
   fontSize: "var(--font-size-body-sm)",
   color: "var(--color-text-3)",
-  flex: 1,
+  lineHeight: 1.5,
 };
 
 const emptyActionStyle: CSSProperties = {
   fontSize: "var(--font-size-sm)",
-  padding: "var(--space-2) var(--space-3)",
+  padding: "var(--space-2) var(--space-4)",
+  marginTop: "var(--space-1)",
 };
 
 export function ListEmpty({
-  icon,
+  icon = defaultIcon,
   title,
   description,
   actionLabel,
@@ -194,10 +217,10 @@ export function ListEmpty({
 }: ListEmptyProps) {
   return (
     <div className={className} style={{ ...emptyStyle, ...style }}>
-      {icon && <div style={{ color: "var(--color-text-4)", flexShrink: 0 }}>{icon}</div>}
-      <div style={{ flex: 1 }}>
-        <p style={{ ...emptyTextStyle, fontWeight: 500 }}>{title}</p>
-        {description && <p style={{ ...emptyTextStyle, marginTop: "var(--space-1)" }}>{description}</p>}
+      <div style={emptyIconStyle}>{icon}</div>
+      <div>
+        <p style={emptyTitleStyle}>{title}</p>
+        {description && <p style={emptyDescStyle}>{description}</p>}
       </div>
       {actionLabel && actionHref && (
         <a href={actionHref} className="btn-secondary" style={emptyActionStyle}>
