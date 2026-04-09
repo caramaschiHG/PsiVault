@@ -559,160 +559,15 @@ label[for], .nav-link, summary {
   outline: none;
 }
 
-/* ─── Vault shell ──────────────────────────────────────────────────────────────── */
-
-.vault-shell {
-  display: flex;
-  min-height: 100vh;
-  background-color: var(--color-bg);
-}
-
-/* Sidebar — desktop */
-.vault-sidebar {
-  width: 240px;
-  min-height: 100vh;
-  background-color: var(--color-sidebar-bg);
-  display: flex;
-  flex-direction: "column";
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-  transition: transform 0.3s ease;
-}
-
-.vault-brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-6) var(--space-4) var(--space-4);
-}
-
-.vault-brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.vault-brand-icon svg {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.vault-brand-text {
-  display: grid;
-  gap: 0.15rem;
-}
-
-.vault-brand-name {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.2;
-}
-
-.vault-brand-tagline {
-  margin: 0;
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
-  line-height: 1;
-}
-
-.vault-sidebar-search {
-  padding: var(--space-3);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  margin-top: auto;
-}
-
-/* Content area */
-.vault-content {
-  flex: 1;
-  min-width: 0;
-  background: var(--color-bg);
-}
-
-/* Page enter animation */
-.vault-page-enter {
-  animation: vaultPageIn 200ms ease-out both;
-}
+/* ─── Page enter animation ───────────────────────────────────────────────────── */
 
 @keyframes vaultPageIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Sidebar dark context ───────────────────────────────────────────────────── */
-
-.vault-sidebar .nav-link {
-  color: rgba(255, 255, 255, 0.75);
-  transition: background-color 150ms ease, color 150ms ease;
-  line-height: 1.4;
-  letter-spacing: 0.005em;
-}
-
-.vault-sidebar .nav-link:hover {
-  color: rgba(255, 255, 255, 0.95);
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.vault-sidebar .nav-link.active {
-  color: rgba(255, 255, 255, 0.98);
-  background-color: rgba(255, 255, 255, 0.12);
-  font-weight: 600;
-  box-shadow: inset 2px 0 0 rgba(253, 186, 116, 0.7);
-}
-
-/* ─── Focus mode ─────────────────────────────────────────────────────────────── */
-
-.vault-sidebar.collapsed {
-  width: 0 !important;
-  overflow: hidden;
-  transition: width 0.25s ease;
-}
-
-/* ─── Responsividade vault ───────────────────────────────────────────────────── */
-
-@media (max-width: 767px) {
-  .vault-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 200;
-    transform: translateX(-100%);
-    box-shadow: var(--shadow-xl);
-  }
-
-  .vault-sidebar.open {
-    transform: translateX(0);
-  }
-
-  .vault-sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 199;
-  }
-
-  .vault-bottom-nav {
-    display: flex !important;
-  }
-
-  .vault-content {
-    padding-bottom: 6rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .vault-bottom-nav {
-    display: none !important;
-  }
+.vault-page-enter {
+  animation: vaultPageIn 200ms ease-out both;
 }
 
 /* ─── Bottom nav mobile ──────────────────────────────────────────────────────── */
@@ -1438,20 +1293,8 @@ label[for], .nav-link, summary {
   animation: searchDropdownIn 150ms ease-out;
 }
 
-/* Skeleton shimmer */
-@keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-.skeleton-shimmer {
-  background: linear-gradient(90deg, #f0ebe2 25%, #e8e2d9 50%, #f0ebe2 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.4s ease infinite;
-  border-radius: var(--radius-sm);
-}
-
-/* Spin animation for loading spinners */
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* Badge dot pulse for warning */
+@keyframes badgeDotPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
