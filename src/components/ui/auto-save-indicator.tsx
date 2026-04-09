@@ -11,11 +11,35 @@ import { useEffect, useRef, useState } from "react";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
-const CONFIG: Record<SaveStatus, { icon: string; color: string; bg: string }> = {
-  idle: { icon: "✓", color: "var(--color-success-text)", bg: "rgba(240,253,244,0.95)" },
-  saving: { icon: "⟳", color: "var(--color-brown-mid)", bg: "rgba(254,243,199,0.95)" },
-  saved: { icon: "✓", color: "var(--color-success-text)", bg: "rgba(240,253,244,0.95)" },
-  error: { icon: "!", color: "var(--color-error-text)", bg: "rgba(254,226,226,0.95)" },
+function CheckCircleIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+  );
+}
+
+function LoaderIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ animation: "spin 0.6s linear infinite" }}>
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+  );
+}
+
+function AlertTriangleIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+  );
+}
+
+const CONFIG: Record<SaveStatus, { icon: React.ReactNode; color: string; bg: string }> = {
+  idle: { icon: <CheckCircleIcon />, color: "var(--color-success-text)", bg: "rgba(240,253,244,0.95)" },
+  saving: { icon: <LoaderIcon />, color: "var(--color-brown-mid)", bg: "rgba(254,243,199,0.95)" },
+  saved: { icon: <CheckCircleIcon />, color: "var(--color-success-text)", bg: "rgba(240,253,244,0.95)" },
+  error: { icon: <AlertTriangleIcon />, color: "var(--color-error-text)", bg: "rgba(254,226,226,0.95)" },
 };
 
 function formatRelative(date: Date): string {
@@ -52,11 +76,11 @@ export function AutoSaveIndicator({ status, lastSaved, className = "" }: {
         color: cfg.color,
         fontSize: "0.72rem",
         fontWeight: 500,
-        transition: "all 150ms ease",
+        transition: "opacity 150ms ease, background-color 150ms ease, color 150ms ease",
       }}
       aria-live="polite"
     >
-      <span style={{ fontSize: "0.8rem", lineHeight: 1 }}>{cfg.icon}</span>
+      <span style={{ lineHeight: 1, display: "flex" }}>{cfg.icon}</span>
       <span>{labels[status]}</span>
     </div>
   );

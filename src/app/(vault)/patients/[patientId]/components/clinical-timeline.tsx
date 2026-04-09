@@ -93,9 +93,12 @@ function NoteBadge({ hasNote }: { hasNote: boolean }) {
       display: "inline-flex", alignItems: "center", gap: "0.2rem",
       padding: "0.15rem 0.55rem", borderRadius: "var(--radius-pill)",
       fontSize: "0.7rem", fontWeight: 500,
-      background: "rgba(219,234,254,0.9)", color: "var(--color-note-blue)",
+      background: "var(--color-note-badge-bg)", color: "var(--color-note-blue)",
     }}>
-      <span style={{ fontSize: "0.65rem" }}>📝</span> Prontuário
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><line x1="12" x2="12" y1="18" y2="12"/><line x1="9" x2="15" y1="15" y2="15"/>
+      </svg>
+      Prontuário
     </span>
   );
 }
