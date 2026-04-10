@@ -6,9 +6,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
 } from "@dnd-kit/core";
 import type { DragEndEvent } from "@dnd-kit/core";
-import { useDroppable } from "@dnd-kit/core";
 import { layoutGridBlocks } from "../../../../lib/appointments/grid-layout";
 import type { GridBlock, GridLayoutOptions, PositionedBlock } from "../../../../lib/appointments/grid-layout";
 import { AppointmentBlock } from "./appointment-block";
@@ -87,12 +87,10 @@ export function WeekCalendarGrid({
     if (!over) return;
 
     const overId = String(over.id);
-    if (!overId.startsWith("slot-")) return;
+    if (!overId.startsWith("column-")) return;
 
-    // "slot-2026-03-20T14:00" → "2026-03-20T14:00:00.000Z"
-    const isoDatetime = overId.replace("slot-", "") + ":00.000Z";
-    const newStartsAt = new Date(isoDatetime);
-    if (isNaN(newStartsAt.getTime())) return;
+    // Extract date from column id: "column-2026-03-20"
+    const dateStr = overId.replace("column-", "");
 
     // Find the dragged block across all day columns
     let dragged: PositionedBlock | undefined;
@@ -101,6 +99,11 @@ export function WeekCalendarGrid({
       if (dragged) break;
     }
     if (!dragged) return;
+
+    // Parse the original time and create new datetime with dropped date
+    const originalTime = new Date(dragged.startsAtIso);
+    const newStartsAt = new Date(`${dateStr}T${String(originalTime.getUTCHours()).padStart(2, "0")}:${String(originalTime.getUTCMinutes()).padStart(2, "0")}:00.000Z`);
+    if (isNaN(newStartsAt.getTime())) return;
 
     const formData = new FormData();
     formData.set("appointmentId", dragged.appointmentId);
@@ -162,54 +165,19 @@ export function WeekCalendarGrid({
             {days.map((day, dayIndex) => {
               const positioned = positionedByDay[day.dateStr] ?? [];
 
-              const slots: string[] = [];
-              for (let h = dayStartHour; h < dayEndHour; h++) {
-                for (let m = 0; m < 60; m += SLOT_MINUTES) {
-                  const hh = String(h).padStart(2, "0");
-                  const mm = String(m).padStart(2, "0");
-                  slots.push(`slot-${day.dateStr}T${hh}:${mm}`);
-                }
-              }
-
               return (
-                <div
+                <DroppableColumn
                   key={day.dateStr}
-                  style={{
-                    position: "relative",
-                    height: containerHeight,
-                    borderLeft:
-                      dayIndex === 0
-                        ? "1px solid var(--color-border)"
-                        : "1px solid var(--color-border)",
-                  }}
-                >
-                  {/* Hour dividers */}
-                  {hours.map((h) => {
-                    const topPx = (h - dayStartHour) * 60 * pixelsPerMinute;
-                    return <div key={h} style={{ ...hourLineStyle, top: topPx }} />;
-                  })}
-
-                  {/* Droppable 15-min slots */}
-                  {slots.map((slotId) => (
-                    <DroppableSlot
-                      key={slotId}
-                      id={slotId}
-                      dayStartHour={dayStartHour}
-                      pixelsPerMinute={pixelsPerMinute}
-                      onClick={onSlotClick}
-                    />
-                  ))}
-
-                  {/* Positioned appointment blocks */}
-                  {positioned.map((b) => (
-                    <AppointmentBlock
-                      key={b.appointmentId}
-                      block={b}
-                      patientName={patientNames[b.patientId] ?? "—"}
-                      onClick={setSelectedId}
-                    />
-                  ))}
-                </div>
+                  dateStr={day.dateStr}
+                  dayIndex={dayIndex}
+                  dayStartHour={dayStartHour}
+                  pixelsPerMinute={pixelsPerMinute}
+                  containerHeight={containerHeight}
+                  positioned={positioned}
+                  patientNames={patientNames}
+                  onSelectAppointment={setSelectedId}
+                  onSlotClick={onSlotClick}
+                />
               );
             })}
           </div>
@@ -225,48 +193,73 @@ export function WeekCalendarGrid({
   );
 }
 
-// ─── DroppableSlot ────────────────────────────────────────────────────────────
+// ─── DroppableColumn (replaces 96 DroppableSlots per day) ─────────────────────
 
-interface DroppableSlotProps {
-  id: string;
+interface DroppableColumnProps {
+  dateStr: string;
+  dayIndex: number;
   dayStartHour: number;
   pixelsPerMinute: number;
-  onClick?: SlotClickHandler;
+  containerHeight: number;
+  positioned: PositionedBlock[];
+  patientNames: Record<string, string>;
+  onSelectAppointment: (id: string) => void;
+  onSlotClick?: SlotClickHandler;
 }
 
-function DroppableSlot({ id, dayStartHour, pixelsPerMinute, onClick }: DroppableSlotProps) {
-  const { setNodeRef, isOver } = useDroppable({ id });
-
-  // "slot-2026-03-16T09:15" → time part "09:15"
-  const timePart = id.replace(/^slot-[^T]+T/, "");
-  const [hStr, mStr] = timePart.split(":");
-  const slotMinutes = (Number(hStr) - dayStartHour) * 60 + Number(mStr);
-  const topPx = slotMinutes * pixelsPerMinute;
-  const slotHeightPx = SLOT_MINUTES * pixelsPerMinute;
+function DroppableColumn({
+  dateStr,
+  dayIndex,
+  dayStartHour,
+  pixelsPerMinute,
+  containerHeight,
+  positioned,
+  patientNames,
+  onSelectAppointment,
+  onSlotClick,
+}: DroppableColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({ id: `column-${dateStr}` });
 
   const handleClick = (e: React.MouseEvent) => {
-    if (!onClick) return;
-    // Parse slot datetime from id: "slot-{dayIdx}-2026-03-16T09:15" or "slot-2026-03-16T09:15"
-    const dateTimePart = id.replace(/^slot-\d+-/, "").replace(/^slot-/, "");
-    const isoStartsAt = `${dateTimePart}:00.000Z`;
-    onClick(isoStartsAt, { top: e.clientY, left: e.clientX });
+    if (!onSlotClick) return;
+    const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+    const y = e.clientY - rect.top + (e.currentTarget.closest("[style]")?.scrollTop ?? 0);
+    const slotMinutes = Math.floor(y / pixelsPerMinute);
+    const totalMinutesFromMidnight = slotMinutes * SLOT_MINUTES + dayStartHour * 60;
+    const hh = String(Math.floor(totalMinutesFromMidnight / 60)).padStart(2, "0");
+    const mm = String(totalMinutesFromMidnight % 60).padStart(2, "0");
+    const isoStartsAt = `${dateStr}T${hh}:${mm}:00.000Z`;
+    onSlotClick(isoStartsAt, { top: e.clientY, left: e.clientX });
   };
 
   return (
     <div
       ref={setNodeRef}
-      onClick={handleClick}
+      onClick={onSlotClick ? handleClick : undefined}
       style={{
-        position: "absolute",
-        top: topPx,
-        left: 0,
-        right: 0,
-        height: slotHeightPx,
-        background: isOver ? "rgba(154, 52, 18, 0.06)" : "transparent",
+        position: "relative",
+        height: containerHeight,
+        borderLeft: "1px solid var(--color-border)",
+        background: isOver ? "rgba(154, 52, 18, 0.04)" : "transparent",
         transition: "background 80ms",
-        cursor: onClick ? "pointer" : "default",
       }}
-    />
+    >
+      {/* Hour dividers */}
+      {Array.from({ length: Math.round(containerHeight / (60 * pixelsPerMinute)) }, (_, i) => {
+        const topPx = i * 60 * pixelsPerMinute;
+        return <div key={i} style={{ ...hourLineStyle, top: topPx }} />;
+      })}
+
+      {/* Positioned appointment blocks */}
+      {positioned.map((b) => (
+        <AppointmentBlock
+          key={b.appointmentId}
+          block={b}
+          patientName={patientNames[b.patientId] ?? "—"}
+          onClick={onSelectAppointment}
+        />
+      ))}
+    </div>
   );
 }
 

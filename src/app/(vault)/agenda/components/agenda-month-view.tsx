@@ -48,16 +48,10 @@ export function AgendaMonthView({
           return (
             <div
               key={dateStr}
+              className="month-cal-cell"
               style={{
                 ...cellStyle,
                 opacity: day.isCurrentMonth ? 1 : 0.35,
-                minHeight: idx % 7 === 0 ? "90px" : "80px",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.background = "var(--color-surface-0)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.background = "transparent";
               }}
             >
               {/* Day number */}
@@ -75,13 +69,19 @@ export function AgendaMonthView({
                 {displayCards.map((card) => (
                   <div
                     key={card.appointmentId}
+                    className="month-cal-bar"
                     style={{
-                      ...barStyle,
                       backgroundColor: STATUS_BAR_COLORS[card.status] ?? "var(--color-text-3)",
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
                       onAppointmentClick(card.appointmentId);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onAppointmentClick(card.appointmentId);
+                      }
                     }}
                     title={`${patientNames[card.patientId] ?? "Paciente"} — ${card.statusLabel}`}
                     role="button"

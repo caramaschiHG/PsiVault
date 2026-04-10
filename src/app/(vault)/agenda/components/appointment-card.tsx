@@ -4,7 +4,7 @@
  * Displays the essentials at a glance:
  * - Time window (start and end)
  * - Status chip (color-coded, clear copy)
- * - Care mode chip (icon + label so Presencial vs Online is fast to parse)
+ * - Care mode chip (SVG icon + label so Presencial vs Online is fast to parse)
  *
  * Privacy: receives only AgendaCard data — no clinical details, no
  * importantObservations, no notes. Patient name is resolved from patientId
@@ -27,12 +27,12 @@ const STATUS_COLORS: Record<string, { background: string; color: string; border:
   },
   COMPLETED: {
     background: "var(--status-completed-bg)",
-    color: "var(--color-warning-text)",
+    color: "var(--color-text-3)",
     border: "var(--status-completed-border)",
   },
   CANCELED: {
     background: "var(--status-canceled-bg)",
-    color: "var(--color-slate)",
+    color: "var(--color-error-text)",
     border: "var(--status-canceled-border)",
   },
   NO_SHOW: {
@@ -40,11 +40,6 @@ const STATUS_COLORS: Record<string, { background: string; color: string; border:
     color: "var(--color-rose)",
     border: "var(--status-no-show-border)",
   },
-};
-
-const CARE_MODE_ICONS: Record<string, string> = {
-  IN_PERSON: "○",
-  ONLINE: "◎",
 };
 
 interface AppointmentCardProps {
@@ -108,7 +103,15 @@ export function AppointmentCard({
         </span>
 
         <span style={careModeChipStyle}>
-          <span style={careModeIconStyle}>{CARE_MODE_ICONS[card.careMode]}</span>
+          {card.careMode === "ONLINE" ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={careModeIconStyle}>
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          ) : (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={careModeIconStyle}>
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          )}
           {card.careModeLabel}
         </span>
       </div>
@@ -132,7 +135,7 @@ const cardStyle = {
   display: "grid",
   gap: "0.55rem",
   boxShadow: "var(--shadow-sm)",
-  transition: "box-shadow 0.15s",
+  transition: "box-shadow 150ms ease",
 } satisfies React.CSSProperties;
 
 const timeRowStyle = {
@@ -187,7 +190,7 @@ const careModeChipStyle = {
 
 const careModeIconStyle = {
   marginRight: "0.35rem",
-  fontSize: "0.85rem",
+  flexShrink: 0,
 } satisfies React.CSSProperties;
 
 const quickActionsRowStyle = {

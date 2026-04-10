@@ -223,6 +223,23 @@
   --color-surface-cream:   #fffdf9;
   --color-border-warm:     #e8ddd0;
   --color-border-warm2:    #e7e5e4;
+
+  /* ─── Appointment status tokens ────────────────────────── */
+  --appt-scheduled-bg:       rgba(246, 246, 244, 0.96);
+  --appt-scheduled-border:   rgba(120, 53, 15, 0.22);
+  --appt-scheduled-text:     var(--color-warm-brown);
+  --appt-confirmed-bg:       rgba(236, 253, 245, 0.96);
+  --appt-confirmed-border:   rgba(16, 185, 129, 0.3);
+  --appt-confirmed-text:     var(--color-success-text);
+  --appt-completed-bg:       rgba(241, 245, 249, 0.96);
+  --appt-completed-border:   rgba(100, 116, 139, 0.3);
+  --appt-completed-text:     var(--color-text-3);
+  --appt-canceled-bg:        rgba(254, 242, 242, 0.96);
+  --appt-canceled-border:    rgba(220, 38, 38, 0.2);
+  --appt-canceled-text:      var(--color-error-text);
+  --appt-noshow-bg:         rgba(255, 247, 237, 0.96);
+  --appt-noshow-border:     rgba(234, 88, 12, 0.3);
+  --appt-noshow-text:       var(--color-accent);
 }
 
 /* ─── WCAG AA Contrast Verification (2026-03-21) ──────────────────────────────────
@@ -1389,4 +1406,102 @@ button, [role="button"], a, summary,
 [data-touch-target] {
   min-height: 44px;
   min-width: 44px;
+}
+
+/* ─── Mini Calendar ─────────────────────────────────────────────────────── */
+.mini-cal-arrow:hover {
+  background: rgba(154, 52, 18, 0.1);
+  color: var(--color-text-1);
+}
+
+.mini-cal-day:hover:not(.selected) {
+  background: rgba(154, 52, 18, 0.06);
+}
+
+.mini-cal-day.today:hover {
+  background: rgba(154, 52, 18, 0.15);
+}
+
+/* ─── Month Calendar View ─────────────────────────────────────────────────── */
+.month-cal-cell {
+  transition: background 80ms ease;
+}
+.month-cal-cell:hover {
+  background: var(--color-surface-0);
+}
+.month-cal-cell:nth-child(-n+7) {
+  min-height: 90px;
+}
+.month-cal-cell:nth-child(n+8) {
+  min-height: 80px;
+}
+
+.month-cal-bar {
+  height: 6px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: opacity 80ms ease, transform 80ms ease;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.month-cal-bar:hover {
+  opacity: 0.8;
+  transform: scaleY(1.3);
+}
+.month-cal-bar:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ─── Side Panel Animation ────────────────────────────────────────────────── */
+.side-panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: rgba(0, 0, 0, 0.18);
+  animation: sidePanelFadeIn 200ms ease-out;
+}
+.side-panel-overlay:active {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.side-panel-drawer {
+  animation: sidePanelSlideIn 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.side-panel-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-2);
+  transition: background 100ms ease, color 100ms ease;
+}
+.side-panel-close:hover {
+  background: var(--color-surface-0);
+  color: var(--color-text-1);
+}
+
+@keyframes sidePanelFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sidePanelSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }

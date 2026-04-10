@@ -237,7 +237,7 @@ function CurrentTimeIndicator({
   const totalMinutes = (dayEndHour - dayStartHour) * 60;
   const containerHeight = totalMinutes * pixelsPerMinute;
 
-  const minutesSinceStart = (now.getUTCHours() * 60 + now.getUTCMinutes()) - (dayStartHour * 60);
+  const minutesSinceStart = (now.getHours() * 60 + now.getMinutes()) - (dayStartHour * 60);
   const topPx = minutesSinceStart * pixelsPerMinute;
 
   // Only render if within the visible grid range

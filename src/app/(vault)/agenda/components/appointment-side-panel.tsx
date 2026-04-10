@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 interface AppointmentSidePanelProps {
   appointmentId: string | null;
@@ -9,14 +9,54 @@ interface AppointmentSidePanelProps {
 }
 
 export function AppointmentSidePanel({ appointmentId, panels, onClose }: AppointmentSidePanelProps) {
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  // Focus trap
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      onClose();
+      return;
+    }
+    if (e.key !== "Tab" || !drawerRef.current) return;
+
+    const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+  }, [onClose]);
+
   useEffect(() => {
     if (!appointmentId) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [appointmentId, onClose]);
+
+    // Save previously focused element
+    previousFocusRef.current = document.activeElement as HTMLElement;
+
+    // Focus the drawer when it opens
+    requestAnimationFrame(() => {
+      drawerRef.current?.focus();
+    });
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      // Restore focus when panel closes
+      previousFocusRef.current?.focus();
+    };
+  }, [appointmentId, handleKeyDown]);
 
   if (!appointmentId) return null;
 
@@ -25,12 +65,27 @@ export function AppointmentSidePanel({ appointmentId, panels, onClose }: Appoint
   return (
     <>
       {/* Overlay */}
-      <div style={overlayStyle} onClick={onClose} aria-hidden />
+      <div className="side-panel-overlay" onClick={onClose} aria-hidden="true" />
 
       {/* Drawer */}
-      <aside style={drawerStyle} aria-label="Detalhes da consulta">
-        <button style={closeButtonStyle} onClick={onClose} aria-label="Fechar painel">
-          ×
+      <aside
+        ref={drawerRef}
+        className="side-panel-drawer"
+        style={drawerStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalhes da consulta"
+        tabIndex={-1}
+      >
+        <button
+          className="side-panel-close"
+          type="button"
+          onClick={onClose}
+          aria-label="Fechar painel"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
         </button>
         <div style={drawerBodyStyle}>
           {content ?? (
@@ -44,13 +99,6 @@ export function AppointmentSidePanel({ appointmentId, panels, onClose }: Appoint
   );
 }
 
-const overlayStyle = {
-  position: "fixed",
-  inset: 0,
-  zIndex: "var(--z-sticky)",
-  background: "rgba(0, 0, 0, 0.18)",
-} satisfies React.CSSProperties;
-
 const drawerStyle = {
   position: "fixed",
   right: 0,
@@ -58,29 +106,13 @@ const drawerStyle = {
   height: "100%",
   width: "22rem",
   maxWidth: "100vw",
-  zIndex: "var(--z-sticky)",
+  zIndex: "var(--z-modal)",
   background: "var(--color-surface-1)",
   borderLeft: "1px solid var(--color-border)",
   boxShadow: "var(--shadow-side-panel)",
   display: "flex",
   flexDirection: "column",
-} satisfies React.CSSProperties;
-
-const closeButtonStyle = {
-  position: "absolute",
-  top: "0.75rem",
-  right: "0.75rem",
-  width: "2rem",
-  height: "2rem",
-  borderRadius: "var(--radius-sm)",
-  border: "1px solid var(--color-border)",
-  background: "transparent",
-  cursor: "pointer",
-  fontSize: "1.2rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "var(--color-text-2)",
+  outline: "none",
 } satisfies React.CSSProperties;
 
 const drawerBodyStyle = {
