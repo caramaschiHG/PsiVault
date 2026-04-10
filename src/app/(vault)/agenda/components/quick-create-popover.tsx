@@ -22,8 +22,8 @@ const DURATIONS = [
   { label: "60 min", value: 60 },
 ];
 
-const POPOVER_HEIGHT = 420; // px approx
 const POPOVER_WIDTH = 280;
+const POPOVER_MAX_HEIGHT = 380;
 
 export function QuickCreatePopover({
   patients,
@@ -44,7 +44,7 @@ export function QuickCreatePopover({
   // Smart positioning: open upward if near bottom of viewport
   const viewportBottom = window.innerHeight;
   const spaceBelow = viewportBottom - position.top;
-  const openingUpward = spaceBelow < POPOVER_HEIGHT + 20;
+  const openingUpward = spaceBelow < POPOVER_MAX_HEIGHT + 40;
 
   // Close on Escape
   useEffect(() => {
@@ -90,17 +90,24 @@ export function QuickCreatePopover({
 
   const OFFSET = 6; // px gap between click and popover edge
 
-  const safeTop = openingUpward
-    ? Math.max(8, position.top - POPOVER_HEIGHT - OFFSET)
-    : position.top + OFFSET;
+  // When opening downward: set `top` to click + offset
+  // When opening upward: set `bottom` to viewportHeight - click + offset
+  // This keeps the popover always próximo ao click
+  const popoverTop = openingUpward ? undefined : position.top + OFFSET;
+  const popoverBottom = openingUpward
+    ? viewportBottom - position.top + OFFSET
+    : undefined;
+  const popoverTransformOrigin = openingUpward ? "bottom center" : "top center";
 
   return (
     <div
       ref={popoverRef}
       style={{
         ...popoverStyle,
-        top: safeTop,
+        top: popoverTop,
+        bottom: popoverBottom,
         left: Math.max(8, safeLeft),
+        transformOrigin: popoverTransformOrigin,
       }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -218,6 +225,8 @@ const popoverStyle = {
   position: "fixed",
   width: `${POPOVER_WIDTH}px`,
   maxWidth: "calc(100vw - 16px)",
+  maxHeight: "calc(100vh - 16px)",
+  overflowY: "auto" as const,
   background: "var(--color-surface-0)",
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-lg)",

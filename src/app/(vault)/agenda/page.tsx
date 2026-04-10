@@ -504,17 +504,16 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
         {/* Page heading */}
         <div style={headingRowStyle}>
-          <div style={headingTextStyle}>
-            <p style={eyebrowStyle}>Consultório</p>
+          <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem" }}>
             <h1 style={titleStyle}>Agenda</h1>
-          </div>
-
-          <div style={headingActionsStyle}>
             {sessionCount > 0 && (
               <span style={sessionBadgeStyle}>
                 {sessionCount} sess{sessionCount !== 1 ? "ões" : "ão"}
               </span>
             )}
+          </div>
+
+          <div style={headingActionsStyle}>
             <Link href="/appointments/new" style={newApptButtonStyle}>
               Nova consulta
             </Link>
@@ -739,7 +738,7 @@ const shellStyle = {
   maxWidth: "none",
   width: "100%",
   display: "grid",
-  gap: "1rem",
+  gap: "0.75rem",
   alignContent: "start",
 } satisfies React.CSSProperties;
 
@@ -749,6 +748,8 @@ const headingRowStyle = {
   justifyContent: "space-between",
   gap: "0.75rem",
   flexWrap: "nowrap" as const,
+  paddingBottom: "0.25rem",
+  borderBottom: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const headingActionsStyle = {
@@ -784,20 +785,21 @@ const eyebrowStyle = {
 
 const titleStyle = {
   margin: 0,
-  fontSize: "var(--font-size-page-title)",
+  fontSize: "1.25rem",
   fontWeight: 700,
   fontFamily: "var(--font-serif)",
   color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const newApptButtonStyle = {
-  padding: "0.625rem 1.25rem",
+  padding: "0.5rem 1rem",
   borderRadius: "var(--radius-md)",
   background: "var(--color-accent)",
   color: "var(--color-surface-0)",
   textDecoration: "none",
-  fontWeight: 700,
-  fontSize: "0.9rem",
+  fontWeight: 600,
+  fontSize: "var(--font-size-sm)",
+  whiteSpace: "nowrap" as const,
 } satisfies React.CSSProperties;
 
 const registerNoteStyle = {
