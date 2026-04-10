@@ -88,9 +88,11 @@ export function QuickCreatePopover({
   // Clamp left to keep popover in viewport
   const safeLeft = Math.min(position.left, window.innerWidth - POPOVER_WIDTH - 8);
 
+  const OFFSET = 6; // px gap between click and popover edge
+
   const safeTop = openingUpward
-    ? Math.max(8, position.top - POPOVER_HEIGHT)
-    : position.top + 8;
+    ? Math.max(8, position.top - POPOVER_HEIGHT - OFFSET)
+    : position.top + OFFSET;
 
   return (
     <div

@@ -739,16 +739,16 @@ const shellStyle = {
   maxWidth: "none",
   width: "100%",
   display: "grid",
-  gap: "1.5rem",
+  gap: "1rem",
   alignContent: "start",
 } satisfies React.CSSProperties;
 
 const headingRowStyle = {
   display: "flex",
-  alignItems: "flex-end",
+  alignItems: "center",
   justifyContent: "space-between",
-  gap: "1rem",
-  flexWrap: "wrap" as const,
+  gap: "0.75rem",
+  flexWrap: "nowrap" as const,
 } satisfies React.CSSProperties;
 
 const headingActionsStyle = {
