@@ -171,8 +171,10 @@ const headerStyle = {
 } satisfies React.CSSProperties;
 
 const arrowButtonStyle = {
-  width: "1.5rem",
-  height: "1.5rem",
+  width: "2.75rem",
+  height: "2.75rem",
+  minWidth: "44px",
+  minHeight: "44px",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",

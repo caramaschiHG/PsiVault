@@ -61,6 +61,7 @@ export function PasswordInput({ name, ...props }: PasswordInputProps) {
         className="auth-input-eye"
         aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
         onClick={() => setVisible((v) => !v)}
+        style={{ minWidth: "44px", minHeight: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
       >
         {visible ? <EyeOffIcon /> : <EyeIcon />}
       </button>

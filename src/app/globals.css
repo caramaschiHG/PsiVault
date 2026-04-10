@@ -567,6 +567,7 @@ label[for], .nav-link, summary {
 .input-field:focus-visible,
 .auth-input:focus-visible {
   outline: none;
+  box-shadow: 0 0 0 3px rgba(154, 52, 18, 0.25);
 }
 
 /* ─── Page enter animation ───────────────────────────────────────────────────── */
@@ -1382,3 +1383,10 @@ label[for], .nav-link, summary {
   transition: opacity 120ms ease;
 }
 .external-link:hover::after { opacity: 0.8; }
+
+/* ─── Touch targets: mínimo 44×44px (WCAG 2.5.5) ──────────────────────── */
+button, [role="button"], a, summary,
+[data-touch-target] {
+  min-height: 44px;
+  min-width: 44px;
+}

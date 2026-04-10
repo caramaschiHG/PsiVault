@@ -71,7 +71,7 @@ export function KeyboardShortcutsModal({ groups, open, onOpenChange }: {
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
           <h2 style={{ margin: 0, fontSize: "1.1rem", color: "var(--color-text-1)" }}>Atalhos de teclado</h2>
-          <button onClick={() => onOpenChange(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-text-2)", padding: "0.25rem 0.5rem", borderRadius: "var(--radius-xs)" }} aria-label="Fechar">
+          <button onClick={() => onOpenChange(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-text-2)", minWidth: "44px", minHeight: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: "var(--radius-xs)" }} aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>

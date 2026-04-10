@@ -17,6 +17,7 @@
 import { useTransition, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import type { SessionCharge, Patient } from "./domain-types";
+import { EmptyState } from "@/app/(vault)/components/empty-state";
 
 const ptBRDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -84,6 +85,8 @@ export default function FinanceiroPageClient({
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [payingCharge, setPayingCharge] = useState<string | null>(null);
+  const [undoingCharge, setUndoingCharge] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showYearView, setShowYearView] = useState(false);
@@ -148,7 +151,8 @@ export default function FinanceiroPageClient({
   }
 
   function handleExport() {
-    startTransition(async () => {
+    setExporting(true);
+    try {
       const patientNameMap = new Map<string, string>(
         patients.map((p) => [p.id, p.socialName ?? p.fullName]),
       );
@@ -171,35 +175,46 @@ export default function FinanceiroPageClient({
       a.download = `financeiro-${year}-${String(month).padStart(2, "0")}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-    });
+    } finally {
+      setExporting(false);
+    }
   }
 
   async function handleQuickPay(chargeId: string, method: string) {
-    const mod = await import("./actions");
-    const result = await mod.markChargeAsPaidAction(chargeId, method);
-    if (result.ok) {
-      setCharges((prev) =>
-        prev.map((c) =>
-          c.id === chargeId
-            ? { ...c, status: "pago" as const, paymentMethod: method, paidAt: new Date() }
-            : c,
-        ),
-      );
+    setPayingCharge(chargeId);
+    try {
+      const mod = await import("./actions");
+      const result = await mod.markChargeAsPaidAction(chargeId, method);
+      if (result.ok) {
+        setCharges((prev) =>
+          prev.map((c) =>
+            c.id === chargeId
+              ? { ...c, status: "pago" as const, paymentMethod: method, paidAt: new Date() }
+              : c,
+          ),
+        );
+        showToast("Pagamento registrado ✓");
+      }
+    } finally {
       setPayingCharge(null);
-      showToast("Pagamento registrado ✓");
     }
   }
 
   async function handleUndoPay(chargeId: string) {
-    const mod = await import("./actions");
-    const result = await mod.undoChargePaymentAction(chargeId);
-    if (result.ok) {
-      setCharges((prev) =>
-        prev.map((c) =>
-          c.id === chargeId ? { ...c, status: "pendente" as const, paymentMethod: null, paidAt: null } : c,
-        ),
-      );
-      showToast("Pagamento desfeito");
+    setUndoingCharge(chargeId);
+    try {
+      const mod = await import("./actions");
+      const result = await mod.undoChargePaymentAction(chargeId);
+      if (result.ok) {
+        setCharges((prev) =>
+          prev.map((c) =>
+            c.id === chargeId ? { ...c, status: "pendente" as const, paymentMethod: null, paidAt: null } : c,
+          ),
+        );
+        showToast("Pagamento desfeito");
+      }
+    } finally {
+      setUndoingCharge(null);
     }
   }
 
@@ -355,7 +370,7 @@ export default function FinanceiroPageClient({
           <Button variant="secondary" size="sm" onClick={() => setShowAddForm((v) => !v)}>
             {showAddForm ? "Fechar" : "+ Cobrança"}
           </Button>
-          <Button variant="ghost" size="sm" onClick={handleExport} isLoading={isPending}>
+          <Button variant="ghost" size="sm" onClick={handleExport} isLoading={exporting}>
             Exportar
           </Button>
         </div>
@@ -375,17 +390,26 @@ export default function FinanceiroPageClient({
             <input type="number" name="amountBrl" placeholder="Valor (R$)" required min="0.01" step="0.01" style={inputStyle} />
             <Button type="submit" variant="primary" isLoading={isPending}>Adicionar</Button>
           </form>
-          {formError && <p style={formErrorStyle}>{formError}</p>}
+          {formError && <p style={formErrorStyle} role="alert">{formError}</p>}
         </div>
       )}
 
       {/* Charge list */}
       {charges.length === 0 ? (
-        <div style={emptyContainerStyle}>
-          <p style={emptyTitleStyle}>Nenhuma cobrança este mês</p>
-          <p style={emptyDescStyle}>Tudo em dia! Nenhuma sessão concluída neste período.</p>
-          <Button variant="primary" onClick={() => setShowAddForm(true)}>Adicionar primeira cobrança</Button>
-        </div>
+        <>
+          <EmptyState
+            icon={
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            }
+            title="Nenhuma cobrança este mês"
+            description="Tudo em dia! Nenhuma sessão concluída neste período."
+          />
+          <div style={{ textAlign: "center", paddingBottom: "2rem" }}>
+            <Button variant="primary" onClick={() => setShowAddForm(true)}>Adicionar primeira cobrança</Button>
+          </div>
+        </>
       ) : filteredCharges.length === 0 ? (
         <p style={noFilterResultStyle}>Nenhuma cobrança para os filtros selecionados.</p>
       ) : (
@@ -462,8 +486,9 @@ export default function FinanceiroPageClient({
                             style={undoBtnStyle}
                             onClick={() => handleUndoPay(charge.id)}
                             title="Desfazer pagamento"
+                            disabled={undoingCharge === charge.id}
                           >
-                            ↩ Desfazer
+                            {undoingCharge === charge.id ? "Desfazendo…" : "↩ Desfazer"}
                           </button>
                         ) : isPaying ? (
                           <div style={paymentPopoverStyle}>
@@ -476,8 +501,9 @@ export default function FinanceiroPageClient({
                                   key={key}
                                   style={methodBtnStyle}
                                   onClick={() => handleQuickPay(charge.id, key)}
+                                  disabled={payingCharge === charge.id}
                                 >
-                                  {label}
+                                  {payingCharge === charge.id ? "Pagando…" : label}
                                 </button>
                               ))}
                             </div>

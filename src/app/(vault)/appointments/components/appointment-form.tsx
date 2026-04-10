@@ -271,7 +271,7 @@ export function AppointmentForm({
       )}
 
       {state?.error && (
-        <p style={errorMessageStyle}>{state.error}</p>
+        <p style={errorMessageStyle} role="alert">{state.error}</p>
       )}
 
       <div style={actionsStyle}>

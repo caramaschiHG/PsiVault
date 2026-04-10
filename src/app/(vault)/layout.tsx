@@ -110,7 +110,7 @@ const brandNameStyle = {
 const brandTaglineStyle = {
   margin: 0,
   fontSize: "0.72rem",
-  color: "rgba(255,255,255,0.45)",
+  color: "rgba(255,255,255,0.70)",
   lineHeight: 1,
 } satisfies React.CSSProperties;
 

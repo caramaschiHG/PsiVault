@@ -116,7 +116,7 @@ export function ExportSection({ patientId, patientName }: ExportSectionProps) {
             />
           </label>
 
-          {errorMessage && <p style={errorStyle}>{errorMessage}</p>}
+          {errorMessage && <p style={errorStyle} role="alert">{errorMessage}</p>}
 
           <div style={actionsStyle}>
             <button type="submit" disabled={isPending} style={primaryButtonStyle}>
