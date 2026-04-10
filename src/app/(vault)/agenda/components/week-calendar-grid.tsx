@@ -222,9 +222,13 @@ function DroppableColumn({
 
   const handleClick = (e: React.MouseEvent) => {
     if (!onSlotClick) return;
+    // Only open popover if clicking on empty space (not on appointment blocks)
+    if ((e.target as HTMLElement).closest('[data-appointment-id]')) return;
+
     const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-    const y = e.clientY - rect.top + (e.currentTarget.closest("[style]")?.scrollTop ?? 0);
-    const slotMinutes = Math.floor(y / pixelsPerMinute);
+    const y = e.clientY - rect.top;
+    const scrollTop = (e.currentTarget.closest('[style*="overflow"]') as HTMLElement)?.scrollTop ?? 0;
+    const slotMinutes = Math.floor((y + scrollTop) / pixelsPerMinute);
     const totalMinutesFromMidnight = slotMinutes * SLOT_MINUTES + dayStartHour * 60;
     const hh = String(Math.floor(totalMinutesFromMidnight / 60)).padStart(2, "0");
     const mm = String(totalMinutesFromMidnight % 60).padStart(2, "0");
@@ -242,6 +246,7 @@ function DroppableColumn({
         borderLeft: "1px solid var(--color-border)",
         background: isOver ? "rgba(154, 52, 18, 0.04)" : "transparent",
         transition: "background 80ms",
+        cursor: onSlotClick ? "pointer" : "default",
       }}
     >
       {/* Hour dividers */}

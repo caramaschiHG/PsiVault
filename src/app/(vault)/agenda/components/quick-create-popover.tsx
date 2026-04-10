@@ -40,17 +40,11 @@ export function QuickCreatePopover({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-  const [openingUpward, setOpeningUpward] = useState(false);
 
   // Smart positioning: open upward if near bottom of viewport
-  useEffect(() => {
-    setMounted(true);
-    const viewportBottom = window.innerHeight;
-    const spaceBelow = viewportBottom - position.top;
-    const needsUpward = spaceBelow < POPOVER_HEIGHT + 20;
-    setOpeningUpward(needsUpward);
-  }, [position.top]);
+  const viewportBottom = window.innerHeight;
+  const spaceBelow = viewportBottom - position.top;
+  const openingUpward = spaceBelow < POPOVER_HEIGHT + 20;
 
   // Close on Escape
   useEffect(() => {
@@ -92,20 +86,15 @@ export function QuickCreatePopover({
   }, [onCreate, toast, router, onClose]);
 
   // Clamp left to keep popover in viewport
-  const safeLeft = mounted
-    ? Math.min(position.left, window.innerWidth - POPOVER_WIDTH - 8)
-    : position.left;
+  const safeLeft = Math.min(position.left, window.innerWidth - POPOVER_WIDTH - 8);
 
-  const safeTop = mounted
-    ? (openingUpward
-        ? Math.max(8, position.top - POPOVER_HEIGHT)
-        : position.top + 8)
-    : position.top;
+  const safeTop = openingUpward
+    ? Math.max(8, position.top - POPOVER_HEIGHT)
+    : position.top + 8;
 
   return (
     <div
       ref={popoverRef}
-      className={`quick-create-popover${mounted ? " open" : ""}`}
       style={{
         ...popoverStyle,
         top: safeTop,
@@ -230,14 +219,12 @@ const popoverStyle = {
   background: "var(--color-surface-0)",
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-lg)",
-  boxShadow: "var(--shadow-md)",
+  boxShadow: "var(--shadow-lg)",
   padding: "var(--space-4)",
   zIndex: "var(--z-dropdown)",
   fontSize: "var(--font-size-meta)",
-  opacity: 0,
-  transform: "scale(0.95)",
-  transformOrigin: "top left",
-  transition: "opacity 180ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+  transformOrigin: "top center",
+  animation: "popoverIn 180ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
 } satisfies React.CSSProperties;
 
 const headerStyle = {

@@ -63,6 +63,7 @@ export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlo
   return (
     <div
       ref={setNodeRef}
+      data-appointment-id={block.appointmentId}
       style={style}
       {...(isFinalized ? {} : { ...attributes, ...listeners })}
       onClick={(e) => {
