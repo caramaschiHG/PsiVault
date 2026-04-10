@@ -33,7 +33,7 @@ export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlo
     height: `${Math.max(block.heightPercent, 2)}%`,
     left: `${(block.columnIndex / block.columnCount) * 100}%`,
     width: `${(1 / block.columnCount) * 100}%`,
-    padding: "2px",
+    padding: "var(--space-1)",
     boxSizing: "border-box",
     transform: CSS.Translate.toString(transform),
     opacity: isDragging ? 0.5 : 1,
@@ -47,11 +47,11 @@ export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlo
     borderRadius: "var(--radius-sm)",
     border: `1px solid ${colors.border}`,
     background: colors.bg,
-    padding: "3px 6px",
+    padding: "var(--space-1) var(--space-2)",
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    gap: "1px",
+    gap: "var(--space-1)",
   };
 
   const startTime = new Date(block.startsAtIso).toLocaleTimeString("pt-BR", {
@@ -71,24 +71,24 @@ export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlo
       }}
     >
       <div style={innerStyle}>
-        <span style={{ fontSize: "0.7rem", color: colors.text, fontWeight: 600, lineHeight: 1.2 }}>
+        <span style={{ fontSize: "var(--font-size-xs)", color: colors.text, fontWeight: 600, lineHeight: 1.2 }}>
           {startTime}
         </span>
-        <span style={{ fontSize: "0.75rem", color: colors.text, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <span style={{ fontSize: "var(--font-size-xs)", color: colors.text, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {patientName}
         </span>
         {block.durationMinutes >= 45 && (
-          <span style={{ fontSize: "0.68rem", color: colors.text, opacity: 0.7, lineHeight: 1.2, display: "inline-flex", alignItems: "center", gap: "2px" }}>
+          <span style={{ fontSize: "var(--font-size-2xs)", color: colors.text, opacity: 0.7, lineHeight: 1.2, display: "inline-flex", alignItems: "center", gap: "var(--space-1)" }}>
             {block.careMode === "ONLINE" ? (
               <>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                 </svg>
                 Online
               </>
             ) : (
               <>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
                 Presencial

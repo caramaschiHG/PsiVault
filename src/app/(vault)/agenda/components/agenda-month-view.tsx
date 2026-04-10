@@ -117,8 +117,8 @@ const headerRowStyle = {
 } satisfies React.CSSProperties;
 
 const headerCellStyle = {
-  padding: "0.375rem 0.25rem",
-  fontSize: "0.65rem",
+  padding: "var(--space-1.5) var(--space-1)",
+  fontSize: "var(--font-size-xs)",
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.08em",
@@ -133,7 +133,7 @@ const gridStyle = {
 
 const cellStyle = {
   position: "relative" as const,
-  padding: "4px",
+  padding: "var(--space-1)",
   borderTop: "1px solid var(--color-border)",
   borderLeft: "1px solid var(--color-border)",
   transition: "background 80ms",
@@ -144,8 +144,8 @@ const dayNumberStyle = {
   display: "block",
   width: "100%",
   textAlign: "right" as const,
-  padding: "0 2px 2px 0",
-  fontSize: "0.75rem",
+  padding: "0 var(--space-1) var(--space-1) 0",
+  fontSize: "var(--font-size-xs)",
   fontWeight: 500,
   color: "var(--color-text-1)",
   background: "none",
@@ -157,20 +157,20 @@ const dayNumberStyle = {
 const barsContainerStyle = {
   display: "flex",
   flexDirection: "column" as const,
-  gap: "2px",
-  marginTop: "2px",
+  gap: "var(--space-1)",
+  marginTop: "var(--space-1)",
 } satisfies React.CSSProperties;
 
 const barStyle = {
-  height: "4px",
+  height: "8px",
   borderRadius: "var(--radius-xs)",
   cursor: "pointer",
   transition: "opacity 80ms",
 } satisfies React.CSSProperties;
 
 const moreStyle = {
-  fontSize: "0.6rem",
+  fontSize: "var(--font-size-xs)",
   color: "var(--color-text-3)",
   lineHeight: 1,
-  marginTop: "1px",
+  marginTop: "var(--space-1)",
 } satisfies React.CSSProperties;

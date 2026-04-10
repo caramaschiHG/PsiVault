@@ -288,22 +288,22 @@ const bodyStyle = {
   display: "grid",
   gridTemplateColumns: COLUMNS,
   overflowY: "auto" as const,
-  maxHeight: "65vh",
+  maxHeight: "70vh",
 } satisfies React.CSSProperties;
 
 const dayHeaderStyle = {
   display: "grid",
   placeItems: "center",
-  padding: "0.5rem 0.25rem",
+  padding: "var(--space-2) var(--space-1)",
   gap: "0.1rem",
 } satisfies React.CSSProperties;
 
 const todayHeaderStyle = {
-  background: "rgba(255, 247, 237, 0.8)",
+  background: "var(--color-accent-light)",
 } satisfies React.CSSProperties;
 
 const dayNameStyle = {
-  fontSize: "0.7rem",
+  fontSize: "var(--font-size-xs)",
   fontWeight: 600,
   color: "var(--color-text-3)",
   textTransform: "uppercase" as const,
@@ -311,7 +311,7 @@ const dayNameStyle = {
 } satisfies React.CSSProperties;
 
 const dayNumberStyle = {
-  fontSize: "1.1rem",
+  fontSize: "var(--font-size-h3)",
   fontWeight: 700,
   color: "var(--color-text-1)",
   lineHeight: 1.2,

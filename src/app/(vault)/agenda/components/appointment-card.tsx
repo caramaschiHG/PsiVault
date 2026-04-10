@@ -128,14 +128,14 @@ export function AppointmentCard({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const cardStyle = {
-  padding: "1.1rem 1.25rem",
+  padding: "var(--space-4) var(--space-5)",
   borderRadius: "var(--radius-lg)",
   background: "var(--color-surface-1)",
   border: "1px solid",
   display: "grid",
-  gap: "0.55rem",
+  gap: "var(--space-2)",
   boxShadow: "var(--shadow-sm)",
-  transition: "box-shadow 150ms ease",
+  transition: "box-shadow 150ms ease, transform 150ms ease",
 } satisfies React.CSSProperties;
 
 const timeRowStyle = {
@@ -160,7 +160,7 @@ const durationStyle = {
 const patientNameStyle = {
   margin: 0,
   fontWeight: 600,
-  fontSize: "0.97rem",
+  fontSize: "var(--font-size-body-sm)",
   color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
@@ -183,13 +183,13 @@ const chipStyle = {
 
 const careModeChipStyle = {
   ...chipStyle,
-  background: "rgba(245, 241, 235, 0.9)",
+  background: "var(--color-surface-warm)",
   color: "var(--color-text-2)",
   borderColor: "var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const careModeIconStyle = {
-  marginRight: "0.35rem",
+  marginRight: "var(--space-1.5)",
   flexShrink: 0,
 } satisfies React.CSSProperties;
 

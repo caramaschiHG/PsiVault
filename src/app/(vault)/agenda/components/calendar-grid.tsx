@@ -280,7 +280,7 @@ const outerStyle = {
   overflowY: "auto" as const,
   maxHeight: "70vh",
   border: "1px solid var(--color-border)",
-  borderRadius: "var(--radius-xl)",
+  borderRadius: "var(--radius-lg)",
   background: "var(--color-surface-1)",
 } satisfies React.CSSProperties;
 
@@ -294,7 +294,7 @@ const axisStyle = {
 const hourLabelStyle = {
   position: "absolute" as const,
   right: "0.4rem",
-  fontSize: "0.7rem",
+  fontSize: "var(--font-size-xs)",
   color: "var(--color-text-3)",
   fontVariantNumeric: "tabular-nums",
   lineHeight: 1,

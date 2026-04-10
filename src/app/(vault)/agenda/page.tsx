@@ -524,7 +524,9 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
         {/* Overdue patients alert */}
         {overduePatientIds.size > 0 && (
           <div style={overdueAlertStyle}>
-            <span style={overdueIconStyle}>⚠</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-warning-text)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: "0.1rem" }} aria-hidden="true">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
             <div style={overdueContentStyle}>
               <span style={overdueTextStyle}>
                 Pacientes com cobranças atrasadas:
@@ -775,7 +777,7 @@ const eyebrowStyle = {
   margin: 0,
   textTransform: "uppercase" as const,
   letterSpacing: "0.12em",
-  fontSize: "0.7rem",
+  fontSize: "var(--font-size-2xs)",
   color: "var(--color-brown-mid)",
   fontWeight: 600,
 } satisfies React.CSSProperties;
@@ -809,7 +811,7 @@ const registerNoteStyle = {
   color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 600,
-  fontSize: "0.82rem",
+  fontSize: "var(--font-size-sm)",
 } satisfies React.CSSProperties;
 
 const viewNoteStyle = {
@@ -823,7 +825,7 @@ const viewNoteStyle = {
   color: "var(--color-brown-mid)",
   textDecoration: "none",
   fontWeight: 600,
-  fontSize: "0.82rem",
+  fontSize: "var(--font-size-sm)",
 } satisfies React.CSSProperties;
 
 // ─── Online care & communication styles ───────────────────────────────────────
@@ -840,7 +842,7 @@ const comunicacaoSectionStyle = {
 
 const comunicacaoLabelStyle = {
   margin: 0,
-  fontSize: "0.72rem",
+  fontSize: "0.75rem",
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
@@ -854,13 +856,13 @@ const comunicacaoRowStyle = {
 } satisfies React.CSSProperties;
 
 const comunicacaoItemLabelStyle = {
-  fontSize: "0.8rem",
+  fontSize: "var(--font-size-sm)",
   color: "var(--color-text-2)",
   minWidth: "7rem",
 } satisfies React.CSSProperties;
 
 const commLinkStyle = {
-  fontSize: "0.8rem",
+  fontSize: "var(--font-size-sm)",
   color: "var(--color-accent)",
   textDecoration: "none",
   fontWeight: 500,
@@ -882,7 +884,7 @@ const onlineSectionStyle = {
 
 const onlineSectionLabelStyle = {
   margin: 0,
-  fontSize: "0.72rem",
+  fontSize: "0.75rem",
   fontWeight: 600,
   textTransform: "uppercase" as const,
   letterSpacing: "0.1em",
@@ -907,7 +909,7 @@ const urlInputStyle = {
   flex: 1,
   minWidth: "12rem",
   padding: "0.3rem 0.5rem",
-  fontSize: "0.82rem",
+  fontSize: "var(--font-size-sm)",
   borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-0)",
@@ -919,7 +921,7 @@ const textareaStyle = {
   flex: 1,
   minWidth: "12rem",
   padding: "0.3rem 0.5rem",
-  fontSize: "0.82rem",
+  fontSize: "var(--font-size-sm)",
   borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-0)",
@@ -935,14 +937,14 @@ const detailsStyle = {
 
 const detailsSummaryStyle = {
   cursor: "pointer",
-  fontSize: "0.82rem",
+  fontSize: "var(--font-size-sm)",
   color: "var(--color-text-2)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
 const remoteIssueNoteStyle = {
   margin: "0.5rem 0",
-  fontSize: "0.82rem",
+  fontSize: "var(--font-size-sm)",
   color: "var(--color-text-2)",
   background: "var(--color-accent-light)",
   padding: "0.4rem 0.6rem",
@@ -995,7 +997,7 @@ const overdueContentStyle = {
 } satisfies React.CSSProperties;
 
 const overdueTextStyle = {
-  fontSize: "0.82rem",
+  fontSize: "var(--font-size-sm)",
   fontWeight: 600,
   color: "var(--color-error-text)",
 } satisfies React.CSSProperties;

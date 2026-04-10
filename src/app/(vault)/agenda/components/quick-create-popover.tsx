@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "../../../../components/ui/toast-provider";
 
@@ -22,6 +22,9 @@ const DURATIONS = [
   { label: "60 min", value: 60 },
 ];
 
+const POPOVER_HEIGHT = 420; // px approx
+const POPOVER_WIDTH = 280;
+
 export function QuickCreatePopover({
   patients,
   defaultStartsAt,
@@ -37,6 +40,17 @@ export function QuickCreatePopover({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [openingUpward, setOpeningUpward] = useState(false);
+
+  // Smart positioning: open upward if near bottom of viewport
+  useEffect(() => {
+    setMounted(true);
+    const viewportBottom = window.innerHeight;
+    const spaceBelow = viewportBottom - position.top;
+    const needsUpward = spaceBelow < POPOVER_HEIGHT + 20;
+    setOpeningUpward(needsUpward);
+  }, [position.top]);
 
   // Close on Escape
   useEffect(() => {
@@ -54,7 +68,6 @@ export function QuickCreatePopover({
         onClose();
       }
     }
-    // Delay to avoid triggering on the click that opened this
     const timer = setTimeout(() => window.addEventListener("click", onClick), 100);
     return () => {
       clearTimeout(timer);
@@ -62,10 +75,9 @@ export function QuickCreatePopover({
     };
   }, [onClose]);
 
-  // Format startsAt for display
   const displayTime = formatTimeISO(defaultStartsAt);
 
-  function handleSubmit(formData: FormData) {
+  const handleSubmit = useCallback((formData: FormData) => {
     setError(null);
     startTransition(async () => {
       const result = await onCreate(formData);
@@ -77,33 +89,48 @@ export function QuickCreatePopover({
         setError(result.error ?? "Erro ao agendar sessão");
       }
     });
-  }
+  }, [onCreate, toast, router, onClose]);
+
+  // Clamp left to keep popover in viewport
+  const safeLeft = mounted
+    ? Math.min(position.left, window.innerWidth - POPOVER_WIDTH - 8)
+    : position.left;
+
+  const safeTop = mounted
+    ? (openingUpward
+        ? Math.max(8, position.top - POPOVER_HEIGHT)
+        : position.top + 8)
+    : position.top;
 
   return (
     <div
       ref={popoverRef}
+      className={`quick-create-popover${mounted ? " open" : ""}`}
       style={{
         ...popoverStyle,
-        top: position.top,
-        left: Math.min(position.left, window.innerWidth - 300),
+        top: safeTop,
+        left: Math.max(8, safeLeft),
       }}
       onClick={(e) => e.stopPropagation()}
     >
       <div style={headerStyle}>
         <span style={headerTitleStyle}>Nova sessão</span>
-        <button type="button" onClick={onClose} style={closeButtonStyle} aria-label="Fechar">
-          ×
+        <button
+          type="button"
+          onClick={onClose}
+          className="quick-create-close"
+          style={closeButtonStyle}
+          aria-label="Fechar"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
         </button>
       </div>
 
-      <form
-        action={handleSubmit}
-        style={formStyle}
-      >
-        {/* Hidden: startsAt */}
+      <form action={handleSubmit} style={formStyle}>
         <input type="hidden" name="startsAt" value={defaultStartsAt} />
 
-        {/* Patient select */}
         <label style={labelStyle}>
           Paciente
           <select name="patientId" required style={selectStyle} defaultValue="">
@@ -120,7 +147,6 @@ export function QuickCreatePopover({
           </select>
         </label>
 
-        {/* Time display (readonly) */}
         <label style={labelStyle}>
           Horário
           <input
@@ -131,7 +157,6 @@ export function QuickCreatePopover({
           />
         </label>
 
-        {/* Duration */}
         <label style={labelStyle}>
           Duração
           <select name="durationMinutes" defaultValue={defaultDurationMinutes} style={selectStyle}>
@@ -143,7 +168,6 @@ export function QuickCreatePopover({
           </select>
         </label>
 
-        {/* Care mode */}
         <label style={labelStyle}>
           Modalidade
           <div style={careModeToggleStyle}>
@@ -168,10 +192,8 @@ export function QuickCreatePopover({
           </div>
         </label>
 
-        {/* Error */}
-        {error && <p style={errorStyle}>{error}</p>}
+        {error && <p style={errorStyle} role="alert">{error}</p>}
 
-        {/* Actions */}
         <div style={actionsStyle}>
           <button
             type="submit"
@@ -203,59 +225,66 @@ function formatTimeISO(iso: string): string {
 
 const popoverStyle = {
   position: "fixed",
-  width: "280px",
+  width: `${POPOVER_WIDTH}px`,
+  maxWidth: "calc(100vw - 16px)",
   background: "var(--color-surface-0)",
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-lg)",
   boxShadow: "var(--shadow-md)",
-  padding: "1rem",
+  padding: "var(--space-4)",
   zIndex: "var(--z-dropdown)",
-  fontSize: "0.85rem",
+  fontSize: "var(--font-size-meta)",
+  opacity: 0,
+  transform: "scale(0.95)",
+  transformOrigin: "top left",
+  transition: "opacity 180ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
 } satisfies React.CSSProperties;
 
 const headerStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  marginBottom: "0.75rem",
+  marginBottom: "var(--space-3)",
 } satisfies React.CSSProperties;
 
 const headerTitleStyle = {
   fontWeight: 600,
-  fontSize: "0.9rem",
+  fontSize: "var(--font-size-body-sm)",
   color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const closeButtonStyle = {
-  width: "1.5rem",
-  height: "1.5rem",
+  width: "2.75rem",
+  height: "2.75rem",
+  minWidth: "44px",
+  minHeight: "44px",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
   background: "none",
   border: "none",
   cursor: "pointer",
-  fontSize: "1rem",
   color: "var(--color-text-3)",
   borderRadius: "var(--radius-xs)",
+  transition: "background 100ms ease, color 100ms ease",
 } satisfies React.CSSProperties;
 
 const formStyle = {
   display: "grid",
-  gap: "0.6rem",
+  gap: "var(--space-2)",
 } satisfies React.CSSProperties;
 
 const labelStyle = {
   display: "grid",
-  gap: "0.25rem",
-  fontSize: "0.75rem",
+  gap: "var(--space-1)",
+  fontSize: "var(--font-size-xs)",
   fontWeight: 600,
   color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const selectStyle = {
-  padding: "0.35rem 0.5rem",
-  fontSize: "0.82rem",
+  padding: "var(--space-1.5) var(--space-2)",
+  fontSize: "var(--font-size-sm)",
   borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-1)",
@@ -264,8 +293,8 @@ const selectStyle = {
 } satisfies React.CSSProperties;
 
 const inputStyle = {
-  padding: "0.35rem 0.5rem",
-  fontSize: "0.82rem",
+  padding: "var(--space-1.5) var(--space-2)",
+  fontSize: "var(--font-size-sm)",
   borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   fontFamily: "inherit",
@@ -273,13 +302,13 @@ const inputStyle = {
 
 const careModeToggleStyle = {
   display: "flex",
-  gap: "0.25rem",
+  gap: "var(--space-1)",
 } satisfies React.CSSProperties;
 
 const careModeOptionStyle = {
   flex: 1,
-  padding: "0.3rem 0.5rem",
-  fontSize: "0.78rem",
+  padding: "var(--space-1.5) var(--space-2)",
+  fontSize: "var(--font-size-sm)",
   borderRadius: "var(--radius-xs)",
   border: "1px solid var(--color-border-med)",
   background: "var(--color-surface-1)",
@@ -289,38 +318,39 @@ const careModeOptionStyle = {
 } satisfies React.CSSProperties;
 
 const careModeSelectedStyle = {
-  background: "rgba(154, 52, 18, 0.1)",
+  background: "var(--color-accent-light)",
   borderColor: "var(--color-brown-mid)",
   color: "var(--color-brown-mid)",
   fontWeight: 600,
 } satisfies React.CSSProperties;
 
 const errorStyle = {
-  fontSize: "0.75rem",
+  fontSize: "var(--font-size-xs)",
   color: "var(--color-error-text)",
   margin: 0,
 } satisfies React.CSSProperties;
 
 const actionsStyle = {
   display: "grid",
-  gap: "0.35rem",
-  marginTop: "0.25rem",
+  gap: "var(--space-1.5)",
+  marginTop: "var(--space-1)",
 } satisfies React.CSSProperties;
 
 const submitButtonStyle = {
-  padding: "0.45rem 0.75rem",
+  padding: "var(--space-2) var(--space-3)",
   borderRadius: "var(--radius-sm)",
   border: "none",
   background: "var(--color-accent)",
   color: "var(--color-surface-0)",
-  fontSize: "0.85rem",
+  fontSize: "var(--font-size-meta)",
   fontWeight: 600,
   cursor: "pointer",
   fontFamily: "inherit",
+  transition: "background 100ms ease, opacity 100ms ease",
 } satisfies React.CSSProperties;
 
 const fullFormLinkStyle = {
-  fontSize: "0.75rem",
+  fontSize: "var(--font-size-xs)",
   color: "var(--color-text-3)",
   textDecoration: "underline",
   textAlign: "center" as const,

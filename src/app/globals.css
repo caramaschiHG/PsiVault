@@ -21,7 +21,7 @@
   --color-text-1:       #1c1917;
   --color-text-2:       #57534e;
   --color-text-3:       #57534e;   /* 6.1:1 on white — AA compliant (was #78716c) */
-  --color-text-4:       #a8a29e;
+  --color-text-4:       #78716c;
   --color-accent:       #9a3412;
   --color-accent-hover: #7c2a0e;
   --color-accent-light: rgba(154, 52, 18, 0.08);
@@ -63,6 +63,7 @@
   --font-sans:  "IBM Plex Sans", "Segoe UI", sans-serif;
 
   /* Hierarchy (desktop base → fluid with clamp) */
+  --font-size-page-title: 1.5rem;     /* 24px — page titles */
   --font-size-2xs:    0.6875rem;  /* 11px — badge dots, minimal captions */
   --font-size-xs:     0.75rem;    /* 12px — timestamps, captions, eyebrow labels */
   --font-size-sm:     0.8125rem;  /* 13px — labels, badges, metadata */
@@ -1504,4 +1505,15 @@ button, [role="button"], a, summary,
 @keyframes sidePanelSlideIn {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
+}
+
+/* ─── Quick Create Popover ────────────────────────────────────────────────── */
+.quick-create-popover.open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.quick-create-close:hover {
+  background: var(--color-surface-0);
+  color: var(--color-text-1);
 }
