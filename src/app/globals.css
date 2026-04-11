@@ -93,6 +93,7 @@
      ═══════════════════════════════════════════════════════════════ */
 
   --space-1:    0.25rem;   /* 4px   — tiny gaps, icon spacing */
+  --space-0.5:  0.125rem;  /* 2px   — micro spacing */
   --space-1.5:  0.375rem;  /* 6px   — subtle gaps, internal padding */
   --space-2:    0.5rem;    /* 8px   — small gaps */
   --space-3:    0.75rem;   /* 12px  — standard gaps */
@@ -1411,16 +1412,29 @@ button, [role="button"], a, summary,
 
 /* ─── Mini Calendar ─────────────────────────────────────────────────────── */
 .mini-cal-arrow:hover {
-  background: rgba(154, 52, 18, 0.1);
-  color: var(--color-text-1);
+  background: var(--color-surface-0) !important;
+  color: var(--color-text-1) !important;
 }
 
-.mini-cal-day:hover:not(.selected) {
-  background: rgba(154, 52, 18, 0.06);
+.mini-cal-arrow:active {
+  transform: scale(0.9);
 }
 
-.mini-cal-day.today:hover {
-  background: rgba(154, 52, 18, 0.15);
+.mini-cal-day:hover {
+  background: var(--color-surface-0) !important;
+}
+
+.mini-cal-day.today {
+  font-weight: 700;
+}
+
+.mini-cal-day.selected {
+  color: var(--color-surface-0) !important;
+  background: var(--color-accent) !important;
+}
+
+.mini-cal-day:active {
+  transform: scale(0.92);
 }
 
 /* ─── Month Calendar View ─────────────────────────────────────────────────── */

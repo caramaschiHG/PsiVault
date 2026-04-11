@@ -76,13 +76,13 @@ export function MiniCalendar({ currentDate, appointmentCounts, activeView = "day
     <div style={containerStyle}>
       <div style={headerStyle}>
         <button type="button" onClick={prevMonth} style={arrowButtonStyle} aria-label="Mês anterior" className="mini-cal-arrow">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
         </button>
         <span style={headerLabelStyle}>{headerLabel}</span>
         <button type="button" onClick={nextMonth} style={arrowButtonStyle} aria-label="Próximo mês" className="mini-cal-arrow">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
         </button>
@@ -156,60 +156,66 @@ const containerStyle = {
   background: "var(--color-surface-1)",
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-md)",
-  padding: "0.5rem",
+  padding: "var(--space-3)",
 } satisfies React.CSSProperties;
 
 const headerStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "0.25rem 0",
-  marginBottom: "0.25rem",
+  gap: "0",
+  marginBottom: "var(--space-1)",
 } satisfies React.CSSProperties;
 
 const arrowButtonStyle = {
-  width: "2.75rem",
-  height: "2.75rem",
-  minWidth: "44px",
-  minHeight: "44px",
+  width: "1.75rem",
+  height: "1.75rem",
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
   background: "none",
   border: "none",
   cursor: "pointer",
-  fontSize: "0.85rem",
-  color: "var(--color-text-2)",
+  color: "var(--color-text-3)",
   borderRadius: "var(--radius-xs)",
   transition: "background 100ms ease, color 100ms ease",
+  flexShrink: 0,
 } satisfies React.CSSProperties;
 
 const headerLabelStyle = {
-  fontSize: "0.8rem",
+  fontSize: "var(--font-size-xs)",
   fontWeight: 600,
   color: "var(--color-text-1)",
+  flex: 1,
+  textAlign: "center" as const,
+  lineHeight: 1.3,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap" as const,
 } satisfies React.CSSProperties;
 
 const weekdayRowStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(7, 1fr)",
-  gap: "1px",
-  marginBottom: "2px",
+  gap: "0",
+  marginBottom: "var(--space-1)",
 } satisfies React.CSSProperties;
 
 const weekdayCellStyle = {
   textAlign: "center" as const,
-  fontSize: "0.55rem",
+  fontSize: "var(--font-size-2xs)",
   fontWeight: 600,
   color: "var(--color-text-3)",
   textTransform: "uppercase" as const,
-  padding: "2px 0",
+  letterSpacing: "0.05em",
+  padding: "var(--space-0.5) 0",
+  lineHeight: 1.2,
 } satisfies React.CSSProperties;
 
 const daysGridStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(7, 1fr)",
-  gap: "1px",
+  gap: "0",
 } satisfies React.CSSProperties;
 
 const dayCellStyle = {
@@ -217,17 +223,18 @@ const dayCellStyle = {
   flexDirection: "column" as const,
   alignItems: "center",
   justifyContent: "center",
-  minHeight: "1.75rem",
-  padding: "1px",
+  minHeight: "1.625rem",
+  padding: "0",
   border: "none",
   cursor: "pointer",
   borderRadius: "var(--radius-xs)",
   lineHeight: 1,
-  transition: "background 80ms ease",
+  transition: "background 100ms ease",
+  overflow: "hidden",
 } satisfies React.CSSProperties;
 
 const dayNumberStyle = {
-  fontSize: "0.7rem",
+  fontSize: "var(--font-size-xs)",
   fontWeight: 500,
   lineHeight: 1,
 } satisfies React.CSSProperties;
@@ -239,8 +246,8 @@ const dotsContainerStyle = {
 } satisfies React.CSSProperties;
 
 const dotStyle = {
-  width: "3px",
-  height: "3px",
+  width: "4px",
+  height: "4px",
   borderRadius: "50%",
   display: "inline-block",
 } satisfies React.CSSProperties;

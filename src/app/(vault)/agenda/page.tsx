@@ -71,7 +71,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const route = "vault.agenda";
   const { accountId, workspaceId } = await observeServerStage(route, "resolveSession", () => resolveSession());
   const params = await searchParams;
-  const activeView = params.view === "week" ? "week" : "day";
+  const activeView = params.view === "week" ? "week" : params.view === "month" ? "month" : "day";
 
   // Resolve anchor date from search params (UTC midnight) or default to today
   const anchorDate = parseAnchorDate(params.date);
@@ -971,6 +971,7 @@ const sidebarStyle = {
   flexDirection: "column" as const,
   gap: "1rem",
   paddingTop: "0.5rem",
+  minWidth: 0,
 } satisfies React.CSSProperties;
 
 // Overdue alert
