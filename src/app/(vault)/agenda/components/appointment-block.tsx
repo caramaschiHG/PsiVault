@@ -10,12 +10,12 @@ interface AppointmentBlockProps {
   onClick: (appointmentId: string) => void;
 }
 
-const STATUS_COLORS: Record<string, { bg: string; border: string; text: string }> = {
-  SCHEDULED:  { bg: "var(--appt-scheduled-bg)",    border: "var(--appt-scheduled-border)",    text: "var(--appt-scheduled-text)" },
-  CONFIRMED:  { bg: "var(--appt-confirmed-bg)",    border: "var(--appt-confirmed-border)",    text: "var(--appt-confirmed-text)" },
-  COMPLETED:  { bg: "var(--appt-completed-bg)",    border: "var(--appt-completed-border)",    text: "var(--appt-completed-text)" },
-  CANCELED:   { bg: "var(--appt-canceled-bg)",     border: "var(--appt-canceled-border)",     text: "var(--appt-canceled-text)" },
-  NO_SHOW:    { bg: "var(--appt-noshow-bg)",       border: "var(--appt-noshow-border)",       text: "var(--appt-noshow-text)" },
+const STATUS_COLORS: Record<string, { bg: string; border: string; text: string; accent: string }> = {
+  SCHEDULED:  { bg: "var(--appt-scheduled-bg)",  border: "var(--appt-scheduled-border)",  text: "var(--appt-scheduled-text)",  accent: "#b45309" },
+  CONFIRMED:  { bg: "var(--appt-confirmed-bg)",  border: "var(--appt-confirmed-border)",  text: "var(--appt-confirmed-text)",  accent: "#2d6a4f" },
+  COMPLETED:  { bg: "var(--appt-completed-bg)",  border: "var(--appt-completed-border)",  text: "var(--appt-completed-text)",  accent: "#a8a29e" },
+  CANCELED:   { bg: "var(--appt-canceled-bg)",   border: "var(--appt-canceled-border)",   text: "var(--appt-canceled-text)",   accent: "#dc2626" },
+  NO_SHOW:    { bg: "var(--appt-noshow-bg)",     border: "var(--appt-noshow-border)",     text: "var(--appt-noshow-text)",     accent: "#9f1239" },
 };
 
 export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlockProps) {
@@ -46,6 +46,7 @@ export function AppointmentBlock({ block, patientName, onClick }: AppointmentBlo
     height: "100%",
     borderRadius: "var(--radius-sm)",
     border: `1px solid ${colors.border}`,
+    borderLeft: `3px solid ${colors.accent}`,
     background: colors.bg,
     padding: "var(--space-1) var(--space-2)",
     overflow: "hidden",

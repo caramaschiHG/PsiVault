@@ -55,6 +55,7 @@ import { resolveSession } from "../../../lib/supabase/session";
 import { deriveMonthAgenda } from "../../../lib/appointments/agenda";
 import { createAppointmentQuickAction } from "../appointments/actions";
 import { QuickCreateWrapper } from "./components/quick-create-wrapper";
+import { AgendaErrorBoundary } from "./components/agenda-error-boundary";
 import { getFinanceRepository } from "../../../lib/finance/store";
 import { autoMarkOverdue } from "../../../lib/finance/model";
 import { db } from "../../../lib/db";
@@ -749,8 +750,6 @@ const headingRowStyle = {
   justifyContent: "space-between",
   gap: "0.75rem",
   flexWrap: "nowrap" as const,
-  paddingBottom: "0.25rem",
-  borderBottom: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const headingActionsStyle = {
@@ -786,10 +785,11 @@ const eyebrowStyle = {
 
 const titleStyle = {
   margin: 0,
-  fontSize: "1.25rem",
+  fontSize: "1.5rem",
   fontWeight: 700,
   fontFamily: "var(--font-serif)",
   color: "var(--color-text-1)",
+  letterSpacing: "-0.01em",
 } satisfies React.CSSProperties;
 
 const newApptButtonStyle = {

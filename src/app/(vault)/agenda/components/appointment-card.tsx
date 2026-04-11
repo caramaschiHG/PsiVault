@@ -1,20 +1,27 @@
 /**
- * AppointmentCard — reusable appointment block for both agenda layouts.
+ * AppointmentCard — reusable appointment block for agenda list view.
  *
- * Displays the essentials at a glance:
- * - Time window (start and end)
- * - Status chip (color-coded, clear copy)
- * - Care mode chip (SVG icon + label so Presencial vs Online is fast to parse)
+ * Layout: left accent strip (status color) + content grid.
+ * Primary: patient name. Secondary: time window, chips, actions.
  *
  * Privacy: receives only AgendaCard data — no clinical details, no
  * importantObservations, no notes. Patient name is resolved from patientId
- * by the parent (passed as patientDisplayName) so this card never handles
- * raw patient records.
+ * by the parent (passed as patientDisplayName).
  */
 
 import type { AgendaCard } from "../../../../lib/appointments/agenda";
 
-const STATUS_COLORS: Record<string, { background: string; color: string; border: string }> = {
+/** Solid accent colors for the left status strip. */
+const STATUS_ACCENTS: Record<string, string> = {
+  SCHEDULED: "#b45309",
+  CONFIRMED: "#2d6a4f",
+  COMPLETED: "#a8a29e",
+  CANCELED:  "#dc2626",
+  NO_SHOW:   "#9f1239",
+};
+
+/** Chip colors for the status badge. */
+const STATUS_CHIPS: Record<string, { background: string; color: string; border: string }> = {
   SCHEDULED: {
     background: "var(--status-scheduled-bg)",
     color: "var(--color-warning-text)",
@@ -45,9 +52,7 @@ const STATUS_COLORS: Record<string, { background: string; color: string; border:
 interface AppointmentCardProps {
   card: AgendaCard;
   patientDisplayName: string;
-  /** When provided, renders the quick next-session action below the card. */
   nextSessionAction?: React.ReactNode;
-  /** When provided, renders inline action buttons (confirm, complete, cancel, no-show). */
   quickActions?: React.ReactNode;
 }
 
@@ -57,7 +62,8 @@ export function AppointmentCard({
   nextSessionAction,
   quickActions,
 }: AppointmentCardProps) {
-  const statusStyle = STATUS_COLORS[card.status] ?? STATUS_COLORS.SCHEDULED;
+  const chipStyle = STATUS_CHIPS[card.status] ?? STATUS_CHIPS.SCHEDULED;
+  const accentColor = STATUS_ACCENTS[card.status] ?? STATUS_ACCENTS.SCHEDULED;
 
   const startTime = card.startsAt.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
@@ -71,56 +77,56 @@ export function AppointmentCard({
   });
 
   return (
-    <div
-      className="card-hover"
-      style={{
-        ...cardStyle,
-        borderColor: statusStyle.border,
-      }}
-    >
-      {/* Time row */}
-      <div style={timeRowStyle}>
-        <time style={timeStyle}>
-          {startTime} – {endTime}
-        </time>
-        <span style={durationStyle}>{card.durationMinutes} min</span>
+    <div className="card-hover" style={cardStyle}>
+      {/* Status accent strip */}
+      <div style={{ ...accentStripStyle, background: accentColor }} />
+
+      {/* Card content */}
+      <div style={contentStyle}>
+        {/* Patient name — primary info */}
+        <p style={patientNameStyle}>{patientDisplayName}</p>
+
+        {/* Time row */}
+        <div style={timeRowStyle}>
+          <time style={timeStyle}>
+            {startTime} – {endTime}
+          </time>
+          <span style={durationStyle}>{card.durationMinutes} min</span>
+        </div>
+
+        {/* Chips: status + care mode */}
+        <div style={chipsRowStyle}>
+          <span
+            style={{
+              ...statusChipStyle,
+              background: chipStyle.background,
+              color: chipStyle.color,
+              borderColor: chipStyle.border,
+            }}
+          >
+            {card.statusLabel}
+          </span>
+
+          <span style={careModeChipStyle}>
+            {card.careMode === "ONLINE" ? (
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={iconStyle}>
+                <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+            ) : (
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={iconStyle}>
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            )}
+            {card.careModeLabel}
+          </span>
+        </div>
+
+        {/* Quick action buttons (confirm, complete, no-show, cancel) */}
+        {quickActions && <div style={quickActionsRowStyle}>{quickActions}</div>}
+
+        {/* Next-session action (completed rebooking, note entry, communication) */}
+        {nextSessionAction && <div style={nextSessionActionStyle}>{nextSessionAction}</div>}
       </div>
-
-      {/* Patient name */}
-      <p style={patientNameStyle}>{patientDisplayName}</p>
-
-      {/* Chips row: status + care mode */}
-      <div style={chipsRowStyle}>
-        <span
-          style={{
-            ...chipStyle,
-            background: statusStyle.background,
-            color: statusStyle.color,
-            borderColor: statusStyle.border,
-          }}
-        >
-          {card.statusLabel}
-        </span>
-
-        <span style={careModeChipStyle}>
-          {card.careMode === "ONLINE" ? (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={careModeIconStyle}>
-              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-          ) : (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={careModeIconStyle}>
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-          )}
-          {card.careModeLabel}
-        </span>
-      </div>
-
-      {/* Quick action buttons (confirm, complete, no-show, cancel) */}
-      {quickActions && <div style={quickActionsRowStyle}>{quickActions}</div>}
-
-      {/* Quick next-session action (e.g., completed-appointment rebooking) */}
-      {nextSessionAction && <div style={nextSessionActionStyle}>{nextSessionAction}</div>}
     </div>
   );
 }
@@ -128,77 +134,94 @@ export function AppointmentCard({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const cardStyle = {
-  padding: "var(--space-4) var(--space-5)",
+  display: "flex",
   borderRadius: "var(--radius-lg)",
   background: "var(--color-surface-1)",
-  border: "1px solid",
+  border: "1px solid var(--color-border)",
+  boxShadow: "var(--shadow-sm)",
+  overflow: "hidden",
+} satisfies React.CSSProperties;
+
+const accentStripStyle = {
+  width: "4px",
+  flexShrink: 0,
+} satisfies React.CSSProperties;
+
+const contentStyle = {
+  flex: 1,
+  padding: "var(--space-4) var(--space-5)",
   display: "grid",
   gap: "var(--space-2)",
-  boxShadow: "var(--shadow-sm)",
-  transition: "box-shadow 150ms ease, transform 150ms ease",
+  minWidth: 0,
+} satisfies React.CSSProperties;
+
+const patientNameStyle = {
+  margin: 0,
+  fontWeight: 700,
+  fontSize: "1rem",
+  color: "var(--color-text-1)",
+  lineHeight: 1.3,
 } satisfies React.CSSProperties;
 
 const timeRowStyle = {
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between",
+  gap: "0.625rem",
 } satisfies React.CSSProperties;
 
 const timeStyle = {
-  fontWeight: 700,
-  fontSize: "1rem",
-  color: "var(--color-text-1)",
+  fontWeight: 500,
+  fontSize: "var(--font-size-sm)",
+  color: "var(--color-text-2)",
   fontVariantNumeric: "tabular-nums",
 } satisfies React.CSSProperties;
 
 const durationStyle = {
-  fontSize: "0.8rem",
+  fontSize: "var(--font-size-xs)",
   color: "var(--color-text-4)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
-const patientNameStyle = {
-  margin: 0,
-  fontWeight: 600,
-  fontSize: "var(--font-size-body-sm)",
-  color: "var(--color-text-1)",
-} satisfies React.CSSProperties;
-
 const chipsRowStyle = {
   display: "flex",
-  gap: "0.5rem",
+  gap: "0.4rem",
   flexWrap: "wrap" as const,
 } satisfies React.CSSProperties;
 
-const chipStyle = {
+const statusChipStyle = {
   display: "inline-flex",
   alignItems: "center",
-  padding: "0.22rem 0.75rem",
+  padding: "0.18rem 0.6rem",
   borderRadius: "var(--radius-pill)",
   border: "1px solid",
-  fontSize: "0.78rem",
+  fontSize: "var(--font-size-xs)",
   fontWeight: 600,
   letterSpacing: "0.02em",
 } satisfies React.CSSProperties;
 
 const careModeChipStyle = {
-  ...chipStyle,
-  background: "var(--color-surface-warm)",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.3rem",
+  padding: "0.18rem 0.6rem",
+  borderRadius: "var(--radius-pill)",
+  border: "1px solid var(--color-border-med)",
+  fontSize: "var(--font-size-xs)",
+  fontWeight: 500,
   color: "var(--color-text-2)",
-  borderColor: "var(--color-border-med)",
+  background: "var(--color-surface-warm)",
 } satisfies React.CSSProperties;
 
-const careModeIconStyle = {
-  marginRight: "var(--space-1.5)",
+const iconStyle = {
   flexShrink: 0,
 } satisfies React.CSSProperties;
 
 const quickActionsRowStyle = {
-  paddingTop: "0.5rem",
+  paddingTop: "var(--space-2)",
 } satisfies React.CSSProperties;
 
 const nextSessionActionStyle = {
-  marginTop: "0.25rem",
+  marginTop: "0.125rem",
   paddingTop: "0.75rem",
-  borderTop: "1px solid rgba(146, 64, 14, 0.1)",
+  borderTop: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
