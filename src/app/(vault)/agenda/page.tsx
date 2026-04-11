@@ -71,7 +71,8 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
   const route = "vault.agenda";
   const { accountId, workspaceId } = await observeServerStage(route, "resolveSession", () => resolveSession());
   const params = await searchParams;
-  const activeView = params.view === "week" ? "week" : params.view === "month" ? "month" : "day";
+  const activeView: "day" | "week" | "month" =
+    params.view === "week" ? "week" : params.view === "month" ? "month" : "day";
 
   // Resolve anchor date from search params (UTC midnight) or default to today
   const anchorDate = parseAnchorDate(params.date);
