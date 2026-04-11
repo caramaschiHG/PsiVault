@@ -1508,9 +1508,9 @@ button, [role="button"], a, summary,
 }
 
 /* ─── Quick Create Popover ────────────────────────────────────────────────── */
-@keyframes popoverIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1); }
+@keyframes popoverFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .quick-create-close:hover {

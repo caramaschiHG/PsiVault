@@ -41,10 +41,10 @@ export function QuickCreatePopover({
   const [error, setError] = useState<string | null>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // Smart positioning: open upward if near bottom of viewport
+  // Smart positioning: open upward ONLY when truly no room below
   const viewportBottom = window.innerHeight;
-  const spaceBelow = viewportBottom - position.top;
-  const openingUpward = spaceBelow < POPOVER_MAX_HEIGHT + 40;
+  const ESTIMATED_HEIGHT = 340; // actual rendered form height
+  const openingUpward = (viewportBottom - position.top) < ESTIMATED_HEIGHT + 20;
 
   // Close on Escape
   useEffect(() => {
@@ -85,19 +85,18 @@ export function QuickCreatePopover({
     });
   }, [onCreate, toast, router, onClose]);
 
-  // Clamp left to keep popover in viewport
-  const safeLeft = Math.min(position.left, window.innerWidth - POPOVER_WIDTH - 8);
+  // Center popover horizontally on click, clamp to viewport
+  const halfWidth = POPOVER_WIDTH / 2;
+  const centeredLeft = position.left - halfWidth;
+  const clampedLeft = Math.max(8, Math.min(centeredLeft, window.innerWidth - POPOVER_WIDTH - 8));
 
   const OFFSET = 6; // px gap between click and popover edge
 
-  // When opening downward: set `top` to click + offset
-  // When opening upward: set `bottom` to viewportHeight - click + offset
-  // This keeps the popover always próximo ao click
+  // Open downward by default; upward when near bottom
   const popoverTop = openingUpward ? undefined : position.top + OFFSET;
   const popoverBottom = openingUpward
     ? viewportBottom - position.top + OFFSET
     : undefined;
-  const popoverTransformOrigin = openingUpward ? "bottom center" : "top center";
 
   return (
     <div
@@ -106,8 +105,7 @@ export function QuickCreatePopover({
         ...popoverStyle,
         top: popoverTop,
         bottom: popoverBottom,
-        left: Math.max(8, safeLeft),
-        transformOrigin: popoverTransformOrigin,
+        left: clampedLeft,
       }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -234,8 +232,7 @@ const popoverStyle = {
   padding: "var(--space-4)",
   zIndex: "var(--z-dropdown)",
   fontSize: "var(--font-size-meta)",
-  transformOrigin: "top center",
-  animation: "popoverIn 180ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+  animation: "popoverFadeIn 120ms ease forwards",
 } satisfies React.CSSProperties;
 
 const headerStyle = {
