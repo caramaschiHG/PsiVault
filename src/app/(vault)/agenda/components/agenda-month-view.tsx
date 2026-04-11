@@ -27,6 +27,14 @@ export function AgendaMonthView({
 }: AgendaMonthViewProps) {
   const { days } = month;
 
+  if (!days || days.length === 0) {
+    return (
+      <div style={{ padding: "2rem", textAlign: "center", color: "var(--color-text-3)" }}>
+        Sem dados para exibir neste mês.
+      </div>
+    );
+  }
+
   return (
     <div style={containerStyle}>
       {/* Weekday headers */}
