@@ -177,71 +177,81 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       ? ("ONLINE" as const)
       : ("IN_PERSON" as const);
 
-  // Load clinical repository to check note existence for completed appointments
+  // Second fan-out: everything that depends on the appointment list runs in
+  // parallel. Previously the clinical-note fetch and the overdue-charges chain
+  // ran sequentially, introducing an unnecessary round trip.
   const clinicalRepo = getClinicalNoteRepository();
-
-  // Build set of appointment IDs that already have a note
-  const notedAppointmentIds = new Set<string>();
+  const financeRepo = getFinanceRepository();
   const completedAppts = appointments.filter((a) => a.status === "COMPLETED");
-  const agendaNoteResults = await observeServerStage(
-    route,
-    "loadClinicalNotesForCompletedAppointments",
-    () =>
-      Promise.all(
-        completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, workspaceId)),
-      ),
-    {
-      workspaceId,
-      completedAppointmentCount: completedAppts.length,
-    },
-  );
+
+  const nowDate = new Date();
+  const todayStr = nowDate.toISOString().slice(0, 10);
+  const todayPatientIds = [...new Set(appointments
+    .filter((a) => a.startsAt.toISOString().slice(0, 10) === todayStr)
+    .map((a) => a.patientId))];
+  const currentMonth = nowDate.getMonth() + 1;
+  const currentYear = nowDate.getFullYear();
+
+  const [agendaNoteResults, overdueCharges] = await Promise.all([
+    observeServerStage(
+      route,
+      "loadClinicalNotesForCompletedAppointments",
+      () =>
+        Promise.all(
+          completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, workspaceId)),
+        ),
+      {
+        workspaceId,
+        completedAppointmentCount: completedAppts.length,
+      },
+    ),
+    todayPatientIds.length > 0
+      ? observeServerStage(
+          route,
+          "loadOverdueChargesForTodayPatients",
+          async () => {
+            const allCharges = await financeRepo.listByWorkspaceAndMonth(
+              workspaceId,
+              currentYear,
+              currentMonth,
+            );
+            const apptIds = allCharges
+              .filter((c) => c.appointmentId)
+              .map((c) => c.appointmentId as string);
+            const appts = apptIds.length
+              ? await db.appointment.findMany({
+                  where: { id: { in: apptIds } },
+                  select: { id: true, startsAt: true },
+                })
+              : [];
+            const apptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
+            const todayPatientSet = new Set(todayPatientIds);
+            return autoMarkOverdue(allCharges, apptMap, nowDate).filter(
+              (c) => c.status === "atrasado" && todayPatientSet.has(c.patientId),
+            );
+          },
+          { workspaceId },
+        )
+      : Promise.resolve([]),
+  ]);
+
+  const notedAppointmentIds = new Set<string>();
   completedAppts.forEach((a, i) => {
     if (agendaNoteResults[i]) notedAppointmentIds.add(a.id);
   });
 
-  // Collect unique patient IDs that have sessions today
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const todayPatientIds = [...new Set(appointments
-    .filter((a) => a.startsAt.toISOString().slice(0, 10) === todayStr)
-    .map((a) => a.patientId))];
-
-  // Check for overdue charges for today's patients
-  let overduePatientIds = new Set<string>();
-  let overdueDetails: { patientId: string; count: number; totalCents: number }[] = [];
-  if (todayPatientIds.length > 0) {
-    const financeRepo = getFinanceRepository();
-    const nowDate = new Date();
-    const currentMonth = nowDate.getMonth() + 1;
-    const currentYear = nowDate.getFullYear();
-    const allCharges = await financeRepo.listByWorkspaceAndMonth(workspaceId, currentYear, currentMonth);
-
-    const apptIds = allCharges.filter((c) => c.appointmentId).map((c) => c.appointmentId as string);
-    let apptMap = new Map<string, Date>();
-    if (apptIds.length > 0) {
-      const appts = await db.appointment.findMany({
-        where: { id: { in: apptIds } },
-        select: { id: true, startsAt: true },
-      });
-      apptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
-    }
-
-    const enriched = autoMarkOverdue(allCharges, apptMap, nowDate);
-    const overdueCharges = enriched.filter((c) => c.status === "atrasado" && todayPatientIds.includes(c.patientId));
-
-    const overdueMap = new Map<string, { count: number; totalCents: number }>();
-    for (const charge of overdueCharges) {
-      const existing = overdueMap.get(charge.patientId) ?? { count: 0, totalCents: 0 };
-      existing.count++;
-      existing.totalCents += charge.amountInCents ?? 0;
-      overdueMap.set(charge.patientId, existing);
-    }
-
-    overduePatientIds = new Set(overdueMap.keys());
-    overdueDetails = Array.from(overdueMap.entries()).map(([patientId, data]) => ({
-      patientId,
-      ...data,
-    }));
+  const overdueMap = new Map<string, { count: number; totalCents: number }>();
+  for (const charge of overdueCharges) {
+    const existing = overdueMap.get(charge.patientId) ?? { count: 0, totalCents: 0 };
+    existing.count++;
+    existing.totalCents += charge.amountInCents ?? 0;
+    overdueMap.set(charge.patientId, existing);
   }
+  const overduePatientIds = new Set(overdueMap.keys());
+  const overdueDetails = Array.from(overdueMap.entries()).map(([patientId, data]) => ({
+    patientId,
+    ...data,
+  }));
 
   const currencyFmt = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 

@@ -2,7 +2,14 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { SignatureCropModal } from "./signature-crop-modal";
+import dynamic from "next/dynamic";
+
+// Lazy-load the crop modal so `react-easy-crop` (~120KB) isn't shipped with
+// the initial settings bundle — it only loads when the user opens the modal.
+const SignatureCropModal = dynamic(
+  () => import("./signature-crop-modal").then((m) => m.SignatureCropModal),
+  { ssr: false },
+);
 
 interface SignatureUploadProps {
   saveAction: (

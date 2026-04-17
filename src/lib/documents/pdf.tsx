@@ -1,13 +1,4 @@
 import React from "react";
-import {
-  Document,
-  Image,
-  Page,
-  StyleSheet,
-  Text,
-  View,
-  renderToBuffer,
-} from "@react-pdf/renderer";
 
 interface RenderPracticeDocumentPdfInput {
   title: string;
@@ -19,9 +10,26 @@ interface RenderPracticeDocumentPdfInput {
   signatureDataUri?: string | null;
 }
 
+// Cached module + stylesheet — populated on first call, reused afterwards.
+// Avoids paying the @react-pdf/renderer boot cost on routes that never render PDFs.
+let pdfModulePromise: Promise<typeof import("@react-pdf/renderer")> | null = null;
+let cachedStyles: ReturnType<typeof buildStyles> | null = null;
+
+function loadPdfModule() {
+  if (!pdfModulePromise) {
+    pdfModulePromise = import("@react-pdf/renderer");
+  }
+  return pdfModulePromise;
+}
+
 export async function renderPracticeDocumentPdf(
   input: RenderPracticeDocumentPdfInput,
 ): Promise<Buffer> {
+  const { Document, Image, Page, StyleSheet, Text, View, renderToBuffer } =
+    await loadPdfModule();
+
+  const styles = cachedStyles ?? (cachedStyles = buildStyles(StyleSheet));
+
   return renderToBuffer(
     <Document
       title={input.title}
@@ -60,7 +68,10 @@ export async function renderPracticeDocumentPdf(
   );
 }
 
-const styles = StyleSheet.create({
+function buildStyles(
+  StyleSheet: typeof import("@react-pdf/renderer").StyleSheet,
+) {
+  return StyleSheet.create({
   page: {
     paddingTop: 44,
     paddingRight: 42,
@@ -123,4 +134,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: "var(--color-warm-brown)",
   },
-});
+  });
+}

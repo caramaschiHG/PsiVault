@@ -37,49 +37,39 @@ interface FinanceiroPageProps {
   searchParams: Promise<{ month?: string; year?: string }>;
 }
 
+async function loadMonthBreakdown(
+  workspaceId: string,
+  year: number,
+  month: number,
+  now: Date,
+) {
+  const financeRepo = getFinanceRepository();
+  const charges = await financeRepo.listByWorkspaceAndMonth(workspaceId, year, month);
+  const apptIds = charges
+    .filter((c) => c.appointmentId)
+    .map((c) => c.appointmentId as string);
+  const appts = apptIds.length
+    ? await db.appointment.findMany({
+        where: { id: { in: apptIds } },
+        select: { id: true, startsAt: true },
+      })
+    : [];
+  const apptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
+  const enriched = autoMarkOverdue(charges, apptMap, now);
+  return { charges, enriched, summary: deriveMonthlyFinancialSummary(enriched) };
+}
+
 export default async function FinanceiroPage({ searchParams }: FinanceiroPageProps) {
-  const { workspaceId } = await resolveSession();
+  const { workspaceId, accountId } = await resolveSession();
   const params = await searchParams;
   const now = new Date();
 
   const year = params.year ? parseInt(params.year, 10) : now.getFullYear();
   const month = params.month ? parseInt(params.month, 10) : now.getMonth() + 1;
 
-  const financeRepo = getFinanceRepository();
   const patientRepo = getPatientRepository();
 
-  const { accountId } = await resolveSession();
-  const [activePatients, archivedPatients, charges, profile] = await Promise.all([
-    patientRepo.listActive(workspaceId),
-    patientRepo.listArchived(workspaceId),
-    financeRepo.listByWorkspaceAndMonth(workspaceId, year, month),
-    getPracticeProfileSnapshot(accountId, workspaceId),
-  ]);
-
-  const allPatients = [...activePatients, ...archivedPatients];
-
-  // Build appointment date map for overdue detection
-  const appointmentIds = charges
-    .filter((c) => c.appointmentId)
-    .map((c) => c.appointmentId as string);
-
-  let appointmentDateMap = new Map<string, Date>();
-  if (appointmentIds.length > 0) {
-    const appointments = await db.appointment.findMany({
-      where: { id: { in: appointmentIds } },
-      select: { id: true, startsAt: true },
-    });
-    appointmentDateMap = new Map(appointments.map((a) => [a.id, a.startsAt]));
-  }
-
-  // Auto-mark overdue based on appointment dates
-  const enrichedCharges = autoMarkOverdue(charges, appointmentDateMap, now);
-
-  const summary = deriveMonthlyFinancialSummary(enrichedCharges);
-  const overdueCount = enrichedCharges.filter((c: { status: string }) => c.status === "atrasado").length;
-  const monthLabel = `${MONTH_LABELS[month - 1]} ${year}`;
-
-  // Trend data (last 6 months)
+  // Trend data (last 6 months, oldest → newest)
   const trendMonths: { year: number; month: number }[] = [];
   for (let i = 5; i >= 0; i--) {
     let y = year;
@@ -100,77 +90,74 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   let prevMonth = month - 1;
   if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
 
-  const trendData: { monthLabel: string; totalReceived: number; totalPending: number; totalSessions: number }[] = [];
-  for (const tm of trendMonths) {
-    const monthCharges = await financeRepo.listByWorkspaceAndMonth(workspaceId, tm.year, tm.month);
-    const tmAppointmentIds = monthCharges
-      .filter((c) => c.appointmentId)
-      .map((c) => c.appointmentId as string);
-    let tmApptMap = new Map<string, Date>();
-    if (tmAppointmentIds.length > 0) {
-      const tmAppts = await db.appointment.findMany({
-        where: { id: { in: tmAppointmentIds } },
-        select: { id: true, startsAt: true },
-      });
-      tmApptMap = new Map(tmAppts.map((a) => [a.id, a.startsAt]));
-    }
-    const tmEnriched = autoMarkOverdue(monthCharges, tmApptMap, now);
-    const tmSummary = deriveMonthlyFinancialSummary(tmEnriched);
+  // Revenue forecast range — rest of current selected month
+  const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59));
 
-    trendData.push({
-      monthLabel: monthAbbr(tm.month),
-      totalReceived: tmSummary.totalReceivedCents / 100,
-      totalPending: tmSummary.totalPendingCents / 100,
-      totalSessions: tmSummary.totalSessions,
-    });
-  }
+  // Fan out every independent DB call in parallel.
+  const [
+    activePatients,
+    archivedPatients,
+    profile,
+    current,
+    prev,
+    trendBreakdowns,
+    yearBreakdowns,
+    restOfMonth,
+  ] = await Promise.all([
+    patientRepo.listActive(workspaceId),
+    patientRepo.listArchived(workspaceId),
+    getPracticeProfileSnapshot(accountId, workspaceId),
+    loadMonthBreakdown(workspaceId, year, month, now),
+    loadMonthBreakdown(workspaceId, prevYear, prevMonth, now),
+    Promise.all(trendMonths.map((tm) => loadMonthBreakdown(workspaceId, tm.year, tm.month, now))),
+    Promise.all(yearMonths.map((ym) => loadMonthBreakdown(workspaceId, ym.year, ym.month, now))),
+    db.appointment.findMany({
+      where: {
+        workspaceId,
+        startsAt: { gte: now, lte: monthEnd },
+        status: { in: ["SCHEDULED", "CONFIRMED"] },
+      },
+      select: { id: true, patientId: true, priceInCents: true },
+    }),
+  ]);
 
-  // Previous month data for comparison
-  const prevCharges = await financeRepo.listByWorkspaceAndMonth(workspaceId, prevYear, prevMonth);
-  const prevApptIds = prevCharges.filter((c) => c.appointmentId).map((c) => c.appointmentId as string);
-  let prevApptMap = new Map<string, Date>();
-  if (prevApptIds.length > 0) {
-    const prevAppts = await db.appointment.findMany({
-      where: { id: { in: prevApptIds } },
-      select: { id: true, startsAt: true },
-    });
-    prevApptMap = new Map(prevAppts.map((a) => [a.id, a.startsAt]));
-  }
-  const prevEnriched = autoMarkOverdue(prevCharges, prevApptMap, now);
-  const prevSummary = deriveMonthlyFinancialSummary(prevEnriched);
+  const allPatients = [...activePatients, ...archivedPatients];
+  const patientIndex = new Map(allPatients.map((p) => [p.id, p]));
 
-  // Year summary
-  const yearSummary: { month: number; monthLabel: string; received: number; pending: number; overdue: number; sessions: number }[] = [];
-  for (const ym of yearMonths) {
-    const ymCharges = await financeRepo.listByWorkspaceAndMonth(workspaceId, ym.year, ym.month);
-    const ymApptIds = ymCharges.filter((c) => c.appointmentId).map((c) => c.appointmentId as string);
-    let ymApptMap = new Map<string, Date>();
-    if (ymApptIds.length > 0) {
-      const ymAppts = await db.appointment.findMany({
-        where: { id: { in: ymApptIds } },
-        select: { id: true, startsAt: true },
-      });
-      ymApptMap = new Map(ymAppts.map((a) => [a.id, a.startsAt]));
-    }
-    const ymEnriched = autoMarkOverdue(ymCharges, ymApptMap, now);
-    const ymSummary = deriveMonthlyFinancialSummary(ymEnriched);
-    const ymOverdue = ymEnriched.filter((c) => c.status === "atrasado").reduce((s, c) => s + (c.amountInCents ?? 0), 0);
+  const enrichedCharges = current.enriched;
+  const summary = current.summary;
+  const overdueCount = enrichedCharges.filter((c: { status: string }) => c.status === "atrasado").length;
+  const monthLabel = `${MONTH_LABELS[month - 1]} ${year}`;
 
-    yearSummary.push({
+  const trendData = trendMonths.map((tm, i) => ({
+    monthLabel: monthAbbr(tm.month),
+    totalReceived: trendBreakdowns[i].summary.totalReceivedCents / 100,
+    totalPending: trendBreakdowns[i].summary.totalPendingCents / 100,
+    totalSessions: trendBreakdowns[i].summary.totalSessions,
+  }));
+
+  const prevSummary = prev.summary;
+
+  const yearSummary = yearMonths.map((ym, i) => {
+    const { enriched, summary: ymSummary } = yearBreakdowns[i];
+    const ymOverdue = enriched
+      .filter((c) => c.status === "atrasado")
+      .reduce((s, c) => s + (c.amountInCents ?? 0), 0);
+    return {
       month: ym.month,
       monthLabel: MONTH_LABELS[ym.month - 1],
       received: ymSummary.totalReceivedCents / 100,
       pending: ymSummary.totalPendingCents / 100,
       overdue: ymOverdue / 100,
       sessions: ymSummary.totalSessions,
-    });
-  }
+    };
+  });
 
   // Top patients by revenue this month
   const patientRevenue = new Map<string, { received: number; sessions: number; name: string }>();
   for (const charge of enrichedCharges) {
     if (!patientRevenue.has(charge.patientId)) {
-      const patient = allPatients.find((p) => p.id === charge.patientId);
+      const patient = patientIndex.get(charge.patientId);
       patientRevenue.set(charge.patientId, {
         received: 0,
         sessions: 0,
@@ -186,23 +173,12 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     .sort((a, b) => b.received - a.received)
     .slice(0, 5);
 
-  // Revenue forecast: scheduled appointments for rest of month
-  const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59));
-  const restOfMonth = await db.appointment.findMany({
-    where: {
-      workspaceId,
-      startsAt: { gte: now, lte: monthEnd },
-      status: { in: ["SCHEDULED", "CONFIRMED"] },
-    },
-    select: { id: true, patientId: true, priceInCents: true },
-  });
-
   let forecastCents = 0;
   for (const appt of restOfMonth) {
     if (appt.priceInCents) {
       forecastCents += appt.priceInCents;
     } else {
-      const patient = allPatients.find((p) => p.id === appt.patientId);
+      const patient = patientIndex.get(appt.patientId);
       const price = patient?.sessionPriceInCents ?? profile?.defaultSessionPriceInCents;
       if (price) forecastCents += price;
     }

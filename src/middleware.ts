@@ -11,7 +11,12 @@ export async function middleware(request: NextRequest) {
 
   if (isAuthRoute) {
     if (user) {
-      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      // Both calls are independent. Fire in parallel to avoid a round-trip.
+      const [aalResult, mfaResult] = await Promise.all([
+        supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+        supabase.auth.mfa.listFactors(),
+      ]);
+      const aal = aalResult.data;
       const mfaComplete = aal?.currentLevel === "aal2";
 
       if (mfaComplete) {
@@ -20,7 +25,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/inicio", request.url));
       }
 
-      const { data: mfaData } = await supabase.auth.mfa.listFactors();
+      const mfaData = mfaResult.data;
       const hasMfa = mfaData?.totp?.some((f: { status: string }) => f.status === "verified") ?? false;
 
       // Already on the correct MFA page — let through
