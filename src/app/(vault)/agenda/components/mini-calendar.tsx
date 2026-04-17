@@ -85,7 +85,9 @@ export function MiniCalendar({ currentDate, appointmentCounts }: MiniCalendarPro
 
 const customCss = `
   .mini-calendar-wrapper {
-    --rdp-cell-size: 2.25rem;
+    --rdp-cell-size: 1.75rem;
+    --rdp-day-width: 1.75rem;
+    --rdp-day-height: 1.75rem;
     --rdp-accent-color: var(--color-accent);
     --rdp-background-color: transparent;
     --rdp-accent-color-dark: var(--color-accent-dark);
@@ -94,6 +96,8 @@ const customCss = `
   }
   .mini-calendar-wrapper .rdp-root {
     --rdp-margin: 0;
+    max-width: 100%;
+    margin: 0 auto;
   }
   .mini-calendar-wrapper .rdp-nav {
     color: var(--color-text-3);
@@ -115,8 +119,10 @@ const customCss = `
   }
   .mini-calendar-wrapper .rdp-day_button {
     border-radius: var(--radius-xs);
-    width: 100%;
-    height: 100%;
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
   .mini-calendar-wrapper .rdp-today {
     color: var(--color-accent);
@@ -140,10 +146,12 @@ const containerStyle = {
   background: "var(--color-surface-1)",
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-md)",
-  padding: "var(--space-3)",
+  padding: "0.75rem 0.5rem",
   display: "flex",
   justifyContent: "center",
   width: "100%",
+  boxSizing: "border-box" as const,
+  overflow: "hidden",
 } satisfies React.CSSProperties;
 
 const dayCellStyle = {
@@ -156,6 +164,9 @@ const dayCellStyle = {
   background: "transparent",
   border: "none",
   cursor: "pointer",
+  padding: 0,
+  margin: 0,
+  boxSizing: "border-box" as const,
 } satisfies React.CSSProperties;
 
 const dayNumberStyle = {
