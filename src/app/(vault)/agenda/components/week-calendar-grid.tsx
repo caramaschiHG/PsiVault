@@ -274,9 +274,13 @@ const COLUMNS = "3.5rem repeat(7, minmax(130px, 1fr))";
 
 const outerWrapStyle = {
   overflowX: "auto" as const,
+  overflowY: "auto" as const,
+  maxHeight: "70vh",
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-xl)",
   background: "var(--color-surface-1)",
+  width: "100%",
+  position: "relative" as const,
 } satisfies React.CSSProperties;
 
 const headerRowStyle = {
@@ -287,13 +291,13 @@ const headerRowStyle = {
   top: 0,
   zIndex: "var(--z-base)",
   background: "var(--color-surface-1)",
+  minWidth: "966px",
 } satisfies React.CSSProperties;
 
 const bodyStyle = {
   display: "grid",
   gridTemplateColumns: COLUMNS,
-  overflowY: "auto" as const,
-  maxHeight: "70vh",
+  minWidth: "966px",
 } satisfies React.CSSProperties;
 
 const dayHeaderStyle = {

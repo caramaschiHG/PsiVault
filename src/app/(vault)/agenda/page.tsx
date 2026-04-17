@@ -742,6 +742,7 @@ const shellStyle = {
   display: "grid",
   gap: "0.75rem",
   alignContent: "start",
+  minWidth: 0,
 } satisfies React.CSSProperties;
 
 const headingRowStyle = {

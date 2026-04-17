@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { DayPicker } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
@@ -16,22 +16,34 @@ interface MiniCalendarProps {
 export function MiniCalendar({ currentDate, appointmentCounts }: MiniCalendarProps) {
   const router = useRouter();
 
+  // Convert the UTC midnight anchor date to a local date with the same year, month, and day.
+  // This prevents the DayPicker from shifting the selection backwards by a day in negative timezones (like Brazil).
+  const localCurrentDate = useMemo(() => {
+    return new Date(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth(),
+      currentDate.getUTCDate()
+    );
+  }, [currentDate]);
+
   const [displayMonth, setDisplayMonth] = useState(() => {
-    return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    return new Date(localCurrentDate.getFullYear(), localCurrentDate.getMonth(), 1);
   });
 
   useEffect(() => {
     setDisplayMonth((prev) => {
-      if (prev.getFullYear() === currentDate.getFullYear() && prev.getMonth() === currentDate.getMonth()) {
+      if (prev.getFullYear() === localCurrentDate.getFullYear() && prev.getMonth() === localCurrentDate.getMonth()) {
         return prev;
       }
-      return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      return new Date(localCurrentDate.getFullYear(), localCurrentDate.getMonth(), 1);
     });
-  }, [currentDate]);
+  }, [localCurrentDate]);
 
   const handleDayClick = useCallback((date: Date) => {
-    const dateStr = date.toISOString().slice(0, 10);
-    router.push(`/agenda?view=day&date=${dateStr}`);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    router.push(`/agenda?view=day&date=${year}-${month}-${day}`);
   }, [router]);
 
   return (
@@ -40,7 +52,8 @@ export function MiniCalendar({ currentDate, appointmentCounts }: MiniCalendarPro
       <DayPicker
         mode="single"
         locale={ptBR}
-        selected={currentDate}
+        weekStartsOn={1}
+        selected={localCurrentDate}
         month={displayMonth}
         onMonthChange={setDisplayMonth}
         onSelect={(date) => {
