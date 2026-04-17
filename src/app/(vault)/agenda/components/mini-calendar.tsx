@@ -98,9 +98,7 @@ export function MiniCalendar({ currentDate, appointmentCounts }: MiniCalendarPro
 
 const customCss = `
   .mini-calendar-wrapper {
-    --rdp-cell-size: 1.75rem;
-    --rdp-day-width: 1.75rem;
-    --rdp-day-height: 1.75rem;
+    --rdp-cell-size: 2rem;
     --rdp-accent-color: var(--color-accent);
     --rdp-background-color: transparent;
     --rdp-accent-color-dark: var(--color-accent-dark);
@@ -109,24 +107,17 @@ const customCss = `
   }
   .mini-calendar-wrapper .rdp-root {
     --rdp-margin: 0;
-    max-width: 100%;
     width: 100%;
-    margin: 0 auto;
   }
-  .mini-calendar-wrapper .rdp-months,
-  .mini-calendar-wrapper .rdp-month,
   .mini-calendar-wrapper .rdp-table {
     width: 100%;
     max-width: 100%;
-  }
-  .mini-calendar-wrapper .rdp-table {
     table-layout: fixed;
     border-collapse: collapse;
   }
   .mini-calendar-wrapper .rdp-cell,
   .mini-calendar-wrapper .rdp-head_cell {
     padding: 0;
-    width: 14.28%;
     text-align: center;
   }
   .mini-calendar-wrapper .rdp-nav {
@@ -134,12 +125,15 @@ const customCss = `
   }
   .mini-calendar-wrapper .rdp-nav svg {
     stroke-width: 2.5;
+    width: 1.25rem;
+    height: 1.25rem;
   }
   .mini-calendar-wrapper .rdp-month_caption {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     font-weight: 600;
     color: var(--color-text-1);
     text-transform: capitalize;
+    padding-left: 0.5rem;
   }
   .mini-calendar-wrapper .rdp-weekday {
     font-size: var(--font-size-2xs);
@@ -148,29 +142,29 @@ const customCss = `
     text-transform: uppercase;
   }
   .mini-calendar-wrapper .rdp-day_button {
-    border-radius: var(--radius-xs);
-    width: 100% !important;
-    max-width: 1.75rem !important;
-    height: 1.75rem !important;
+    border-radius: 50%;
+    width: 2rem !important;
+    height: 2rem !important;
     padding: 0 !important;
     margin: 0 auto !important;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.1s ease;
   }
-  .mini-calendar-wrapper .rdp-today {
+  .mini-calendar-wrapper .rdp-day_button:hover {
+    background-color: var(--color-surface-2);
+  }
+  .mini-calendar-wrapper .rdp-today .rdp-day_button {
+    background-color: var(--color-accent-light);
     color: var(--color-accent);
     font-weight: bold;
-    background-color: rgba(154, 52, 18, 0.08);
-  }
-  .mini-calendar-wrapper .rdp-selected {
-    background-color: var(--color-accent);
-    color: #fff;
   }
   .mini-calendar-wrapper .rdp-selected .rdp-day_button {
-    background-color: var(--color-accent);
-    color: #fff;
+    background-color: var(--color-accent) !important;
+    color: #fff !important;
+    font-weight: bold;
   }
   .mini-calendar-wrapper .rdp-outside {
     opacity: 0.35;
@@ -178,15 +172,12 @@ const customCss = `
 `;
 
 const containerStyle = {
-  background: "var(--color-surface-1)",
-  border: "1px solid var(--color-border)",
-  borderRadius: "var(--radius-md)",
-  padding: "0.75rem 0.5rem",
+  background: "transparent",
+  padding: "0",
   display: "flex",
   justifyContent: "center",
   width: "100%",
   boxSizing: "border-box" as const,
-  overflow: "hidden",
 } satisfies React.CSSProperties;
 
 const dayCellStyle = {

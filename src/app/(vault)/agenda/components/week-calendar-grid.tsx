@@ -270,14 +270,14 @@ function DroppableColumn({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const COLUMNS = "3.5rem repeat(7, minmax(130px, 1fr))";
+const COLUMNS = "3.5rem repeat(7, minmax(110px, 1fr))";
 
 const outerWrapStyle = {
   overflowX: "auto" as const,
   overflowY: "auto" as const,
-  maxHeight: "70vh",
+  maxHeight: "calc(100vh - 160px)",
   border: "1px solid var(--color-border)",
-  borderRadius: "var(--radius-xl)",
+  borderRadius: "var(--radius-lg)",
   background: "var(--color-surface-1)",
   width: "100%",
   position: "relative" as const,
@@ -289,51 +289,63 @@ const headerRowStyle = {
   borderBottom: "1px solid var(--color-border)",
   position: "sticky" as const,
   top: 0,
-  zIndex: "var(--z-base)",
+  zIndex: "var(--z-dropdown)",
   background: "var(--color-surface-1)",
-  minWidth: "966px",
+  minWidth: "min-content",
 } satisfies React.CSSProperties;
 
 const bodyStyle = {
   display: "grid",
   gridTemplateColumns: COLUMNS,
-  minWidth: "966px",
+  minWidth: "min-content",
 } satisfies React.CSSProperties;
 
 const dayHeaderStyle = {
-  display: "grid",
-  placeItems: "center",
-  padding: "var(--space-2) var(--space-1)",
+  display: "flex",
+  flexDirection: "column" as const,
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "0.5rem 0",
   gap: "0.1rem",
 } satisfies React.CSSProperties;
 
 const todayHeaderStyle = {
-  background: "var(--color-accent-light)",
-} satisfies React.CSSProperties;
-
-const dayNameStyle = {
-  fontSize: "var(--font-size-xs)",
-  fontWeight: 600,
-  color: "var(--color-text-3)",
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.08em",
-} satisfies React.CSSProperties;
-
-const dayNumberStyle = {
-  fontSize: "var(--font-size-h3)",
-  fontWeight: 700,
-  color: "var(--color-text-1)",
-  lineHeight: 1.2,
-} satisfies React.CSSProperties;
-
-const todayDayNumberStyle = {
   color: "var(--color-accent)",
 } satisfies React.CSSProperties;
 
+const dayNameStyle = {
+  fontSize: "0.7rem",
+  fontWeight: 500,
+  color: "var(--color-text-3)",
+  textTransform: "uppercase" as const,
+} satisfies React.CSSProperties;
+
+const dayNumberStyle = {
+  fontSize: "1.5rem",
+  fontWeight: 400,
+  color: "var(--color-text-1)",
+  lineHeight: 1,
+  width: "2.5rem",
+  height: "2.5rem",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "50%",
+} satisfies React.CSSProperties;
+
+const todayDayNumberStyle = {
+  background: "var(--color-accent)",
+  color: "#fff",
+  fontWeight: 600,
+} satisfies React.CSSProperties;
+
 const axisStyle = {
-  position: "relative" as const,
+  position: "sticky" as const,
+  left: 0,
   flexShrink: 0,
   borderRight: "1px solid var(--color-border)",
+  background: "var(--color-surface-1)",
+  zIndex: "var(--z-base)",
 } satisfies React.CSSProperties;
 
 const hourLabelStyle = {

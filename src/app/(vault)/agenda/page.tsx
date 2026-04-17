@@ -960,10 +960,10 @@ const remoteIssueNoteStyle = {
 
 const pageLayoutStyle = {
   display: "grid",
-  gridTemplateColumns: "220px 1fr",
+  gridTemplateColumns: "256px 1fr",
   gap: "1.5rem",
-  padding: "2rem 2.5rem",
-  maxWidth: "1200px",
+  padding: "1.5rem 2rem",
+  maxWidth: "100%",
   width: "100%",
   minHeight: "100vh",
 } satisfies React.CSSProperties;
