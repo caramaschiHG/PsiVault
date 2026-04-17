@@ -280,6 +280,7 @@ const outerWrapStyle = {
   borderRadius: "var(--radius-lg)",
   background: "var(--color-surface-1)",
   width: "100%",
+  minWidth: 0,
   position: "relative" as const,
 } satisfies React.CSSProperties;
 

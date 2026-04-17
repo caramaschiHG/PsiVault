@@ -960,7 +960,7 @@ const remoteIssueNoteStyle = {
 
 const pageLayoutStyle = {
   display: "grid",
-  gridTemplateColumns: "256px 1fr",
+  gridTemplateColumns: "256px minmax(0, 1fr)",
   gap: "1.5rem",
   padding: "1.5rem 2rem",
   maxWidth: "100%",
