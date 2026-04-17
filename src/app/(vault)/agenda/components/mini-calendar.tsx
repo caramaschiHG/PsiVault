@@ -97,7 +97,24 @@ const customCss = `
   .mini-calendar-wrapper .rdp-root {
     --rdp-margin: 0;
     max-width: 100%;
+    width: 100%;
     margin: 0 auto;
+  }
+  .mini-calendar-wrapper .rdp-months,
+  .mini-calendar-wrapper .rdp-month,
+  .mini-calendar-wrapper .rdp-table {
+    width: 100%;
+    max-width: 100%;
+  }
+  .mini-calendar-wrapper .rdp-table {
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+  .mini-calendar-wrapper .rdp-cell,
+  .mini-calendar-wrapper .rdp-head_cell {
+    padding: 0;
+    width: 14.28%;
+    text-align: center;
   }
   .mini-calendar-wrapper .rdp-nav {
     color: var(--color-text-3);
@@ -119,10 +136,15 @@ const customCss = `
   }
   .mini-calendar-wrapper .rdp-day_button {
     border-radius: var(--radius-xs);
-    width: 1.75rem !important;
+    width: 100% !important;
+    max-width: 1.75rem !important;
     height: 1.75rem !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   .mini-calendar-wrapper .rdp-today {
     color: var(--color-accent);
