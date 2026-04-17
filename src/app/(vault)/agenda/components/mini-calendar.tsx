@@ -98,42 +98,63 @@ export function MiniCalendar({ currentDate, appointmentCounts }: MiniCalendarPro
 
 const customCss = `
   .mini-calendar-wrapper {
-    --rdp-cell-size: 2rem;
+    --rdp-day-width: 2rem;
+    --rdp-day-height: 2rem;
+    --rdp-day_button-width: 2rem;
+    --rdp-day_button-height: 2rem;
+    --rdp-day_button-border: 0;
+    --rdp-day_button-border-radius: 50%;
+    --rdp-nav-height: 2rem;
+    --rdp-nav_button-width: 1.75rem;
+    --rdp-nav_button-height: 1.75rem;
+    --rdp-weekday-padding: 0.25rem 0;
     --rdp-accent-color: var(--color-accent);
-    --rdp-background-color: transparent;
-    --rdp-accent-color-dark: var(--color-accent-dark);
-    --rdp-outline: 2px solid var(--color-accent);
-    --rdp-outline-selected: 2px solid var(--color-accent);
+    --rdp-accent-background-color: var(--color-accent-light);
+    --rdp-today-color: var(--color-accent);
+    --rdp-selected-border: 0;
+    width: 100%;
+    overflow: hidden;
   }
   .mini-calendar-wrapper .rdp-root {
-    --rdp-margin: 0;
     width: 100%;
   }
-  .mini-calendar-wrapper .rdp-table {
-    width: 100%;
+  .mini-calendar-wrapper .rdp-months {
     max-width: 100%;
+    width: 100%;
+  }
+  .mini-calendar-wrapper .rdp-month {
+    width: 100%;
+  }
+  .mini-calendar-wrapper .rdp-month_grid {
+    width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
   }
-  .mini-calendar-wrapper .rdp-cell,
-  .mini-calendar-wrapper .rdp-head_cell {
+  .mini-calendar-wrapper .rdp-weekdays,
+  .mini-calendar-wrapper .rdp-week {
+    width: 100%;
+  }
+  .mini-calendar-wrapper .rdp-day,
+  .mini-calendar-wrapper .rdp-weekday {
+    width: calc(100% / 7);
     padding: 0;
     text-align: center;
+    box-sizing: border-box;
   }
   .mini-calendar-wrapper .rdp-nav {
     color: var(--color-text-3);
   }
-  .mini-calendar-wrapper .rdp-nav svg {
-    stroke-width: 2.5;
-    width: 1.25rem;
-    height: 1.25rem;
+  .mini-calendar-wrapper .rdp-chevron {
+    width: 1rem;
+    height: 1rem;
+    fill: currentColor;
   }
   .mini-calendar-wrapper .rdp-month_caption {
     font-size: var(--font-size-sm);
     font-weight: 600;
     color: var(--color-text-1);
     text-transform: capitalize;
-    padding-left: 0.5rem;
+    padding-left: 0.25rem;
   }
   .mini-calendar-wrapper .rdp-weekday {
     font-size: var(--font-size-2xs);
@@ -142,11 +163,7 @@ const customCss = `
     text-transform: uppercase;
   }
   .mini-calendar-wrapper .rdp-day_button {
-    border-radius: 50%;
-    width: 2rem !important;
-    height: 2rem !important;
-    padding: 0 !important;
-    margin: 0 auto !important;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
