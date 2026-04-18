@@ -227,9 +227,9 @@ function DroppableColumn({
 
     const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
     const y = e.clientY - rect.top;
-    const scrollTop = (e.currentTarget.closest('[style*="overflow"]') as HTMLElement)?.scrollTop ?? 0;
-    const slotMinutes = Math.floor((y + scrollTop) / pixelsPerMinute);
-    const totalMinutesFromMidnight = slotMinutes * SLOT_MINUTES + dayStartHour * 60;
+    const minutesFromTop = y / pixelsPerMinute;
+    const snappedMinutes = Math.floor(minutesFromTop / SLOT_MINUTES) * SLOT_MINUTES;
+    const totalMinutesFromMidnight = snappedMinutes + dayStartHour * 60;
     const hh = String(Math.floor(totalMinutesFromMidnight / 60)).padStart(2, "0");
     const mm = String(totalMinutesFromMidnight % 60).padStart(2, "0");
     const isoStartsAt = `${dateStr}T${hh}:${mm}:00.000Z`;
