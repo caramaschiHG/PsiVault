@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useNotifications } from "./notification-context";
+import { NotificationItem } from "./notification-item";
 
 export function NotificationBell() {
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } = useNotifications();
@@ -72,29 +73,12 @@ export function NotificationBell() {
               </div>
             ) : (
               notifications.map((n) => (
-                <button
+                <NotificationItem
                   key={n.id}
-                  onClick={() => {
-                    if (!n.read) markAsRead(n.id);
-                  }}
-                  className={`notif-item${!n.read ? " notif-item--unread" : ""}`}
-                >
-                  <div className="notif-item-content">
-                    {!n.read && <span className="notif-unread-dot" />}
-                    <div className="notif-item-body">
-                      <div className="notif-item-header">
-                        <span className={`notif-item-title${!n.read ? " notif-item-title--unread" : ""}`}>
-                          {n.title}
-                        </span>
-                      </div>
-                      {n.description && (
-                        <p className="notif-item-desc">
-                          {n.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </button>
+                  notification={n}
+                  onMarkAsRead={() => markAsRead(n.id)}
+                  onCloseDropdown={() => setOpen(false)}
+                />
               ))
             )}
           </div>
