@@ -134,7 +134,7 @@ export function NotificationItem({ notification: n, onMarkAsRead, onCloseDropdow
             {expanded && n.type === "update" && n.changelog && (
               <div className="notif-item-changelog">
                 <ul style={{ margin: 0, paddingLeft: '16px' }}>
-                  {n.changelog.map((item, i) => (
+                  {n.changelog.split('\n').map((item, i) => (
                     <li key={i} style={{ marginBottom: '4px' }}>{item}</li>
                   ))}
                 </ul>
