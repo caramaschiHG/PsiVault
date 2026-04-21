@@ -2,10 +2,10 @@
 
 ## Current Position
 
-Phase: 17 — Notification Top Bar Layout
+Phase: 18 — Tipos de Notificação e Ações
 Plan: Not yet planned
-Status: Phase 16 complete (Arquitetura)
-Last activity: 2026-04-21 — Phase 16 complete
+Status: Phase 17 complete (Top Bar Layout)
+Last activity: 2026-04-21 — Phase 17 complete
 
 ## Project Reference
 
