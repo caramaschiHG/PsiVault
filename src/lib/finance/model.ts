@@ -22,7 +22,7 @@ export interface SessionCharge {
   id: string;
   workspaceId: string;
   patientId: string;
-  appointmentId: string;
+  appointmentId: string | null;
 
   status: ChargeStatus;
 
@@ -42,7 +42,7 @@ export interface SessionCharge {
 export interface CreateSessionChargeInput {
   workspaceId: string;
   patientId: string;
-  appointmentId: string;
+  appointmentId?: string | null;
   amountInCents?: number | null;
 }
 
