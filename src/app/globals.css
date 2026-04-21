@@ -1555,6 +1555,51 @@ label[for], .nav-link, summary {
   background-color: rgba(154, 52, 18, 0.04);
 }
 
+.notif-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.notif-item--update .notif-icon-wrap {
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.notif-item--reminder .notif-icon-wrap {
+  background-color: rgba(30, 64, 175, 0.08);
+  color: var(--color-note-blue);
+}
+
+.notif-item--payment .notif-icon-wrap {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+
+.notif-item--noshow .notif-icon-wrap {
+  background-color: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.notif-item--birthday .notif-icon-wrap {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.notif-item-changelog {
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  background-color: var(--color-surface-1);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-2);
+  border: 1px solid var(--color-border);
+}
+
 .notif-item-content {
   display: flex;
   gap: var(--space-3);
