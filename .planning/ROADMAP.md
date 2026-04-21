@@ -100,7 +100,7 @@
 |---|-------|------|--------------|----------|
 | 16 | Arquitetura de Notificações | Storage abstrato, tipos, CSS | ARCH-01..04 | 5 |
 | 17 | Top Bar Layout | Top bar Gmail/Notion | LAYOUT-01..03 | 5 |
-| 18 | Tipos de Notificação | 5 tipos com ícones e ações | NTYPE-01..06 | 6 |
+| 18 | Tipos de Notificação | 1/1 | Complete   | 2026-04-21 |
 | 19 | Dropdown Premium | Redesign completo dropdown | NOTIF-01..07 | 7 |
 | 20 | Interações e Polish | Ações, dismiss, transições | NACT-01..04 | 5 |
 
