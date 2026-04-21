@@ -113,9 +113,3 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
 
   if (shouldRedirect) redirect(`/patients/${patientId}`);
 }
-e.error("[createDocumentAction]", err);
-    return;
-  }
-
-  if (shouldRedirect) redirect(`/patients/${patientId}`);
-}
