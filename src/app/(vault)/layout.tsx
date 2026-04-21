@@ -4,7 +4,7 @@ import { BottomNav } from "./components/bottom-nav";
 import { KeyboardShortcutsProvider } from "./components/keyboard-shortcuts-provider";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import { NotificationProvider } from "@/components/ui/notification-context";
-import { NotificationBell } from "@/components/ui/notification-bell";
+import { TopBar } from "./components/top-bar";
 
 export const dynamic = "force-dynamic";
 
@@ -32,20 +32,15 @@ export default function VaultLayout({ children }: { children: React.ReactNode })
               <p style={brandNameStyle}>PsiVault</p>
               <p style={brandTaglineStyle}>Base clínica</p>
             </div>
-            <NotificationBell />
           </div>
 
           {/* Primary navigation */}
           <VaultSidebarNav />
-
-          {/* Search — pinned to sidebar bottom */}
-          <div style={sidebarSearchStyle}>
-            <SearchBar />
-          </div>
         </aside>
 
         {/* Content area */}
         <main id="main-content" className="vault-content" style={contentStyle}>
+          <TopBar />
           <ToastProvider>
             <div className="vault-page-enter">
               {children}
@@ -112,11 +107,6 @@ const brandTaglineStyle = {
   fontSize: "0.72rem",
   color: "rgba(255,255,255,0.70)",
   lineHeight: 1,
-} satisfies React.CSSProperties;
-
-const sidebarSearchStyle = {
-  padding: "0.75rem",
-  borderTop: "1px solid rgba(255,255,255,0.08)",
 } satisfies React.CSSProperties;
 
 const contentStyle = {

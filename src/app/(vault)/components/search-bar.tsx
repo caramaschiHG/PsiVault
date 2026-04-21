@@ -153,6 +153,7 @@ export function SearchBar() {
 
 const containerStyle: React.CSSProperties = {
   position: "relative",
+  width: "100%",
 };
 
 const inputWrapperStyle: React.CSSProperties = {
@@ -182,7 +183,7 @@ const searchInputStyle: React.CSSProperties = {
 
 const dropdownStyle: React.CSSProperties = {
   position: "absolute",
-  bottom: "calc(100% + 0.375rem)",
+  top: "calc(100% + 0.375rem)",
   left: 0,
   right: 0,
   minWidth: "280px",
