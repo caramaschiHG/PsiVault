@@ -59,7 +59,7 @@ export function createSessionCharge(
     id: deps.createId(),
     workspaceId: input.workspaceId,
     patientId: input.patientId,
-    appointmentId: input.appointmentId,
+    appointmentId: input.appointmentId ?? null,
     status: "pendente",
     amountInCents: input.amountInCents ?? null,
     paymentMethod: null,

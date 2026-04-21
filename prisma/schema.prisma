@@ -275,7 +275,7 @@ model SessionCharge {
   id            String @id @default(uuid())
   workspaceId   String @map("workspace_id")
   patientId     String @map("patient_id")
-  appointmentId String @unique @map("appointment_id")
+  appointmentId String? @unique @map("appointment_id")
 
   status        String // ChargeStatus: "pendente" | "pago" | "atrasado"
   amountInCents Int?      @map("amount_in_cents")

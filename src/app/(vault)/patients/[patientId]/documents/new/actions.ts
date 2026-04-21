@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createPracticeDocument } from "../../../../../../lib/documents/model";
 import { getDocumentRepository } from "../../../../../../lib/documents/store";
+import { getPatientRepository } from "../../../../../../lib/patients/store";
 import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
 import { getAuditRepository } from "../../../../../../lib/audit/store";
 import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
@@ -107,6 +108,12 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
     shouldRedirect = true;
   } catch (err) {
     console.error("[createDocumentAction]", err);
+    return;
+  }
+
+  if (shouldRedirect) redirect(`/patients/${patientId}`);
+}
+e.error("[createDocumentAction]", err);
     return;
   }
 

@@ -90,7 +90,7 @@ export async function createManualChargeAction(
       {
         workspaceId,
         patientId,
-        appointmentId: "",
+        appointmentId: null,
         amountInCents,
       },
       { now: date, createId },
