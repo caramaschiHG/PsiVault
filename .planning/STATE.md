@@ -2,10 +2,10 @@
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-21 — Milestone v1.1 started
+Phase: 16 — Arquitetura de Notificações
+Plan: Not yet planned
+Status: Roadmap created, ready for Phase 16
+Last activity: 2026-04-21 — Roadmap v1.1 created (5 phases, 23 requirements)
 
 ## Project Reference
 
