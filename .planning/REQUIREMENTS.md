@@ -1,167 +1,106 @@
-# Requirements — UX Round 3 (Design System Hardening)
+# Requirements: PsiVault
 
-## Requirements
+**Defined:** 2026-04-21
+**Core Value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar
 
-### R1: Design Token Consistency
-**Priority:** CRITICAL  
-**Source:** Audit C1, C2, C3, A9  
-**Description:** Todos os valores visuais (cores, radius, spacing, font-size, shadow, transition, z-index) devem usar tokens CSS, nunca valores hardcodados.
+## v1.1 Requirements
 
-**Acceptance Criteria:**
-- [ ] R1.1: Zero cores hex hardcodadas em TSX (exceto SVG fills/strokes)
-- [ ] R1.2: Zero border-radius hardcodados em TSX
-- [ ] R1.3: Zero padding/margin hardcodados em TSX
-- [ ] R1.4: Zero font-size hardcodados em TSX
-- [ ] R1.5: Zero box-shadow hardcodados em TSX
-- [ ] R1.6: Zero z-index hardcodados em TSX
-- [ ] R1.7: Todos os tokens definidos em `:root` do globals.css
+Requirements for Notificações Premium milestone. Each maps to roadmap phases.
 
-### R2: CSS Cleanliness
-**Priority:** HIGH  
-**Source:** Audit A1, A11, A16  
-**Description:** Zero código duplicado no globals.css
+### Layout
 
-**Acceptance Criteria:**
-- [ ] R2.1: Zero @keyframes duplicados
-- [ ] R2.2: Zero CSS declarations duplicadas
-- [ ] R2.3: Zero variáveis CSS não utilizadas
+- [ ] **LAYOUT-01**: Top bar fixa no topo da área de conteúdo com busca, sino e avatar do usuário
+- [ ] **LAYOUT-02**: Sino de notificações removido da sidebar e posicionado no canto superior direito da top bar
+- [ ] **LAYOUT-03**: Top bar responsiva (adapta para mobile sem quebrar bottom nav)
 
-### R3: Accessibility — Focus States
-**Priority:** CRITICAL  
-**Source:** Audit C4, C6, M1  
-**Description:** Todos os elementos interativos devem ter focus states visíveis
+### Notificações — Dropdown
 
-**Acceptance Criteria:**
-- [ ] R3.1: Todos os botões da toolbar do RichTextEditor têm :focus-visible
-- [ ] R3.2: Todos os botões da toolbar têm :hover visual
-- [ ] R3.3: Todos os botões da toolbar têm :active feedback
-- [ ] R3.4: Botões toggle têm aria-pressed
-- [ ] R3.5: Tabs têm :hover state
-- [ ] R3.6: :focus-visible global não tem border-radius fixo
+- [ ] **NOTIF-01**: Dropdown abre ao clicar no sino com animação suave (scale + fade)
+- [ ] **NOTIF-02**: Notificações agrupadas por data (Hoje, Ontem, Esta semana, Anteriores)
+- [ ] **NOTIF-03**: Cada notificação exibe ícone por tipo, título, descrição, e timestamp relativo ("há 2h")
+- [ ] **NOTIF-04**: Badge de contagem no sino com animação de pulse ao receber nova notificação
+- [ ] **NOTIF-05**: Empty state com ilustração e mensagem quando não há notificações
+- [ ] **NOTIF-06**: Ações no header: "Marcar todas como lidas" e "Limpar todas"
+- [ ] **NOTIF-07**: Fechar com click outside, Escape, ou botão X
 
-### R4: Accessibility — Icon Consistency
-**Priority:** CRITICAL  
-**Source:** Audit C7, M4  
-**Description:** Zero emojis como ícones estruturais
+### Notificações — Tipos e Ações
 
-**Acceptance Criteria:**
-- [ ] R4.1: RichTextEditor toolbar usa SVG icons (17 botões)
-- [ ] R4.2: AutoSaveIndicator usa SVG icons (3 estados)
-- [ ] R4.3: NoteBadge usa SVG icon
-- [ ] R4.4: External links têm ícone indicador
+- [ ] **NTYPE-01**: Tipo "update" — changelog do sistema, ação: expandir detalhes inline
+- [ ] **NTYPE-02**: Tipo "session_reminder" — lembrete de sessão próxima, ação: navegar para agenda
+- [ ] **NTYPE-03**: Tipo "payment_pending" — pagamento pendente, ação: navegar para financeiro
+- [ ] **NTYPE-04**: Tipo "patient_noshow" — paciente não compareceu, ação: abrir perfil do paciente
+- [ ] **NTYPE-05**: Tipo "birthday" — aniversário de paciente, ação: abrir perfil do paciente
+- [ ] **NTYPE-06**: Cada tipo tem ícone SVG, cor, e ação contextual distintos
 
-### R5: Accessibility — Contrast
-**Priority:** CRITICAL  
-**Source:** Audit C5  
-**Description:** Todas as cores de texto passam WCAG AA (4.5:1)
+### Notificações — Interação
 
-**Acceptance Criteria:**
-- [ ] R5.1: --color-text-3 ≥ 4.5:1 sobre --color-bg
-- [ ] R5.2: --color-text-3 ≥ 4.5:1 sobre --color-surface-0
-- [ ] R5.3: Todas as cores de texto inline passam em contraste
+- [ ] **NACT-01**: Clicar em notificação executa ação primária (navegar, expandir) e marca como lida
+- [ ] **NACT-02**: Swipe ou botão dismiss para remover notificação individual
+- [ ] **NACT-03**: Transição visual read/unread com dot indicator e background sutil
+- [ ] **NACT-04**: Scroll suave no dropdown com max-height e overflow controlado
 
-### R6: Component Interaction Polish
-**Priority:** HIGH  
-**Source:** Audit A2, A5, M2, M8  
-**Description:** Todos os componentes interativos têm feedback visual
+### Arquitetura
 
-**Acceptance Criteria:**
-- [ ] R6.1: Template cards têm :hover e :active
-- [ ] R6.2: ListItem interativo tem :hover visual
-- [ ] R6.3: Card variants usam tokens consistentemente
-- [ ] R6.4: AutoSaveIndicator usa transition específica (não "all")
+- [ ] **ARCH-01**: Interface abstrata de NotificationStorage (get, save, clear) com implementação localStorage
+- [ ] **ARCH-02**: Tipos TypeScript completos para cada categoria de notificação com union discriminada
+- [ ] **ARCH-03**: Hook useNotifications refatorado para usar storage abstrato
+- [ ] **ARCH-04**: Zero inline styles — usar CSS modules ou classes com design tokens existentes
 
-### R7: Modal Accessibility
-**Priority:** HIGH  
-**Source:** Audit A14  
-**Description:** Modais têm focus trap e keyboard navigation
+## v2 Requirements
 
-**Acceptance Criteria:**
-- [ ] R7.1: KeyboardShortcutsModal tem focus trap
-- [ ] R7.2: Tab cycle dentro do modal
-- [ ] R7.3: Escape fecha o modal
-- [ ] R7.4: Primeiro elemento recebe focus ao abrir
+Deferred to future release. Tracked but not in current roadmap.
 
-### R8: Toast UX
-**Priority:** MEDIUM  
-**Source:** Audit A8  
-**Description:** Toasts têm dismiss button
+### Server-side Notifications
 
-**Acceptance Criteria:**
-- [ ] R8.1: Cada toast tem botão ✕ visível
-- [ ] R8.2: Botão tem aria-label "Fechar notificação"
+- **SRVN-01**: Migrar storage de localStorage para Supabase real-time
+- **SRVN-02**: Push notifications via Web Push API
+- **SRVN-03**: Email notifications para eventos críticos
+- **SRVN-04**: Notification preferences (quais tipos receber, frequência)
 
-### R9: UX Flow Improvements
-**Priority:** MEDIUM  
-**Source:** Audit M1-M16  
-**Description:** Flows de usuário são melhorados
+## Out of Scope
 
-**Acceptance Criteria:**
-- [ ] R9.1: PatientForm tem inline validation (blur)
-- [ ] R9.2: PatientForm tem auto-save
-- [ ] R9.3: DocumentsSection "Enviar" tem keyboard support
-- [ ] R9.4: Communication links têm external link indicator
-- [ ] R9.5: Focus mode usa React state (não DOM manipulation)
+| Feature | Reason |
+|---------|--------|
+| Supabase real-time notifications | Será v1.2, após validar UX client-side |
+| Web Push API | Complexidade alta, não essencial para v1.1 |
+| Email notifications | Requer infraestrutura de email |
+| Backend API para notificações | Manter client-side por enquanto |
+| Notification sounds | Over-engineering para contexto clínico |
 
-### R10: Performance
-**Priority:** LOW  
-**Source:** Audit M9, M15  
-**Description:** Otimizações de performance
+## Traceability
 
-**Acceptance Criteria:**
-- [ ] R10.1: Style objects repetidos usam useMemo
-- [ ] R10.2: CLS < 0.05 em todas as páginas
-- [ ] R10.3: Bundle size não aumenta significativamente
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| ARCH-01 | Phase 16 | Pending |
+| ARCH-02 | Phase 16 | Pending |
+| ARCH-03 | Phase 16 | Pending |
+| ARCH-04 | Phase 16 | Pending |
+| LAYOUT-01 | Phase 17 | Pending |
+| LAYOUT-02 | Phase 17 | Pending |
+| LAYOUT-03 | Phase 17 | Pending |
+| NTYPE-01 | Phase 18 | Pending |
+| NTYPE-02 | Phase 18 | Pending |
+| NTYPE-03 | Phase 18 | Pending |
+| NTYPE-04 | Phase 18 | Pending |
+| NTYPE-05 | Phase 18 | Pending |
+| NTYPE-06 | Phase 18 | Pending |
+| NOTIF-01 | Phase 19 | Pending |
+| NOTIF-02 | Phase 19 | Pending |
+| NOTIF-03 | Phase 19 | Pending |
+| NOTIF-04 | Phase 19 | Pending |
+| NOTIF-05 | Phase 19 | Pending |
+| NOTIF-06 | Phase 19 | Pending |
+| NOTIF-07 | Phase 19 | Pending |
+| NACT-01 | Phase 20 | Pending |
+| NACT-02 | Phase 20 | Pending |
+| NACT-03 | Phase 20 | Pending |
+| NACT-04 | Phase 20 | Pending |
 
-### R11: Quality Gates
-**Priority:** CRITICAL  
-**Source:** GSD workflow  
-**Description:** Build e tests sempre passando
+**Coverage:**
+- v1.1 requirements: 23 total
+- Mapped to phases: 23
+- Unmapped: 0 ✓
 
-**Acceptance Criteria:**
-- [ ] R11.1: `npx next build` passa (zero errors)
-- [ ] R11.2: `pnpm test` passa (351/351)
-- [ ] R11.3: Lighthouse Accessibility ≥ 95
-- [ ] R11.4: Lighthouse Performance ≥ 90
-
-## Traceability Matrix
-
-| Requirement | Phase Tasks | Audit Items |
-|-------------|-------------|-------------|
-| R1: Token Consistency | 13.1-13.3, 14.1-14.6 | C1, C2, C3, A9 |
-| R2: CSS Cleanliness | 13.6-13.7 | A1, A11, A16 |
-| R3: Focus States | 15.1, 15.5, 15.6 | C4, M1 |
-| R4: Icon Consistency | 15.2, 15.3, 15.4, 16.4 | C7, M4 |
-| R5: Contrast | 13.4 | C5 |
-| R6: Component Polish | 15.7, 15.8, 15.12 | A2, A5, M2 |
-| R7: Modal A11y | 15.9 | A14 |
-| R8: Toast UX | 15.10 | A8 |
-| R9: UX Flows | 16.1-16.5, 15.11 | M1-M16 |
-| R10: Performance | 17.1-17.4 | M9, M15 |
-| R11: Quality Gates | 13.x-17.x (all) | — |
-
-## Verification Plan
-
-Cada requirement será verificada ao final da fase correspondente:
-
-```bash
-# R1: Token consistency
-grep -rn '#[0-9a-fA-F]\{6\}' src/ --include='*.tsx' | grep -v 'globals.css' | grep -v 'svg' | grep -v 'data:image' | wc -l
-# Expected: 0
-
-# R2: CSS cleanliness
-grep -c '@keyframes vaultPageIn' src/app/globals.css  # Expected: 1
-
-# R3: Focus states
-# Manual: Tab através da RTE toolbar, verificar focus visible
-
-# R4: Icon consistency
-grep -rn '📝\|✓\|⟳' src/ --include='*.tsx' | grep -v 'user content' | wc -l
-# Expected: 0
-
-# R5: Contrast
-# Automated: Use axe-core ou lighthouse
-
-# R11: Quality gates
-npx next build && pnpm test
-```
+---
+*Requirements defined: 2026-04-21*
+*Last updated: 2026-04-21 after initial definition*
