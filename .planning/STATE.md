@@ -2,10 +2,10 @@
 
 ## Current Position
 
-Phase: 16 — Arquitetura de Notificações
+Phase: 17 — Notification Top Bar Layout
 Plan: Not yet planned
-Status: Roadmap created, ready for Phase 16
-Last activity: 2026-04-21 — Roadmap v1.1 created (5 phases, 23 requirements)
+Status: Phase 16 complete (Arquitetura)
+Last activity: 2026-04-21 — Phase 16 complete
 
 ## Project Reference
 
