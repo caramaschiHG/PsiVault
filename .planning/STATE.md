@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: milestone
+milestone: v1.2
+milestone_name: Financeiro Completo e UX
 status: executing
 last_updated: "2026-04-21T20:15:16.059Z"
-last_activity: 2026-04-21 -- Phase 18 execution started
+last_activity: 2026-04-21 -- Milestone v1.2 started
 progress:
-  total_phases: 6
+  total_phases: 0
   completed_phases: 0
-  total_plans: 5
+  total_plans: 0
   completed_plans: 0
   percent: 0
 ---
@@ -17,19 +17,25 @@ progress:
 
 ## Current Position
 
-Phase: 18 (workspace-identity-and-persistence-integrity) — EXECUTING
-Plan: 1 of 1
-Status: Executing Phase 18
-Last activity: 2026-04-21 -- Phase 18 execution started
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements
+Last activity: 2026-04-21 -- Milestone v1.2 started
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-04-21)
 
 **Core value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar
-**Current focus:** Phase 18 — workspace-identity-and-persistence-integrity
+**Current focus:** Defining requirements
 
 ## Accumulated Context
+
+### From v1.1 (Notificações Premium)
+
+- Redesenho completo do sistema de notificações (top bar, dropdown)
+- Suporte a múltiplos tipos de notificação com ações contextuais
+- Arquitetura de storage abstraída (localStorage → server-side ready)
 
 ### From v1.0 (UI/UX Polish)
 

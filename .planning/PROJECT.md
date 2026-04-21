@@ -8,17 +8,15 @@ PsiVault é uma plataforma web completa para psicólogos gerenciarem sua prátic
 
 Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
 
-## Current Milestone: v1.1 Notificações Premium
+## Current Milestone: v1.2 Financeiro Completo e UX
 
-**Goal:** Redesenhar completamente o sistema de notificações — mover para top bar (estilo Gmail/Notion), suportar múltiplos tipos de notificação com ações contextuais, e entregar a melhor UX possível.
+**Goal:** Refatorar a experiência de uso da aba de finanças e expandir suas capacidades para uma gestão completa de fluxo de caixa e emissão de documentos.
 
 **Target features:**
-- Top bar fixa com busca + sino + avatar (substituir sino na sidebar)
-- Dropdown de notificações premium com categorias, timestamps, animações
-- Tipos de notificação: update de sistema, lembrete de sessão, pagamento pendente, paciente sem comparecer, aniversário
-- Ações contextuais por tipo: expandir detalhes, navegar para link, ação rápida inline
-- Arquitetura preparada para migração server-side (abstração de storage)
-- Empty state, agrupamento por data, swipe/dismiss, mark all read
+- Refatoração da UX/UI atual (substituir formulários inline por modais/drawers, melhorar visualização de inadimplência)
+- Módulo de Despesas (lançamento de saídas, categorização de custos do consultório)
+- Emissão de Recibos em PDF (geração com dados do psicólogo, paciente, CPF, CRP)
+- Relatórios Consolidados (visão de lucro/prejuízo, fluxo de caixa e exportação)
 
 ## Requirements
 
@@ -32,15 +30,19 @@ Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, c
 - ✓ Acessibilidade WCAG 2.1 AA (focus states, aria, keyboard nav) — v1.0
 - ✓ SVG icon system (zero emojis estruturais) — v1.0
 - ✓ Notification bell básico com localStorage — v1.0
+- ✓ Top bar com busca, sino e avatar — v1.1
+- ✓ Dropdown de notificações redesenhado — v1.1
+- ✓ Múltiplos tipos de notificação com ações contextuais — v1.1
+- ✓ Arquitetura de storage abstraída (localStorage → server-side ready) — v1.1
 
 ### Active
 
-<!-- Current scope — v1.1 Notificações Premium -->
+<!-- Current scope — v1.2 Financeiro Completo e UX -->
 
-- [ ] Top bar com busca, sino e avatar
-- [ ] Dropdown de notificações redesenhado
-- [ ] Múltiplos tipos de notificação com ações contextuais
-- [ ] Arquitetura de storage abstraída (localStorage → server-side ready)
+- [ ] Refatoração UX/UI Finanças (Modais, Layout, Filtros)
+- [ ] Módulo de Gestão de Despesas (CRUD e Categorias)
+- [ ] Emissão de Recibos em PDF
+- [ ] Relatórios e Fluxo de Caixa (DRE simples)
 
 ### Out of Scope
 
@@ -92,4 +94,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-21 after milestone v1.1 started*
+*Last updated: 2026-04-21 after milestone v1.2 started*
