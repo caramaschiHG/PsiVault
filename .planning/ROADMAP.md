@@ -1,107 +1,63 @@
-# Roadmap: PsiVault v1.1 — Notificações Premium
+# ROADMAP
 
-**Milestone:** v1.1
-**Phases:** 5 (Phase 16–20)
-**Requirements covered:** 23/23
+## Phases
 
----
+- [ ] **Phase 19: Refatoração UX/UI Finanças** - Refatorar gestão de cobranças com modais e destacar inadimplência
+- [ ] **Phase 20: Módulo de Gestão de Despesas** - Permitir registro, categorização e anexação de comprovantes de gastos
+- [ ] **Phase 21: Emissão de Recibos em PDF** - Gerar, baixar e enviar recibos de cobranças pagas
+- [ ] **Phase 22: Relatórios e Fluxo de Caixa** - Dashboard com DRE, gráficos de evolução e exportação de dados
 
-## Phase 16: Arquitetura de Notificações
+## Phase Details
 
-**Goal:** Refatorar a base do sistema de notificações — tipos TypeScript, storage abstrato, e migrar de inline styles para CSS classes.
+### Phase 19: Refatoração UX/UI Finanças
+**Goal**: Usuários conseguem gerenciar finanças em modais e identificar inadimplência rapidamente, sem recarregar a página
+**Depends on**: Nothing
+**Requirements**: UXFI-01, UXFI-02
+**Success Criteria** (what must be TRUE):
+  1. Usuário visualiza e edita formulários de cobrança em modais ou drawers usando `<dialog>`.
+  2. Usuário fecha o modal e continua no mesmo contexto da lista financeira.
+  3. Usuário visualiza indicativos visuais em destaque para identificar pagamentos atrasados ou inadimplência.
+**Plans**: TBD
+**UI hint**: yes
 
-**Requirements:** ARCH-01, ARCH-02, ARCH-03, ARCH-04
+### Phase 20: Módulo de Gestão de Despesas
+**Goal**: Usuários conseguem registrar, categorizar e documentar os custos operacionais do consultório
+**Depends on**: Phase 19
+**Requirements**: DESP-01, DESP-02, DESP-03
+**Success Criteria** (what must be TRUE):
+  1. Usuário pode adicionar uma despesa preenchendo valor, data e descrição.
+  2. Usuário pode atribuir uma categoria à despesa lançada.
+  3. Usuário pode anexar e visualizar o arquivo de comprovante associado à despesa.
+**Plans**: TBD
+**UI hint**: yes
 
-**Success criteria:**
-1. Interface `NotificationStorage` com métodos get/save/clear e implementação localStorage
-2. Union discriminada `NotificationType` com 5 categorias tipadas (update, session_reminder, payment_pending, patient_noshow, birthday)
-3. Hook `useNotifications` refatorado para usar storage abstrato
-4. Zero inline styles nos componentes de notificação — tudo via CSS classes com design tokens
-5. Testes existentes continuam passando
+### Phase 21: Emissão de Recibos em PDF
+**Goal**: Usuários conseguem gerar, baixar e enviar recibos clínicos em PDF contendo dados fiscais
+**Depends on**: Phase 19
+**Requirements**: RECP-01, RECP-02, RECP-03
+**Success Criteria** (what must be TRUE):
+  1. Usuário consegue clicar em baixar recibo de uma cobrança paga e recebe um arquivo PDF.
+  2. Usuário encontra os dados corretos no recibo: seu CRP/CPF e o CPF do paciente.
+  3. Usuário consegue optar por enviar o recibo gerado por Email ou WhatsApp diretamente pelo sistema.
+**Plans**: TBD
+**UI hint**: yes
 
-**Depends on:** Nenhum
+### Phase 22: Relatórios e Fluxo de Caixa
+**Goal**: Usuários conseguem acompanhar a saúde financeira do consultório e exportar dados consolidados
+**Depends on**: Phase 19, Phase 20
+**Requirements**: RELA-01, RELA-02, RELA-03
+**Success Criteria** (what must be TRUE):
+  1. Usuário visualiza uma tela de DRE Simples com o balanço de entradas e saídas.
+  2. Usuário gera e baixa um arquivo de exportação de lançamentos para IRPF/Carnê-Leão.
+  3. Usuário visualiza gráficos de evolução do seu saldo no dashboard.
+**Plans**: TBD
+**UI hint**: yes
 
----
+## Progress
 
-## Phase 17: Top Bar Layout
-
-**Goal:** Criar top bar fixa no topo da área de conteúdo (estilo Gmail/Notion) com busca, sino e avatar. Remover sino da sidebar.
-
-**Requirements:** LAYOUT-01, LAYOUT-02, LAYOUT-03
-
-**Success criteria:**
-1. Top bar fixa visível em todas as páginas do vault com SearchBar, NotificationBell e avatar
-2. Sino removido do header da sidebar (brandStyle)
-3. Top bar responsiva: em mobile, sino e avatar visíveis, busca colapsável
-4. Layout não quebra bottom nav existente
-5. Sidebar mantém largura 240px e funcionalidade intacta
-
-**Depends on:** Phase 16 (componentes refatorados)
-
----
-
-## Phase 18: Tipos de Notificação e Ações
-
-**Goal:** Implementar os 5 tipos de notificação com ícones SVG, cores, e ações contextuais distintas por tipo.
-
-**Requirements:** NTYPE-01, NTYPE-02, NTYPE-03, NTYPE-04, NTYPE-05, NTYPE-06
-
-**Success criteria:**
-1. Tipo "update": ícone raio, cor accent, expande detalhes inline ao clicar
-2. Tipo "session_reminder": ícone calendário, cor azul, navega para `/agenda`
-3. Tipo "payment_pending": ícone cifrão, cor amber, navega para `/financeiro`
-4. Tipo "patient_noshow": ícone alerta, cor rose, navega para `/patients/{id}`
-5. Tipo "birthday": ícone presente, cor verde, navega para `/patients/{id}`
-6. Cada tipo renderiza ícone SVG distinto e cor de fundo sutil diferente
-
-**Depends on:** Phase 16 (tipos TypeScript)
-
----
-
-## Phase 19: Dropdown Premium
-
-**Goal:** Redesenhar o dropdown de notificações com agrupamento por data, timestamps relativos, animações, empty state, e header com ações.
-
-**Requirements:** NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-04, NOTIF-05, NOTIF-06, NOTIF-07
-
-**Success criteria:**
-1. Dropdown abre com animação scale+fade (transform origin top-right)
-2. Notificações agrupadas por "Hoje", "Ontem", "Esta semana", "Anteriores" com headers visuais
-3. Cada item mostra ícone, título, descrição truncada, e timestamp relativo ("há 2h", "há 3 dias")
-4. Badge no sino com animação pulse ao receber nova notificação
-5. Empty state com ícone de sino e mensagem "Tudo em dia"
-6. Header com "Marcar todas como lidas" e "Limpar" funcionais
-7. Fecha com click outside, Escape, ou botão X no header
-
-**Depends on:** Phase 17 (top bar), Phase 18 (tipos de notificação)
-
----
-
-## Phase 20: Interações e Polish
-
-**Goal:** Finalizar interações avançadas — ações por clique, dismiss individual, transições read/unread, scroll otimizado.
-
-**Requirements:** NACT-01, NACT-02, NACT-03, NACT-04
-
-**Success criteria:**
-1. Clicar em notificação: executa ação primária do tipo (navegar/expandir) e marca como lida
-2. Botão dismiss (X) em cada notificação para remover individualmente com animação de slide-out
-3. Transição visual suave entre read/unread (dot indicator + background fade)
-4. Dropdown com scroll suave, max-height 400px, scrollbar customizada sutil
-5. Build passa sem erros, zero regressões visuais
-
-**Depends on:** Phase 19 (dropdown completo)
-
----
-
-## Phase Summary
-
-| # | Phase | Goal | Requirements | Criteria |
-|---|-------|------|--------------|----------|
-| 16 | Arquitetura de Notificações | Storage abstrato, tipos, CSS | ARCH-01..04 | 5 |
-| 17 | Top Bar Layout | Top bar Gmail/Notion | LAYOUT-01..03 | 5 |
-| 18 | Tipos de Notificação | 1/1 | Complete   | 2026-04-21 |
-| 19 | Dropdown Premium | Redesign completo dropdown | NOTIF-01..07 | 7 |
-| 20 | Interações e Polish | Ações, dismiss, transições | NACT-01..04 | 5 |
-
-**Total:** 5 phases | 23 requirements | 28 success criteria
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 19. Refatoração UX/UI Finanças | 0/0 | Not started | - |
+| 20. Módulo de Gestão de Despesas | 0/0 | Not started | - |
+| 21. Emissão de Recibos em PDF | 0/0 | Not started | - |
+| 22. Relatórios e Fluxo de Caixa | 0/0 | Not started | - |
