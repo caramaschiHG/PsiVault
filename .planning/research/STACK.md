@@ -1,43 +1,80 @@
-# Stack Research — v2.0 Reposicionamento Psicanalítico
+# Stack Research
 
-## Question
-Quais adições ou mudanças de stack são necessárias para as novas features do v2.0?
+**Domain:** Financeiro e Emissão de Documentos Clínicos (SaaS Psicanálise)
+**Researched:** 2026-04-21
+**Confidence:** HIGH
 
-## Findings
+## Recommended Stack
 
-### Adições necessárias
+### Core Technologies
 
-**Landing page / marketing:**
-- Nenhuma lib obrigatória — Next.js App Router já suporta rotas de landing no root. Usar Server Components puros com React.CSSProperties para consistência com o projeto.
-- Para animações sutis: `framer-motion` (já pode estar no projeto ou a adicionar) — verificar antes de adicionar.
-- Sem MDX/CMS necessário para v2.0; copy pode ficar em componentes tsx com constantes de string.
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| Next.js Server Actions | 15.2+ | Mutations para CRUD de Despesas | Elimina necessidade de tRPC/React Query, mantendo bundle super lean. |
+| Native HTML `<dialog>` | N/A | Modais e Drawers (Acessibilidade) | Zero JS de dependência externa, suporte nativo WCAG, alinhado com meta de "bundle lean". |
+| @react-pdf/renderer | ^4.3.2 | Geração de Recibos em PDF | Declarativo (usa componentes React), já presente no `package.json`, suporte a React 19 e uso SSR/Client. |
 
-**Pricing/premium plan UI:**
-- Sem dependências extras. Componentes de pricing são UI pura com Server Components.
+### Supporting Libraries
 
-**AI research assistant:**
-- `@anthropic-ai/sdk` (latest) — para integrar Claude API como backend do assistente de pesquisa psicanalítica.
-- Integração via Server Action ou Route Handler em Next.js 15 — streaming de resposta com `ReadableStream`.
-- Modelo recomendado: claude-sonnet-4-6 ou claude-haiku-4-5 (menor custo para consultas frequentes).
-- Armazenar preferências do usuário (pensador/linha) em tabela `workspace_settings` ou `account_settings`.
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| recharts | ^2.12.0 ou ^3.0.0 | Gráficos de Fluxo de Caixa / Inadimplência | **Apenas se** gráficos complexos forem exigidos. Possui suporte a React 19, mas impacta o bundle. |
+| date-fns | ^4.1.0 | Formatação e manipulação de datas | Já presente no projeto, ideal para os filtros do DRE simples e cálculos de meses/anos para relatórios. |
 
-**PDF / documents:**
-- Stack atual (já existente): verificar se usa `@react-pdf/renderer` ou `puppeteer`/`playwright` headless.
-- Para v2.0: manter stack existente, melhorar templates de documentos (design, headers, tipografia).
+### Development Tools
 
-**Copy management:**
-- Sem i18n lib necessária — app é pt-BR exclusivo. Centralizar strings em `src/lib/copy/` como objetos TypeScript exportados.
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| Vitest | Testes de domínio | Garantir que cálculos financeiros (DRE, total de despesas) funcionem perfeitamente. |
 
-### O que NÃO adicionar
-- CMS headless (Contentful, Sanity) — overkill para produto com copy em pt-BR fixo
-- i18n lib (next-intl) — não há multi-idioma
-- Embedding/vector store para AI — assistente de pesquisa usa Claude diretamente, sem RAG próprio no v2.0
-- Biblioteca de terceiros para "clinic management" — o produto JÁ TEM os módulos, v2.0 é repositioning não rebuild
+## Installation
 
-### Versões a verificar
-- `@anthropic-ai/sdk`: `^0.39.0` (Claude 4.x)
-- `next`: `15.x` (já instalado)
-- Verificar `framer-motion` se já presente antes de adicionar
+```bash
+# Caso os relatórios consolidem necessidade gráfica visual complexa
+npm install recharts
 
-## Conclusion
-O v2.0 é primariamente um trabalho de copy, identidade e posicionamento — não um projeto de infra heavy. A única adição real de dependência é `@anthropic-ai/sdk` para o assistente premium. Todo o resto é configuração, copy e componentes UI dentro do stack existente.
+# Nota: @react-pdf/renderer já está no package.json
+```
+
+## Alternatives Considered
+
+| Recommended | Alternative | When to Use Alternative |
+|-------------|-------------|-------------------------|
+| Native `<dialog>` / CSS Tokens | Radix UI (Primitives) | Se a complexidade dos focos de acessibilidade em dropdowns/modais aninhados exceder as capacidades do elemento nativo. |
+| CSS Bars / Tabelas Nativas | Recharts | Se relatórios e DRE simples precisarem apenas de visualizações fáceis de ler. Preferível tabelas para manter "bundle impact mínimo" (102 kB atual). |
+
+## What NOT to Use
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| Tailwind CSS / Styled-components | Quebra de restrição: O projeto determina o uso exclusivo dos "CSS tokens" criados na v1.0 e proíbe Tailwind e inline styles. | CSS Modules ou tokens definidos em `globals.css` via classes próprias. |
+| jsPDF / html2canvas | Gera arquivos pesados, não-textuais e de difícil manutenção com Next.js SSR. Não acessível para leitores de PDF. | `@react-pdf/renderer` (já pré-instalado). |
+| Chart.js / Highcharts | Tamanho de bundle massivo, não idiossincráticos com React Server Components/App Router puro. | Tabelas HTML simples ou, em último caso, `recharts`. |
+| React Hook Form / Zod | Dependências pesadas se o app estiver usando apenas forms simples. | Next.js 15 Server Actions com `useActionState` e HTML5 form validation. |
+
+## Stack Patterns by Variant
+
+**If [Precisar de gráficos interativos no Dashboard/DRE]:**
+- Use `recharts` com lazy loading (`next/dynamic`).
+- Because Isso protege o initial bundle (102 kB JS) de carregar uma biblioteca pesada nas rotas principais não-financeiras.
+
+**If [Refatorar Modais e Filtros de Inadimplência]:**
+- Use o sistema de Design Tokens (v1.0) e componha a partir dos componentes existentes (Card, Section, List).
+- Because O projeto exige consistência estrita de UI ("premium sem exibicionismo", "calma, sigilo") e proibição de novos inline styles.
+
+## Version Compatibility
+
+| Package A | Compatible With | Notes |
+|-----------|-----------------|-------|
+| `@react-pdf/renderer@4.3.2` | `react@19.0.0` | Suporte validado para uso com App Router (verificar warnings de `useSyncExternalStore` que podem ser ignorados com Next.js 15). |
+| `recharts@3.x` | `react@19.0.0` | Totalmente compatível, possui deduplicação de dependências de react. |
+
+## Sources
+
+- Context7 `/diegomura/react-pdf` — Compatibilidade React 19 SSR confirmada.
+- Context7 `/recharts/recharts` — Suporte documentado React 16 ao 19.
+- `.planning/PROJECT.md` — Restrições rígidas (CSS tokens, zero Tailwind, bundle lean 102 kB, e a biblioteca `react-pdf` já em `package.json`).
+
+---
+*Stack research for: Módulo de Despesas, Emissão de Recibos PDF, Relatórios Consolidados, Refatoração UX/UI Finanças*
+*Researched: 2026-04-21*

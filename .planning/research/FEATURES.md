@@ -1,90 +1,63 @@
-# Features Research — v2.0 Reposicionamento Psicanalítico
+# Feature Landscape
 
-## Question
-Como plataformas premium para clínicos psicanalíticos se diferenciam? Quais features são table stakes vs diferenciadores vs anti-features para esse nicho?
+**Domain:** Prontuário Eletrônico para Psicólogos (Módulo Financeiro)
+**Researched:** 2026-04-21
 
-## Findings
+## Table Stakes
 
-### Categoria: Identidade de Produto e Landing Page
+Features users expect. Missing = product feels incomplete.
 
-**Table stakes:**
-- Hero claro e específico para o nicho (não genérico "para psicólogos")
-- Vocabulário psicanalítico no copy: prontuário, escuta, acompanhamento, linha teórica
-- Seção de módulos com nomes precisos (não "features" genéricas)
-- Pricing transparente com distinção livre/premium clara
-- Mensagem de sigilo e preservação de registros como pilar, não como rodapé
+| Feature | Why Expected | Complexity | Notes |
+|---------|--------------|------------|-------|
+| Lançamento de Despesas | O controle financeiro real exige entradas (sessões) e saídas (custos). | Low | CRUD simples com data, valor, descrição e categoria (ex: aluguel, CRP, supervisão, impostos). |
+| Emissão de Recibo em PDF | Exigência legal e contábil. Pacientes precisam para abatimento no IRPF. | Med | Precisa cruzar dados do psicólogo (Nome, CPF, CRP), paciente (Nome, CPF) e atendimentos (datas, valores). |
+| Dashboard Financeiro Claro | Psicólogos não são contadores; precisam bater o olho e entender se estão no azul ou no vermelho. | Med | Refatoração da UX/UI atual para usar cards resumidos (recebido, a receber, despesas, saldo). |
+| Controle de Inadimplência | É a maior dor financeira da clínica. O sistema precisa destacar quem deve. | Low | UI focada (ex: badge vermelho, lista separada) para pagamentos atrasados, substituindo formulários inline complexos. |
 
-**Diferenciadores:**
-- Nomeação explícita da orientação psicanalítica (não "terapia cognitiva", não "saúde mental genérica")
-- Copy que fala com o profissional, não com o paciente
-- Tom editorial, calmo, adulto — nunca startup/wellness
-- Referência à realidade brasileira: CFP, prática privada, consultório autônomo
+## Differentiators
 
-**Anti-features:**
-- "Para todos os psicólogos" — dilui o posicionamento
-- Imagens de ilustração genérica de saúde mental
-- Dashboard com KPIs de "engajamento" e métricas de "usuários ativos"
-- Frases como "revolucione sua prática" ou "IA que cuida de você"
+Features that set product apart. Not expected, but valued.
 
----
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| DRE Simples (Lucro/Prejuízo) | Traz uma visão empresarial da prática clínica, mostrando a margem de lucro real. | Med | Requer consolidação de receitas e despesas estruturadas por mês e categoria. |
+| Envio de Recibo por Email/WhatsApp | Reduz atrito na comunicação e o trabalho manual de baixar e enviar o arquivo. | High | Depende de infraestrutura de email ou API externa (fora do escopo imediato, mas bom diferencial futuro). |
+| Exportação para o Contador | Facilita a vida do profissional na época de declaração de imposto de renda (Carnê-Leão). | Low | Geração de arquivo CSV/Excel ou relatório formatado para impressão com o fluxo de caixa consolidado. |
 
-### Categoria: Módulos existentes — renomeação e framing
+## Anti-Features
 
-**Table stakes (renomeação necessária):**
-- "Patients" → "Pacientes" (já está certo) com framing de "histórico clínico completo"
-- "Records" / "Clinical records" → "Prontuário" — com ênfase em continuidade cronológica
-- "Appointments" → "Agenda" — com ênfase em recorrência, rotina, flexibilidade de modalidade
-- "Documents" → "Documentos" — com lista de tipos: declarações, recibos, contratos, fichas
-- "Finance" → "Financeiro" — leve, simples, não contabilidade
+Features to explicitly NOT build.
 
-**Diferenciadores de framing:**
-- Prontuário: enfatizar privacidade, "visível apenas para você", preservação de longo prazo
-- Agenda: enfatizar recorrência (psicanálise é frequência alta — 2-5x/semana), rescheduling, sessões online e presenciais
-- Documentos: enfatizar que são modelos prontos, adaptáveis, profissionais — não templates genéricos
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Emissão de Nota Fiscal (NFS-e) | Cada prefeitura no Brasil tem uma API diferente. O custo de manutenção e suporte é altíssimo. | Focar apenas em Recibos em PDF, que já atendem à grande maioria dos psicólogos que atuam como Pessoa Física. |
+| Integração Bancária (Open Finance) | Risco de segurança, compliance alto e complexidade de infraestrutura. Foge do core clínico. | Manter lançamentos manuais com uma interface (UX/UI) extremamente rápida e sem atrito via modais/drawers. |
+| Rateio Complexo / Centro de Custos | A maioria dos usuários são profissionais autônomos ou clínicas pequenas. Complexidade desnecessária. | Usar um sistema de categorias plano (flat) e simples para as despesas. |
 
----
+## Feature Dependencies
 
-### Categoria: Premium AI Research Assistant
+```
+Gestão Básica (Receitas atuais) → Refatoração UX/UI Finanças (Base visual)
+Refatoração UX/UI Finanças → Módulo de Despesas (Usa os novos modais/drawers)
+Perfil do Psicólogo (Configurações) + Pacientes + Receitas → Emissão de Recibos PDF
+Módulo de Despesas + Receitas → Relatórios Consolidados (DRE simples e Fluxo de Caixa)
+```
 
-**Table stakes:**
-- Configuração por pensador de preferência (Freud, Lacan, Winnicott, Klein, Bion, etc.)
-- Busca de referências bibliográficas por tema ou conceito
-- Explicação de conceitos psicanalíticos com indicação de fonte
-- Construção de listas de leitura e bibliografias anotadas
+## MVP Recommendation
 
-**Diferenciadores:**
-- Comparação entre linhas de pensamento (ex: conceito de transferência em Freud vs Lacan)
-- Mapeamento de literatura: "quem escreveu sobre X nessa escola"
-- Sugestão de aprofundamento contextual por linha teórica do usuário
-- Acesso a textos em domínio público (Freud completo, por exemplo) com citação precisa
+Prioritize:
+1. **Refatoração UX/UI Finanças:** Layout mais limpo, usando modais/drawers em vez de formulários inline, com visão clara de inadimplência.
+2. **Módulo de Despesas:** CRUD básico (criar, ler, atualizar, deletar) com categorias pré-definidas ou customizáveis.
+3. **Emissão de Recibos PDF:** Geração client-side ou server-side simples para download direto (sem envio por email no MVP).
+4. **Relatórios Consolidados:** Visão mensal em tela comparando receitas vs despesas (DRE simples).
 
-**Anti-features (NUNCA):**
-- Diagnóstico ou hipótese diagnóstica
-- "O que você acha do caso do paciente X?" — IA não participa de caso clínico
-- Distribuição de obras com copyright sem licença
-- Posicionamento como "segunda opinião clínica"
-- Interface que pareça um chatbot de terapia
+Defer:
+- Envio automático de recibos por email/WhatsApp.
+- Emissão de Notas Fiscais Eletrônicas.
+- Exportações complexas (OFX).
 
-**Limites legais explícitos:**
-- Texto completo: apenas domínio público, licenciado, ou enviado pelo usuário
-- Para obras protegidas: metadados + citação + trecho curto + explicação conceitual + caminho de acesso legal
+## Sources
 
----
-
-### Categoria: Preservação de longo prazo
-
-**Table stakes:**
-- Mensagem de que registros são mantidos de forma estruturada e segura
-- Exportação de dados disponível ao usuário
-
-**Diferenciadores:**
-- Horizonte de 20 anos como referência de preservação (alinhado com boas práticas clínicas)
-- Linguagem de "responsabilidade operacional", não promessa legal vaga
-- Backup implícito (Supabase + Vercel) comunicado como fato de produto, não como marketing
-
-**Anti-features:**
-- "Garantia de segurança absoluta" — promessa que não pode ser cumprida
-- Linguagem de conformidade regulatória sem base real no produto
-
-## Conclusion
-O v2.0 não constrói features novas nos módulos core — reposiciona e renomeia o que existe. O único módulo genuinamente novo é o Assistente Premium. O resto é copy, framing e identidade visual alinhada ao nicho psicanalítico.
+- Padrões de mercado em HealthTechs e softwares de gestão de consultório (PsicoManager, Zenklub).
+- Requisitos do Conselho Regional de Psicologia (CRP) para emissão de documentos financeiros.
+- Diretrizes da Receita Federal para comprovação de despesas médicas (Carnê-Leão).
