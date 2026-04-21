@@ -17,7 +17,9 @@
   1. Usuário visualiza e edita formulários de cobrança em modais ou drawers usando `<dialog>`.
   2. Usuário fecha o modal e continua no mesmo contexto da lista financeira.
   3. Usuário visualiza indicativos visuais em destaque para identificar pagamentos atrasados ou inadimplência.
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 19-01-PLAN.md — Refatorar listagem principal em Extrato Bancário e Aba de Inadimplência
+- [ ] 19-02-PLAN.md — Implementar Drawers de edição via URL, removendo popovers
 **UI hint**: yes
 
 ### Phase 20: Módulo de Gestão de Despesas
@@ -57,7 +59,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 19. Refatoração UX/UI Finanças | 0/0 | Not started | - |
+| 19. Refatoração UX/UI Finanças | 0/2 | Not started | - |
 | 20. Módulo de Gestão de Despesas | 0/0 | Not started | - |
 | 21. Emissão de Recibos em PDF | 0/0 | Not started | - |
 | 22. Relatórios e Fluxo de Caixa | 0/0 | Not started | - |
