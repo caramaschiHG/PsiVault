@@ -1796,7 +1796,7 @@ button, [role="button"], a, summary,
 .top-bar {
   position: sticky;
   top: 0;
-  z-index: var(--z-header);
+  z-index: var(--z-sticky);
   display: flex;
   align-items: center;
   justify-content: space-between;
