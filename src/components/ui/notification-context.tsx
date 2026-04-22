@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback, type ReactNode } from "react";
 import {
   type AppNotification,
   type CreateNotificationInput,
@@ -49,32 +49,34 @@ export function NotificationProvider({
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const addNotification = (n: CreateNotificationInput) => {
-    const newNotif = {
-      ...n,
-      id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      read: false,
-      createdAt: Date.now(),
-    } as AppNotification;
-    setNotifications((prev) => [newNotif, ...prev].slice(0, 50));
-  };
+  const addNotification = useCallback((n: CreateNotificationInput) => {
+    setNotifications((prev) => {
+      const newNotif = {
+        ...n,
+        id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        read: false,
+        createdAt: Date.now(),
+      } as AppNotification;
+      return [newNotif, ...prev].slice(0, 50);
+    });
+  }, []);
 
-  const markAsRead = (id: string) => {
+  const markAsRead = useCallback((id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-  };
+  }, []);
 
-  const markAllAsRead = () => {
+  const markAllAsRead = useCallback(() => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
+  }, []);
 
-  const removeNotification = (id: string) => {
+  const removeNotification = useCallback((id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  }, []);
 
-  const clearAll = () => {
+  const clearAll = useCallback(() => {
     setNotifications([]);
     storage.clear();
-  };
+  }, [storage]);
 
   return (
     <NotificationContext.Provider

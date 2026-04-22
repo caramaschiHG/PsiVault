@@ -74,8 +74,8 @@ export function CalendarGrid({ blocks, panels, patientNames, date, options, onSl
     if (!overId.startsWith("slot-")) return;
 
     // Parse slot ISO datetime from id: "slot-2026-03-20T14:00"
-    const isoDatetime = overId.replace("slot-", "") + ":00.000Z";
-    const newStartsAt = new Date(isoDatetime);
+    const localDatetime = overId.replace("slot-", "") + ":00";
+    const newStartsAt = new Date(localDatetime);
     if (isNaN(newStartsAt.getTime())) return;
 
     const dragged = positioned.find((b) => b.appointmentId === active.id);
@@ -194,7 +194,9 @@ function DroppableSlot({ id, dayStartHour, totalMinutes, pixelsPerMinute, onClic
     if (!onClick) return;
     // Parse slot datetime from id: "slot-2026-03-20T14:00"
     const dateTimePart = id.replace(/^slot-/, "");
-    const isoStartsAt = `${dateTimePart}:00.000Z`;
+    // Use local time parsing to adjust to the correct timezone
+    const localStartsAt = new Date(`${dateTimePart}:00`);
+    const isoStartsAt = localStartsAt.toISOString();
     onClick(isoStartsAt, { top: e.clientY, left: e.clientX });
   };
 

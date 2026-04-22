@@ -102,7 +102,7 @@ export function WeekCalendarGrid({
 
     // Parse the original time and create new datetime with dropped date
     const originalTime = new Date(dragged.startsAtIso);
-    const newStartsAt = new Date(`${dateStr}T${String(originalTime.getUTCHours()).padStart(2, "0")}:${String(originalTime.getUTCMinutes()).padStart(2, "0")}:00.000Z`);
+    const newStartsAt = new Date(`${dateStr}T${String(originalTime.getHours()).padStart(2, "0")}:${String(originalTime.getMinutes()).padStart(2, "0")}:00`);
     if (isNaN(newStartsAt.getTime())) return;
 
     const formData = new FormData();
@@ -232,7 +232,8 @@ function DroppableColumn({
     const totalMinutesFromMidnight = snappedMinutes + dayStartHour * 60;
     const hh = String(Math.floor(totalMinutesFromMidnight / 60)).padStart(2, "0");
     const mm = String(totalMinutesFromMidnight % 60).padStart(2, "0");
-    const isoStartsAt = `${dateStr}T${hh}:${mm}:00.000Z`;
+    const localStartsAt = new Date(`${dateStr}T${hh}:${mm}:00`);
+    const isoStartsAt = localStartsAt.toISOString();
     onSlotClick(isoStartsAt, { top: e.clientY, left: e.clientX });
   };
 
