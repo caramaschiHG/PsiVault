@@ -388,3 +388,47 @@ model NotificationJob {
   @@index([appointmentId, type])
   @@map("notification_jobs")
 }
+
+model ExpenseCategory {
+  id          String    @id
+  workspaceId String    @map("workspace_id")
+  name        String
+  archived    Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedByAccountId String? @map("deleted_by_account_id")
+
+  expenses    Expense[]
+
+  @@index([workspaceId, deletedAt])
+  @@index([workspaceId, archived])
+  @@map("expense_categories")
+}
+
+model Expense {
+  id                 String    @id
+  workspaceId        String    @map("workspace_id")
+  categoryId         String    @map("category_id")
+  description        String
+  amountInCents      Int       @map("amount_in_cents")
+  dueDate            DateTime  @map("due_date")
+  recurrencePattern  String?   @map("recurrence_pattern") // "MENSAL" | "QUINZENAL"
+  seriesId           String?   @map("series_id")
+  seriesIndex        Int?      @map("series_index")
+  receiptStorageKey  String?   @map("receipt_storage_key")
+  receiptFileName    String?   @map("receipt_file_name")
+  receiptMimeType    String?   @map("receipt_mime_type")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  createdByAccountId String    @map("created_by_account_id")
+  deletedAt          DateTime? @map("deleted_at")
+  deletedByAccountId String?   @map("deleted_by_account_id")
+
+  category ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, deletedAt])
+  @@index([workspaceId, dueDate])
+  @@index([seriesId])
+  @@map("expenses")
+}
