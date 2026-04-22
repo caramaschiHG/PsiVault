@@ -7,7 +7,7 @@
 
 ### UX Finanças
 
-- [ ] **UXFI-01**: Usuário pode gerenciar cobranças usando modais e drawers em vez de formulários inline (usando `<dialog>`)
+- [x] **UXFI-01**: Usuário pode gerenciar cobranças usando modais e drawers em vez de formulários inline (usando `<dialog>`)
 - [x] **UXFI-02**: Usuário visualiza inadimplência e pagamentos atrasados com destaque na interface
 
 ### Despesas
@@ -46,7 +46,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UXFI-01 | Phase 19 | Pending |
+| UXFI-01 | Phase 19 | Complete |
 | UXFI-02 | Phase 19 | Complete |
 | DESP-01 | Phase 20 | Pending |
 | DESP-02 | Phase 20 | Pending |

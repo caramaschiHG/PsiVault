@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-stopped_at: Completed 19-01-PLAN.md
-last_updated: "2026-04-22T15:46:14.968Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 19-02-PLAN.md
+last_updated: "2026-04-22T17:45:23.422Z"
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 100
 ---
 
 # STATE
@@ -44,6 +44,8 @@ Plan: 2 of 2
 - On-the-fly PDF generation implemented to avoid storage overhead and timeout issues.
 - [Phase 19]: Flattened the finance summary into a chronological sequence for better readability without the accordion overhead.
 - [Phase 19]: Implemented client-side filtering on the flat list directly without grouping.
+- [Phase 19]: Used URL searchParams to control the side panel visibility instead of local state.
+- [Phase 19]: Kept the 'Receber' button in the list but redirected its click to open the drawer instead of opening an inline popover.
 
 ### Todos
 
@@ -55,6 +57,6 @@ Plan: 2 of 2
 
 ## Session Continuity
 
-Last session: 2026-04-22T15:46:14.944Z
-Stopped at: Completed 19-01-PLAN.md
+Last session: 2026-04-22T17:45:23.414Z
+Stopped at: Completed 19-02-PLAN.md
 Resume file: None

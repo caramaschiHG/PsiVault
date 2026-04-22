@@ -2,7 +2,7 @@
 
 ## Phases
 
-- [ ] **Phase 19: Refatoração UX/UI Finanças** - Refatorar gestão de cobranças com modais e destacar inadimplência
+- [x] **Phase 19: Refatoração UX/UI Finanças** - Refatorar gestão de cobranças com modais e destacar inadimplência (completed 2026-04-22)
 - [ ] **Phase 20: Módulo de Gestão de Despesas** - Permitir registro, categorização e anexação de comprovantes de gastos
 - [ ] **Phase 21: Emissão de Recibos em PDF** - Gerar, baixar e enviar recibos de cobranças pagas
 - [ ] **Phase 22: Relatórios e Fluxo de Caixa** - Dashboard com DRE, gráficos de evolução e exportação de dados
@@ -19,7 +19,7 @@
   3. Usuário visualiza indicativos visuais em destaque para identificar pagamentos atrasados ou inadimplência.
 **Plans**: 2 plans
 - [x] 19-01-PLAN.md — Refatorar listagem principal em Extrato Bancário e Aba de Inadimplência
-- [ ] 19-02-PLAN.md — Implementar Drawers de edição via URL, removendo popovers
+- [x] 19-02-PLAN.md — Implementar Drawers de edição via URL, removendo popovers
 **UI hint**: yes
 
 ### Phase 20: Módulo de Gestão de Despesas
@@ -59,7 +59,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 19. Refatoração UX/UI Finanças | 1/2 | In Progress|  |
+| 19. Refatoração UX/UI Finanças | 2/2 | Complete   | 2026-04-22 |
 | 20. Módulo de Gestão de Despesas | 0/0 | Not started | - |
 | 21. Emissão de Recibos em PDF | 0/0 | Not started | - |
 | 22. Relatórios e Fluxo de Caixa | 0/0 | Not started | - |
