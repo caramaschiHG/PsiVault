@@ -9,6 +9,8 @@ import { deriveMonthlyFinancialSummary, autoMarkOverdue } from "@/lib/finance/mo
 import { resolveSession } from "@/lib/supabase/session";
 import FinanceiroPageClient from "./page-client";
 import { db } from "@/lib/db";
+import { getExpenseStore } from "@/lib/expenses/store";
+import { getExpenseCategoryStore } from "@/lib/expense-categories/store";
 
 const MONTH_LABELS = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -103,6 +105,8 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     trendBreakdowns,
     yearBreakdowns,
     restOfMonth,
+    expenses,
+    categories,
   ] = await Promise.all([
     patientRepo.listActive(workspaceId),
     patientRepo.listArchived(workspaceId),
@@ -119,6 +123,8 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
       },
       select: { id: true, patientId: true, priceInCents: true },
     }),
+    getExpenseStore().repository.findByWorkspace(workspaceId),
+    getExpenseCategoryStore().repository.findActiveByWorkspace(workspaceId),
   ]);
 
   const allPatients = [...activePatients, ...archivedPatients];
@@ -202,6 +208,8 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
       forecast={forecastCents / 100}
       scheduledCount={restOfMonth.length}
       drawerId={params.drawer || null}
+      expenses={expenses}
+      categories={categories}
     />
   );
 }

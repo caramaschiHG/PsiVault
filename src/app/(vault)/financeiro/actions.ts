@@ -5,8 +5,20 @@ import { resolveSession } from "@/lib/supabase/session";
 import { getFinanceRepository } from "@/lib/finance/store";
 import { getPatientRepository } from "@/lib/patients/store";
 import { createSessionCharge } from "@/lib/finance/model";
+import { getExpenseCategoryStore } from "@/lib/expense-categories/store";
+import { getExpenseStore } from "@/lib/expenses/store";
+import { createExpenseCategory, renameExpenseCategory, archiveExpenseCategory } from "@/lib/expense-categories/model";
+import { createExpense, type SeriesScope } from "@/lib/expenses/model";
+import { materializeSeries } from "@/lib/expenses/series";
+import { parseBRLToCents } from "@/lib/expenses/format";
+import { validateReceiptFile } from "@/lib/expenses/upload-validation";
+import { buildExpenseReceiptStorageKey, uploadExpenseReceipt, deleteExpenseReceipt } from "@/lib/expenses/storage";
+import { createClient } from "@/lib/supabase/server";
 
 const createId = () => `chg_${crypto.randomUUID().slice(0, 12)}`;
+const createExpenseCategoryId = () => `excat_${crypto.randomUUID().slice(0, 12)}`;
+const createExpenseId = () => `exp_${crypto.randomUUID().slice(0, 12)}`;
+const createSeriesId = () => `expser_${crypto.randomUUID().slice(0, 12)}`;
 
 export async function markChargeAsPaidAction(
   chargeId: string,
@@ -148,4 +160,247 @@ export async function exportFinanceCSVAction(
     console.error("[exportFinanceCSVAction]", err);
     return null;
   }
+}
+
+// ─── Expense Category Actions ─────────────────────────────────────────────────
+
+export async function createExpenseCategoryAction(
+  _prevState: { error?: string } | null,
+  formData: FormData,
+): Promise<{ error?: string; categoryId?: string }> {
+  const { workspaceId } = await resolveSession();
+  const name = String(formData.get("name") ?? "").trim();
+  if (name.length < 1 || name.length > 60) {
+    return { error: "Nome da categoria precisa ter entre 1 e 60 caracteres." };
+  }
+  const repo = getExpenseCategoryStore().repository;
+  const category = createExpenseCategory(
+    { workspaceId, name },
+    { now: new Date(), createId: createExpenseCategoryId },
+  );
+  await repo.create(category);
+  revalidatePath("/financeiro");
+  return { categoryId: category.id };
+}
+
+export async function renameExpenseCategoryAction(
+  categoryId: string,
+  newName: string,
+): Promise<{ error?: string }> {
+  const { workspaceId } = await resolveSession();
+  const name = newName.trim();
+  if (name.length < 1 || name.length > 60) {
+    return { error: "Nome da categoria precisa ter entre 1 e 60 caracteres." };
+  }
+  const repo = getExpenseCategoryStore().repository;
+  const category = await repo.findById(workspaceId, categoryId);
+  if (!category) return { error: "Categoria não encontrada." };
+  const updated = renameExpenseCategory(category, name, { now: new Date() });
+  await repo.update(workspaceId, categoryId, updated);
+  revalidatePath("/financeiro");
+  return {};
+}
+
+export async function archiveExpenseCategoryAction(
+  categoryId: string,
+): Promise<{ error?: string }> {
+  const { workspaceId } = await resolveSession();
+  const repo = getExpenseCategoryStore().repository;
+  const category = await repo.findById(workspaceId, categoryId);
+  if (!category) return { error: "Categoria não encontrada." };
+  const updated = archiveExpenseCategory(category, { now: new Date() });
+  await repo.update(workspaceId, categoryId, updated);
+  revalidatePath("/financeiro");
+  return {};
+}
+
+// ─── Expense Actions ──────────────────────────────────────────────────────────
+
+export async function createExpenseAction(
+  _prevState: { error?: string } | null,
+  formData: FormData,
+): Promise<{ error?: string; expenseId?: string }> {
+  const { accountId, workspaceId } = await resolveSession();
+
+  const description = String(formData.get("description") ?? "").trim();
+  const amountText = String(formData.get("amount") ?? "");
+  const amountInCents = parseBRLToCents(amountText);
+  const categoryId = String(formData.get("categoryId") ?? "");
+  const dueDateStr = String(formData.get("dueDate") ?? "");
+  const recurrenceRaw = formData.get("recurrencePattern");
+  const recurrencePattern =
+    recurrenceRaw === "MENSAL" || recurrenceRaw === "QUINZENAL" ? recurrenceRaw : null;
+
+  if (description.length < 1 || description.length > 200) return { error: "Descrição inválida." };
+  if (!amountInCents || amountInCents <= 0) return { error: "Valor inválido." };
+  if (!categoryId) return { error: "Categoria obrigatória." };
+  const dueDate = new Date(dueDateStr);
+  if (Number.isNaN(dueDate.getTime())) return { error: "Data inválida." };
+
+  const categoryRepo = getExpenseCategoryStore().repository;
+  const category = await categoryRepo.findById(workspaceId, categoryId);
+  if (!category) return { error: "Categoria não encontrada." };
+
+  const repo = getExpenseStore().repository;
+
+  if (recurrencePattern) {
+    const series = materializeSeries(
+      {
+        workspaceId,
+        categoryId,
+        description,
+        amountInCents,
+        recurrencePattern,
+        firstOccurrenceDate: dueDate,
+        createdByAccountId: accountId,
+      },
+      { now: new Date(), createId: createExpenseId, createSeriesId },
+    );
+    await repo.createMany(series);
+    revalidatePath("/financeiro");
+    return { expenseId: series[0].id };
+  } else {
+    const expense = createExpense(
+      { workspaceId, categoryId, description, amountInCents, dueDate, createdByAccountId: accountId },
+      { now: new Date(), createId: createExpenseId },
+    );
+    await repo.create(expense);
+    revalidatePath("/financeiro");
+    return { expenseId: expense.id };
+  }
+}
+
+export async function updateExpenseAction(
+  expenseId: string,
+  scope: SeriesScope,
+  patch: { description?: string; amountInCents?: number; categoryId?: string },
+): Promise<{ error?: string }> {
+  const { workspaceId } = await resolveSession();
+  const repo = getExpenseStore().repository;
+  const target = await repo.findById(workspaceId, expenseId);
+  if (!target) return { error: "Despesa não encontrada." };
+
+  if (target.seriesId && scope !== "this") {
+    const series = await repo.findBySeries(workspaceId, target.seriesId);
+    const fromIndex = target.seriesIndex ?? 0;
+    const ids = series
+      .filter((e) => {
+        if (scope === "all") return true;
+        return (e.seriesIndex ?? 0) >= fromIndex;
+      })
+      .map((e) => e.id);
+    await repo.bulkUpdate(workspaceId, ids, patch, new Date());
+  } else {
+    await repo.update(workspaceId, expenseId, { ...patch, updatedAt: new Date() });
+  }
+
+  revalidatePath("/financeiro");
+  return {};
+}
+
+export async function deleteExpenseAction(
+  expenseId: string,
+  scope: SeriesScope,
+): Promise<{ error?: string }> {
+  const { accountId, workspaceId } = await resolveSession();
+  const repo = getExpenseStore().repository;
+  const target = await repo.findById(workspaceId, expenseId);
+  if (!target) return { error: "Despesa não encontrada." };
+  await repo.softDeleteWithScope(workspaceId, expenseId, scope, accountId, new Date());
+  revalidatePath("/financeiro");
+  return {};
+}
+
+// ─── Receipt Actions ──────────────────────────────────────────────────────────
+
+export async function attachReceiptAction(
+  _prevState: { error?: string } | null,
+  formData: FormData,
+): Promise<{ error?: string }> {
+  const { workspaceId } = await resolveSession();
+  const expenseId = String(formData.get("expenseId") ?? "");
+  const file = formData.get("file");
+  if (!(file instanceof File)) return { error: "Nenhum arquivo selecionado." };
+
+  const validation = validateReceiptFile(file);
+  if (!validation.ok) return { error: validation.error };
+
+  const repo = getExpenseStore().repository;
+  const expense = await repo.findById(workspaceId, expenseId);
+  if (!expense) return { error: "Despesa não encontrada." };
+  if (expense.receiptStorageKey) return { error: "Despesa já possui comprovante. Use substituir." };
+
+  const storageKey = buildExpenseReceiptStorageKey({ workspaceId, expenseId, fileName: file.name });
+  const supabase = await createClient();
+  const upload = await uploadExpenseReceipt(supabase, {
+    storageKey,
+    buffer: await file.arrayBuffer(),
+    mimeType: file.type,
+  });
+  if (!upload.ok) return { error: `Erro no upload: ${upload.error}` };
+
+  await repo.update(workspaceId, expenseId, {
+    receiptStorageKey: storageKey,
+    receiptFileName: file.name,
+    receiptMimeType: file.type,
+  });
+  revalidatePath("/financeiro");
+  return {};
+}
+
+export async function replaceReceiptAction(
+  _prevState: { error?: string } | null,
+  formData: FormData,
+): Promise<{ error?: string }> {
+  const { workspaceId } = await resolveSession();
+  const expenseId = String(formData.get("expenseId") ?? "");
+  const file = formData.get("file");
+  if (!(file instanceof File)) return { error: "Nenhum arquivo selecionado." };
+
+  const validation = validateReceiptFile(file);
+  if (!validation.ok) return { error: validation.error };
+
+  const repo = getExpenseStore().repository;
+  const expense = await repo.findById(workspaceId, expenseId);
+  if (!expense) return { error: "Despesa não encontrada." };
+
+  const supabase = await createClient();
+
+  if (expense.receiptStorageKey) {
+    await deleteExpenseReceipt(supabase, expense.receiptStorageKey);
+  }
+
+  const storageKey = buildExpenseReceiptStorageKey({ workspaceId, expenseId, fileName: file.name });
+  const upload = await uploadExpenseReceipt(supabase, {
+    storageKey,
+    buffer: await file.arrayBuffer(),
+    mimeType: file.type,
+  });
+  if (!upload.ok) return { error: `Erro no upload: ${upload.error}` };
+
+  await repo.update(workspaceId, expenseId, {
+    receiptStorageKey: storageKey,
+    receiptFileName: file.name,
+    receiptMimeType: file.type,
+  });
+  revalidatePath("/financeiro");
+  return {};
+}
+
+export async function removeReceiptAction(expenseId: string): Promise<{ error?: string }> {
+  const { workspaceId } = await resolveSession();
+  const repo = getExpenseStore().repository;
+  const expense = await repo.findById(workspaceId, expenseId);
+  if (!expense || !expense.receiptStorageKey) return { error: "Sem comprovante para remover." };
+
+  const supabase = await createClient();
+  await deleteExpenseReceipt(supabase, expense.receiptStorageKey);
+  await repo.update(workspaceId, expenseId, {
+    receiptStorageKey: null,
+    receiptFileName: null,
+    receiptMimeType: null,
+    updatedAt: new Date(),
+  });
+  revalidatePath("/financeiro");
+  return {};
 }

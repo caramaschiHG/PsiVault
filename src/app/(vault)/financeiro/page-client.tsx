@@ -63,6 +63,8 @@ interface FinanceiroPageProps {
   forecast: number;
   scheduledCount: number;
   drawerId: string | null;
+  expenses?: import("@/lib/expenses/model").Expense[];
+  categories?: import("@/lib/expense-categories/model").ExpenseCategory[];
 }
 
 export default function FinanceiroPageClient({
@@ -82,6 +84,8 @@ export default function FinanceiroPageClient({
   forecast,
   scheduledCount,
   drawerId,
+  expenses: _expenses,
+  categories: _categories,
 }: FinanceiroPageProps) {
   const router = useRouter();
   const pathname = usePathname();
