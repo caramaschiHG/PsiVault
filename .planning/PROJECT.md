@@ -34,12 +34,12 @@ Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, c
 - ✓ Dropdown de notificações redesenhado — v1.1
 - ✓ Múltiplos tipos de notificação com ações contextuais — v1.1
 - ✓ Arquitetura de storage abstraída (localStorage → server-side ready) — v1.1
+- ✓ Refatoração UX/UI Finanças (Modais, Layout, Filtros) — Validated in Phase 19: refatora-o-ux-ui-finan-as
 
 ### Active
 
 <!-- Current scope — v1.2 Financeiro Completo e UX -->
 
-- [ ] Refatoração UX/UI Finanças (Modais, Layout, Filtros)
 - [ ] Módulo de Gestão de Despesas (CRUD e Categorias)
 - [ ] Emissão de Recibos em PDF
 - [ ] Relatórios e Fluxo de Caixa (DRE simples)
@@ -94,4 +94,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-21 after milestone v1.2 started*
+*Last updated: 2026-04-22 after Phase 19 complete*
