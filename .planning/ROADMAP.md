@@ -59,7 +59,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 19. Refatoração UX/UI Finanças | 2/2 | Complete   | 2026-04-22 |
+| 19. Refatoração UX/UI Finanças | 2/2 | Complete    | 2026-04-22 |
 | 20. Módulo de Gestão de Despesas | 0/0 | Not started | - |
 | 21. Emissão de Recibos em PDF | 0/0 | Not started | - |
 | 22. Relatórios e Fluxo de Caixa | 0/0 | Not started | - |
