@@ -34,7 +34,7 @@ function monthAbbr(month: number): string {
 }
 
 interface FinanceiroPageProps {
-  searchParams: Promise<{ month?: string; year?: string }>;
+  searchParams: Promise<{ month?: string; year?: string; drawer?: string }>;
 }
 
 async function loadMonthBreakdown(
@@ -201,6 +201,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
       topPatients={topPatients}
       forecast={forecastCents / 100}
       scheduledCount={restOfMonth.length}
+      drawerId={params.drawer || null}
     />
   );
 }

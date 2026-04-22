@@ -15,10 +15,12 @@
 "use client";
 
 import { useTransition, useState, useMemo } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@/components/ui/tabs";
 import type { SessionCharge, Patient } from "./domain-types";
 import { EmptyState } from "@/app/(vault)/components/empty-state";
+import { ChargeSidePanel } from "./components/charge-side-panel";
 
 const ptBRDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -60,6 +62,7 @@ interface FinanceiroPageProps {
   topPatients: { name: string; received: number; sessions: number }[];
   forecast: number;
   scheduledCount: number;
+  drawerId: string | null;
 }
 
 export default function FinanceiroPageClient({
@@ -78,11 +81,15 @@ export default function FinanceiroPageClient({
   topPatients,
   forecast,
   scheduledCount,
+  drawerId,
 }: FinanceiroPageProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [charges, setCharges] = useState(initialCharges);
   const [filterPatient, setFilterPatient] = useState("");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("todos");
-  const [showAddForm, setShowAddForm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [payingCharge, setPayingCharge] = useState<string | null>(null);
@@ -125,13 +132,25 @@ export default function FinanceiroPageClient({
     setTimeout(() => setToast(null), 3000);
   }
 
+  function openDrawer(id: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("drawer", id);
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
+  function closeDrawer() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("drawer");
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
   async function handleAddCharge(formData: FormData) {
     setFormError(null);
     startTransition(async () => {
       const mod = await import("./actions");
       const result = await mod.createManualChargeAction(formData);
       if (result.ok) {
-        setShowAddForm(false);
+        closeDrawer();
         window.location.reload();
       } else {
         setFormError(result.error ?? "Erro desconhecido.");
@@ -244,7 +263,11 @@ export default function FinanceiroPageClient({
           const isPaying = payingCharge === charge.id;
 
           return (
-            <div key={charge.id} style={rowStyle}>
+            <div 
+              key={charge.id} 
+              style={{ ...rowStyle, cursor: "pointer" }}
+              onClick={() => openDrawer(charge.id)}
+            >
               <div style={rowLeftStyle}>
                 <span
                   style={{
@@ -268,43 +291,13 @@ export default function FinanceiroPageClient({
                   {charge.amountInCents !== null ? currency.format(charge.amountInCents / 100) : "—"}
                 </span>
 
-                {charge.status === "pago" ? (
-                  <button
-                    style={undoBtnStyle}
-                    onClick={() => handleUndoPay(charge.id)}
-                    title="Desfazer pagamento"
-                    disabled={undoingCharge === charge.id}
-                  >
-                    {undoingCharge === charge.id ? "Desfazendo…" : "↩ Desfazer"}
-                  </button>
-                ) : isPaying ? (
-                  <div style={paymentPopoverStyle}>
-                    <p style={{ margin: "0 0 0.5rem", fontSize: "0.8rem", color: "#666" }}>
-                      Forma de pagamento:
-                    </p>
-                    <div style={paymentMethodsRowStyle}>
-                      {Object.entries(PAYMENT_METHOD_LABELS).map(([key, label]) => (
-                        <button
-                          key={key}
-                          style={methodBtnStyle}
-                          onClick={() => handleQuickPay(charge.id, key)}
-                          disabled={payingCharge === charge.id}
-                        >
-                          {payingCharge === charge.id ? "Pagando…" : label}
-                        </button>
-                      ))}
-                    </div>
-                    <button
-                      style={cancelPayStyle}
-                      onClick={() => setPayingCharge(null)}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                ) : (
+                {charge.status !== "pago" && (
                   <button
                     style={payBtnStyle}
-                    onClick={() => setPayingCharge(charge.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openDrawer(charge.id);
+                    }}
                     title="Registrar pagamento"
                   >
                     ✓ Receber
@@ -443,32 +436,14 @@ export default function FinanceiroPageClient({
         </div>
 
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          <Button variant="secondary" size="sm" onClick={() => setShowAddForm((v) => !v)}>
-            {showAddForm ? "Fechar" : "+ Cobrança"}
+          <Button variant="secondary" size="sm" onClick={() => openDrawer("nova")}>
+            + Cobrança
           </Button>
           <Button variant="ghost" size="sm" onClick={handleExport} isLoading={exporting}>
             Exportar
           </Button>
         </div>
       </div>
-
-      {/* Inline add form */}
-      {showAddForm && (
-        <div style={inlineFormCardStyle}>
-          <form action={handleAddCharge} style={inlineFormStyle}>
-            <select name="patientId" required defaultValue="" style={inputStyle}>
-              <option value="" disabled>Paciente</option>
-              {patients.map((p) => (
-                <option key={p.id} value={p.id}>{p.socialName ?? p.fullName}</option>
-              ))}
-            </select>
-            <input type="date" name="date" defaultValue={new Date().toISOString().split("T")[0]} style={inputStyle} />
-            <input type="number" name="amountBrl" placeholder="Valor (R$)" required min="0.01" step="0.01" style={inputStyle} />
-            <Button type="submit" variant="primary" isLoading={isPending}>Adicionar</Button>
-          </form>
-          {formError && <p style={formErrorStyle} role="alert">{formError}</p>}
-        </div>
-      )}
 
       {/* Charge list */}
       {charges.length === 0 ? (
@@ -483,7 +458,7 @@ export default function FinanceiroPageClient({
             description="Tudo em dia! Nenhuma sessão concluída neste período."
           />
           <div style={{ textAlign: "center", paddingBottom: "2rem" }}>
-            <Button variant="primary" onClick={() => setShowAddForm(true)}>Adicionar primeira cobrança</Button>
+            <Button variant="primary" onClick={() => openDrawer("nova")}>Adicionar primeira cobrança</Button>
           </div>
         </>
       ) : (
@@ -596,6 +571,118 @@ export default function FinanceiroPageClient({
           </div>
         )}
       </div>
+
+      <ChargeSidePanel drawerId={drawerId} onClose={closeDrawer}>
+        {drawerId === "nova" && (
+          <form action={handleAddCharge} style={{ display: "grid", gap: "1.25rem" }}>
+            <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600, fontFamily: "var(--font-serif)" }}>Nova Cobrança</h2>
+            <div style={{ display: "grid", gap: "0.25rem" }}>
+              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "#444" }}>Paciente</label>
+              <select name="patientId" required defaultValue="" style={inputStyle}>
+                <option value="" disabled>Selecione um paciente</option>
+                {patients.map((p) => (
+                  <option key={p.id} value={p.id}>{p.socialName ?? p.fullName}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: "grid", gap: "0.25rem" }}>
+              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "#444" }}>Data da sessão</label>
+              <input type="date" name="date" defaultValue={new Date().toISOString().split("T")[0]} style={inputStyle} />
+            </div>
+            <div style={{ display: "grid", gap: "0.25rem" }}>
+              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "#444" }}>Valor (R$)</label>
+              <input type="number" name="amountBrl" placeholder="0.00" required min="0.01" step="0.01" style={inputStyle} />
+            </div>
+            
+            {formError && <p style={formErrorStyle} role="alert">{formError}</p>}
+            
+            <div style={{ marginTop: "1rem" }}>
+              <Button type="submit" variant="primary" isLoading={isPending} style={{ width: "100%" }}>
+                Salvar Cobrança
+              </Button>
+            </div>
+          </form>
+        )}
+        
+        {drawerId && drawerId !== "nova" && charges.find(c => c.id === drawerId) && (() => {
+          const c = charges.find(c => c.id === drawerId)!;
+          const patient = patientMap.get(c.patientId);
+          const patientName = patient?.socialName ?? patient?.fullName ?? c.patientId;
+          const color = STATUS_COLORS[c.status] ?? STATUS_COLORS.pendente;
+
+          return (
+            <div style={{ display: "grid", gap: "1.5rem" }}>
+              <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600, fontFamily: "var(--font-serif)" }}>Detalhes da Cobrança</h2>
+              
+              <div style={{ display: "grid", gap: "1rem" }}>
+                <div>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Paciente</p>
+                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", fontWeight: 500, color: "#111" }}>{patientName}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Data da sessão</p>
+                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", color: "#111" }}>{ptBRDate.format(c.createdAt)}</p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Valor</p>
+                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", color: "#111" }}>
+                    {c.amountInCents !== null ? currency.format(c.amountInCents / 100) : "—"}
+                  </p>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Status</p>
+                  <span style={{ ...statusBadgeStyle, background: color.bg, color: color.text, display: "inline-block", marginTop: "0.25rem" }}>
+                    {color.label}
+                  </span>
+                </div>
+              </div>
+
+              {c.status === "pago" ? (
+                <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1, #fafaf8)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
+                  <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--color-success-text)" }}>Pagamento recebido</p>
+                  <p style={{ margin: "0 0 1rem", fontSize: "0.85rem", color: "#555" }}>
+                    Forma de pagamento: <span style={{ fontWeight: 500 }}>{PAYMENT_METHOD_LABELS[c.paymentMethod || ""] ?? c.paymentMethod}</span>
+                  </p>
+                  <Button 
+                    variant="secondary" 
+                    onClick={() => handleUndoPay(c.id)} 
+                    disabled={undoingCharge === c.id}
+                    style={{ width: "100%" }}
+                  >
+                    {undoingCharge === c.id ? "Desfazendo..." : "↩ Desfazer pagamento"}
+                  </Button>
+                </div>
+              ) : (
+                <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1, #fafaf8)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
+                  <p style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", fontWeight: 600, color: "#111" }}>Registrar Recebimento</p>
+                  <div style={{ display: "grid", gap: "0.5rem" }}>
+                    {Object.entries(PAYMENT_METHOD_LABELS).map(([key, label]) => (
+                      <button
+                        key={key}
+                        onClick={() => handleQuickPay(c.id, key)}
+                        disabled={payingCharge === c.id}
+                        style={{
+                          padding: "0.625rem",
+                          border: "1px solid var(--color-border)",
+                          borderRadius: "var(--radius-sm)",
+                          background: "#fff",
+                          cursor: payingCharge === c.id ? "not-allowed" : "pointer",
+                          fontSize: "0.85rem",
+                          fontWeight: 500,
+                          textAlign: "left",
+                          color: "#333",
+                        }}
+                      >
+                        {payingCharge === c.id ? "Salvando..." : label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+      </ChargeSidePanel>
     </main>
   );
 }
