@@ -21,6 +21,7 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@/components/ui/tabs";
 import type { SessionCharge, Patient } from "./domain-types";
 import { EmptyState } from "@/app/(vault)/components/empty-state";
 import { ChargeSidePanel } from "./components/charge-side-panel";
+import { ExpensesSection } from "./components/expenses-section";
 
 const ptBRDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -470,6 +471,7 @@ export default function FinanceiroPageClient({
           <TabList>
             <Tab value="extrato">Extrato</Tab>
             <Tab value="atrasados">Atrasados</Tab>
+            <Tab value="despesas">Despesas</Tab>
           </TabList>
           <TabPanels>
             <TabPanel value="extrato">
@@ -477,6 +479,9 @@ export default function FinanceiroPageClient({
             </TabPanel>
             <TabPanel value="atrasados">
               {renderChargeList(filteredCharges.filter((c) => c.status === "atrasado"))}
+            </TabPanel>
+            <TabPanel value="despesas">
+              <ExpensesSection expenses={_expenses ?? []} categories={_categories ?? []} />
             </TabPanel>
           </TabPanels>
         </Tabs>
