@@ -16,6 +16,7 @@
 
 import { useTransition, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@/components/ui/tabs";
 import type { SessionCharge, Patient } from "./domain-types";
 import { EmptyState } from "@/app/(vault)/components/empty-state";
 
@@ -87,7 +88,6 @@ export default function FinanceiroPageClient({
   const [payingCharge, setPayingCharge] = useState<string | null>(null);
   const [undoingCharge, setUndoingCharge] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
-  const [expandedPatient, setExpandedPatient] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showYearView, setShowYearView] = useState(false);
   const [showTopPatients, setShowTopPatients] = useState(false);
@@ -105,17 +105,6 @@ export default function FinanceiroPageClient({
     if (filterStatus !== "todos") result = result.filter((c) => c.status === filterStatus);
     return result;
   }, [charges, filterPatient, filterStatus]);
-
-  // Group by patient
-  const grouped = useMemo(() => {
-    const map = new Map<string, SessionCharge[]>();
-    for (const charge of filteredCharges) {
-      const key = charge.patientId;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(charge);
-    }
-    return map;
-  }, [filteredCharges]);
 
   // Patient totals
   const patientTotals = useMemo(() => {
@@ -240,6 +229,93 @@ export default function FinanceiroPageClient({
     a.click();
     URL.revokeObjectURL(url);
     showToast("Resumo IR exportado ✓");
+  }
+
+  function renderChargeList(list: SessionCharge[]) {
+    if (list.length === 0) {
+      return <p style={noFilterResultStyle}>Nenhuma cobrança para os filtros selecionados.</p>;
+    }
+    return (
+      <div style={listStyle}>
+        {list.map((charge) => {
+          const patient = patientMap.get(charge.patientId);
+          const patientName = patient?.socialName ?? patient?.fullName ?? charge.patientId;
+          const color = STATUS_COLORS[charge.status] ?? STATUS_COLORS.pendente;
+          const isPaying = payingCharge === charge.id;
+
+          return (
+            <div key={charge.id} style={rowStyle}>
+              <div style={rowLeftStyle}>
+                <span
+                  style={{
+                    ...statusBadgeStyle,
+                    background: color.bg,
+                    color: color.text,
+                  }}
+                >
+                  {color.label}
+                </span>
+                <span style={dateLabelStyle}>{ptBRDate.format(charge.createdAt)}</span>
+                <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "#333" }}>{patientName}</span>
+                {charge.paymentMethod && (
+                  <span style={methodLabelStyle}>
+                    {PAYMENT_METHOD_LABELS[charge.paymentMethod] ?? charge.paymentMethod}
+                  </span>
+                )}
+              </div>
+              <div style={rowRightStyle}>
+                <span style={amountLabelStyle}>
+                  {charge.amountInCents !== null ? currency.format(charge.amountInCents / 100) : "—"}
+                </span>
+
+                {charge.status === "pago" ? (
+                  <button
+                    style={undoBtnStyle}
+                    onClick={() => handleUndoPay(charge.id)}
+                    title="Desfazer pagamento"
+                    disabled={undoingCharge === charge.id}
+                  >
+                    {undoingCharge === charge.id ? "Desfazendo…" : "↩ Desfazer"}
+                  </button>
+                ) : isPaying ? (
+                  <div style={paymentPopoverStyle}>
+                    <p style={{ margin: "0 0 0.5rem", fontSize: "0.8rem", color: "#666" }}>
+                      Forma de pagamento:
+                    </p>
+                    <div style={paymentMethodsRowStyle}>
+                      {Object.entries(PAYMENT_METHOD_LABELS).map(([key, label]) => (
+                        <button
+                          key={key}
+                          style={methodBtnStyle}
+                          onClick={() => handleQuickPay(charge.id, key)}
+                          disabled={payingCharge === charge.id}
+                        >
+                          {payingCharge === charge.id ? "Pagando…" : label}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      style={cancelPayStyle}
+                      onClick={() => setPayingCharge(null)}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    style={payBtnStyle}
+                    onClick={() => setPayingCharge(charge.id)}
+                    title="Registrar pagamento"
+                  >
+                    ✓ Receber
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 
   const maxTrend = Math.max(...trends.map((t) => t.totalReceived), 1);
@@ -410,145 +486,21 @@ export default function FinanceiroPageClient({
             <Button variant="primary" onClick={() => setShowAddForm(true)}>Adicionar primeira cobrança</Button>
           </div>
         </>
-      ) : filteredCharges.length === 0 ? (
-        <p style={noFilterResultStyle}>Nenhuma cobrança para os filtros selecionados.</p>
       ) : (
-        <div style={listStyle}>
-          {Array.from(grouped.entries()).map(([patientId, patientCharges]) => {
-            const patient = patientMap.get(patientId);
-            const patientName = patient?.socialName ?? patient?.fullName ?? patientId;
-            const totals = patientTotals.get(patientId) ?? { paid: 0, pending: 0, overdue: 0 };
-            const isExpanded = expandedPatient === patientId;
-            const hasMultiple = patientCharges.length > 1;
-
-            return (
-              <div key={patientId} style={patientGroupStyle}>
-                {/* Patient header — clickable to expand */}
-                <div
-                  style={patientHeaderStyle}
-                  onClick={() => hasMultiple && setExpandedPatient(isExpanded ? null : patientId)}
-                  className={hasMultiple ? "clickable" : ""}
-                >
-                  <h3 style={patientNameHeadingStyle}>{patientName}</h3>
-                  <div style={patientTotalsRowStyle}>
-                    {totals.paid > 0 && (
-                      <span style={{ ...totalBadgeStyle, background: "var(--color-success-bg)", color: "var(--color-success-text)" }}>
-                        Recebido: {currency.format(totals.paid / 100)}
-                      </span>
-                    )}
-                    {totals.pending > 0 && (
-                      <span style={{ ...totalBadgeStyle, background: "var(--color-warning-bg)", color: "var(--color-warning-text)" }}>
-                        Pendente: {currency.format(totals.pending / 100)}
-                      </span>
-                    )}
-                    {totals.overdue > 0 && (
-                      <span style={{ ...totalBadgeStyle, background: "var(--color-error-bg)", color: "var(--color-error-text)" }}>
-                        Atrasado: {currency.format(totals.overdue / 100)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Charges */}
-                {patientCharges.map((charge, idx) => {
-                  const showCharge = !hasMultiple || isExpanded || idx < 2;
-                  if (!showCharge) return null;
-
-                  const color = STATUS_COLORS[charge.status] ?? STATUS_COLORS.pendente;
-                  const isPaying = payingCharge === charge.id;
-
-                  return (
-                    <div key={charge.id} style={rowStyle}>
-                      <div style={rowLeftStyle}>
-                        <span
-                          style={{
-                            ...statusBadgeStyle,
-                            background: color.bg,
-                            color: color.text,
-                          }}
-                        >
-                          {color.label}
-                        </span>
-                        <span style={dateLabelStyle}>{ptBRDate.format(charge.createdAt)}</span>
-                        {charge.paymentMethod && (
-                          <span style={methodLabelStyle}>
-                            {PAYMENT_METHOD_LABELS[charge.paymentMethod] ?? charge.paymentMethod}
-                          </span>
-                        )}
-                      </div>
-                      <div style={rowRightStyle}>
-                        <span style={amountLabelStyle}>
-                          {charge.amountInCents !== null ? currency.format(charge.amountInCents / 100) : "—"}
-                        </span>
-
-                        {charge.status === "pago" ? (
-                          <button
-                            style={undoBtnStyle}
-                            onClick={() => handleUndoPay(charge.id)}
-                            title="Desfazer pagamento"
-                            disabled={undoingCharge === charge.id}
-                          >
-                            {undoingCharge === charge.id ? "Desfazendo…" : "↩ Desfazer"}
-                          </button>
-                        ) : isPaying ? (
-                          <div style={paymentPopoverStyle}>
-                            <p style={{ margin: "0 0 0.5rem", fontSize: "0.8rem", color: "#666" }}>
-                              Forma de pagamento:
-                            </p>
-                            <div style={paymentMethodsRowStyle}>
-                              {Object.entries(PAYMENT_METHOD_LABELS).map(([key, label]) => (
-                                <button
-                                  key={key}
-                                  style={methodBtnStyle}
-                                  onClick={() => handleQuickPay(charge.id, key)}
-                                  disabled={payingCharge === charge.id}
-                                >
-                                  {payingCharge === charge.id ? "Pagando…" : label}
-                                </button>
-                              ))}
-                            </div>
-                            <button
-                              style={cancelPayStyle}
-                              onClick={() => setPayingCharge(null)}
-                            >
-                              Cancelar
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            style={payBtnStyle}
-                            onClick={() => setPayingCharge(charge.id)}
-                            title="Registrar pagamento"
-                          >
-                            ✓ Receber
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Show more indicator */}
-                {hasMultiple && !isExpanded && patientCharges.length > 2 && (
-                  <button
-                    style={showMoreStyle}
-                    onClick={() => setExpandedPatient(patientId)}
-                  >
-                    +{patientCharges.length - 2} mais
-                  </button>
-                )}
-                {hasMultiple && isExpanded && (
-                  <button
-                    style={showLessStyle}
-                    onClick={() => setExpandedPatient(null)}
-                  >
-                    Recolher
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        <Tabs defaultValue="extrato" searchParamKey="tab">
+          <TabList>
+            <Tab value="extrato">Extrato</Tab>
+            <Tab value="atrasados">Atrasados</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel value="extrato">
+              {renderChargeList(filteredCharges)}
+            </TabPanel>
+            <TabPanel value="atrasados">
+              {renderChargeList(filteredCharges.filter((c) => c.status === "atrasado"))}
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       )}
 
       {/* ─── Top patients section ─────────────────────────────────────────── */}
@@ -901,38 +853,7 @@ const noFilterResultStyle: React.CSSProperties = {
 
 const listStyle: React.CSSProperties = { display: "grid", gap: "1rem" };
 
-const patientGroupStyle: React.CSSProperties = { display: "grid", gap: "0.375rem" };
 
-const patientHeaderStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  padding: "0.5rem 0.75rem",
-  borderRadius: "var(--radius-sm, 4px)",
-  flexWrap: "wrap",
-  gap: "0.5rem",
-};
-
-const patientNameHeadingStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: "0.95rem",
-  fontWeight: 600,
-  fontFamily: "var(--font-serif, Georgia, serif)",
-  color: "#444",
-};
-
-const patientTotalsRowStyle: React.CSSProperties = {
-  display: "flex",
-  gap: "0.5rem",
-  flexWrap: "wrap",
-};
-
-const totalBadgeStyle: React.CSSProperties = {
-  fontSize: "0.72rem",
-  padding: "0.2rem 0.5rem",
-  borderRadius: "var(--radius-sm, 4px)",
-  fontWeight: 600,
-};
 
 const rowStyle: React.CSSProperties = {
   display: "flex",
@@ -1045,26 +966,7 @@ const cancelPayStyle: React.CSSProperties = {
   marginTop: "0.375rem",
 };
 
-const showMoreStyle: React.CSSProperties = {
-  fontSize: "0.78rem",
-  padding: "0.375rem 0.75rem",
-  border: "none",
-  background: "transparent",
-  color: "var(--color-accent, #2d7d6f)",
-  cursor: "pointer",
-  fontWeight: 600,
-  textAlign: "left",
-};
 
-const showLessStyle: React.CSSProperties = {
-  fontSize: "0.78rem",
-  padding: "0.375rem 0.75rem",
-  border: "none",
-  background: "transparent",
-  color: "#888",
-  cursor: "pointer",
-  textAlign: "left",
-};
 
 const formErrorStyle: React.CSSProperties = {
   margin: "0.5rem 0 0",
