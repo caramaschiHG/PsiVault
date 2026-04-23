@@ -111,7 +111,12 @@ Plans:
   3. memlab não detecta memory leaks no fluxo de navegação de pacientes
   4. react-scan destaca re-renders desnecessários durante desenvolvimento
   5. Relatório publicado mostra métricas before/after com próximos passos acionáveis
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 31-01-PLAN.md — Dev Observability Tools: Lighthouse CI, memlab, react-scan
+- [ ] 31-02-PLAN.md — RUM Dashboard: agregações p75, /admin/performance, cleanup
+- [ ] 31-03-PLAN.md — Report Generator: script `performance:report`, relatório Markdown
 
 ### 📋 v1.5 Motion & Feel — Interações Fluidas (Planned)
 
