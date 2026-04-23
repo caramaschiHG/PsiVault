@@ -156,8 +156,13 @@ Plans:
   5. Itens de navegação indicam estado ativo com transição suave
   6. Cursores apropriados em todos os elementos interativos
   7. Scroll entre âncoras e páginas longas é suave
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 33-01-PLAN.md — CSS Foundation & Component Primitives: focus rings, card hover, button active, input shake, floating labels, sidebar nav transitions
+- [ ] 33-02-PLAN.md — Auth Forms Floating Labels & Error Shake: sign-in, sign-up, reset-password, complete-profile, password-input
+- [ ] 33-03-PLAN.md — Vault Forms & Verification: expense-filters, expense-side-panel, expense-category-modal, reminders-section, search-bar
 
 ### Phase 34: Feedback de Ação e Loading
 **Goal**: Usuários recebem feedback visual calmo e imediato sobre o estado de suas ações
@@ -210,7 +215,7 @@ Plans:
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
-| 33. Micro-interações em Componentes Base | v1.5 | 0/TBD | Not started | — |
+| 33. Micro-interações em Componentes Base | v1.5 | 0/3 | Ready to execute | — |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
 | 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
