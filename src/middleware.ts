@@ -44,6 +44,26 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
+  // AUTH-01: user is already returned by updateSession() — no separate getUser() call.
+  // AUTH-02: Fast path — read aal claim from JWT without a network call.
+  // getSession() reads from the cookie; the token was already validated by getUser()
+  // inside updateSession(), so decoding the payload is safe here.
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData?.session?.access_token;
+  if (accessToken) {
+    try {
+      const payload = JSON.parse(
+        atob(accessToken.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+      );
+      if (payload?.aal === "aal2") {
+        // Already at aal2 — step-up not needed. Skip the API round-trip.
+        return supabaseResponse;
+      }
+    } catch {
+      // JWT decode failed — fall through to full check
+    }
+  }
+
   const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (aal?.nextLevel === "aal2" && aal?.currentLevel !== "aal2") {
     return NextResponse.redirect(new URL("/mfa-verify", request.url));
