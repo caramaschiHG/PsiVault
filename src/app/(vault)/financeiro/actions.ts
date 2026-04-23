@@ -135,6 +135,7 @@ export async function exportFinanceCSVAction(
       allPatients.map((p) => [p.id, p.socialName ?? p.fullName]),
     );
 
+    // Single-month CSV export — intentionally uses per-month query, not the batch range
     const charges = await financeRepo.listByWorkspaceAndMonth(workspaceId, year, month);
 
     const statusLabels: Record<string, string> = {

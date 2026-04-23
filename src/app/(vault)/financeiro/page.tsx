@@ -55,7 +55,7 @@ function computeBreakdown(
 ) {
   const charges = chargesByMonth.get(`${year}-${month}`) ?? [];
   const enriched = autoMarkOverdue(charges, apptMap, now);
-  return { charges, enriched, summary: deriveMonthlyFinancialSummary(enriched) };
+  return { enriched, summary: deriveMonthlyFinancialSummary(enriched) };
 }
 
 interface FinanceiroPageProps {
@@ -108,12 +108,10 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   }
   const rangeStart = new Date(Date.UTC(minYear, minMonth - 1, 1));
   // rangeEnd = first day of the month AFTER maxMonth (exclusive upper bound)
-  const rangeEndMonth = maxMonth === 12 ? 1 : maxMonth + 1;
-  const rangeEndYear = maxMonth === 12 ? maxYear + 1 : maxYear;
-  const rangeEnd = new Date(Date.UTC(rangeEndYear, rangeEndMonth - 1, 1));
+  const rangeEnd = new Date(Date.UTC(maxYear, maxMonth, 1)); // month is 1-based; maxMonth=12 normalises to Jan next year
 
   // Revenue forecast range — rest of current selected month
-  const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59));
+  const monthEnd = new Date(Date.UTC(year, month, 1)); // exclusive upper bound: start of next month
 
   // Fan out every independent DB call in parallel.
   // allChargesInRange replaces 20 individual listByWorkspaceAndMonth calls.
@@ -133,7 +131,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     db.appointment.findMany({
       where: {
         workspaceId,
-        startsAt: { gte: now, lte: monthEnd },
+        startsAt: { gte: now, lt: monthEnd },
         status: { in: ["SCHEDULED", "CONFIRMED"] },
       },
       select: { id: true, patientId: true, priceInCents: true },
@@ -143,9 +141,11 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   ]);
 
   // One appointment query for all apptIds across the full range (overdue detection)
-  const apptIds = allChargesInRange
-    .filter((c) => c.appointmentId)
-    .map((c) => c.appointmentId as string);
+  const apptIds = [...new Set(
+    allChargesInRange
+      .filter((c) => c.appointmentId)
+      .map((c) => c.appointmentId as string)
+  )];
   const appts = apptIds.length
     ? await db.appointment.findMany({
         where: { id: { in: apptIds } },
