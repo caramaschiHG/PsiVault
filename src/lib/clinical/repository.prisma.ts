@@ -60,7 +60,7 @@ export function createPrismaClinicalRepository(): ClinicalNoteRepository {
         where: { appointmentId: { in: ids }, workspaceId },
         select: { appointmentId: true },
       });
-      return new Set(rows.map((r) => r.appointmentId).filter(Boolean) as string[]);
+      return new Set(rows.map((r) => r.appointmentId));
     },
 
     async listByPatient(patientId: string, workspaceId: string): Promise<ClinicalNote[]> {
