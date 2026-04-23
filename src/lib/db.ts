@@ -5,11 +5,31 @@ declare global {
   var __psivaultPrisma__: PrismaClient | undefined;
 }
 
+const prismaClient = new PrismaClient({
+  log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+});
+
+const extendedClient = prismaClient.$extends({
+  query: {
+    async $allOperations({ operation, model, args, query }) {
+      const start = performance.now();
+      const result = await query(args);
+      const duration = performance.now() - start;
+
+      if (process.env.NODE_ENV === "development" && duration > 500) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[Slow Query] ${model ?? "raw"}.${operation} took ${duration.toFixed(2)}ms`
+        );
+      }
+
+      return result;
+    },
+  },
+});
+
 export const db =
-  globalThis.__psivaultPrisma__ ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
-  });
+  globalThis.__psivaultPrisma__ ?? extendedClient;
 
 globalThis.__psivaultPrisma__ = db;
 
@@ -29,4 +49,3 @@ export function ownsWorkspace(
 ) {
   return workspace.id === workspaceId && workspace.ownerAccountId === accountId;
 }
-
