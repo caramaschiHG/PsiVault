@@ -29,7 +29,7 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
 - [x] **Phase 28: Streaming e Suspense Granular** — loading.tsx, async sections, React 19 use API, skeletons (4/4 plans) — completed 2026-04-23
 - [x] **Phase 29: Cache Seletivo e Seguro** — unstable_cache, revalidateTag, workspace-scoped keys, revalidatePath audit
 - [ ] **Phase 30: Otimização de Assets e Bundle** — next/dynamic, optimizePackageImports, next/image, next/font, next/script
-- [ ] **Phase 31: Medição, Observabilidade e Iteração** — Lighthouse CI, RUM, memlab, react-scan, relatório before/after
+- [x] **Phase 31: Medição, Observabilidade e Iteração** — Lighthouse CI, RUM, memlab, react-scan, relatório before/after (completed 2026-04-23)
 
 ## Phase Details
 
@@ -116,7 +116,7 @@ Plans:
 Plans:
 - [x] 31-01-PLAN.md — Dev Observability Tools: Lighthouse CI, memlab, react-scan
 - [x] 31-02-PLAN.md — RUM Dashboard: agregações p75, /admin/performance, cleanup
-- [ ] 31-03-PLAN.md — Report Generator: script `performance:report`, relatório Markdown
+- [x] 31-03-PLAN.md — Report Generator: script `performance:report`, relatório Markdown
 
 ### 📋 v1.5 Motion & Feel — Interações Fluidas (Planned)
 
@@ -160,7 +160,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 33-01-PLAN.md — CSS Foundation & Component Primitives: focus rings, card hover, button active, input shake, floating labels, sidebar nav transitions
+- [x] 33-01-PLAN.md — CSS Foundation & Component Primitives: focus rings, card hover, button active, input shake, floating labels, sidebar nav transitions
 - [ ] 33-02-PLAN.md — Auth Forms Floating Labels & Error Shake: sign-in, sign-up, reset-password, complete-profile, password-input
 - [ ] 33-03-PLAN.md — Vault Forms & Verification: expense-filters, expense-side-panel, expense-category-modal, reminders-section, search-bar
 
@@ -213,9 +213,9 @@ Plans:
 | 28. Streaming e Suspense Granular | v1.4 | 4/4 | Complete | 2026-04-23 |
 | 29. Cache Seletivo e Seguro | v1.4 | 3/3 | Complete | 2026-04-23 |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
-| 31. Medição, Observabilidade e Iteração | v1.4 | 2/3 | In Progress|  |
+| 31. Medição, Observabilidade e Iteração | v1.4 | 3/3 | Complete   | 2026-04-23 |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
-| 33. Micro-interações em Componentes Base | v1.5 | 0/3 | Ready to execute | — |
+| 33. Micro-interações em Componentes Base | v1.5 | 1/3 | In Progress|  |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
 | 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
