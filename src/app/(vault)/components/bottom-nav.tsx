@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
@@ -86,7 +87,7 @@ export function BottomNav() {
   return (
     <nav className="vault-bottom-nav" aria-label="Navegação mobile">
       {NAV_ITEMS.map((item) => (
-        <a
+        <Link
           key={item.href}
           href={item.href}
           className={`bottom-nav-item${isActive(item.href) ? " active" : ""}`}
@@ -94,7 +95,7 @@ export function BottomNav() {
         >
           {item.icon}
           <span>{item.label}</span>
-        </a>
+        </Link>
       ))}
     </nav>
   );

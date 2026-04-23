@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV_ITEMS = [
@@ -100,14 +101,14 @@ export function VaultSidebarNav() {
       <ul style={listStyle}>
         {NAV_ITEMS.map((item) => (
           <li key={item.href}>
-            <a
+            <Link
               href={item.href}
               className={`nav-link${isActive(item.href) ? " active" : ""}`}
               aria-current={isActive(item.href) ? "page" : undefined}
             >
               {item.icon}
               <span>{item.label}</span>
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
@@ -118,14 +119,14 @@ export function VaultSidebarNav() {
       {/* Settings */}
       <ul style={listStyle}>
         <li>
-          <a
+          <Link
             href={SETTINGS_ITEM.href}
             className={`nav-link${isActive(SETTINGS_ITEM.href) ? " active" : ""}`}
             aria-current={isActive(SETTINGS_ITEM.href) ? "page" : undefined}
           >
             {SETTINGS_ITEM.icon}
             <span>{SETTINGS_ITEM.label}</span>
-          </a>
+          </Link>
         </li>
       </ul>
 
@@ -139,7 +140,7 @@ export function VaultSidebarNav() {
       <div style={footerStyle}>
         <div style={avatarStyle}>PV</div>
         <div style={footerInfoStyle}>
-          <a href="/settings/profile" style={settingsLinkStyle}>Meu perfil</a>
+          <Link href="/settings/profile" style={settingsLinkStyle}>Meu perfil</Link>
           <a href="/api/auth/signout" style={signoutStyle}>Sair</a>
         </div>
       </div>
