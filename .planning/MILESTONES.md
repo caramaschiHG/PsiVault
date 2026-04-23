@@ -56,3 +56,11 @@
 **Started:** 2026-04-23
 
 ---
+
+## v1.5 Motion & Feel — Interações Fluidas (In Progress)
+
+**Goal:** Elevar a percepção de qualidade do PsiVault através de animações sutis, micro-interações e refinamentos visuais que criam uma experiência clinicamente calma, estável e agradável.
+
+**Started:** 2026-04-23
+
+---

@@ -8,7 +8,24 @@ PsiVault é uma plataforma web completa para psicólogos gerenciarem sua prátic
 
 Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
 
-## Current Milestone: v1.4 Performance Profunda
+## Current Milestone: v1.5 Motion & Feel — Interações Fluidas
+
+**Goal:** Elevar a percepção de qualidade do PsiVault através de animações sutis, micro-interações e refinamentos visuais que criam uma experiência clinicamente calma, estável e agradável — sem cair em exagero decorativo.
+
+**Target features:**
+- Transições de página e navegação fluidas (soft enter/exit)
+- Micro-interações em botões, cards e formulários (hover, focus, active states)
+- Estados de loading e skeletons com movimento orgânico
+- Animações em listas e tabelas (adicionar, remover, reordenar itens)
+- Feedback visual de ações bem-sucedidas e erros (toasts, subtle shakes, fades)
+- Refinamentos de tipografia, espaçamento e ritmo visual
+- Redução de "jump" em layouts via animações de altura/controladas
+- Cursor e scroll behavior refinado
+- Compatibilidade com preferência de reduced motion do sistema
+
+**Parallel milestone:** v1.4 Performance Profunda continua em execução em workstream separado.
+
+## Previous Milestone: v1.4 Performance Profunda (In Progress — Parallel)
 
 **Goal:** Eliminar gargalos remanescentes de performance e atingir fluidez objetivamente mensurável via Core Web Vitals e métricas de runtime.
 

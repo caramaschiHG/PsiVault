@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4
-milestone_name: Performance Profunda
-status: Phase 28 planned — ready for execution
-stopped_at: Phase 28 planning complete
-last_updated: "2026-04-23T16:30:00.000Z"
+milestone: v1.5
+milestone_name: Motion & Feel — Interações Fluidas
+status: Defining requirements
+stopped_at: Milestone initialized
+last_updated: "2026-04-23T17:00:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 1
-  total_plans: 7
-  completed_plans: 3
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # STATE
@@ -17,23 +17,21 @@ progress:
 ## Project Reference
 
 **Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.4 Performance Profunda — Phase 28 planned (4 plans), ready for execution
+**Current Focus**: Milestone v1.5 Motion & Feel — Interações Fluidas
 
 ## Current Position
 
-Phase: 28 — Streaming e Suspense Granular
-Plan: 01–04 (planned)
-**Status**: Planning complete. All 4 plans validated and committed.
-**Last activity**: 2026-04-23 — Phase 28 planning completed
+Phase: Not started (defining requirements)
+Plan: —
+**Status**: Defining requirements for milestone v1.5
+**Last activity**: 2026-04-23 — Milestone v1.5 initialized
 
 **Progress**:
-[███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 20% (1/5 phases)
+[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/0 phases)
 
 ## Performance Metrics
 
-- Phase 27 duration: ~50 min total
-- 3 plans executed, 10 commits created
-- 407 tests passing (no regressions)
+- Tests: 407/407 passing (baseline from v1.3/v1.4)
 - Build successful with no TypeScript errors
 
 ## Accumulated Context
@@ -60,10 +58,15 @@ Plan: 01–04 (planned)
 - [v1.4 Phase 28]: React 19 `use` API utilizado em RemindersSection para streaming de promises para Client Components.
 - [v1.4 Phase 28]: Skeletons usam mesmas variáveis CSS dos componentes reais para zero CLS.
 - [v1.4 Phase 28]: Error boundaries por seção via AsyncBoundary (Client Component) — erro em uma seção não quebra a página.
+- [v1.5 Init]: Milestone paralelo ao v1.4 — foco em qualidade subjetiva (feel) enquanto v1.4 trata performance objetiva.
+- [v1.5 Init]: Regra de ouro: animações só quando melhoram orientação ou resposta de interação — nada decorativo.
+- [v1.5 Init]: Compatibilidade com `prefers-reduced-motion` é obrigatória em todas as animações.
+- [v1.5 Init]: Zero impacto nos 407 testes existentes e na performance conquistada em v1.3/v1.4.
 
 ### Todos
 
-- Executar `/gsd-execute-phase 28` para iniciar implementação
+- Definir requisitos do milestone v1.5
+- Criar roadmap v1.5
 
 ### Blockers
 
@@ -71,6 +74,6 @@ Plan: 01–04 (planned)
 
 ## Session Continuity
 
-Last session: 2026-04-23T16:30:00.000Z
-Stopped at: Phase 28 planning complete — 4 plans created, validated, and committed
-Resume file: .planning/phases/28-streaming-suspense/28-01-PLAN.md
+Last session: 2026-04-23T17:00:00.000Z
+Stopped at: Milestone v1.5 initialized — awaiting requirements definition
+Resume file: N/A
