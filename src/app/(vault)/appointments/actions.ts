@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "../../../lib/cache/tags";
 import {
   createAppointment,
   rescheduleAppointment,
@@ -266,6 +267,7 @@ export async function createAppointmentQuickAction(
     }
 
     revalidatePath("/agenda", "page");
+    revalidateTag(CACHE_TAGS.appointments);
     return { success: true };
   } catch (err) {
     console.error("[createAppointmentQuickAction]", err);
@@ -426,6 +428,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
     }
 
     revalidatePath("/agenda", "page");
+    revalidateTag(CACHE_TAGS.appointments);
     return { success: true };
   } catch (err) {
     console.error("[rescheduleAppointmentAction]", err);
@@ -529,6 +532,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ suc
     }
 
     revalidatePath("/agenda", "page");
+    revalidateTag(CACHE_TAGS.appointments);
     return { success: true };
   } catch (err) {
     console.error("[cancelAppointmentAction]", err);
@@ -565,6 +569,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ su
     );
 
     revalidatePath("/agenda", "page");
+    revalidateTag(CACHE_TAGS.appointments);
     return { success: true };
   } catch (err) {
     console.error("[confirmAppointmentAction]", err);
@@ -670,6 +675,7 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
     revalidatePath("/agenda", "page");
     revalidatePath(`/patients/${completed.patientId}`, "page");
     revalidatePath(`/sessions/${completed.id}/note`, "page");
+    revalidateTag(CACHE_TAGS.appointments);
     return { success: true };
   } catch (err) {
     console.error("[completeAppointmentAction]", err);
@@ -706,6 +712,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ suc
     );
 
     revalidatePath("/agenda", "page");
+    revalidateTag(CACHE_TAGS.appointments);
     return { success: true };
   } catch (err) {
     console.error("[noShowAppointmentAction]", err);
@@ -811,6 +818,7 @@ export async function editMeetingLinkAction(
 
   revalidatePath("/agenda", "page");
   if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`, "page");
+  revalidateTag(CACHE_TAGS.appointments);
   return { success: true };
 }
 
@@ -858,6 +866,7 @@ export async function addRemoteIssueNoteAction(
 
   revalidatePath("/agenda", "page");
   if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`, "page");
+  revalidateTag(CACHE_TAGS.appointments);
   return { success: true };
 }
 

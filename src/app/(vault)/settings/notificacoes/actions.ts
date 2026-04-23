@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "../../../../lib/cache/tags";
 import { resolveSession } from "../../../../lib/supabase/session";
 import { getSmtpConfigRepository } from "../../../../lib/notifications/smtp-config-store";
 import { encryptSmtpPassword } from "../../../../lib/notifications/crypto";
@@ -71,6 +72,7 @@ export async function saveSmtpConfigAction(
 
     await repo.save(config);
     revalidatePath("/settings/notificacoes", "page");
+    revalidateTag(CACHE_TAGS.notifications);
     return { success: true, message: "Configuração salva com sucesso." };
   } catch (err) {
     console.error("[saveSmtpConfigAction]", err);

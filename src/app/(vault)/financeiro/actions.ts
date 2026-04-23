@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache/tags";
 import { resolveSession } from "@/lib/supabase/session";
 import { getFinanceRepository } from "@/lib/finance/store";
 import { getPatientRepository } from "@/lib/patients/store";
@@ -41,6 +42,7 @@ export async function markChargeAsPaidAction(
     };
     await financeRepo.save(updated);
     revalidatePath("/financeiro", "page");
+    revalidateTag(CACHE_TAGS.financeCharges);
     return { ok: true };
   } catch (err) {
     console.error("[markChargeAsPaidAction]", err);
@@ -68,6 +70,7 @@ export async function undoChargePaymentAction(
     };
     await financeRepo.save(updated);
     revalidatePath("/financeiro", "page");
+    revalidateTag(CACHE_TAGS.financeCharges);
     return { ok: true };
   } catch (err) {
     console.error("[undoChargePaymentAction]", err);
@@ -110,6 +113,7 @@ export async function createManualChargeAction(
 
     await financeRepo.save(charge);
     revalidatePath("/financeiro", "page");
+    revalidateTag(CACHE_TAGS.financeCharges);
     return { ok: true };
   } catch (err) {
     console.error("[createManualChargeAction]", err);
@@ -181,6 +185,7 @@ export async function createExpenseCategoryAction(
   );
   await repo.create(category);
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenseCategories);
   return { categoryId: category.id };
 }
 
@@ -199,6 +204,7 @@ export async function renameExpenseCategoryAction(
   const updated = renameExpenseCategory(category, name, { now: new Date() });
   await repo.update(workspaceId, categoryId, updated);
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenseCategories);
   return {};
 }
 
@@ -212,6 +218,7 @@ export async function archiveExpenseCategoryAction(
   const updated = archiveExpenseCategory(category, { now: new Date() });
   await repo.update(workspaceId, categoryId, updated);
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenseCategories);
   return {};
 }
 
@@ -259,6 +266,7 @@ export async function createExpenseAction(
     );
     await repo.createMany(series);
     revalidatePath("/financeiro", "page");
+    revalidateTag(CACHE_TAGS.expenses);
     return { expenseId: series[0].id };
   } else {
     const expense = createExpense(
@@ -267,6 +275,7 @@ export async function createExpenseAction(
     );
     await repo.create(expense);
     revalidatePath("/financeiro", "page");
+    revalidateTag(CACHE_TAGS.expenses);
     return { expenseId: expense.id };
   }
 }
@@ -296,6 +305,7 @@ export async function updateExpenseAction(
   }
 
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenses);
   return {};
 }
 
@@ -309,6 +319,7 @@ export async function deleteExpenseAction(
   if (!target) return { error: "Despesa não encontrada." };
   await repo.softDeleteWithScope(workspaceId, expenseId, scope, accountId, new Date());
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenses);
   return {};
 }
 
@@ -346,6 +357,7 @@ export async function attachReceiptAction(
     receiptMimeType: file.type,
   });
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenses);
   return {};
 }
 
@@ -385,6 +397,7 @@ export async function replaceReceiptAction(
     receiptMimeType: file.type,
   });
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenses);
   return {};
 }
 
@@ -403,5 +416,6 @@ export async function removeReceiptAction(expenseId: string): Promise<{ error?: 
     updatedAt: new Date(),
   });
   revalidatePath("/financeiro", "page");
+  revalidateTag(CACHE_TAGS.expenses);
   return {};
 }

@@ -13,7 +13,8 @@
  *   reminderId and workspaceId appear in audit metadata.
  */
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "../../../lib/cache/tags";
 import { createReminder, completeReminder } from "../../../lib/reminders/model";
 import { getReminderRepository } from "../../../lib/reminders/store";
 import { createReminderAuditEvent } from "../../../lib/reminders/audit";
@@ -70,6 +71,7 @@ export async function createReminderAction(
 
   // Always revalidate dashboard
   revalidatePath("/inicio", "page");
+  revalidateTag(CACHE_TAGS.reminders);
 
   // If linked to a patient, also revalidate their profile
   if (patientId) {
@@ -104,6 +106,7 @@ export async function completeReminderAction(reminderId: string): Promise<void> 
   );
 
   revalidatePath("/inicio", "page");
+  revalidateTag(CACHE_TAGS.reminders);
 
   // If reminder was linked to a patient, revalidate their profile too
   if (completed.link?.type === "patient") {

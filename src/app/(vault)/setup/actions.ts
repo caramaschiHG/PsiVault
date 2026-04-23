@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "../../../lib/cache/tags";
 import {
   clearSignatureAsset,
   savePracticeProfile,
@@ -42,6 +43,7 @@ export async function savePracticeProfileAction(formData: FormData) {
   });
 
   revalidatePath("/settings/profile", "page");
+  revalidateTag(CACHE_TAGS.practiceProfile);
 }
 
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/svg+xml"];
@@ -90,6 +92,7 @@ export async function saveSignatureAssetAction(
   });
 
   revalidatePath("/settings/profile", "page");
+  revalidateTag(CACHE_TAGS.practiceProfile);
   return {};
 }
 
@@ -98,4 +101,5 @@ export async function removeSignatureAssetAction() {
 
   await clearSignatureAsset(accountId, workspaceId);
   revalidatePath("/settings/profile", "page");
+  revalidateTag(CACHE_TAGS.practiceProfile);
 }
