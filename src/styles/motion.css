@@ -134,7 +134,18 @@
   .motion-slide-up,
   .motion-slide-down,
   .motion-scale-in,
-  .motion-stagger > * {
+  .motion-stagger > *,
+  .vault-page-transition,
+  .vault-page-enter,
+  .toast-enter,
+  .fab-enter,
+  .search-dropdown-enter,
+  .side-panel-overlay,
+  .side-panel-drawer,
+  .notif-dropdown,
+  .tab-panel,
+  .kbd-overlay,
+  .skeleton-shimmer {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

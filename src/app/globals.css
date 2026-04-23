@@ -1220,27 +1220,7 @@ label[for], .nav-link, summary {
     min-height: auto;
   }
 }
-
 /* ─── Auth OTP input ─────────────────────────────────────────────────────────── */
-
-
-
-
-
-
-
-
-
-
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
 
 /* ─── Micro-interactions & Polish ───────────────────────────────────────────── */
 
@@ -1815,5 +1795,16 @@ button, [role="button"], a, summary,
 @media (max-width: 768px) {
   .top-bar-center {
     max-width: 180px;
+  }
+}
+
+/* Catch-all: all animations and transitions become instant.
+   Utility-specific overrides live in motion.css. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
