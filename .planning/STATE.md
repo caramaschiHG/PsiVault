@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Performance Profunda
-status: Phase 27 completed — ready for Phase 28
-stopped_at: Phase 27 execution complete
-last_updated: "2026-04-23T16:05:00.000Z"
+status: Phase 28 planned — ready for execution
+stopped_at: Phase 28 planning complete
+last_updated: "2026-04-23T16:30:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 3
+  total_plans: 7
   completed_plans: 3
 ---
 
@@ -17,14 +17,14 @@ progress:
 ## Project Reference
 
 **Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.4 Performance Profunda — Phase 27 completa, aguardando início da Phase 28
+**Current Focus**: Milestone v1.4 Performance Profunda — Phase 28 planned (4 plans), ready for execution
 
 ## Current Position
 
-Phase: 27 — Diagnóstico e Fundação de Dados
-Plan: 03 (complete)
-**Status**: All plans executed and committed
-**Last activity**: 2026-04-23 — Phase 27 execution completed
+Phase: 28 — Streaming e Suspense Granular
+Plan: 01–04 (planned)
+**Status**: Planning complete. All 4 plans validated and committed.
+**Last activity**: 2026-04-23 — Phase 28 planning completed
 
 **Progress**:
 [███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 20% (1/5 phases)
@@ -55,10 +55,15 @@ Plan: 03 (complete)
 - [v1.4 Phase 27]: CWV collector envia métricas anonimamente (workspaceId null permitido) — dados de timing não contêm PII.
 - [v1.4 Phase 27]: Query logging threshold 500ms — suficiente para capturar queries lentas sem poluir console.
 - [v1.4 Phase 27]: searchByName usa database-level search com LIST_SELECT — elimina carregamento de todos os pacientes em memória.
+- [v1.4 Phase 28]: Async sections para /financeiro computam a partir de dados core (charges, patients) carregados no page.tsx pai — valor está na renderização progressiva, não no fetch independente.
+- [v1.4 Phase 28]: Async sections para /inicio carregam seus próprios dados independentemente.
+- [v1.4 Phase 28]: React 19 `use` API utilizado em RemindersSection para streaming de promises para Client Components.
+- [v1.4 Phase 28]: Skeletons usam mesmas variáveis CSS dos componentes reais para zero CLS.
+- [v1.4 Phase 28]: Error boundaries por seção via AsyncBoundary (Client Component) — erro em uma seção não quebra a página.
 
 ### Todos
 
-- Iniciar `/gsd-plan-phase 28` (Streaming e Suspense Granular)
+- Executar `/gsd-execute-phase 28` para iniciar implementação
 
 ### Blockers
 
@@ -66,6 +71,6 @@ Plan: 03 (complete)
 
 ## Session Continuity
 
-Last session: 2026-04-23T16:05:00.000Z
-Stopped at: Phase 27 complete — all 3 plans executed, tested, and committed
-Resume file: .planning/phases/27-diagn-stico-e-funda-o-de-dados/27-03-SUMMARY.md
+Last session: 2026-04-23T16:30:00.000Z
+Stopped at: Phase 28 planning complete — 4 plans created, validated, and committed
+Resume file: .planning/phases/28-streaming-suspense/28-01-PLAN.md
