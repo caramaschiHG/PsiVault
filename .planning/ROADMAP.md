@@ -78,7 +78,12 @@ Plans:
   2. Todas as Server Actions de mutação invalidam cache de domínio imediatamente
   3. Nenhum dado cacheado é servido sem `workspaceId` na chave de cache
   4. Todas as 13 chamadas `revalidatePath` existentes usam escopo `'page'` corretamente
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 29-01-PLAN.md — Cache Foundation: unstable_cache para practice profile e expense categories com workspace-scoped keys
+- [ ] 29-02-PLAN.md — revalidatePath Scope Audit & Fix: escopo "page" em todas as chamadas bare
+- [ ] 29-03-PLAN.md — revalidateTag Integration: invalidacao de cache de dominio em todas as mutation actions
 
 ### Phase 30: Otimização de Assets e Bundle
 **Goal**: Aplicação carrega menos bytes e renderiza imagens/fontes de forma eficiente
