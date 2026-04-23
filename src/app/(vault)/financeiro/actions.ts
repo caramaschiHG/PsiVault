@@ -40,7 +40,7 @@ export async function markChargeAsPaidAction(
       paidAt: new Date(),
     };
     await financeRepo.save(updated);
-    revalidatePath("/financeiro");
+    revalidatePath("/financeiro", "page");
     return { ok: true };
   } catch (err) {
     console.error("[markChargeAsPaidAction]", err);
@@ -67,7 +67,7 @@ export async function undoChargePaymentAction(
       paidAt: null,
     };
     await financeRepo.save(updated);
-    revalidatePath("/financeiro");
+    revalidatePath("/financeiro", "page");
     return { ok: true };
   } catch (err) {
     console.error("[undoChargePaymentAction]", err);
@@ -109,7 +109,7 @@ export async function createManualChargeAction(
     );
 
     await financeRepo.save(charge);
-    revalidatePath("/financeiro");
+    revalidatePath("/financeiro", "page");
     return { ok: true };
   } catch (err) {
     console.error("[createManualChargeAction]", err);
@@ -179,7 +179,7 @@ export async function createExpenseCategoryAction(
     { now: new Date(), createId: createExpenseCategoryId },
   );
   await repo.create(category);
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return { categoryId: category.id };
 }
 
@@ -197,7 +197,7 @@ export async function renameExpenseCategoryAction(
   if (!category) return { error: "Categoria não encontrada." };
   const updated = renameExpenseCategory(category, name, { now: new Date() });
   await repo.update(workspaceId, categoryId, updated);
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return {};
 }
 
@@ -210,7 +210,7 @@ export async function archiveExpenseCategoryAction(
   if (!category) return { error: "Categoria não encontrada." };
   const updated = archiveExpenseCategory(category, { now: new Date() });
   await repo.update(workspaceId, categoryId, updated);
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return {};
 }
 
@@ -257,7 +257,7 @@ export async function createExpenseAction(
       { now: new Date(), createId: createExpenseId, createSeriesId },
     );
     await repo.createMany(series);
-    revalidatePath("/financeiro");
+    revalidatePath("/financeiro", "page");
     return { expenseId: series[0].id };
   } else {
     const expense = createExpense(
@@ -265,7 +265,7 @@ export async function createExpenseAction(
       { now: new Date(), createId: createExpenseId },
     );
     await repo.create(expense);
-    revalidatePath("/financeiro");
+    revalidatePath("/financeiro", "page");
     return { expenseId: expense.id };
   }
 }
@@ -294,7 +294,7 @@ export async function updateExpenseAction(
     await repo.update(workspaceId, expenseId, { ...patch, updatedAt: new Date() });
   }
 
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return {};
 }
 
@@ -307,7 +307,7 @@ export async function deleteExpenseAction(
   const target = await repo.findById(workspaceId, expenseId);
   if (!target) return { error: "Despesa não encontrada." };
   await repo.softDeleteWithScope(workspaceId, expenseId, scope, accountId, new Date());
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return {};
 }
 
@@ -344,7 +344,7 @@ export async function attachReceiptAction(
     receiptFileName: file.name,
     receiptMimeType: file.type,
   });
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return {};
 }
 
@@ -383,7 +383,7 @@ export async function replaceReceiptAction(
     receiptFileName: file.name,
     receiptMimeType: file.type,
   });
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return {};
 }
 
@@ -401,6 +401,6 @@ export async function removeReceiptAction(expenseId: string): Promise<{ error?: 
     receiptMimeType: null,
     updatedAt: new Date(),
   });
-  revalidatePath("/financeiro");
+  revalidatePath("/financeiro", "page");
   return {};
 }

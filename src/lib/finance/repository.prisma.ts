@@ -76,5 +76,13 @@ export function createPrismaFinanceRepository(): SessionChargeRepository {
       });
       return rows.map(mapToDomain);
     },
+
+    async listByWorkspaceAndDateRange(workspaceId: string, from: Date, to: Date): Promise<SessionCharge[]> {
+      const rows = await db.sessionCharge.findMany({
+        where: { workspaceId, createdAt: { gte: from, lt: to } },
+        orderBy: { createdAt: "desc" },
+      });
+      return rows.map(mapToDomain);
+    },
   };
 }

@@ -18,6 +18,7 @@ export interface SessionChargeRepository {
   listByPatient(patientId: string, workspaceId: string): Promise<SessionCharge[]>;
   listByMonth(workspaceId: string, patientId: string, year: number, month: number): Promise<SessionCharge[]>;
   listByWorkspaceAndMonth(workspaceId: string, year: number, month: number): Promise<SessionCharge[]>;
+  listByWorkspaceAndDateRange(workspaceId: string, from: Date, to: Date): Promise<SessionCharge[]>;
 }
 
 export function createInMemorySessionChargeRepository(): SessionChargeRepository {
@@ -82,6 +83,18 @@ export function createInMemorySessionChargeRepository(): SessionChargeRepository
         if (createdMs >= from && createdMs < to) {
           result.push(charge);
         }
+      }
+      return Promise.resolve(result);
+    },
+
+    listByWorkspaceAndDateRange(workspaceId: string, from: Date, to: Date): Promise<SessionCharge[]> {
+      const fromMs = from.getTime();
+      const toMs = to.getTime();
+      const result: SessionCharge[] = [];
+      for (const charge of store.values()) {
+        if (charge.workspaceId !== workspaceId) continue;
+        const createdMs = charge.createdAt.getTime();
+        if (createdMs >= fromMs && createdMs < toMs) result.push(charge);
       }
       return Promise.resolve(result);
     },

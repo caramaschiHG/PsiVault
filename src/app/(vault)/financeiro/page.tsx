@@ -6,6 +6,7 @@ import { getFinanceRepository } from "@/lib/finance/store";
 import { getPatientRepository } from "@/lib/patients/store";
 import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
 import { deriveMonthlyFinancialSummary, autoMarkOverdue } from "@/lib/finance/model";
+import type { SessionCharge } from "@/lib/finance/model";
 import { resolveSession } from "@/lib/supabase/session";
 import FinanceiroPageClient from "./page-client";
 import { db } from "@/lib/db";
@@ -35,30 +36,30 @@ function monthAbbr(month: number): string {
   return MONTH_LABELS[month - 1].slice(0, 3);
 }
 
-interface FinanceiroPageProps {
-  searchParams: Promise<{ month?: string; year?: string; drawer?: string }>;
+function groupChargesByMonth(charges: SessionCharge[]): Map<string, SessionCharge[]> {
+  const map = new Map<string, SessionCharge[]>();
+  for (const c of charges) {
+    const key = `${c.createdAt.getUTCFullYear()}-${c.createdAt.getUTCMonth() + 1}`;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(c);
+  }
+  return map;
 }
 
-async function loadMonthBreakdown(
-  workspaceId: string,
+function computeBreakdown(
   year: number,
   month: number,
+  chargesByMonth: Map<string, SessionCharge[]>,
+  apptMap: Map<string, Date>,
   now: Date,
 ) {
-  const financeRepo = getFinanceRepository();
-  const charges = await financeRepo.listByWorkspaceAndMonth(workspaceId, year, month);
-  const apptIds = charges
-    .filter((c) => c.appointmentId)
-    .map((c) => c.appointmentId as string);
-  const appts = apptIds.length
-    ? await db.appointment.findMany({
-        where: { id: { in: apptIds } },
-        select: { id: true, startsAt: true },
-      })
-    : [];
-  const apptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
+  const charges = chargesByMonth.get(`${year}-${month}`) ?? [];
   const enriched = autoMarkOverdue(charges, apptMap, now);
   return { charges, enriched, summary: deriveMonthlyFinancialSummary(enriched) };
+}
+
+interface FinanceiroPageProps {
+  searchParams: Promise<{ month?: string; year?: string; drawer?: string }>;
 }
 
 export default async function FinanceiroPage({ searchParams }: FinanceiroPageProps) {
@@ -70,6 +71,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   const month = params.month ? parseInt(params.month, 10) : now.getMonth() + 1;
 
   const patientRepo = getPatientRepository();
+  const financeRepo = getFinanceRepository();
 
   // Trend data (last 6 months, oldest → newest)
   const trendMonths: { year: number; month: number }[] = [];
@@ -92,18 +94,34 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   let prevMonth = month - 1;
   if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
 
+  // Compute date range covering all months needed (trendMonths + yearMonths + prev)
+  const allMonthsList = [...trendMonths, ...yearMonths, { year: prevYear, month: prevMonth }];
+  let minYear = allMonthsList[0].year, minMonth = allMonthsList[0].month;
+  let maxYear = allMonthsList[0].year, maxMonth = allMonthsList[0].month;
+  for (const m of allMonthsList) {
+    if (m.year < minYear || (m.year === minYear && m.month < minMonth)) {
+      minYear = m.year; minMonth = m.month;
+    }
+    if (m.year > maxYear || (m.year === maxYear && m.month > maxMonth)) {
+      maxYear = m.year; maxMonth = m.month;
+    }
+  }
+  const rangeStart = new Date(Date.UTC(minYear, minMonth - 1, 1));
+  // rangeEnd = first day of the month AFTER maxMonth (exclusive upper bound)
+  const rangeEndMonth = maxMonth === 12 ? 1 : maxMonth + 1;
+  const rangeEndYear = maxMonth === 12 ? maxYear + 1 : maxYear;
+  const rangeEnd = new Date(Date.UTC(rangeEndYear, rangeEndMonth - 1, 1));
+
   // Revenue forecast range — rest of current selected month
   const monthEnd = new Date(Date.UTC(year, month, 0, 23, 59, 59));
 
   // Fan out every independent DB call in parallel.
+  // allChargesInRange replaces 20 individual listByWorkspaceAndMonth calls.
   const [
     activePatients,
     archivedPatients,
     profile,
-    current,
-    prev,
-    trendBreakdowns,
-    yearBreakdowns,
+    allChargesInRange,
     restOfMonth,
     expenses,
     categories,
@@ -111,10 +129,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     patientRepo.listActive(workspaceId),
     patientRepo.listArchived(workspaceId),
     getPracticeProfileSnapshot(accountId, workspaceId),
-    loadMonthBreakdown(workspaceId, year, month, now),
-    loadMonthBreakdown(workspaceId, prevYear, prevMonth, now),
-    Promise.all(trendMonths.map((tm) => loadMonthBreakdown(workspaceId, tm.year, tm.month, now))),
-    Promise.all(yearMonths.map((ym) => loadMonthBreakdown(workspaceId, ym.year, ym.month, now))),
+    financeRepo.listByWorkspaceAndDateRange(workspaceId, rangeStart, rangeEnd),
     db.appointment.findMany({
       where: {
         workspaceId,
@@ -126,6 +141,29 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     getExpenseStore().repository.findByWorkspace(workspaceId),
     getExpenseCategoryStore().repository.findActiveByWorkspace(workspaceId),
   ]);
+
+  // One appointment query for all apptIds across the full range (overdue detection)
+  const apptIds = allChargesInRange
+    .filter((c) => c.appointmentId)
+    .map((c) => c.appointmentId as string);
+  const appts = apptIds.length
+    ? await db.appointment.findMany({
+        where: { id: { in: apptIds } },
+        select: { id: true, startsAt: true },
+      })
+    : [];
+  const apptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
+
+  // Compute all breakdowns in memory — zero extra DB queries
+  const chargesByMonth = groupChargesByMonth(allChargesInRange);
+  const current = computeBreakdown(year, month, chargesByMonth, apptMap, now);
+  const prev = computeBreakdown(prevYear, prevMonth, chargesByMonth, apptMap, now);
+  const trendBreakdowns = trendMonths.map((tm) =>
+    computeBreakdown(tm.year, tm.month, chargesByMonth, apptMap, now),
+  );
+  const yearBreakdowns = yearMonths.map((ym) =>
+    computeBreakdown(ym.year, ym.month, chargesByMonth, apptMap, now),
+  );
 
   const allPatients = [...activePatients, ...archivedPatients];
   const patientIndex = new Map(allPatients.map((p) => [p.id, p]));
