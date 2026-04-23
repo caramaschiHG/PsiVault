@@ -27,7 +27,10 @@
   2. Páginas vault são servidas com caching do Next.js por padrão — `force-dynamic` removido do layout raiz vault
   3. `resolveSession()` executa a chamada Supabase/DB no máximo uma vez por request, mesmo quando invocada por múltiplos server components
   4. 351 testes continuam passando sem regressão funcional
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 23-01-PLAN.md — Migrar vault-sidebar-nav.tsx e bottom-nav.tsx para Link (NAV-01)
+- [ ] 23-02-PLAN.md — Remover force-dynamic e envolver session/client com React.cache() (CACHE-01, CACHE-02)
 
 ### Phase 24: Wave 2 — Auth Deduplication
 **Goal**: Cada request ao vault faz no máximo um round-trip ao Supabase Auth, eliminando chamadas duplicadas no middleware
