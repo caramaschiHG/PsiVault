@@ -13,6 +13,8 @@ export interface ResolvedSession {
  * Resolves the authenticated user's accountId and workspaceId from the Supabase session.
  * Redirects to sign-in if unauthenticated or workspace not found.
  */
+// Request-scoped cache (React `cache` — deduplicates within a single render tree).
+// The auto-provision side effect (account/workspace upsert) runs at most once per request; intentional.
 export const resolveSession = cache(async (): Promise<ResolvedSession> => {
   const route = "lib.resolveSession";
   const supabase = await observeServerStage(route, "createSupabaseClient", () => createClient());

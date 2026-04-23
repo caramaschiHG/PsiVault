@@ -209,8 +209,6 @@ const settingsLinkStyle: React.CSSProperties = {
   transition: "color 120ms ease",
 };
 
-const settingsLinkStyle_hover = "rgba(255,255,255,0.95)";
-
 const signoutStyle: React.CSSProperties = {
   fontSize: "var(--font-size-meta)",
   color: "rgba(255,255,255,0.5)",
