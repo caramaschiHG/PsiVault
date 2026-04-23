@@ -48,82 +48,83 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
   const filterContent = (
     <div style={rowStyle}>
       <div style={fieldStyle}>
-        <label htmlFor="expense-filter-q" style={labelStyle}>
-          Buscar por descrição
-        </label>
-        <input
-          id="expense-filter-q"
-          className="input-field"
-          type="text"
-          value={localQ}
-          onChange={(e) => setLocalQ(e.target.value)}
-          placeholder="Ex: aluguel, supervisão..."
-          style={inputStyle}
-        />
+        <div className="input-floating-label-wrap">
+          <input
+            id="expense-filter-q"
+            className="input-field"
+            type="text"
+            value={localQ}
+            onChange={(e) => setLocalQ(e.target.value)}
+            placeholder=" "
+            style={inputStyle}
+          />
+          <label htmlFor="expense-filter-q" className="input-floating-label">Buscar por descrição</label>
+        </div>
       </div>
 
       <div style={fieldStyle}>
-        <label htmlFor="expense-filter-category" style={labelStyle}>
-          Categoria
-        </label>
-        <select
-          id="expense-filter-category"
-          className="input-field"
-          value={category}
-          onChange={(e) => updateFilter("category", e.target.value || null)}
-          style={inputStyle}
-        >
-          <option value="">Todas as categorias</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        <div className="input-floating-label-wrap">
+          <select
+            id="expense-filter-category"
+            className={`input-field ${category ? "select-has-value" : ""}`}
+            value={category}
+            onChange={(e) => updateFilter("category", e.target.value || null)}
+            style={inputStyle}
+          >
+            <option value="">Todas as categorias</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <label htmlFor="expense-filter-category" className="input-floating-label">Categoria</label>
+        </div>
       </div>
 
       <div style={fieldStyle}>
-        <label htmlFor="expense-filter-min" style={labelStyle}>
-          Valor mín.
-        </label>
-        <input
-          id="expense-filter-min"
-          className="input-field"
-          type="text"
-          value={minValue}
-          onChange={(e) => updateFilter("minValue", e.target.value || null)}
-          placeholder="mín"
-          style={{ ...inputStyle, width: "6rem" }}
-        />
+        <div className="input-floating-label-wrap">
+          <input
+            id="expense-filter-min"
+            className="input-field"
+            type="text"
+            value={minValue}
+            onChange={(e) => updateFilter("minValue", e.target.value || null)}
+            placeholder=" "
+            style={{ ...inputStyle, width: "6rem" }}
+          />
+          <label htmlFor="expense-filter-min" className="input-floating-label">Valor mín.</label>
+        </div>
       </div>
 
       <div style={fieldStyle}>
-        <label htmlFor="expense-filter-max" style={labelStyle}>
-          Valor máx.
-        </label>
-        <input
-          id="expense-filter-max"
-          className="input-field"
-          type="text"
-          value={maxValue}
-          onChange={(e) => updateFilter("maxValue", e.target.value || null)}
-          placeholder="máx"
-          style={{ ...inputStyle, width: "6rem" }}
-        />
+        <div className="input-floating-label-wrap">
+          <input
+            id="expense-filter-max"
+            className="input-field"
+            type="text"
+            value={maxValue}
+            onChange={(e) => updateFilter("maxValue", e.target.value || null)}
+            placeholder=" "
+            style={{ ...inputStyle, width: "6rem" }}
+          />
+          <label htmlFor="expense-filter-max" className="input-floating-label">Valor máx.</label>
+        </div>
       </div>
 
       <div style={fieldStyle}>
-        <label htmlFor="expense-filter-month" style={labelStyle}>
-          Mês
-        </label>
-        <input
-          id="expense-filter-month"
-          className="input-field"
-          type="month"
-          value={month}
-          onChange={(e) => updateFilter("month", e.target.value || null)}
-          style={inputStyle}
-        />
+        <div className="input-floating-label-wrap">
+          <input
+            id="expense-filter-month"
+            className="input-field"
+            type="month"
+            value={month}
+            onChange={(e) => updateFilter("month", e.target.value || null)}
+            placeholder=" "
+            style={inputStyle}
+          />
+          <label htmlFor="expense-filter-month" className="input-floating-label">Mês</label>
+        </div>
       </div>
 
       {hasFilters && (
@@ -166,12 +167,6 @@ const fieldStyle = {
   display: "flex",
   flexDirection: "column",
   gap: "var(--space-1)",
-} satisfies React.CSSProperties;
-
-const labelStyle = {
-  fontSize: "var(--font-size-sm)",
-  fontWeight: 500,
-  color: "var(--color-text-2)",
 } satisfies React.CSSProperties;
 
 const inputStyle = {

@@ -129,14 +129,19 @@ export function ExpenseCategoryModal({ open, onOpenChange, categories }: Expense
             <div key={cat.id} style={catRowStyle}>
               {editingId === cat.id ? (
                 <>
-                  <input
-                    className="input-field"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") handleRename(cat.id); if (e.key === "Escape") cancelEdit(); }}
-                    style={editInputStyle}
-                    autoFocus
-                  />
+                  <div className="input-floating-label-wrap" style={{ flex: 1 }}>
+                    <input
+                      id={`cat-edit-${cat.id}`}
+                      className="input-field"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") handleRename(cat.id); if (e.key === "Escape") cancelEdit(); }}
+                      style={{ width: "100%" }}
+                      autoFocus
+                      placeholder=" "
+                    />
+                    <label htmlFor={`cat-edit-${cat.id}`} className="input-floating-label">Nome da categoria</label>
+                  </div>
                   <button className="btn-primary" type="button" onClick={() => handleRename(cat.id)} disabled={isPending} style={smallBtnStyle}>Salvar</button>
                   <button className="btn-ghost" type="button" onClick={cancelEdit} style={smallBtnStyle}>Cancelar</button>
                 </>
@@ -174,14 +179,18 @@ export function ExpenseCategoryModal({ open, onOpenChange, categories }: Expense
         <div style={footerStyle}>
           <div style={separatorStyle} />
           <div style={footerRowStyle}>
-            <input
-              className="input-field"
-              placeholder="Nome da categoria"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleCreate(); }}
-              style={newCatInputStyle}
-            />
+            <div className="input-floating-label-wrap" style={{ flex: 1 }}>
+              <input
+                id="cat-new"
+                className="input-field"
+                placeholder=" "
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleCreate(); }}
+                style={{ width: "100%" }}
+              />
+              <label htmlFor="cat-new" className="input-floating-label">Nova categoria</label>
+            </div>
             <button
               className="btn-primary"
               type="button"
@@ -287,10 +296,6 @@ const inactiveSuffixStyle = {
   color: "var(--color-text-3)",
 } satisfies React.CSSProperties;
 
-const editInputStyle = {
-  flex: 1,
-} satisfies React.CSSProperties;
-
 const smallBtnStyle = {
   fontSize: "var(--font-size-sm)",
   padding: "4px 10px",
@@ -315,8 +320,4 @@ const footerRowStyle = {
   display: "flex",
   gap: "var(--space-3)",
   alignItems: "center",
-} satisfies React.CSSProperties;
-
-const newCatInputStyle = {
-  flex: 1,
 } satisfies React.CSSProperties;

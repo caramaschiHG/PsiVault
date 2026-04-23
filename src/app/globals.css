@@ -479,6 +479,7 @@ select.input-field {
   background-repeat: no-repeat;
   background-position: right 0.875rem center;
   padding-right: 2.5rem;
+  cursor: pointer;
 }
 
 .input-error {
@@ -708,6 +709,7 @@ label[for], .nav-link, summary {
 @media (max-width: 767px) {
   .fab-mobile {
     display: flex !important;
+    cursor: pointer;
   }
 }
 
@@ -1351,6 +1353,9 @@ label[for], .nav-link, summary {
 
 
 /* ─── Template card hover ───────────────────────────────────────────── */
+.template-card {
+  cursor: pointer;
+}
 .template-card:hover {
   border-color: rgba(146, 64, 14, 0.3);
   box-shadow: var(--shadow-xs);

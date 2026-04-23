@@ -72,22 +72,31 @@ export function RemindersSection({ remindersPromise, workspaceId }: RemindersSec
         <p style={newReminderFormLabelStyle}>Novo lembrete</p>
         <form action={formAction} style={newReminderFormStyle}>
           <input type="hidden" name="workspaceId" value={workspaceId} />
-          <input
-            ref={titleRef}
-            type="text"
-            name="title"
-            placeholder="Título do lembrete"
-            required
-            className="input-field"
-            style={reminderTitleInputStyle}
-          />
-          <input
-            ref={dateRef}
-            type="date"
-            name="dueAt"
-            className="input-field"
-            style={reminderDateInputStyle}
-          />
+          <div className="input-floating-label-wrap" style={{ flex: 1, minWidth: "12rem" }}>
+            <input
+              ref={titleRef}
+              id="reminder-title"
+              type="text"
+              name="title"
+              placeholder=" "
+              required
+              className="input-field"
+              style={{ width: "100%" }}
+            />
+            <label htmlFor="reminder-title" className="input-floating-label">Título do lembrete</label>
+          </div>
+          <div className="input-floating-label-wrap" style={{ minWidth: "9rem" }}>
+            <input
+              ref={dateRef}
+              id="reminder-date"
+              type="date"
+              name="dueAt"
+              placeholder=" "
+              className="input-field"
+              style={{ width: "100%" }}
+            />
+            <label htmlFor="reminder-date" className="input-floating-label">Data</label>
+          </div>
           <SubmitButton label="Adicionar" pendingLabel="Adicionando..." className="btn-primary" />
         </form>
       </div>
@@ -168,13 +177,4 @@ const newReminderFormStyle = {
   gap: "0.5rem",
   alignItems: "center",
   flexWrap: "wrap" as const,
-} satisfies React.CSSProperties;
-
-const reminderTitleInputStyle = {
-  flex: 1,
-  minWidth: "12rem",
-} satisfies React.CSSProperties;
-
-const reminderDateInputStyle = {
-  minWidth: "9rem",
 } satisfies React.CSSProperties;

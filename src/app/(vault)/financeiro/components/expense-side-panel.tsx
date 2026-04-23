@@ -264,6 +264,8 @@ export function ExpenseSidePanel({
     ? { fileName: expense.receiptFileName, mimeType: expense.receiptMimeType ?? "application/octet-stream" }
     : null;
 
+  const shakeClass = formError ? "input-error input-error-shake" : "";
+
   return (
     <>
       {/* Overlay */}
@@ -300,52 +302,67 @@ export function ExpenseSidePanel({
 
               <div style={formStyle}>
                 {/* Data */}
-                <div style={fieldStyle}>
-                  <label style={labelStyle} htmlFor="exp-dueDate">Data</label>
+                <div className="input-floating-label-wrap">
                   <input
                     id="exp-dueDate"
-                    className="input-field"
+                    className={`input-field ${shakeClass}`}
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
+                    placeholder=" "
                     required
+                    onAnimationEnd={(e) => {
+                      if (e.animationName === "inputShake") {
+                        e.currentTarget.classList.remove("input-error-shake");
+                      }
+                    }}
                   />
+                  <label htmlFor="exp-dueDate" className="input-floating-label">Data</label>
                 </div>
 
                 {/* Valor */}
-                <div style={fieldStyle}>
-                  <label style={labelStyle} htmlFor="exp-amount">Valor</label>
+                <div className="input-floating-label-wrap">
                   <input
                     id="exp-amount"
-                    className="input-field"
+                    className={`input-field ${shakeClass}`}
                     type="text"
                     inputMode="numeric"
-                    placeholder="0,00"
+                    placeholder=" "
                     value={amountDisplay}
                     onChange={handleAmountChange}
+                    onAnimationEnd={(e) => {
+                      if (e.animationName === "inputShake") {
+                        e.currentTarget.classList.remove("input-error-shake");
+                      }
+                    }}
                   />
+                  <label htmlFor="exp-amount" className="input-floating-label">Valor</label>
                 </div>
 
                 {/* Descrição */}
-                <div style={fieldStyle}>
-                  <label style={labelStyle} htmlFor="exp-description">Descrição</label>
+                <div className="input-floating-label-wrap">
                   <input
                     id="exp-description"
-                    className="input-field"
+                    className={`input-field ${shakeClass}`}
                     type="text"
-                    placeholder='Ex: "Aluguel sala 302 — abril/26"'
+                    placeholder=" "
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
+                    onAnimationEnd={(e) => {
+                      if (e.animationName === "inputShake") {
+                        e.currentTarget.classList.remove("input-error-shake");
+                      }
+                    }}
                   />
+                  <label htmlFor="exp-description" className="input-floating-label">Descrição</label>
                 </div>
 
                 {/* Categoria */}
-                <div style={fieldStyle}>
-                  <label style={labelStyle} htmlFor="exp-category">Categoria</label>
+                <div className="input-floating-label-wrap">
                   <select
                     id="exp-category"
-                    className="input-field"
+                    className={`input-field ${categoryId ? "select-has-value" : ""} ${shakeClass}`}
                     value={categoryId}
                     onChange={(e) => setCategoryId(e.target.value)}
                     required
@@ -355,6 +372,7 @@ export function ExpenseSidePanel({
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
                   </select>
+                  <label htmlFor="exp-category" className="input-floating-label">Categoria</label>
                 </div>
 
                 {/* Recorrência */}
@@ -377,23 +395,29 @@ export function ExpenseSidePanel({
 
                 {/* Repetir por */}
                 {recurrence !== "UNICA" && (
-                  <div style={fieldStyle}>
-                    <label style={labelStyle} htmlFor="exp-repeatFor">Repetir por</label>
+                  <div className="input-floating-label-wrap">
                     <div style={repeatRowStyle}>
                       <input
                         id="exp-repeatFor"
-                        className="input-field"
+                        className={`input-field ${shakeClass}`}
                         type="number"
                         min={1}
                         max={60}
+                        placeholder=" "
                         value={repeatFor}
                         onChange={(e) => setRepeatFor(parseInt(e.target.value, 10) || 1)}
                         style={repeatInputStyle}
+                        onAnimationEnd={(e) => {
+                          if (e.animationName === "inputShake") {
+                            e.currentTarget.classList.remove("input-error-shake");
+                          }
+                        }}
                       />
                       <span style={helperStyle}>
                         {repeatFor} ocorrência{repeatFor !== 1 ? "s" : ""} serão criadas a partir desta data
                       </span>
                     </div>
+                    <label htmlFor="exp-repeatFor" className="input-floating-label">Repetir por</label>
                   </div>
                 )}
 

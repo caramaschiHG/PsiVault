@@ -123,12 +123,13 @@ export function SearchBar() {
 
   return (
     <div ref={containerRef} style={containerStyle}>
-      <div style={inputWrapperStyle}>
+      <div className="input-floating-label-wrap" style={{ position: "relative", paddingTop: 0 }}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={searchIconStyle} aria-hidden="true">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
         <input
+          id="vault-search"
           type="text"
           placeholder="Buscar..."
           value={query}
@@ -141,6 +142,7 @@ export function SearchBar() {
           data-search-input
         />
         <span style={commandKHintStyle}>⌘K</span>
+        <label htmlFor="vault-search" className="input-floating-label" style={{ clip: "rect(0 0 0 0)", clipPath: "inset(50%)", height: "1px", overflow: "hidden", position: "absolute", whiteSpace: "nowrap", width: "1px" }}>Buscar</label>
       </div>
       {isOpen && results !== null && (
         <SearchDropdown results={results} onClose={() => setIsOpen(false)} />
