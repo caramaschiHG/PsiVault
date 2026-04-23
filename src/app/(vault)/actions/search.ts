@@ -26,12 +26,8 @@ export async function searchAllAction(query: string): Promise<SearchResultItem[]
   const documentRepo = getDocumentRepository();
   const chargeRepo = getFinanceRepository();
 
-  // Load all patients (active + archived)
-  const [activePatients, archivedPatients] = await Promise.all([
-    patientRepo.listActive(workspaceId),
-    patientRepo.listArchived(workspaceId),
-  ]);
-  const allPatients = [...activePatients, ...archivedPatients];
+  // Load matching patients via database search (PERF-06)
+  const allPatients = await patientRepo.searchByName(workspaceId, query);
 
   // Load all appointments using a wide date range stub
   // (no listAll method available — use wide date range)
