@@ -142,5 +142,27 @@ export function createPrismaPatientRepository(): PatientRepository {
       });
       return patients.map(mapToDomain);
     },
+
+    async searchByName(workspaceId: string, query: string): Promise<Patient[]> {
+      const q = query.trim();
+      if (!q) return [];
+
+      const patients = await db.patient.findMany({
+        where: {
+          workspaceId,
+          deletedAt: null,
+          OR: [
+            { fullName: { contains: q, mode: "insensitive" } },
+            { socialName: { contains: q, mode: "insensitive" } },
+            { email: { contains: q, mode: "insensitive" } },
+            { phone: { contains: q, mode: "insensitive" } },
+          ],
+        },
+        orderBy: { fullName: "asc" },
+        select: LIST_SELECT,
+      });
+
+      return patients.map(mapListToDomain);
+    },
   };
 }

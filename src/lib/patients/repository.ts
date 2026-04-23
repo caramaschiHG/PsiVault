@@ -23,6 +23,9 @@ export interface PatientRepository {
 
   /** All patients (active and archived) scoped to a workspace, with full data. For backup/export use only. */
   listAllByWorkspace(workspaceId: string): Promise<Patient[]>;
+
+  /** Search patients by name, social name, email, or phone. Excludes sensitive fields. */
+  searchByName(workspaceId: string, query: string): Promise<Patient[]>;
 }
 
 export function createInMemoryPatientRepository(seed: Patient[] = []): PatientRepository {
@@ -60,6 +63,24 @@ export function createInMemoryPatientRepository(seed: Patient[] = []): PatientRe
 
     async listAllByWorkspace(workspaceId) {
       return [...store.values()].filter((p) => p.workspaceId === workspaceId);
+    },
+
+    async searchByName(workspaceId, query) {
+      const q = query.trim().toLowerCase();
+      if (!q) return [];
+      return [...store.values()]
+        .filter((p) =>
+          p.workspaceId === workspaceId &&
+          p.archivedAt === null &&
+          (
+            p.fullName.toLowerCase().includes(q) ||
+            p.socialName?.toLowerCase().includes(q) ||
+            p.email?.toLowerCase().includes(q) ||
+            p.phone?.toLowerCase().includes(q)
+          )
+        )
+        .sort((a, b) => a.fullName.localeCompare(b.fullName, "pt-BR"))
+        .map((p) => ({ ...p, importantObservations: null }));
     },
   };
 }
