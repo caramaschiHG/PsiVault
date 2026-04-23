@@ -9,6 +9,7 @@ interface CardProps {
   style?: CSSProperties;
   children: React.ReactNode;
   onClick?: () => void;
+  asLink?: boolean;
 }
 
 const variantStyles: Record<CardVariant, CSSProperties> = {
@@ -31,8 +32,6 @@ const variantStyles: Record<CardVariant, CSSProperties> = {
     background: "var(--surface-base)",
     border: "1px solid var(--color-border)",
     boxShadow: "var(--shadow-xs)",
-    cursor: "pointer",
-    transition: "box-shadow var(--transition-normal), transform var(--transition-normal)",
   },
   subtle: {
     background: "transparent",
@@ -60,12 +59,19 @@ export function Card({
   style,
   children,
   onClick,
+  asLink,
 }: CardProps) {
+  const isInteractive = !!onClick || !!asLink;
+  const combinedClassName = [
+    className,
+    isInteractive ? "card-hover" : "",
+  ].filter(Boolean).join(" ");
+
   const combinedStyle: CSSProperties = {
     ...baseStyle,
     ...variantStyles[variant],
     ...paddingStyles[padding],
-    ...(onClick ? { cursor: "pointer" } : {}),
+    ...(isInteractive ? { cursor: "pointer" } : {}),
     ...style,
   };
 
@@ -73,7 +79,7 @@ export function Card({
 
   return (
     <Component
-      className={className}
+      className={combinedClassName}
       style={combinedStyle}
       onClick={onClick}
       {...(onClick ? { type: "button" as const } : {})}

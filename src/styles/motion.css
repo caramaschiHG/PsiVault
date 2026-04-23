@@ -128,6 +128,13 @@
   to   { opacity: 1; }
 }
 
+@keyframes inputShake {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-2px); }
+  75%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .motion-fade-in,
   .motion-fade-out,
@@ -145,7 +152,8 @@
   .notif-dropdown,
   .tab-panel,
   .kbd-overlay,
-  .skeleton-shimmer {
+  .skeleton-shimmer,
+  .input-error-shake {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
