@@ -173,6 +173,7 @@ model Appointment {
   @@index([workspaceId, startsAt])
   @@index([workspaceId, patientId])
   @@index([seriesId])
+  @@index([workspaceId, status, startsAt])
   @@map("appointments")
 }
 
@@ -291,6 +292,7 @@ model SessionCharge {
 
   @@index([workspaceId, createdAt])
   @@index([workspaceId, patientId])
+  @@index([workspaceId, status, createdAt])
   @@map("session_charges")
 }
 
@@ -431,4 +433,19 @@ model Expense {
   @@index([workspaceId, dueDate])
   @@index([seriesId])
   @@map("expenses")
+}
+
+model PerformanceMetric {
+  id          String   @id @default(uuid())
+  metricName  String   @map("metric_name")
+  value       Float
+  rating      String?
+  pagePath    String   @map("page_path")
+  workspaceId String?  @map("workspace_id")
+  sessionId   String?  @map("session_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([workspaceId, metricName, createdAt])
+  @@index([createdAt])
+  @@map("performance_metrics")
 }
