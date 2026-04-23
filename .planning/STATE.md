@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Performance Profunda
 status: Ready to execute
-stopped_at: Completed 31-01-PLAN.md
-last_updated: "2026-04-23T20:40:18.291Z"
+stopped_at: Completed 31-02-PLAN.md
+last_updated: "2026-04-23T20:49:37.042Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 14
-  completed_plans: 12
-  percent: 86
+  completed_plans: 13
+  percent: 93
 ---
 
 # STATE
@@ -22,8 +22,8 @@ progress:
 
 ## Current Position
 
-Phase: 31 (medi-o-observabilidade-e-itera-o) — EXECUTING
-Plan: 2 of 3
+Phase: 33 (micro-interacoes-em-componentes-base) — EXECUTING
+Plan: 3 of 3
 **Status**: Phase 29 fully executed and verified. All 3 plans complete. Build passes, 419 tests pass. Ready for Phase 30.
 **Last activity**: 2026-04-23 — Phase 29 completed with cache foundation, revalidatePath scope audit, and revalidateTag integration.
 
@@ -83,6 +83,8 @@ Plan: 2 of 3
 - [Phase 31-medi-o-observabilidade-e-itera-o]: react-scan importado dinamicamente com gate NODE_ENV === 'development' para garantir zero impacto no bundle de produção
 - [Phase 31-medi-o-observabilidade-e-itera-o]: Lighthouse CI configura 8 rotas do vault com 3 runs e thresholds rigorosos de CWV
 - [Phase 31-medi-o-observabilidade-e-itera-o]: memlab scenario navega pacientes -> atendimentos -> prontuario com waits de 2s entre passos
+- [Phase 31]: percentile_cont via  acceptable for internal analytics where Prisma ORM lacks native support
+- [Phase 31]: Build-time feature flag ENABLE_PERF_DASHBOARD appropriate for internal dev dashboard
 
 ### Todos
 
@@ -97,6 +99,6 @@ Plan: 2 of 3
 
 ## Session Continuity
 
-Last session: 2026-04-23T20:40:18.283Z
-Stopped at: Completed 31-01-PLAN.md
+Last session: 2026-04-23T20:49:37.032Z
+Stopped at: Completed 31-02-PLAN.md
 Resume file: None
