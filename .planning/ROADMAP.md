@@ -10,7 +10,7 @@
 ## Phases
 
 - [x] **Phase 23: Wave 1 — Navegação e Cache** - Eliminar full page reloads e habilitar caching do Next.js
-- [ ] **Phase 24: Wave 2 — Auth Deduplication** - Eliminar round-trips redundantes ao Supabase Auth no middleware
+- [x] **Phase 24: Wave 2 — Auth Deduplication** - Eliminar round-trips redundantes ao Supabase Auth no middleware
 - [ ] **Phase 25: Wave 3 — Finance Query Consolidation** - Consolidar ~44 queries do /financeiro em agregações SQL
 - [ ] **Phase 26: Wave 4 — N+1 e Column Selection** - Eliminar N+1 na agenda e colunas desnecessárias em listagens
 
@@ -74,7 +74,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 23. Wave 1 — Navegação e Cache | 2/2 | Complete | 2026-04-22 |
-| 24. Wave 2 — Auth Deduplication | 0/1 | Not started | - |
+| 24. Wave 2 — Auth Deduplication | 1/1 | Complete | 2026-04-22 |
 | 25. Wave 3 — Finance Query Consolidation | 0/0 | Not started | - |
 | 26. Wave 4 — N+1 e Column Selection | 0/0 | Not started | - |
 
