@@ -2,21 +2,23 @@
 
 ## What This Is
 
-PsiVault é uma plataforma web completa para psicólogos gerenciarem sua prática clínica — pacientes, agenda, prontuários, documentos e financeiro. Construída com Next.js 15, Supabase, e Prisma, com foco em segurança (multi-tenant, audit trail) e UX premium.
+PsiVault é uma plataforma web completa para psicólogos gerenciarem sua prática clínica — pacientes, agenda, prontuários, documentos e financeiro. Construída com Next.js 15, Supabase, e Prisma, com foco em segurança (multi-tenant, audit trail) e UX premium. App v1.3 Performance: navegação instantânea, caching habilitado, queries otimizadas.
 
 ## Core Value
 
 Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
 
-## Current Milestone: v1.3 Performance
+## Current State (v1.3 Performance — Shipped 2026-04-22)
 
-**Goal:** Eliminar a lentidão sistêmica do app resolvendo os 10 problemas identificados em auditoria de performance — das navegações com full-reload às queries explosivas no /financeiro.
+Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:
+- Navegação client-side via `<Link>` (zero full reloads)
+- Caching do Next.js habilitado (force-dynamic removido)
+- /financeiro: ~40 queries → 3 por page load
+- Agenda: N+1 de clinical notes → 1 query batch
+- `importantObservations` excluído de todas as queries de listagem
 
-**Target features:**
-- Wave 1 — Navegação e Cache: `<a>`→`<Link>` em sidebar/bottom nav, remover `force-dynamic` do vault layout, `React.cache()` em `resolveSession`
-- Wave 2 — Auth Supabase: eliminar dupla chamada `getUser()`, reduzir MFA check no middleware
-- Wave 3 — Finance Queries: consolidar ~44 queries em agregações SQL, defer charts para client-side, narrowar `revalidatePath`
-- Wave 4 — N+1 e Limpeza: batch de clinical notes na agenda, select de colunas em listagens de pacientes
+Stack: Next.js 15, React 19, TypeScript 5.8 (strict), Prisma 6, PostgreSQL (Supabase), Supabase Auth (SSR)
+Tests: 407/407 passing
 
 ## Requirements
 
@@ -36,51 +38,47 @@ Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, c
 - ✓ Arquitetura de storage abstraída (localStorage → server-side ready) — v1.1
 - ✓ Refatoração UX/UI Finanças (Modais, Layout, Filtros) — v1.2 Phase 19
 - ✓ Módulo de Gestão de Despesas (CRUD, Categorias, Comprovantes) — v1.2 Phase 20
+- ✓ Navegação client-side via Next.js Link (zero full reloads) — v1.3
+- ✓ Vault layout com caching do Next.js (force-dynamic removido) — v1.3
+- ✓ resolveSession deduplicada via React.cache() — v1.3
+- ✓ Middleware: eliminação de dupla chamada getUser() + JWT AAL fast-path — v1.3
+- ✓ /financeiro: ~40 queries consolidadas em 3 via listByWorkspaceAndDateRange — v1.3
+- ✓ revalidatePath com escopo "page" em 13 server actions — v1.3
+- ✓ Agenda: N+1 clinical notes → 1 batch query (findByAppointmentIds) — v1.3
+- ✓ importantObservations excluído de listActive/listArchived via LIST_SELECT — v1.3
 
 ### Active
 
-<!-- Current scope — v1.3 Performance -->
+<!-- Next milestone scope — v1.4 -->
 
-- [ ] Navegação client-side via Next.js Link (eliminar full reloads)
-- [ ] Remoção de force-dynamic no vault layout (habilitar caching)
-- [ ] Deduplicação de resolveSession via React.cache()
-- [ ] Eliminação da dupla chamada getUser() middleware + page
-- [ ] Redução de MFA check no middleware (apenas quando necessário)
-- [ ] Consolidação das queries do /financeiro (~44 → agregação SQL)
-- [ ] Defer de trend/year charts para client-side
-- [ ] Narrowar revalidatePath nas server actions
-- [ ] Batch de clinical notes query na agenda (eliminar N+1)
-- [ ] Select de colunas necessárias em listagens de pacientes
+- [ ] Emissão de recibos em PDF para cobranças pagas (RECP-01, RECP-02)
+- [ ] Relatórios: DRE simples, export IRPF/Carnê-Leão (RELA-01, RELA-02)
+- [ ] Streaming visual de charts com Suspense (melhoria v1.4)
+- [ ] Column selection para endpoints de search de pacientes
 
 ### Out of Scope
 
-- Emissão de Recibos em PDF — Phase 21, adiada para v1.4
-- Relatórios e Fluxo de Caixa — Phase 22, adiada para v1.4
-- Server-side notifications (Supabase real-time) — será v1.4+
-- Push notifications (web push API) — complexidade alta
-- Email notifications — requer infraestrutura de email
+- Server-side notifications (Supabase real-time) — v1.4+
+- Push/Email notifications — requer infraestrutura adicional
 - Nota Fiscal (NFS-e) — alta complexidade de integração
 - Integração Bancária (Open Finance) — risco de segurança alto
+- Envio automático de recibos por Email/WhatsApp — v1.4+
 
 ## Context
 
-- App sofre de lentidão sistêmica em todos os cliques — reproduzível localmente (não é problema de Vercel)
-- Causa raiz identificada em auditoria 2026-04-22:
-  - Sidebar/bottom nav usam `<a href>` em vez de `<Link>` (full page reload em cada clique)
-  - `force-dynamic` no vault layout desabilita todo caching do Next.js
-  - `/financeiro` dispara ~44 queries de DB por page load
-  - Server actions chamam `revalidatePath` que dispara o render de 44 queries
-  - Middleware faz 2-3 round-trips Supabase por request
+- App estável com 407 testes, bundle lean
+- Performance resolvida em v1.3 — navegação, caching, queries
 - Design system maduro com 50+ CSS tokens, componentes reutilizáveis
-- Testes: 351/351 passando, bundle lean
+- Multi-tenant, workspace-scoped, audit trail completo
+- Próximas demandas: funcionalidades financeiras avançadas (recibos, relatórios)
 
 ## Constraints
 
 - **Stack**: Next.js 15, React 19, Supabase, Prisma, CSS tokens (sem Tailwind)
 - **Estilo**: Usar design tokens existentes, zero inline styles em componentes novos
-- **Compatibilidade**: Manter comportamento visual e funcional idêntico — performance sem regressão
 - **Segurança**: MFA/auth deve continuar funcionando corretamente após refatorações
-- **Testes**: 351 testes existentes devem continuar passando
+- **Sensibilidade**: importantObservations nunca em listagens — apenas findById e backup export
+- **Testes**: 407 testes existentes devem continuar passando
 
 ## Key Decisions
 
@@ -92,23 +90,14 @@ Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, c
 | Abstração de storage | Facilita migração futura para server-side | ✓ Good |
 | force-dynamic no layout (v1.0-v1.2) | Simplicidade inicial, sem pensar em cache | → Removido em v1.3 |
 | `<a>` em vez de `<Link>` na nav (v1.0) | Oversight inicial | → Corrigido em v1.3 |
+| listByWorkspaceAndDateRange para /financeiro | Range único cobre trend+year+prev, grouping in-memory | ✓ Good |
+| findByAppointmentIds retorna Set<string> | Agenda só precisa de presença, não conteúdo da nota | ✓ Good |
+| listAllByWorkspace para backup | Backup precisa de dados completos — separado de listagens | ✓ Good |
+| JWT AAL fast-path no middleware | Decodifica claim do cookie, skipa API call para aal2 | ✓ Good |
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
-
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
-
 ---
-*Last updated: 2026-04-22 — Milestone v1.3 Performance started*
+*Last updated: 2026-04-22 after v1.3 Performance milestone*
