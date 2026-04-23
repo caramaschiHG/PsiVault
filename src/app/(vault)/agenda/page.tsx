@@ -196,10 +196,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
     observeServerStage(
       route,
       "loadClinicalNotesForCompletedAppointments",
-      () =>
-        Promise.all(
-          completedAppts.map((a) => clinicalRepo.findByAppointmentId(a.id, workspaceId)),
-        ),
+      () => clinicalRepo.findByAppointmentIds(completedAppts.map((a) => a.id), workspaceId),
       {
         workspaceId,
         completedAppointmentCount: completedAppts.length,
@@ -235,10 +232,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
       : Promise.resolve([]),
   ]);
 
-  const notedAppointmentIds = new Set<string>();
-  completedAppts.forEach((a, i) => {
-    if (agendaNoteResults[i]) notedAppointmentIds.add(a.id);
-  });
+  const notedAppointmentIds = agendaNoteResults; // Set<string> from batch query
 
   const overdueMap = new Map<string, { count: number; totalCents: number }>();
   for (const charge of overdueCharges) {

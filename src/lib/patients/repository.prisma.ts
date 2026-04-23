@@ -1,6 +1,7 @@
 import { db } from "../db";
 import type { Patient } from "./model";
 import type { PatientRepository } from "./repository";
+import { Prisma } from "@prisma/client";
 import type { Patient as PrismaPatient } from "@prisma/client";
 
 function mapToDomain(p: PrismaPatient): Patient {
@@ -17,6 +18,47 @@ function mapToDomain(p: PrismaPatient): Patient {
     emergencyContactName: p.emergencyContactName,
     emergencyContactPhone: p.emergencyContactPhone,
     importantObservations: p.importantObservations,
+    archivedAt: p.deletedAt,
+    archivedByAccountId: p.deletedByAccountId,
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
+  };
+}
+
+const LIST_SELECT = Prisma.validator<Prisma.PatientSelect>()({
+  id: true,
+  workspaceId: true,
+  fullName: true,
+  socialName: true,
+  email: true,
+  phone: true,
+  sessionPriceInCents: true,
+  guardianName: true,
+  guardianPhone: true,
+  emergencyContactName: true,
+  emergencyContactPhone: true,
+  deletedAt: true,
+  deletedByAccountId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+type PatientListRow = Prisma.PatientGetPayload<{ select: typeof LIST_SELECT }>;
+
+function mapListToDomain(p: PatientListRow): Patient {
+  return {
+    id: p.id,
+    workspaceId: p.workspaceId,
+    fullName: p.fullName,
+    socialName: p.socialName,
+    email: p.email,
+    phone: p.phone,
+    sessionPriceInCents: p.sessionPriceInCents,
+    guardianName: p.guardianName,
+    guardianPhone: p.guardianPhone,
+    emergencyContactName: p.emergencyContactName,
+    emergencyContactPhone: p.emergencyContactPhone,
+    importantObservations: null, // excluded from list queries — see schema comment
     archivedAt: p.deletedAt,
     archivedByAccountId: p.deletedByAccountId,
     createdAt: p.createdAt,
@@ -72,9 +114,10 @@ export function createPrismaPatientRepository(): PatientRepository {
         orderBy: {
           fullName: "asc",
         },
+        select: LIST_SELECT,
       });
 
-      return patients.map(mapToDomain);
+      return patients.map(mapListToDomain);
     },
 
     async listArchived(workspaceId: string): Promise<Patient[]> {
@@ -86,9 +129,10 @@ export function createPrismaPatientRepository(): PatientRepository {
         orderBy: {
           deletedAt: "desc",
         },
+        select: LIST_SELECT,
       });
 
-      return patients.map(mapToDomain);
+      return patients.map(mapListToDomain);
     },
   };
 }

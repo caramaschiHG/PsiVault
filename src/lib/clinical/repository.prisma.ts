@@ -54,6 +54,15 @@ export function createPrismaClinicalRepository(): ClinicalNoteRepository {
       return n ? mapToDomain(n) : null;
     },
 
+    async findByAppointmentIds(ids: string[], workspaceId: string): Promise<Set<string>> {
+      if (ids.length === 0) return new Set();
+      const rows = await db.clinicalNote.findMany({
+        where: { appointmentId: { in: ids }, workspaceId },
+        select: { appointmentId: true },
+      });
+      return new Set(rows.map((r) => r.appointmentId).filter(Boolean) as string[]);
+    },
+
     async listByPatient(patientId: string, workspaceId: string): Promise<ClinicalNote[]> {
       const notes = await db.clinicalNote.findMany({
         where: { patientId, workspaceId },

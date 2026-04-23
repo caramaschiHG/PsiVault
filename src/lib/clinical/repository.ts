@@ -13,6 +13,7 @@ export interface ClinicalNoteRepository {
   save(note: ClinicalNote): Promise<ClinicalNote>;
   findById(id: string, workspaceId: string): Promise<ClinicalNote | null>;
   findByAppointmentId(appointmentId: string, workspaceId: string): Promise<ClinicalNote | null>;
+  findByAppointmentIds(ids: string[], workspaceId: string): Promise<Set<string>>;
   listByPatient(patientId: string, workspaceId: string): Promise<ClinicalNote[]>;
 }
 
@@ -46,6 +47,17 @@ export function createInMemoryClinicalRepository(
         }
       }
       return null;
+    },
+
+    async findByAppointmentIds(ids: string[], workspaceId: string): Promise<Set<string>> {
+      const result = new Set<string>();
+      const idSet = new Set(ids);
+      for (const note of store.values()) {
+        if (note.workspaceId === workspaceId && note.appointmentId && idSet.has(note.appointmentId)) {
+          result.add(note.appointmentId);
+        }
+      }
+      return result;
     },
 
     async listByPatient(patientId: string, workspaceId: string): Promise<ClinicalNote[]> {
