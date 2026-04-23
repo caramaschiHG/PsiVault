@@ -229,8 +229,8 @@ box-shadow: 0 0 0 2px <bg-color>, 0 0 0 4px <ring-color>;
 
 **Especificações visuais:**
 - Label padrão: `font-size: var(--font-size-meta)` (14px), `color: var(--color-text-2)`, `font-weight: 500`.
-- Label flutuada: `font-size: var(--font-size-xs)` (12px), `color: var(--color-accent)`, `transform: translateY(-1.25rem) scale(0.85)`.
-- Transição: `transition: transform var(--duration-200) var(--ease-out), color var(--duration-200) var(--ease-out), font-size var(--duration-200) var(--ease-out)`.
+- Label flutuada: `color: var(--color-accent)`, `transform: translateY(-1.25rem) scale(0.85)` — tamanho efetivo ~12px (14px × 0.85), mantido dentro da escala tipográfica.
+- Transição: `transition: transform var(--duration-200) var(--ease-out), color var(--duration-200) var(--ease-out)`.
 - Container do input deve ter `position: relative` e `padding-top: 1rem` para acomodar o label flutuado.
 
 **Classes CSS propostas:**
@@ -249,7 +249,7 @@ box-shadow: 0 0 0 2px <bg-color>, 0 0 0 4px <ring-color>;
   font-weight: 500;
   pointer-events: none;
   transform-origin: left top;
-  transition: transform var(--duration-200) var(--ease-out), color var(--duration-200) var(--ease-out), font-size var(--duration-200) var(--ease-out);
+  transition: transform var(--duration-200) var(--ease-out), color var(--duration-200) var(--ease-out);
 }
 
 .input-field:focus ~ .input-floating-label,
@@ -432,14 +432,15 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .motion-fade-in, .motion-slide-up, .motion-scale-in, .motion-stagger > *,
   .vault-page-transition, .toast-enter, .skeleton-shimmer,
-  .input-error-shake, .floating-label {
+  .input-error-shake {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
 }
 ```
-- Adicionar `.input-error-shake` e classes de floating label à lista existente em `motion.css`.
+- Adicionar **apenas** `.input-error-shake` à lista existente em `motion.css`.
+- **Não** adicionar classes de floating label a esse bloco — o catch-all global em `globals.css` (`transition-duration: 0.01ms`) já garante transição instantânea sem destruir o posicionamento final das labels.
 
 ---
 
@@ -545,8 +546,7 @@ html {
   pointer-events: none;
   transform-origin: left top;
   transition: transform var(--duration-200) var(--ease-out),
-              color var(--duration-200) var(--ease-out),
-              font-size var(--duration-200) var(--ease-out);
+              color var(--duration-200) var(--ease-out);
 }
 
 .input-field:focus ~ .input-floating-label,
@@ -556,7 +556,6 @@ html {
 .select-has-value ~ .input-floating-label {
   transform: translateY(-1.25rem) scale(0.85);
   color: var(--color-accent);
-  font-size: var(--font-size-xs);
 }
 
 /* ─── Sidebar nav transitions ──────────────────────────────────────────────── */
