@@ -6,12 +6,14 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 import { NotificationProvider } from "@/components/ui/notification-context";
 import { TopBar } from "./components/top-bar";
 import { CwvCollector } from "@/components/cwv-collector";
+import { ReactScan } from "@/components/react-scan";
 
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <KeyboardShortcutsProvider>
       <NotificationProvider>
         <CwvCollector />
+        <ReactScan />
         <div style={shellStyle}>
         {/* Skip link — acessibilidade teclado (CSS-only, sem event handlers) */}
         <a href="#main-content" className="skip-link">
