@@ -59,8 +59,14 @@ Plans:
   3. Skeleton placeholders correspondem às dimensões finais do layout (zero layout shift)
   4. Client Components recebem promises streamadas com tratamento de erro adequado
   5. Charts exibem estados visuais de loading que transicionam suavemente para dados
-**Plans**: TBD
+**Plans**: 4 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 28-01-PLAN.md — Foundation: Skeletons, AsyncBoundary, useStreamedPromise hook
+- [ ] 28-02-PLAN.md — /financeiro Granular Suspense: async sections, page refactor, loading.tsx
+- [ ] 28-03-PLAN.md — /início Granular Suspense: async sections, React 19 use API, loading.tsx
+- [ ] 28-04-PLAN.md — Verification: integration tests, visual checkpoint
 
 ### Phase 29: Cache Seletivo e Seguro
 **Goal**: Dados de leitura intensa carregam instantaneamente do cache sem risco de vazamento cross-tenant
@@ -106,8 +112,8 @@ Plans:
 | 24. Wave 2 — Auth Deduplication | v1.3 | 1/1 | Complete | 2026-04-22 |
 | 25. Wave 3 — Finance Query Consolidation | v1.3 | 3/3 | Complete | 2026-04-22 |
 | 26. Wave 4 — N+1 e Column Selection | v1.3 | 2/2 | Complete | 2026-04-22 |
-| 27. Diagnóstico e Fundação de Dados | v1.4 | 0/3 | Planned | — |
-| 28. Streaming e Suspense Granular | v1.4 | 0/TBD | Not started | — |
+| 27. Diagnóstico e Fundação de Dados | v1.4 | 3/3 | Complete | 2026-04-23 |
+| 28. Streaming e Suspense Granular | v1.4 | 0/4 | Planned | — |
 | 29. Cache Seletivo e Seguro | v1.4 | 0/TBD | Not started | — |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
