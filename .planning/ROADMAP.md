@@ -40,7 +40,9 @@ Plans:
   1. Middleware não chama `supabase.auth.getUser()` separadamente após `updateSession()` — user é reutilizado do resultado de `updateSession()`
   2. Verificação de MFA (`getAuthenticatorAssuranceLevel`) não executa em todo request vault — status AAL é cacheado por request ou verificação é condicional
   3. Autenticação e MFA continuam funcionando corretamente — login, logout e fluxo de MFA sem regressão
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 24-01-PLAN.md — JWT fast-path para AAL check no vault (AUTH-01, AUTH-02)
 
 ### Phase 25: Wave 3 — Finance Query Consolidation
 **Goal**: Página /financeiro carrega com ≤10 queries de DB e server actions não disparam re-renders desnecessários
@@ -72,7 +74,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 23. Wave 1 — Navegação e Cache | 2/2 | Complete | 2026-04-22 |
-| 24. Wave 2 — Auth Deduplication | 0/0 | Not started | - |
+| 24. Wave 2 — Auth Deduplication | 0/1 | Not started | - |
 | 25. Wave 3 — Finance Query Consolidation | 0/0 | Not started | - |
 | 26. Wave 4 — N+1 e Column Selection | 0/0 | Not started | - |
 
