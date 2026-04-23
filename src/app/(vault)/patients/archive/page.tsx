@@ -5,8 +5,6 @@
  * Recovery returns the professional directly to the restored patient profile.
  */
 
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import { getPatientRepository } from "../../../../lib/patients/store";
 import { recoverPatientAction } from "../actions";

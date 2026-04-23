@@ -6,8 +6,6 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 import { NotificationProvider } from "@/components/ui/notification-context";
 import { TopBar } from "./components/top-bar";
 
-export const dynamic = "force-dynamic";
-
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <KeyboardShortcutsProvider>

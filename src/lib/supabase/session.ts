@@ -2,6 +2,7 @@ import { createClient } from "./server";
 import { db } from "@/lib/db";
 import { logServerRenderError, logServerRenderInfo, observeServerStage } from "@/lib/observability/server-render";
 import { redirect } from "next/navigation";
+import { cache } from 'react'
 
 export interface ResolvedSession {
   accountId: string;
@@ -12,7 +13,7 @@ export interface ResolvedSession {
  * Resolves the authenticated user's accountId and workspaceId from the Supabase session.
  * Redirects to sign-in if unauthenticated or workspace not found.
  */
-export async function resolveSession(): Promise<ResolvedSession> {
+export const resolveSession = cache(async (): Promise<ResolvedSession> => {
   const route = "lib.resolveSession";
   const supabase = await observeServerStage(route, "createSupabaseClient", () => createClient());
   const {
@@ -87,4 +88,4 @@ export async function resolveSession(): Promise<ResolvedSession> {
     logServerRenderError(route, "resolveSessionFailed", error, baseMetadata);
     throw error;
   }
-}
+})
