@@ -128,4 +128,4 @@ Tests: 407/407 passing
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-04-22 after v1.3 Performance milestone*
+*Last updated: 2026-04-23 after Phase 31: Medição, Observabilidade e Iteração (v1.4 Performance Profunda)*

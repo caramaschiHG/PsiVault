@@ -213,7 +213,7 @@ Plans:
 | 28. Streaming e Suspense Granular | v1.4 | 4/4 | Complete | 2026-04-23 |
 | 29. Cache Seletivo e Seguro | v1.4 | 3/3 | Complete | 2026-04-23 |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
-| 31. Medição, Observabilidade e Iteração | v1.4 | 3/3 | Complete   | 2026-04-23 |
+| 31. Medição, Observabilidade e Iteração | v1.4 | 3/3 | Complete    | 2026-04-23 |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
 | 33. Micro-interações em Componentes Base | v1.5 | 3/3 | Complete   | 2026-04-23 |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
