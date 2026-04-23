@@ -41,7 +41,7 @@ export async function savePracticeProfileAction(formData: FormData) {
     preferredThinker: readFormValue(formData, "preferredThinker"),
   });
 
-  revalidatePath("/settings/profile");
+  revalidatePath("/settings/profile", "page");
 }
 
 const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/svg+xml"];
@@ -89,7 +89,7 @@ export async function saveSignatureAssetAction(
     fileSize: file.size,
   });
 
-  revalidatePath("/settings/profile");
+  revalidatePath("/settings/profile", "page");
   return {};
 }
 
@@ -97,5 +97,5 @@ export async function removeSignatureAssetAction() {
   const { accountId, workspaceId } = await resolveSession();
 
   await clearSignatureAsset(accountId, workspaceId);
-  revalidatePath("/settings/profile");
+  revalidatePath("/settings/profile", "page");
 }

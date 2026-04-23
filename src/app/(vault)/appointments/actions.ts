@@ -265,7 +265,7 @@ export async function createAppointmentQuickAction(
       });
     }
 
-    revalidatePath("/agenda");
+    revalidatePath("/agenda", "page");
     return { success: true };
   } catch (err) {
     console.error("[createAppointmentQuickAction]", err);
@@ -425,7 +425,7 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
       }
     }
 
-    revalidatePath("/agenda");
+    revalidatePath("/agenda", "page");
     return { success: true };
   } catch (err) {
     console.error("[rescheduleAppointmentAction]", err);
@@ -528,7 +528,7 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ suc
       }
     }
 
-    revalidatePath("/agenda");
+    revalidatePath("/agenda", "page");
     return { success: true };
   } catch (err) {
     console.error("[cancelAppointmentAction]", err);
@@ -564,7 +564,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ su
       ),
     );
 
-    revalidatePath("/agenda");
+    revalidatePath("/agenda", "page");
     return { success: true };
   } catch (err) {
     console.error("[confirmAppointmentAction]", err);
@@ -667,9 +667,9 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
       );
     }
 
-    revalidatePath("/agenda");
-    revalidatePath(`/patients/${completed.patientId}`);
-    revalidatePath(`/sessions/${completed.id}/note`);
+    revalidatePath("/agenda", "page");
+    revalidatePath(`/patients/${completed.patientId}`, "page");
+    revalidatePath(`/sessions/${completed.id}/note`, "page");
     return { success: true };
   } catch (err) {
     console.error("[completeAppointmentAction]", err);
@@ -705,7 +705,7 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ suc
       ),
     );
 
-    revalidatePath("/agenda");
+    revalidatePath("/agenda", "page");
     return { success: true };
   } catch (err) {
     console.error("[noShowAppointmentAction]", err);
@@ -761,7 +761,7 @@ export async function updateChargeAction(formData: FormData): Promise<void> {
     return;
   }
 
-  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
+  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`, "page");
 }
 
 // ─── Edit meeting link (ONLN-01) ──────────────────────────────────────────────
@@ -809,8 +809,8 @@ export async function editMeetingLinkAction(
     return { success: false, error: "Erro ao salvar link." };
   }
 
-  revalidatePath("/agenda");
-  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
+  revalidatePath("/agenda", "page");
+  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`, "page");
   return { success: true };
 }
 
@@ -856,8 +856,8 @@ export async function addRemoteIssueNoteAction(
     return { success: false, error: "Erro ao registrar." };
   }
 
-  revalidatePath("/agenda");
-  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`);
+  revalidatePath("/agenda", "page");
+  if (patientIdForRevalidate) revalidatePath(`/patients/${patientIdForRevalidate}`, "page");
   return { success: true };
 }
 

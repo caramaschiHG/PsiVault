@@ -70,7 +70,7 @@ export async function saveSmtpConfigAction(
     };
 
     await repo.save(config);
-    revalidatePath("/settings/notificacoes");
+    revalidatePath("/settings/notificacoes", "page");
     return { success: true, message: "Configuração salva com sucesso." };
   } catch (err) {
     console.error("[saveSmtpConfigAction]", err);

@@ -69,11 +69,11 @@ export async function createReminderAction(
   );
 
   // Always revalidate dashboard
-  revalidatePath("/inicio");
+  revalidatePath("/inicio", "page");
 
   // If linked to a patient, also revalidate their profile
   if (patientId) {
-    revalidatePath(`/patients/${patientId}`);
+    revalidatePath(`/patients/${patientId}`, "page");
   }
 
   return { success: true };
@@ -103,10 +103,10 @@ export async function completeReminderAction(reminderId: string): Promise<void> 
     }),
   );
 
-  revalidatePath("/inicio");
+  revalidatePath("/inicio", "page");
 
   // If reminder was linked to a patient, revalidate their profile too
   if (completed.link?.type === "patient") {
-    revalidatePath(`/patients/${completed.link.id}`);
+    revalidatePath(`/patients/${completed.link.id}`, "page");
   }
 }
