@@ -1,105 +1,102 @@
-# Requirements: PsiVault v1.4 Performance Profunda
+# Milestone v1.5 Requirements — Motion & Feel
 
-## Milestone v1.4 Requirements
+## Scope
 
-### Diagnóstico e Fundação (PERF)
+Elevar a percepção de qualidade do PsiVault através de animações sutis, micro-interações e refinamentos visuais que criam uma experiência clinicamente calma, estável e agradável — sem cair em exagero decorativo e sem impactar a performance objetiva conquistada em v1.3/v1.4.
 
-- [x] **PERF-01**: Bundle size baseline estabelecido via `@next/bundle-analyzer` com script de build `ANALYZE=true`
-- [x] **PERF-02**: Core Web Vitals instrumentados via `web-vitals` library com endpoint de coleta RUM
-- [x] **PERF-03**: Índices compostos adicionados em `Appointment` (`[workspaceId, status, startsAt]`) e `SessionCharge` (`[workspaceId, status, createdAt]`)
-- [x] **PERF-04**: Supavisor transaction mode configurado (`DATABASE_URL` com `pgbouncer=true&prepareThreshold=0`, `DIRECT_URL` para migrations)
-- [x] **PERF-05**: Prisma query logging extension (`$extends`) adicionado para identificar queries lentas (threshold >500ms)
-- [x] **PERF-06**: Column selection (`LIST_SELECT` pattern) estendido para endpoints de search de pacientes
+---
 
-### Streaming e Suspense (STREAM)
+## Requirements
 
-- [ ] **STREAM-01**: `loading.tsx` adicionado para rotas pesadas (`/financeiro`, `/inicio`)
-- [ ] **STREAM-02**: Seções de página decompostas em Server Components assíncronos independentes
-- [ ] **STREAM-03**: Suspense boundaries granulares com skeletons que correspondem às dimensões finais (prevenção de CLS)
-- [ ] **STREAM-04**: React 19 `use` API utilizado para streaming de promises para Client Components (com Error Boundaries)
-- [ ] **STREAM-05**: Streaming visual de charts com Suspense boundaries
+### Motion Tokens & Foundation (MOTF)
 
-### Cache Seletivo e Seguro (CACHE)
+- [ ] **MOTF-01**: Design tokens de motion (`--duration-*`, `--ease-*`, `--stagger-gap`) criados e integrados ao design system existente
+- [ ] **MOTF-02**: Media query `prefers-reduced-motion: reduce` implementada como fallback global — todas as animações degradam para instantâneo
+- [ ] **MOTF-03**: Utility classes CSS de motion criadas (`.motion-fade-in`, `.motion-slide-up`, `.motion-stagger`, etc.)
+- [ ] **MOTF-04**: Arquivo `src/styles/motion.css` carregado no critical path (sem FOUC)
 
-- [ ] **CACHE-01**: `unstable_cache` aplicado em métodos de repository leitura-intensiva (`PracticeProfile`, `ExpenseCategory`, workspace metadata)
-- [ ] **CACHE-02**: `revalidateTag` implementado em todas as Server Actions de mutação
-- [ ] **CACHE-03**: Chaves de cache sempre incluem `workspaceId` (padrão: `['domain', workspaceId, ...params]`)
-- [ ] **CACHE-04**: Audit de `revalidatePath` existente confirmando escopo `'page'` em todas as 13 actions
+### Micro-interactions em Componentes Base (MICR)
 
-### Otimização de Assets e Bundle (ASSET)
+- [ ] **MICR-01**: Todos os botões interativos possuem estados de hover (`translateY`, sombra suave), active (`scale(0.98)`), e disabled/loading (`opacity`, cursor)
+- [ ] **MICR-02**: Todos os cards possuem hover state suave (elevação ou sombra)
+- [ ] **MICR-03**: Focus rings elegantes e visíveis em todos os elementos focáveis (botões, links, inputs, nav items) — WCAG 2.1 AA compliant
+- [ ] **MICR-04**: Inputs e campos de formulário possuem micro-interações: border glow suave no focus, transição de label (float), shake sutil em erro de validação
+- [ ] **MICR-05**: Itens de navegação (sidebar, top bar) possuem indicador de ativo com transição suave e hover background
+- [ ] **MICR-06**: Links e elementos clicáveis possuem cursor apropriado (`pointer`, `wait`, `not-allowed`, `grab`/`grabbing`)
+- [ ] **MICR-07**: Smooth scroll habilitado globalmente (`scroll-behavior: smooth`) com fallback para reduced motion
 
-- [ ] **ASSET-01**: `next/dynamic` aplicado em componentes Client pesados (charts, date pickers, editores, PDF preview)
-- [ ] **ASSET-02**: `optimizePackageImports` configurado em `next.config.ts` para bibliotecas utilitárias adotadas
-- [ ] **ASSET-03**: `next/image` utilizado em todas as imagens da aplicação (zero `<img>` raw)
-- [ ] **ASSET-04**: Font loading audit realizado; migração para `next/font` se houver requests externos
-- [ ] **ASSET-05**: `next/script` com strategy apropriada para quaisquer scripts de terceiros
+### Feedback de Ação e Loading (FEED)
 
-### Observabilidade e Medição (OBS)
+- [ ] **FEED-01**: Sistema de Toast existente integrado com `AnimatePresence` — enter (slide + fade), exit (fade), duração ≤300ms
+- [ ] **FEED-02**: Botões que disparam Server Actions utilizam `useTransition` para estado de loading visual (opacity, spinner, texto alternativo)
+- [ ] **FEED-03**: Skeletons substituem pulse mecânico por shimmer gradient orgânico (CSS animation, duração lenta 1.5–2s)
+- [ ] **FEED-04**: Componente `Spinner` leve criado (SVG animado via CSS, sem bibliotecas externas)
+- [ ] **FEED-05**: Estados de erro em formulários fornecem feedback visual imediato (border color transition, shake sutil) além de mensagem textual
 
-- [ ] **OBS-01**: Lighthouse CI configurado com thresholds (LCP < 2.5s, INP < 200ms, CLS < 0.1)
-- [ ] **OBS-02**: RUM pipeline reportando CWV no 75º percentil para usuários reais
-- [ ] **OBS-03**: `memlab` scenario configurado para fluxo de navegação de pacientes (heap snapshot diffing)
-- [ ] **OBS-04**: `react-scan` integrado no ambiente de desenvolvimento para detecção de re-renders
-- [ ] **OBS-05**: Relatório before/after de performance publicado com próximos passos acionáveis
+### Listas e Transições de Página (LIST)
 
-## Future Requirements
+- [ ] **LIST-01**: Listagens principais (pacientes, atendimentos, financeiro) possuem staggered animation de entrada — itens aparecem em sequência com delay progressivo (cap em 10 itens)
+- [ ] **LIST-02**: Transição suave entre rotas do vault — fade de conteúdo com duração ≤150ms, sem bloquear navegação rápida
+- [ ] **LIST-03**: Cards, filtros e seções expansíveis possuem layout animation de altura suave (expand/collapse sem "jump")
+- [ ] **LIST-04**: Reordenação ou adição/remoção de itens em listas possui feedback visual de movimento
 
-### v1.5+ — Funcionalidades Financeiras Avançadas
+### Polish, Accessibility & Measurement (POLI)
 
-- [ ] **RECP-01**: Emissão de recibos em PDF para cobranças pagas
-- [ ] **RECP-02**: Template de recibo customizável com dados do psicólogo e paciente
-- [ ] **RELA-01**: Relatório DRE simples (receitas vs despesas por período)
-- [ ] **RELA-02**: Exportação IRPF / Carnê-Leão
+- [ ] **POLI-01**: Motion audit realizado em todas as páginas do vault — consistência de hover/focus/active verificada
+- [ ] **POLI-02**: Teste de `prefers-reduced-motion` realizado em TODAS as animações — nenhuma animação persiste indevidamente
+- [ ] **POLI-03**: Métricas de performance (INP, CLS) medidas antes e depois do milestone — sem regressão em relação ao baseline v1.4
+- [ ] **POLI-04**: Documentação de padrões de motion adicionada ao CLAUDE.md (regras de uso, tokens, anti-padrões)
+- [ ] **POLI-05**: Nenhum dos 407 testes existentes quebrado por mudanças de motion (visual-only, sem lógica)
 
-### v1.5+ — Otimizações Avançadas
+---
 
-- [ ] **PERF-07**: React Compiler (aguardar integração SWC para evitar slowdown de build)
-- [ ] **PERF-08**: Deep memory leak investigation (apenas se dados de campo mostrarem degradação de INP ao longo do tempo)
-- [ ] **PERF-09**: Raw SQL para queries de relatório (escalar apenas se relatórios ORM ficarem lentos)
-- [ ] **PERF-10**: Pipeline OpenTelemetry/Sentry completo (expandir a partir de `instrumentation.ts` simples)
+## Future Requirements (Deferred)
+
+- Number counting animation em dashboards estatísticos (complexidade baixa, mas impacto limitado)
+- Swipe to dismiss em notificações mobile-only (esperar estratégia mobile)
+- View Transition API nativa do browser quando suporte cross-browser for estável (progressive enhancement futura)
+- Ripple effect em botões (questionável para o tom PsiVault; prototipar antes)
 
 ## Out of Scope
 
-- **Server-side notifications (Supabase real-time)** — requer infraestrutura adicional, não relacionado a performance de runtime
-- **Push/Email notifications** — requer infraestrutura adicional
-- **Nota Fiscal (NFS-e)** — alta complexidade de integração, não relacionado a performance
-- **Integração Bancária (Open Finance)** — risco de segurança alto
-- **Envio automático de recibos por Email/WhatsApp** — v1.5+
-- **Redis cache layer customizado** — Next.js built-in caching é suficiente na escala atual
-- **Prisma Accelerate** — lock-in desnecessário, Supavisor já provisionado
-- **TanStack Query** — conflita com Server Components + React.cache()
-- **Partytown** — `next/script` com strategy `worker` é suficiente
+- **Parallax scrolling** — viola o tom discreto e pode causar desconforto vestibular
+- **3D transforms, perspective, rotateX/Y** — anti-padrão visual do PsiVault (nada de glassmorphism/crypto aesthetic)
+- **Celebration effects (confetti, etc.)** — anti-padrão de tom (proibido pelo CLAUDE.md)
+- **Sound effects** — inapropriado para ambiente clínico
+- **Typing animation em textos funcionais** — aumenta tempo de leitura, frustra usuários experientes
+- **Full-screen loading spinners** — anti-padrão de UX; skeletons progressivos já implementados em v1.4
+- **Background animated gradients / mesh** — viola regra visual do PsiVault
+- **Dark mode motion tokens** — dark mode não está no roadmap atual
 
 ## Traceability
 
-| REQ-ID | Phase | Status |
-|--------|-------|--------|
-| PERF-01 | Phase 27 | Completed |
-| PERF-02 | Phase 27 | Completed |
-| PERF-03 | Phase 27 | Completed |
-| PERF-04 | Phase 27 | Completed |
-| PERF-05 | Phase 27 | Completed |
-| PERF-06 | Phase 27 | Completed |
-| STREAM-01 | Phase 28 | Pending |
-| STREAM-02 | Phase 28 | Pending |
-| STREAM-03 | Phase 28 | Pending |
-| STREAM-04 | Phase 28 | Pending |
-| STREAM-05 | Phase 28 | Pending |
-| CACHE-01 | Phase 29 | Pending |
-| CACHE-02 | Phase 29 | Pending |
-| CACHE-03 | Phase 29 | Pending |
-| CACHE-04 | Phase 29 | Pending |
-| ASSET-01 | Phase 30 | Pending |
-| ASSET-02 | Phase 30 | Pending |
-| ASSET-03 | Phase 30 | Pending |
-| ASSET-04 | Phase 30 | Pending |
-| ASSET-05 | Phase 30 | Pending |
-| OBS-01 | Phase 31 | Pending |
-| OBS-02 | Phase 31 | Pending |
-| OBS-03 | Phase 31 | Pending |
-| OBS-04 | Phase 31 | Pending |
-| OBS-05 | Phase 31 | Pending |
+| REQ-ID | Phase | Plan |
+|--------|-------|------|
+| MOTF-01 | 29 | TBD |
+| MOTF-02 | 29 | TBD |
+| MOTF-03 | 29 | TBD |
+| MOTF-04 | 29 | TBD |
+| MICR-01 | 30 | TBD |
+| MICR-02 | 30 | TBD |
+| MICR-03 | 30 | TBD |
+| MICR-04 | 30 | TBD |
+| MICR-05 | 30 | TBD |
+| MICR-06 | 30 | TBD |
+| MICR-07 | 30 | TBD |
+| FEED-01 | 31 | TBD |
+| FEED-02 | 31 | TBD |
+| FEED-03 | 31 | TBD |
+| FEED-04 | 31 | TBD |
+| FEED-05 | 31 | TBD |
+| LIST-01 | 32 | TBD |
+| LIST-02 | 32 | TBD |
+| LIST-03 | 32 | TBD |
+| LIST-04 | 32 | TBD |
+| POLI-01 | 33 | TBD |
+| POLI-02 | 33 | TBD |
+| POLI-03 | 33 | TBD |
+| POLI-04 | 33 | TBD |
+| POLI-05 | 33 | TBD |
 
 ---
-*Requirements defined: 2026-04-23*
-*Milestone: v1.4 Performance Profunda*
+*Last updated: 2026-04-23 — Requirements defined for v1.5*
