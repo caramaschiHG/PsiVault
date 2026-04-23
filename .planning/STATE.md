@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Performance
 status: In progress
-stopped_at: Phase 23 complete — Phase 24 ready to plan
-last_updated: "2026-04-23T00:00:00.000Z"
+stopped_at: Phase 25 complete — Phase 26 ready to plan
+last_updated: "2026-04-22T00:00:00.000Z"
 progress:
   total_phases: 4
-  completed_phases: 2
-  total_plans: 3
-  completed_plans: 3
-  percent: 50
+  completed_phases: 3
+  total_plans: 6
+  completed_plans: 6
+  percent: 75
 ---
 
 # STATE
@@ -22,13 +22,13 @@ progress:
 
 ## Current Position
 
-Phase: Phase 25 (next)
+Phase: Phase 26 (next)
 Plan: —
 **Status**: In progress
-**Last activity**: 2026-04-22 — Phase 24 complete (auth deduplication)
+**Last activity**: 2026-04-22 — Phase 25 complete (finance query consolidation)
 
 **Progress**:
-[██████████████████████████████░░░░░░░░░░░░░░░░░░░░░░] 50%
+[████████████████████████████████████████░░░░░░░░░░░░] 75%
 
 ## Performance Metrics
 
@@ -53,6 +53,9 @@ Plan: —
 - [v1.3 Phase 23]: React.cache() é request-scoped (por render tree) — não persiste entre requests. Correto para dados de auth.
 - [v1.3 Phase 23]: signout link (/api/auth/signout) mantido como `<a href>` — API route não deve usar Link.
 - [v1.3 Phase 23]: Baseline de testes = 407 (roadmap tinha 351 desatualizado).
+- [v1.3 Phase 25]: listByWorkspaceAndDateRange adicionado ao SessionChargeRepository — uma query cobre todos os meses (trend + year).
+- [v1.3 Phase 25]: current e prev deduplicated do batch — sem chamadas standalone.
+- [v1.3 Phase 25]: revalidatePath("/financeiro", "page") em todas as 13 server actions — preserva cache do vault layout.
 
 ### Todos
 
@@ -65,5 +68,5 @@ Plan: —
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: Milestone v1.3 started — requirements phase
+Stopped at: Phase 25 complete — Phase 26 N+1 e Column Selection ready to plan
 Resume file: None
