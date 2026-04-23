@@ -134,5 +134,13 @@ export function createPrismaPatientRepository(): PatientRepository {
 
       return patients.map(mapListToDomain);
     },
+
+    async listAllByWorkspace(workspaceId: string): Promise<Patient[]> {
+      const patients = await db.patient.findMany({
+        where: { workspaceId },
+        orderBy: { fullName: "asc" },
+      });
+      return patients.map(mapToDomain);
+    },
   };
 }

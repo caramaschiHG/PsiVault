@@ -43,11 +43,7 @@ export async function GET(
   const docRepo = getDocumentRepository();
   const financeRepo = getFinanceRepository();
 
-  const [activePatients, archivedPatients] = await Promise.all([
-    patientRepo.listActive(workspaceId),
-    patientRepo.listArchived(workspaceId),
-  ]);
-  const patients = [...activePatients, ...archivedPatients];
+  const patients = await patientRepo.listAllByWorkspace(workspaceId);
 
   // Load all appointments (Asynchronous)
   const appointmentsResults = await Promise.all(patients.map((p) =>

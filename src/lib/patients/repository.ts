@@ -20,6 +20,9 @@ export interface PatientRepository {
 
   /** All archived patients scoped to a workspace, ordered by archivedAt desc. */
   listArchived(workspaceId: string): Promise<Patient[]>;
+
+  /** All patients (active and archived) scoped to a workspace, with full data. For backup/export use only. */
+  listAllByWorkspace(workspaceId: string): Promise<Patient[]>;
 }
 
 export function createInMemoryPatientRepository(seed: Patient[] = []): PatientRepository {
@@ -40,7 +43,8 @@ export function createInMemoryPatientRepository(seed: Patient[] = []): PatientRe
     async listActive(workspaceId) {
       return [...store.values()]
         .filter((p) => p.workspaceId === workspaceId && p.archivedAt === null)
-        .sort((a, b) => a.fullName.localeCompare(b.fullName, "pt-BR"));
+        .sort((a, b) => a.fullName.localeCompare(b.fullName, "pt-BR"))
+        .map((p) => ({ ...p, importantObservations: null }));
     },
 
     async listArchived(workspaceId) {
@@ -50,7 +54,12 @@ export function createInMemoryPatientRepository(seed: Patient[] = []): PatientRe
           const aTime = a.archivedAt!.getTime();
           const bTime = b.archivedAt!.getTime();
           return bTime - aTime;
-        });
+        })
+        .map((p) => ({ ...p, importantObservations: null }));
+    },
+
+    async listAllByWorkspace(workspaceId) {
+      return [...store.values()].filter((p) => p.workspaceId === workspaceId);
     },
   };
 }
