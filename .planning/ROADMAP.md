@@ -27,7 +27,7 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
 
 - [x] **Phase 27: Diagnóstico e Fundação de Dados** — Baseline de bundle, CWV, índices DB e pooling (3/3 plans) — completed 2026-04-23
 - [x] **Phase 28: Streaming e Suspense Granular** — loading.tsx, async sections, React 19 use API, skeletons (4/4 plans) — completed 2026-04-23
-- [ ] **Phase 29: Cache Seletivo e Seguro** — unstable_cache, revalidateTag, workspace-scoped keys, revalidatePath audit
+- [x] **Phase 29: Cache Seletivo e Seguro** — unstable_cache, revalidateTag, workspace-scoped keys, revalidatePath audit
 - [ ] **Phase 30: Otimização de Assets e Bundle** — next/dynamic, optimizePackageImports, next/image, next/font, next/script
 - [ ] **Phase 31: Medição, Observabilidade e Iteração** — Lighthouse CI, RUM, memlab, react-scan, relatório before/after
 
@@ -81,9 +81,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 29-01-PLAN.md — Cache Foundation: unstable_cache para practice profile e expense categories com workspace-scoped keys
-- [ ] 29-02-PLAN.md — revalidatePath Scope Audit & Fix: escopo "page" em todas as chamadas bare
-- [ ] 29-03-PLAN.md — revalidateTag Integration: invalidacao de cache de dominio em todas as mutation actions
+- [x] 29-01-PLAN.md — Cache Foundation: unstable_cache para practice profile e expense categories com workspace-scoped keys
+- [x] 29-02-PLAN.md — revalidatePath Scope Audit & Fix: escopo "page" em todas as chamadas bare
+- [x] 29-03-PLAN.md — revalidateTag Integration: invalidacao de cache de dominio em todas as mutation actions
 
 ### Phase 30: Otimização de Assets e Bundle
 **Goal**: Aplicação carrega menos bytes e renderiza imagens/fontes de forma eficiente
@@ -198,7 +198,7 @@ Plans:
 | 26. Wave 4 — N+1 e Column Selection | v1.3 | 2/2 | Complete | 2026-04-22 |
 | 27. Diagnóstico e Fundação de Dados | v1.4 | 3/3 | Complete | 2026-04-23 |
 | 28. Streaming e Suspense Granular | v1.4 | 4/4 | Complete | 2026-04-23 |
-| 29. Cache Seletivo e Seguro | v1.4 | 0/TBD | Not started | — |
+| 29. Cache Seletivo e Seguro | v1.4 | 3/3 | Complete | 2026-04-23 |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 0/3 | Planned | — |
