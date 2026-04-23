@@ -75,26 +75,22 @@ export default async function ResetPasswordPage({
             <AuthForm>
               <input type="hidden" name="code" value={code} />
 
-              <label className="auth-label">
-                Nova senha
-                <PasswordInput
-                  name="password"
-                  placeholder="Nova senha segura"
-                  required
-                />
-              </label>
+              <PasswordInput
+                name="password"
+                label="Nova senha"
+                errorShake={errorField === "password"}
+                required
+              />
 
-              <label className="auth-label">
-                Confirmar nova senha
-                <PasswordInput
-                  name="confirmPassword"
-                  placeholder="Repita a nova senha"
-                  required
-                />
-                {errorField === "confirmPassword" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+              <PasswordInput
+                name="confirmPassword"
+                label="Confirmar nova senha"
+                errorShake={errorField === "confirmPassword"}
+                required
+              />
+              {errorField === "confirmPassword" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
               <SubmitButton label="Atualizar senha" fullWidth />
 
@@ -159,16 +155,22 @@ export default async function ResetPasswordPage({
 
         <form className="auth-form" action={requestPasswordReset}>
           <AuthForm>
-            <label className="auth-label">
-              E-mail
+            <div className="input-floating-label-wrap">
               <input
-                className="auth-input"
+                id="reset-email"
+                className={`auth-input ${errorField === "email" ? "input-error input-error-shake" : ""}`}
                 type="email"
                 name="email"
-                placeholder="voce@consultorio.com.br"
+                placeholder=" "
                 required
+                onAnimationEnd={(e) => {
+                  if (e.animationName === "inputShake") {
+                    e.currentTarget.classList.remove("input-error-shake");
+                  }
+                }}
               />
-            </label>
+              <label htmlFor="reset-email" className="input-floating-label">E-mail</label>
+            </div>
 
             <SubmitButton label="Enviar link de recuperação" fullWidth />
 

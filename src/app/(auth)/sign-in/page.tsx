@@ -57,31 +57,35 @@ export default async function SignInPage({
 
           <form className="auth-form" action={signIn}>
             <AuthForm>
-              <label className="auth-label">
-                E-mail
+              <div className="input-floating-label-wrap">
                 <input
-                  className="auth-input"
+                  id="signin-email"
+                  className={`auth-input ${errorField === "email" ? "input-error input-error-shake" : ""}`}
                   type="email"
                   name="email"
-                  placeholder="voce@consultorio.com.br"
+                  placeholder=" "
                   required
+                  onAnimationEnd={(e) => {
+                    if (e.animationName === "inputShake") {
+                      e.currentTarget.classList.remove("input-error-shake");
+                    }
+                  }}
                 />
-                {errorField === "email" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+                <label htmlFor="signin-email" className="input-floating-label">E-mail</label>
+              </div>
+              {errorField === "email" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
-              <label className="auth-label">
-                Senha
-                <PasswordInput
-                  name="password"
-                  placeholder="Sua senha"
-                  required
-                />
-                {errorField === "password" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+              <PasswordInput
+                name="password"
+                label="Senha"
+                errorShake={errorField === "password"}
+                required
+              />
+              {errorField === "password" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
               <div style={{ textAlign: "right" } satisfies React.CSSProperties}>
                 <a

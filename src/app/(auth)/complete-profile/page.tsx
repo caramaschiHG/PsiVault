@@ -46,72 +46,80 @@ export default async function CompleteProfilePage() {
           style={{ display: "grid", gap: "1rem" } satisfies React.CSSProperties}
         >
           <div style={fieldGridStyle}>
-            <label className="auth-label">
-              Nome profissional
+            <div className="input-floating-label-wrap">
               <input
+                id="profile-fullName"
                 className="auth-input"
                 name="fullName"
-                placeholder="Dra. Helena Prado"
+                placeholder=" "
                 defaultValue={profile.fullName ?? defaultName}
                 required
               />
-            </label>
+              <label htmlFor="profile-fullName" className="input-floating-label">Nome profissional</label>
+            </div>
 
-            <label className="auth-label">
-              CRP
+            <div className="input-floating-label-wrap">
               <MaskedInput
                 mask="crp"
+                id="profile-crp"
                 className="auth-input"
                 name="crp"
-                placeholder="CRP 00/000000"
+                placeholder=" "
                 defaultValue={profile.crp ?? ""}
                 required
               />
-            </label>
+              <label htmlFor="profile-crp" className="input-floating-label">CRP</label>
+            </div>
 
-            <label className="auth-label">
-              E-mail de contato
+            <div className="input-floating-label-wrap">
               <input
+                id="profile-contactEmail"
                 className="auth-input"
                 name="contactEmail"
-                placeholder="contato@consultorio.com.br"
+                placeholder=" "
                 defaultValue={profile.contactEmail ?? defaultEmail}
                 type="email"
               />
-            </label>
+              <label htmlFor="profile-contactEmail" className="input-floating-label">E-mail de contato</label>
+            </div>
 
-            <label className="auth-label">
-              Telefone
+            <div className="input-floating-label-wrap">
               <MaskedInput
                 mask="phone"
+                id="profile-contactPhone"
                 className="auth-input"
                 name="contactPhone"
-                placeholder="(11) 99999-9999"
+                placeholder=" "
                 defaultValue={profile.contactPhone ?? ""}
               />
-            </label>
+              <label htmlFor="profile-contactPhone" className="input-floating-label">Telefone</label>
+            </div>
 
-            <label className="auth-label">
-              Duração padrão da sessão (min)
+            <div className="input-floating-label-wrap">
               <input
+                id="profile-duration"
                 className="auth-input"
                 name="defaultAppointmentDurationMinutes"
                 type="number"
                 min={1}
+                placeholder=" "
                 defaultValue={profile.defaultAppointmentDurationMinutes ?? 50}
               />
-            </label>
+              <label htmlFor="profile-duration" className="input-floating-label">Duração padrão da sessão (min)</label>
+            </div>
 
-            <label className="auth-label">
-              Valor padrão em centavos
+            <div className="input-floating-label-wrap">
               <input
+                id="profile-price"
                 className="auth-input"
                 name="defaultSessionPriceInCents"
                 type="number"
                 min={1}
+                placeholder=" "
                 defaultValue={profile.defaultSessionPriceInCents ?? 18000}
               />
-            </label>
+              <label htmlFor="profile-price" className="input-floating-label">Valor padrão em centavos</label>
+            </div>
           </div>
 
           <div style={{ display: "grid", gap: "0.6rem" } satisfies React.CSSProperties}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function EyeIcon() {
   return (
@@ -43,28 +43,40 @@ function EyeOffIcon() {
 
 interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
+  label?: string;
+  errorShake?: boolean;
 }
 
-export function PasswordInput({ name, ...props }: PasswordInputProps) {
+export function PasswordInput({ name, label, errorShake, ...props }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
+  const [shake, setShake] = useState(errorShake);
+
+  useEffect(() => { setShake(errorShake); }, [errorShake]);
 
   return (
-    <div className="auth-input-wrap">
+    <div className="input-floating-label-wrap">
       <input
-        className="auth-input"
+        className={`auth-input ${shake ? "input-error input-error-shake" : ""}`}
         type={visible ? "text" : "password"}
         name={name}
+        placeholder=" "
         {...props}
+        style={{ paddingRight: "2.75rem", ...(props.style || {}) }}
+        onAnimationEnd={(e) => {
+          if (e.animationName === "inputShake") setShake(false);
+          props.onAnimationEnd?.(e);
+        }}
       />
       <button
         type="button"
         className="auth-input-eye"
         aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
         onClick={() => setVisible((v) => !v)}
-        style={{ minWidth: "44px", minHeight: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+        style={{ position: "absolute", right: "0.75rem", top: "50%", transform: "translateY(-50%)", margin: 0, minWidth: "44px", minHeight: "44px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
       >
         {visible ? <EyeOffIcon /> : <EyeIcon />}
       </button>
+      {label && <label htmlFor={name} className="input-floating-label">{label}</label>}
     </div>
   );
 }

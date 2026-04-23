@@ -48,81 +48,95 @@ export default async function SignUpPage({
 
           <form className="auth-form" action={signUp}>
             <AuthForm>
-              <label className="auth-label">
-                Nome profissional
+              <div className="input-floating-label-wrap">
                 <input
-                  className="auth-input"
+                  id="signup-displayName"
+                  className={`auth-input ${errorField === "displayName" ? "input-error input-error-shake" : ""}`}
                   name="displayName"
-                  placeholder="Dra. Helena Prado"
+                  placeholder=" "
                   required
+                  onAnimationEnd={(e) => {
+                    if (e.animationName === "inputShake") {
+                      e.currentTarget.classList.remove("input-error-shake");
+                    }
+                  }}
                 />
-                {errorField === "displayName" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+                <label htmlFor="signup-displayName" className="input-floating-label">Nome profissional</label>
+              </div>
+              {errorField === "displayName" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
-              <label className="auth-label">
-                CRP
+              <div className="input-floating-label-wrap">
                 <MaskedInput
                   mask="crp"
-                  className="auth-input"
+                  id="signup-crp"
+                  className={`auth-input ${errorField === "crp" ? "input-error input-error-shake" : ""}`}
                   name="crp"
-                  placeholder="CRP 06/000000"
+                  placeholder=" "
                   required
+                  onAnimationEnd={(e) => {
+                    if (e.animationName === "inputShake") {
+                      e.currentTarget.classList.remove("input-error-shake");
+                    }
+                  }}
                 />
-                {errorField === "crp" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+                <label htmlFor="signup-crp" className="input-floating-label">CRP</label>
+              </div>
+              {errorField === "crp" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
-              <label className="auth-label">
-                E-mail
+              <div className="input-floating-label-wrap">
                 <input
-                  className="auth-input"
+                  id="signup-email"
+                  className={`auth-input ${errorField === "email" ? "input-error input-error-shake" : ""}`}
                   name="email"
-                  placeholder="voce@consultorio.com.br"
+                  placeholder=" "
                   type="email"
                   required
+                  onAnimationEnd={(e) => {
+                    if (e.animationName === "inputShake") {
+                      e.currentTarget.classList.remove("input-error-shake");
+                    }
+                  }}
                 />
-                {errorField === "email" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+                <label htmlFor="signup-email" className="input-floating-label">E-mail</label>
+              </div>
+              {errorField === "email" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
-              <label className="auth-label">
-                Senha
-                <PasswordInput
-                  name="password"
-                  placeholder="Crie uma senha forte"
-                  required
-                />
-                <p
-                  style={
-                    {
-                      fontSize: "0.8rem",
-                      color: "var(--color-text-3)",
-                      margin: 0,
-                    } satisfies React.CSSProperties
-                  }
-                >
-                  Use pelo menos 8 caracteres.
-                </p>
-                {errorField === "password" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+              <PasswordInput
+                name="password"
+                label="Senha"
+                errorShake={errorField === "password"}
+                required
+              />
+              <p
+                style={
+                  {
+                    fontSize: "0.8rem",
+                    color: "var(--color-text-3)",
+                    margin: 0,
+                  } satisfies React.CSSProperties
+                }
+              >
+                Use pelo menos 8 caracteres.
+              </p>
+              {errorField === "password" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
-              <label className="auth-label">
-                Confirmar senha
-                <PasswordInput
-                  name="confirmPassword"
-                  placeholder="Repita a senha"
-                  required
-                />
-                {errorField === "confirmPassword" && errorMessage && (
-                  <span className="auth-field-error">{errorMessage}</span>
-                )}
-              </label>
+              <PasswordInput
+                name="confirmPassword"
+                label="Confirmar senha"
+                errorShake={errorField === "confirmPassword"}
+                required
+              />
+              {errorField === "confirmPassword" && errorMessage && (
+                <span className="auth-field-error">{errorMessage}</span>
+              )}
 
               <SubmitButton label="Continuar para verificação" fullWidth />
 
