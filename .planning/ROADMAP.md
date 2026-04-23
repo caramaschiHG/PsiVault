@@ -114,7 +114,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 31-01-PLAN.md — Dev Observability Tools: Lighthouse CI, memlab, react-scan
+- [x] 31-01-PLAN.md — Dev Observability Tools: Lighthouse CI, memlab, react-scan
 - [ ] 31-02-PLAN.md — RUM Dashboard: agregações p75, /admin/performance, cleanup
 - [ ] 31-03-PLAN.md — Report Generator: script `performance:report`, relatório Markdown
 
@@ -213,7 +213,7 @@ Plans:
 | 28. Streaming e Suspense Granular | v1.4 | 4/4 | Complete | 2026-04-23 |
 | 29. Cache Seletivo e Seguro | v1.4 | 3/3 | Complete | 2026-04-23 |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
-| 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
+| 31. Medição, Observabilidade e Iteração | v1.4 | 1/3 | In Progress|  |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
 | 33. Micro-interações em Componentes Base | v1.5 | 0/3 | Ready to execute | — |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |

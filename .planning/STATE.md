@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Performance Profunda
 status: Ready to execute
-stopped_at: Phase 31 context gathered
-last_updated: "2026-04-23T20:12:48.932Z"
+stopped_at: Completed 31-01-PLAN.md
+last_updated: "2026-04-23T20:40:18.291Z"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 11
-  completed_plans: 11
-  percent: 100
+  total_plans: 14
+  completed_plans: 12
+  percent: 86
 ---
 
 # STATE
@@ -22,8 +22,8 @@ progress:
 
 ## Current Position
 
-Phase: 29-cache-seletivo — COMPLETE
-Plan: —
+Phase: 31 (medi-o-observabilidade-e-itera-o) — EXECUTING
+Plan: 2 of 3
 **Status**: Phase 29 fully executed and verified. All 3 plans complete. Build passes, 419 tests pass. Ready for Phase 30.
 **Last activity**: 2026-04-23 — Phase 29 completed with cache foundation, revalidatePath scope audit, and revalidateTag integration.
 
@@ -80,6 +80,9 @@ Plan: —
 - [v1.5 Phase 32]: Todos os 13 keyframes migrados de globals.css para motion.css.
 - [v1.5 Phase 32]: Toda animação em globals.css usa tokens --duration-* e --ease-*.
 - [v1.5 Phase 32]: prefers-reduced-motion: reduce cobre todas as classes de animação (11 classes + utilitários).
+- [Phase 31-medi-o-observabilidade-e-itera-o]: react-scan importado dinamicamente com gate NODE_ENV === 'development' para garantir zero impacto no bundle de produção
+- [Phase 31-medi-o-observabilidade-e-itera-o]: Lighthouse CI configura 8 rotas do vault com 3 runs e thresholds rigorosos de CWV
+- [Phase 31-medi-o-observabilidade-e-itera-o]: memlab scenario navega pacientes -> atendimentos -> prontuario com waits de 2s entre passos
 
 ### Todos
 
@@ -94,6 +97,6 @@ Plan: —
 
 ## Session Continuity
 
-Last session: 2026-04-23T20:12:48.924Z
-Stopped at: Phase 31 context gathered
-Resume file: .planning/phases/31-medi-o-observabilidade-e-itera-o/31-CONTEXT.md
+Last session: 2026-04-23T20:40:18.283Z
+Stopped at: Completed 31-01-PLAN.md
+Resume file: None
