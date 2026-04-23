@@ -95,8 +95,11 @@ Plans:
   3. Zero tags `<img>` raw permanecem na codebase
   4. Requests externos de fontes são eliminados ou migrados para `next/font`
   5. Scripts de terceiros carregam com estratégia apropriada (`lazyOnload`/`worker`)
-**Plans**: TBD
+**Plans**: 1 plan
 **UI hint**: yes
+
+Plans:
+- [ ] 30-01-PLAN.md — Lazy Loading de Componentes Pesados, Documentação de Exceções <img>, e Verificação de Bundle
 
 ### Phase 31: Medição, Observabilidade e Iteração
 **Goal**: Time tem visibilidade contínua de performance e relatório validado de melhorias
