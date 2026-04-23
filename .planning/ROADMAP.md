@@ -121,7 +121,7 @@ Plans:
 ### 📋 v1.5 Motion & Feel — Interações Fluidas (Planned)
 
 - [x] **Phase 32: Motion Tokens & Foundation CSS** — Tokens de duration/easing/stagger, reduced motion fallback, utility classes
-- [ ] **Phase 33: Micro-interações em Componentes Base** — Hover/focus/active states, focus rings, input micro-interactions, smooth scroll
+- [x] **Phase 33: Micro-interações em Componentes Base** — Hover/focus/active states, focus rings, input micro-interactions, smooth scroll (completed 2026-04-23)
 - [ ] **Phase 34: Feedback de Ação e Loading** — Toast AnimatePresence, useTransition em botões, skeleton shimmer, spinner
 - [ ] **Phase 35: Listas e Transições de Página** — Staggered lists, page transition fade, layout animations expand/collapse
 - [ ] **Phase 36: Polish, Accessibility & Measurement** — Motion audit, reduced motion test, INP/CLS validation, docs
@@ -161,8 +161,8 @@ Plans:
 
 Plans:
 - [x] 33-01-PLAN.md — CSS Foundation & Component Primitives: focus rings, card hover, button active, input shake, floating labels, sidebar nav transitions
-- [ ] 33-02-PLAN.md — Auth Forms Floating Labels & Error Shake: sign-in, sign-up, reset-password, complete-profile, password-input
-- [ ] 33-03-PLAN.md — Vault Forms & Verification: expense-filters, expense-side-panel, expense-category-modal, reminders-section, search-bar
+- [x] 33-02-PLAN.md — Auth Forms Floating Labels & Error Shake: sign-in, sign-up, reset-password, complete-profile, password-input
+- [x] 33-03-PLAN.md — Vault Forms & Verification: expense-filters, expense-side-panel, expense-category-modal, reminders-section, search-bar
 
 ### Phase 34: Feedback de Ação e Loading
 **Goal**: Usuários recebem feedback visual calmo e imediato sobre o estado de suas ações
@@ -215,7 +215,7 @@ Plans:
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 3/3 | Complete   | 2026-04-23 |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
-| 33. Micro-interações em Componentes Base | v1.5 | 1/3 | In Progress|  |
+| 33. Micro-interações em Componentes Base | v1.5 | 3/3 | Complete   | 2026-04-23 |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
 | 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
