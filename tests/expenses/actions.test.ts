@@ -11,9 +11,9 @@ vi.mock("@/lib/supabase/session", () => ({
 }));
 
 // Mock next/cache
-vi.mock("next/cache", () => ({
-  revalidatePath: vi.fn(),
-}));
+vi.mock("next/cache");
+
+
 
 describe("expense actions — workspace scoping", () => {
   let expenseRepo: InMemoryExpenseRepository;

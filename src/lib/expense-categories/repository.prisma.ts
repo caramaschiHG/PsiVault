@@ -1,4 +1,6 @@
+import { unstable_cache } from "next/cache";
 import { db } from "../db";
+import { CACHE_TAGS } from "../cache/tags";
 import type { ExpenseCategoryRepository } from "./repository";
 import type { ExpenseCategory } from "./model";
 
@@ -25,6 +27,30 @@ function mapToDomain(row: {
 }
 
 export function createPrismaExpenseCategoryRepository(): ExpenseCategoryRepository {
+  const cachedFindByWorkspace = unstable_cache(
+    async (workspaceId: string): Promise<ExpenseCategory[]> => {
+      const rows = await db.expenseCategory.findMany({
+        where: { workspaceId, deletedAt: null },
+        orderBy: { name: "asc" },
+      });
+      return rows.map(mapToDomain);
+    },
+    ["expense-categories"],
+    { revalidate: 3600, tags: [CACHE_TAGS.expenseCategories] },
+  );
+
+  const cachedFindActiveByWorkspace = unstable_cache(
+    async (workspaceId: string): Promise<ExpenseCategory[]> => {
+      const rows = await db.expenseCategory.findMany({
+        where: { workspaceId, archived: false, deletedAt: null },
+        orderBy: { name: "asc" },
+      });
+      return rows.map(mapToDomain);
+    },
+    ["expense-categories", "active"],
+    { revalidate: 3600, tags: [CACHE_TAGS.expenseCategories] },
+  );
+
   return {
     async findById(workspaceId: string, id: string): Promise<ExpenseCategory | null> {
       const row = await db.expenseCategory.findFirst({ where: { id, workspaceId } });
@@ -32,19 +58,11 @@ export function createPrismaExpenseCategoryRepository(): ExpenseCategoryReposito
     },
 
     async findByWorkspace(workspaceId: string): Promise<ExpenseCategory[]> {
-      const rows = await db.expenseCategory.findMany({
-        where: { workspaceId, deletedAt: null },
-        orderBy: { name: "asc" },
-      });
-      return rows.map(mapToDomain);
+      return cachedFindByWorkspace(workspaceId);
     },
 
     async findActiveByWorkspace(workspaceId: string): Promise<ExpenseCategory[]> {
-      const rows = await db.expenseCategory.findMany({
-        where: { workspaceId, archived: false, deletedAt: null },
-        orderBy: { name: "asc" },
-      });
-      return rows.map(mapToDomain);
+      return cachedFindActiveByWorkspace(workspaceId);
     },
 
     async create(category: ExpenseCategory): Promise<ExpenseCategory> {

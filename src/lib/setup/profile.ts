@@ -1,6 +1,8 @@
 import { ServiceMode as PrismaServiceMode } from "@prisma/client";
 
+import { unstable_cache } from "next/cache";
 import { db } from "../db";
+import { CACHE_TAGS, buildCacheKey } from "../cache/tags";
 import {
   SERVICE_MODE_OPTIONS,
   type ServiceMode,
@@ -149,6 +151,19 @@ export function normalizeServiceModes(input: Iterable<string>) {
   return nextModes;
 }
 
+const _getCachedPracticeProfile = unstable_cache(
+  async (workspaceId: string) => {
+    const profile = await db.practiceProfile.findUnique({
+      where: { workspaceId },
+      include: { signatureAsset: true },
+    });
+
+    return mapProfileRowToSnapshot(profile);
+  },
+  ["practice-profile"],
+  { revalidate: 3600, tags: [CACHE_TAGS.practiceProfile] },
+);
+
 export async function getPracticeProfileSnapshot(
   _accountId?: string,
   workspaceId?: string,
@@ -157,12 +172,7 @@ export async function getPracticeProfileSnapshot(
     return { ...DEFAULT_PROFILE_SNAPSHOT };
   }
 
-  const profile = await db.practiceProfile.findUnique({
-    where: { workspaceId },
-    include: { signatureAsset: true },
-  });
-
-  return mapProfileRowToSnapshot(profile);
+  return _getCachedPracticeProfile(workspaceId);
 }
 
 export async function savePracticeProfile(input: {
