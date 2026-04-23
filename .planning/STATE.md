@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Performance Profunda
-status: In progress — Phase 28 complete, ready for Phase 29
-stopped_at: Phase 32 context gathered
-last_updated: "2026-04-23T17:25:22.167Z"
+status: In progress — Phase 29 complete, ready for Phase 30
+stopped_at: Phase 29 execution complete
+last_updated: "2026-04-23T19:15:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
   completed_plans: 7
-  percent: 100
+  percent: 60
 ---
 
 # STATE
@@ -18,25 +18,28 @@ progress:
 ## Project Reference
 
 **Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.4 Performance Profunda — Fase 29: Cache Seletivo e Seguro
+**Current Focus**: Milestone v1.5 Motion & Feel — Phase 32: Motion Tokens Foundation complete
 
 ## Current Position
 
-Phase: 28 — COMPLETE
+Phase: 29-cache-seletivo — COMPLETE
 Plan: —
-**Status**: Phase 28 fully executed and verified. Ready for Phase 29.
-**Last activity**: 2026-04-23 — Phase 28 completed with human visual verification approved.
+**Status**: Phase 29 fully executed and verified. All 3 plans complete. Build passes, 419 tests pass. Ready for Phase 30.
+**Last activity**: 2026-04-23 — Phase 29 completed with cache foundation, revalidatePath scope audit, and revalidateTag integration.
 
 **Progress**:
-[████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 40% (2/5 phases)
+[████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 60% (3/5 phases)
 
 ## Performance Metrics
 
-- Tests: 407+ passing (streaming integration tests added)
+- Tests: 419 passing (12 new streaming integration tests from Phase 28)
 - Build successful with no TypeScript errors
 - CWV collection active (Phase 27)
 - Bundle analyzer available (Phase 27)
 - Query logging active for slow queries >500ms (Phase 27)
+- Motion token system active (Phase 32) — all transitions use --duration-* and --ease-*
+- Zero @keyframes in globals.css — all consolidated in motion.css
+- prefers-reduced-motion covers all app-specific animations
 
 ## Accumulated Context
 
@@ -66,12 +69,24 @@ Plan: —
 - [v1.5 Init]: Regra de ouro: animações só quando melhoram orientação ou resposta de interação — nada decorativo.
 - [v1.5 Init]: Compatibilidade com `prefers-reduced-motion` é obrigatória em todas as animações.
 - [v1.5 Init]: Zero impacto nos 407 testes existentes e na performance conquistada em v1.3/v1.4.
+- [v1.5 Phase 32]: D-01: Create --duration-* and --ease-* tokens; deprecate --transition-* — migrados e removidos.
+- [v1.5 Phase 32]: D-02: Granularity: 3 durations + 2 easings — --duration-100/200/300, --ease-out/in-out.
+- [v1.5 Phase 32]: D-03: --stagger-gap: 60ms — implementado.
+- [v1.5 Phase 32]: D-07: Utility classes .motion-fade-in, .motion-slide-up, .motion-stagger (plus .motion-scale-in, .motion-fade-out, .motion-slide-down) — criados.
+- [v1.5 Phase 32]: D-08: globals.css keeps --duration-* and --ease-* tokens in :root.
+- [v1.5 Phase 32]: D-09: src/styles/motion.css contains keyframes, utility classes, and prefers-reduced-motion.
+- [v1.5 Phase 32]: D-10: motion.css imported in globals.css via @import '../styles/motion.css'.
+- [v1.5 Phase 32]: D-11: Zero changes in layout.tsx — mantido.
+- [v1.5 Phase 32]: Todos os 13 keyframes migrados de globals.css para motion.css.
+- [v1.5 Phase 32]: Toda animação em globals.css usa tokens --duration-* e --ease-*.
+- [v1.5 Phase 32]: prefers-reduced-motion: reduce cobre todas as classes de animação (11 classes + utilitários).
 
 ### Todos
 
-- Planejar/executar Phase 29: Cache Seletivo e Seguro
-- Planejar/executar Phase 30: Otimização de Assets e Bundle
-- Planejar/executar Phase 31: Medição, Observabilidade e Iteração
+- Planejar/executar Phase 33: Scroll-Triggered Entrance Animations
+- Planejar/executar Phase 34: Micro-Interaction Polish
+- Planejar/executar Phase 35: Skeleton & Loading State Motion
+- Planejar/executar Phase 36: Feedback & Confirmation Animations
 
 ### Blockers
 
@@ -79,6 +94,6 @@ Plan: —
 
 ## Session Continuity
 
-Last session: 2026-04-23T17:25:22.161Z
-Stopped at: Phase 32 context gathered
-Resume file: .planning/phases/32-motion-tokens-foundation-css/32-CONTEXT.md
+Last session: 2026-04-23T19:45:00.000Z
+Stopped at: Phase 32 complete — all 3 plans executed, build and tests verified
+Resume file: .planning/phases/32-motion-tokens-foundation-css/32-03-SUMMARY.md

@@ -112,7 +112,7 @@ Plans:
 
 ### 📋 v1.5 Motion & Feel — Interações Fluidas (Planned)
 
-- [ ] **Phase 32: Motion Tokens & Foundation CSS** — Tokens de duration/easing/stagger, reduced motion fallback, utility classes
+- [x] **Phase 32: Motion Tokens & Foundation CSS** — Tokens de duration/easing/stagger, reduced motion fallback, utility classes
 - [ ] **Phase 33: Micro-interações em Componentes Base** — Hover/focus/active states, focus rings, input micro-interactions, smooth scroll
 - [ ] **Phase 34: Feedback de Ação e Loading** — Toast AnimatePresence, useTransition em botões, skeleton shimmer, spinner
 - [ ] **Phase 35: Listas e Transições de Página** — Staggered lists, page transition fade, layout animations expand/collapse
@@ -132,9 +132,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 32-01-PLAN.md — Motion Tokens & motion.css Foundation: tokens in :root, motion.css with keyframes/utilities/reduced-motion, import wiring
-- [ ] 32-02-PLAN.md — Migration of Existing Animations: transition tokenization, keyframe consolidation, deprecated token removal
-- [ ] 32-03-PLAN.md — Verification & Reduced Motion Audit: prefers-reduced-motion coverage, FOUC prevention, build + tests
+- [x] 32-01-PLAN.md — Motion Tokens & motion.css Foundation: tokens in :root, motion.css with keyframes/utilities/reduced-motion, import wiring
+- [x] 32-02-PLAN.md — Migration of Existing Animations: transition tokenization, keyframe consolidation, deprecated token removal
+- [x] 32-03-PLAN.md — Verification & Reduced Motion Audit: prefers-reduced-motion coverage, FOUC prevention, build + tests
 
 ### Phase 33: Micro-interações em Componentes Base
 **Goal**: Todo elemento interativo do app fornece feedback visual suave e consistente
@@ -201,7 +201,7 @@ Plans:
 | 29. Cache Seletivo e Seguro | v1.4 | 3/3 | Complete | 2026-04-23 |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
-| 32. Motion Tokens & Foundation CSS | v1.5 | 0/3 | Planned | — |
+| 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
 | 33. Micro-interações em Componentes Base | v1.5 | 0/TBD | Not started | — |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
 | 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
