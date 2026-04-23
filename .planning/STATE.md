@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Performance Profunda
-status: Phase 27 planned — ready to execute
-stopped_at: Phase 27 planning complete
-last_updated: "2026-04-23T16:00:00.000Z"
+status: Phase 27 completed — ready for Phase 28
+stopped_at: Phase 27 execution complete
+last_updated: "2026-04-23T16:05:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 0
+  completed_plans: 3
 ---
 
 # STATE
@@ -17,21 +17,24 @@ progress:
 ## Project Reference
 
 **Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.4 Performance Profunda — roadmap definido, aguardando início do planning da Phase 27
+**Current Focus**: Milestone v1.4 Performance Profunda — Phase 27 completa, aguardando início da Phase 28
 
 ## Current Position
 
 Phase: 27 — Diagnóstico e Fundação de Dados
-Plan: —
-**Status**: Roadmap defined
-**Last activity**: 2026-04-23 — Roadmap v1.4 criado com 5 fases e 25 requisitos mapeados
+Plan: 03 (complete)
+**Status**: All plans executed and committed
+**Last activity**: 2026-04-23 — Phase 27 execution completed
 
 **Progress**:
-[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/5 phases)
+[███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 20% (1/5 phases)
 
 ## Performance Metrics
 
-- N/A (baseline será estabelecido na Phase 27)
+- Phase 27 duration: ~50 min total
+- 3 plans executed, 10 commits created
+- 407 tests passing (no regressions)
+- Build successful with no TypeScript errors
 
 ## Accumulated Context
 
@@ -48,10 +51,14 @@ Plan: —
 - [v1.4 Roadmap]: Phase 27 first — database performance é foundation; indexes e pooling beneficiam todas as fases subsequentes.
 - [v1.4 Roadmap]: Phase 29 depois de Phase 28 — caching não deve mascarar queries lentas; arquitetura de streaming estável antes de cache.
 - [v1.4 Roadmap]: Phase 31 last — medição before/after requer todas as otimizações anteriores instaladas.
+- [v1.4 Phase 27]: Bundle analyzer ativado condicionalmente via ANALYZE=true — não adiciona overhead em builds normais.
+- [v1.4 Phase 27]: CWV collector envia métricas anonimamente (workspaceId null permitido) — dados de timing não contêm PII.
+- [v1.4 Phase 27]: Query logging threshold 500ms — suficiente para capturar queries lentas sem poluir console.
+- [v1.4 Phase 27]: searchByName usa database-level search com LIST_SELECT — elimina carregamento de todos os pacientes em memória.
 
 ### Todos
 
-- Iniciar `/gsd-plan-phase 27` quando aprovado
+- Iniciar `/gsd-plan-phase 28` (Streaming e Suspense Granular)
 
 ### Blockers
 
@@ -59,6 +66,6 @@ Plan: —
 
 ## Session Continuity
 
-Last session: 2026-04-23T15:33:38.631Z
-Stopped at: Phase 27 context gathered
-Resume file: .planning/phases/27-diagn-stico-e-funda-o-de-dados/27-CONTEXT.md
+Last session: 2026-04-23T16:05:00.000Z
+Stopped at: Phase 27 complete — all 3 plans executed, tested, and committed
+Resume file: .planning/phases/27-diagn-stico-e-funda-o-de-dados/27-03-SUMMARY.md

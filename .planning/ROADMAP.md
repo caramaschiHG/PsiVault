@@ -24,7 +24,7 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
 
 ### 📋 v1.4 Performance Profunda (Planned)
 
-- [ ] **Phase 27: Diagnóstico e Fundação de Dados** — Baseline de bundle, CWV, índices DB e pooling
+- [x] **Phase 27: Diagnóstico e Fundação de Dados** — Baseline de bundle, CWV, índices DB e pooling (3/3 plans) — completed 2026-04-23
 - [ ] **Phase 28: Streaming e Suspense Granular** — loading.tsx, async sections, React 19 use API, skeletons
 - [ ] **Phase 29: Cache Seletivo e Seguro** — unstable_cache, revalidateTag, workspace-scoped keys, revalidatePath audit
 - [ ] **Phase 30: Otimização de Assets e Bundle** — next/dynamic, optimizePackageImports, next/image, next/font, next/script
@@ -45,9 +45,9 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
 **Plans**: 3 plans
 
 Plans:
-- [ ] 27-01-PLAN.md — Schema Foundation: PerformanceMetric model + composite indexes + Supavisor docs
-- [ ] 27-02-PLAN.md — Bundle Analyzer e CWV: @next/bundle-analyzer, web-vitals, /api/metrics endpoint
-- [ ] 27-03-PLAN.md — Query Logging e Column Selection: Prisma $extends, searchByName, EXPLAIN ANALYZE
+- [x] 27-01-PLAN.md — Schema Foundation: PerformanceMetric model + composite indexes + Supavisor docs
+- [x] 27-02-PLAN.md — Bundle Analyzer e CWV: @next/bundle-analyzer, web-vitals, /api/metrics endpoint
+- [x] 27-03-PLAN.md — Query Logging e Column Selection: Prisma $extends, searchByName, EXPLAIN ANALYZE
 
 ### Phase 28: Streaming e Suspense Granular
 **Goal**: Usuários percebem carregamento mais rápido em rotas pesadas com renderização progressiva

@@ -4,12 +4,12 @@
 
 ### Diagnóstico e Fundação (PERF)
 
-- [ ] **PERF-01**: Bundle size baseline estabelecido via `@next/bundle-analyzer` com script de build `ANALYZE=true`
-- [ ] **PERF-02**: Core Web Vitals instrumentados via `web-vitals` library com endpoint de coleta RUM
-- [ ] **PERF-03**: Índices compostos adicionados em `Appointment` (`[workspaceId, status, startsAt]`) e `SessionCharge` (`[workspaceId, status, createdAt]`)
-- [ ] **PERF-04**: Supavisor transaction mode configurado (`DATABASE_URL` com `pgbouncer=true&prepareThreshold=0`, `DIRECT_URL` para migrations)
-- [ ] **PERF-05**: Prisma query logging extension (`$extends`) adicionado para identificar queries lentas (threshold >500ms)
-- [ ] **PERF-06**: Column selection (`LIST_SELECT` pattern) estendido para endpoints de search de pacientes
+- [x] **PERF-01**: Bundle size baseline estabelecido via `@next/bundle-analyzer` com script de build `ANALYZE=true`
+- [x] **PERF-02**: Core Web Vitals instrumentados via `web-vitals` library com endpoint de coleta RUM
+- [x] **PERF-03**: Índices compostos adicionados em `Appointment` (`[workspaceId, status, startsAt]`) e `SessionCharge` (`[workspaceId, status, createdAt]`)
+- [x] **PERF-04**: Supavisor transaction mode configurado (`DATABASE_URL` com `pgbouncer=true&prepareThreshold=0`, `DIRECT_URL` para migrations)
+- [x] **PERF-05**: Prisma query logging extension (`$extends`) adicionado para identificar queries lentas (threshold >500ms)
+- [x] **PERF-06**: Column selection (`LIST_SELECT` pattern) estendido para endpoints de search de pacientes
 
 ### Streaming e Suspense (STREAM)
 
@@ -74,12 +74,12 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| PERF-01 | Phase 27 | Pending |
-| PERF-02 | Phase 27 | Pending |
-| PERF-03 | Phase 27 | Pending |
-| PERF-04 | Phase 27 | Pending |
-| PERF-05 | Phase 27 | Pending |
-| PERF-06 | Phase 27 | Pending |
+| PERF-01 | Phase 27 | Completed |
+| PERF-02 | Phase 27 | Completed |
+| PERF-03 | Phase 27 | Completed |
+| PERF-04 | Phase 27 | Completed |
+| PERF-05 | Phase 27 | Completed |
+| PERF-06 | Phase 27 | Completed |
 | STREAM-01 | Phase 28 | Pending |
 | STREAM-02 | Phase 28 | Pending |
 | STREAM-03 | Phase 28 | Pending |
