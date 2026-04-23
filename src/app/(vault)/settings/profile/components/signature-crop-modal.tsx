@@ -275,6 +275,8 @@ export function SignatureCropModal({ imageUrl, onConfirm, onCancel }: SignatureC
             <div style={resultPanelOriginalStyle}>
               {/* Fix 5: label cor sólida, contraste adequado */}
               <span style={resultLabelOriginalStyle}>Original</span>
+              {/* next/image não se aplica: object URL efêmero gerado por URL.createObjectURL()
+                  durante o crop. A URL dura segundos e não se beneficia do otimizador do Next.js. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {beforeUrl && (
                 <img src={beforeUrl} alt="Recorte original da foto" style={resultImgStyle} />
@@ -282,6 +284,8 @@ export function SignatureCropModal({ imageUrl, onConfirm, onCancel }: SignatureC
             </div>
             <div style={resultPanelDigitalStyle}>
               <span style={resultLabelDigitalStyle}>Digitalizada</span>
+              {/* next/image não se aplica: object URL efêmero do resultado processado.
+                  Gerado por URL.createObjectURL() — não há domínio estável para configurar em images.remotePatterns. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {resultUrl && (
                 <img src={resultUrl} alt="Assinatura digitalizada com fundo removido" style={resultImgStyle} />

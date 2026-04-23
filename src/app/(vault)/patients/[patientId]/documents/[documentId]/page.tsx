@@ -132,6 +132,9 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
 
         {signatureImageUrl && !isPrivate && (
           <div style={signatureBlockStyle}>
+            {/* next/image não se aplica: signed URL do Supabase Storage com expiração de 1h.
+                O Supabase já serve imagens otimizadas; adicionar o domínio em images.remotePatterns
+                aumentaria a superfície de configuração sem ganho proporcional. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={signatureImageUrl}

@@ -40,10 +40,7 @@ import { TodayWhatsAppPanel } from "./components/today-whatsapp-panel";
 import { MeetingLinkForm } from "./components/meeting-link-form";
 import { RemoteIssueForm } from "./components/remote-issue-form";
 import { AgendaDayView } from "./components/agenda-day-view";
-import { CalendarGrid } from "./components/calendar-grid";
-import { WeekCalendarGrid } from "./components/week-calendar-grid";
 import { AgendaMonthView } from "./components/agenda-month-view";
-import { MiniCalendar } from "./components/mini-calendar";
 import { AgendaKeyboard } from "./components/agenda-keyboard-wrapper";
 import { useKeyboardShortcuts } from "./components/agenda-keyboard";
 import { CompletedAppointmentNextSessionAction } from "./components/completed-appointment-next-session-action";
@@ -59,6 +56,7 @@ import { AgendaErrorBoundary } from "./components/agenda-error-boundary";
 import { getFinanceRepository } from "../../../lib/finance/store";
 import { autoMarkOverdue } from "../../../lib/finance/model";
 import { db } from "../../../lib/db";
+import { MiniCalendar, CalendarGrid, WeekCalendarGrid } from "./components/agenda-grids-lazy";
 
 const TIMEZONE = "America/Sao_Paulo";
 const DAY_MS = 24 * 60 * 60 * 1000;
