@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: Motion & Feel — Interações Fluidas
-status: Defining requirements
-stopped_at: Milestone initialized
-last_updated: "2026-04-23T17:00:00.000Z"
+status: Roadmap created — ready for execution
+stopped_at: Milestone v1.5 roadmap created (5 phases, 26 requirements)
+last_updated: "2026-04-23T17:30:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0

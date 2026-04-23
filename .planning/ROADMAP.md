@@ -6,7 +6,8 @@
 - ✅ **v1.1 Notifications** — Phases 13–16 (shipped 2026-03)
 - ✅ **v1.2 Finance** — Phases 17–22 (shipped 2026-04)
 - ✅ **v1.3 Performance** — Phases 23–26 (shipped 2026-04-22)
-- 📋 **v1.4 Performance Profunda** — Phases 27–31 (planned)
+- 📋 **v1.4 Performance Profunda** — Phases 27–31 (in progress)
+- 📋 **v1.5 Motion & Feel** — Phases 32–36 (planned)
 
 ## Phases
 
@@ -104,6 +105,79 @@ Plans:
   5. Relatório publicado mostra métricas before/after com próximos passos acionáveis
 **Plans**: TBD
 
+### 📋 v1.5 Motion & Feel — Interações Fluidas (Planned)
+
+- [ ] **Phase 32: Motion Tokens & Foundation CSS** — Tokens de duration/easing/stagger, reduced motion fallback, utility classes
+- [ ] **Phase 33: Micro-interações em Componentes Base** — Hover/focus/active states, focus rings, input micro-interactions, smooth scroll
+- [ ] **Phase 34: Feedback de Ação e Loading** — Toast AnimatePresence, useTransition em botões, skeleton shimmer, spinner
+- [ ] **Phase 35: Listas e Transições de Página** — Staggered lists, page transition fade, layout animations expand/collapse
+- [ ] **Phase 36: Polish, Accessibility & Measurement** — Motion audit, reduced motion test, INP/CLS validation, docs
+
+## Phase Details
+
+### Phase 32: Motion Tokens & Foundation CSS
+**Goal**: Sistema unificado de motion tokens e utility classes serve como fundação para todo o milestone
+**Depends on**: Nothing (primeira fase do milestone v1.5)
+**Requirements**: MOTF-01, MOTF-02, MOTF-03, MOTF-04
+**Success Criteria** (o que deve ser VERDADEIRO):
+  1. `globals.css` inclui tokens `--duration-*`, `--ease-*`, `--stagger-gap` utilizáveis por qualquer componente
+  2. Ativando `prefers-reduced-motion: reduce` no sistema desativa instantaneamente todas as animações do app
+  3. Utility classes `.motion-fade-in`, `.motion-slide-up`, `.motion-stagger` funcionam em Server Components sem JS
+  4. Nenhum flash de conteúdo não-estilizado ocorre em primeiro paint (CSS síncrono)
+**Plans**: TBD
+
+### Phase 33: Micro-interações em Componentes Base
+**Goal**: Todo elemento interativo do app fornece feedback visual suave e consistente
+**Depends on**: Phase 32
+**Requirements**: MICR-01, MICR-02, MICR-03, MICR-04, MICR-05, MICR-06, MICR-07
+**Success Criteria** (o que deve ser VERDADEIRO):
+  1. Todos os botões possuem hover, active e disabled states com transição suave (≤200ms)
+  2. Todos os cards reagem a hover com elevação ou sombra suave
+  3. Focus rings são visíveis e elegantes em todos os elementos focáveis (keyboard navigation)
+  4. Inputs possuem border glow no focus e shake sutil em erro de validação
+  5. Itens de navegação indicam estado ativo com transição suave
+  6. Cursores apropriados em todos os elementos interativos
+  7. Scroll entre âncoras e páginas longas é suave
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 34: Feedback de Ação e Loading
+**Goal**: Usuários recebem feedback visual calmo e imediato sobre o estado de suas ações
+**Depends on**: Phase 32, Phase 33
+**Requirements**: FEED-01, FEED-02, FEED-03, FEED-04, FEED-05
+**Success Criteria** (o que deve ser VERDADEIRO):
+  1. Toasts entram com slide+fade e saem com fade — duração ≤300ms, sem bloquear interação
+  2. Botões de Server Action exibem estado de loading visual via `useTransition` (opacity + spinner)
+  3. Skeletons exibem shimmer gradient orgânico em vez de pulse mecânico de opacidade
+  4. Spinner leve (SVG + CSS) disponível para todos os estados de loading
+  5. Erros de formulário acionam border color transition e shake sutil imediato
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 35: Listas e Transições de Página
+**Goal**: Navegação e listagens "respiram" — entram suavemente e transicionam sem cortes secos
+**Depends on**: Phase 32, Phase 33, Phase 34
+**Requirements**: LIST-01, LIST-02, LIST-03, LIST-04
+**Success Criteria** (o que deve ser VERDADEIRO):
+  1. Listagens de pacientes, atendimentos e financeiro exibem staggered animation de entrada (cap 10 itens)
+  2. Navegação entre rotas do vault apresenta fade suave ≤150ms sem bloquear clicks rápidos
+  3. Cards e filtros expansíveis animam altura suavemente sem layout shift
+  4. Adição/remoção de itens em listas fornece feedback visual de movimento
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 36: Polish, Accessibility & Measurement
+**Goal**: Motion é consistente, acessível e não regressa a performance objetiva
+**Depends on**: Phase 32, Phase 33, Phase 34, Phase 35
+**Requirements**: POLI-01, POLI-02, POLI-03, POLI-04, POLI-05
+**Success Criteria** (o que deve ser VERDADEIRO):
+  1. Audit page-by-page confirma que 100% dos elementos interativos têm feedback visual consistente
+  2. Teste com `prefers-reduced-motion: reduce` ativo mostra zero animações persistentes
+  3. INP e CLS permanecem dentro dos thresholds do v1.4 (sem regressão)
+  4. CLAUDE.md documenta padrões de motion, tokens e anti-padrões
+  5. Todos os 407 testes existentes continuam passando
+**Plans**: TBD
+
 ## Progress Table
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -117,6 +191,12 @@ Plans:
 | 29. Cache Seletivo e Seguro | v1.4 | 0/TBD | Not started | — |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
+| 32. Motion Tokens & Foundation CSS | v1.5 | 0/TBD | Not started | — |
+| 33. Micro-interações em Componentes Base | v1.5 | 0/TBD | Not started | — |
+| 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
+| 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
+| 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
 
 ---
 *Milestone v1.4: Performance Profunda — roadmap created: 2026-04-23*
+*Milestone v1.5: Motion & Feel — roadmap updated: 2026-04-23*

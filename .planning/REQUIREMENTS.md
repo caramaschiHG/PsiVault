@@ -72,31 +72,31 @@ Elevar a percepção de qualidade do PsiVault através de animações sutis, mic
 
 | REQ-ID | Phase | Plan |
 |--------|-------|------|
-| MOTF-01 | 29 | TBD |
-| MOTF-02 | 29 | TBD |
-| MOTF-03 | 29 | TBD |
-| MOTF-04 | 29 | TBD |
-| MICR-01 | 30 | TBD |
-| MICR-02 | 30 | TBD |
-| MICR-03 | 30 | TBD |
-| MICR-04 | 30 | TBD |
-| MICR-05 | 30 | TBD |
-| MICR-06 | 30 | TBD |
-| MICR-07 | 30 | TBD |
-| FEED-01 | 31 | TBD |
-| FEED-02 | 31 | TBD |
-| FEED-03 | 31 | TBD |
-| FEED-04 | 31 | TBD |
-| FEED-05 | 31 | TBD |
-| LIST-01 | 32 | TBD |
-| LIST-02 | 32 | TBD |
-| LIST-03 | 32 | TBD |
-| LIST-04 | 32 | TBD |
-| POLI-01 | 33 | TBD |
-| POLI-02 | 33 | TBD |
-| POLI-03 | 33 | TBD |
-| POLI-04 | 33 | TBD |
-| POLI-05 | 33 | TBD |
+| MOTF-01 | 32 | TBD |
+| MOTF-02 | 32 | TBD |
+| MOTF-03 | 32 | TBD |
+| MOTF-04 | 32 | TBD |
+| MICR-01 | 33 | TBD |
+| MICR-02 | 33 | TBD |
+| MICR-03 | 33 | TBD |
+| MICR-04 | 33 | TBD |
+| MICR-05 | 33 | TBD |
+| MICR-06 | 33 | TBD |
+| MICR-07 | 33 | TBD |
+| FEED-01 | 34 | TBD |
+| FEED-02 | 34 | TBD |
+| FEED-03 | 34 | TBD |
+| FEED-04 | 34 | TBD |
+| FEED-05 | 34 | TBD |
+| LIST-01 | 35 | TBD |
+| LIST-02 | 35 | TBD |
+| LIST-03 | 35 | TBD |
+| LIST-04 | 35 | TBD |
+| POLI-01 | 36 | TBD |
+| POLI-02 | 36 | TBD |
+| POLI-03 | 36 | TBD |
+| POLI-04 | 36 | TBD |
+| POLI-05 | 36 | TBD |
 
 ---
 *Last updated: 2026-04-23 — Requirements defined for v1.5*
