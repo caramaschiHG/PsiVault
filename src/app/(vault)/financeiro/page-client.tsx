@@ -4,14 +4,13 @@
 
 "use client";
 
-import { useTransition, useState, useMemo, Suspense } from "react";
+import { useTransition, useState, useMemo, Suspense, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@/components/ui/tabs";
 import type { SessionCharge, Patient } from "./domain-types";
 import { EmptyState } from "@/app/(vault)/components/empty-state";
 import { ChargeSidePanel } from "./components/charge-side-panel";
-import { ExpensesAsyncSection } from "./components/expenses-async-section";
 import { SectionSkeleton } from "@/components/streaming/section-skeleton";
 
 const ptBRDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -45,6 +44,7 @@ interface FinanceiroPageProps {
   nextHref: string;
   drawerId: string | null;
   workspaceId: string;
+  expensesPanel?: ReactNode;
 }
 
 export default function FinanceiroPageClient({
@@ -59,6 +59,7 @@ export default function FinanceiroPageClient({
   nextHref,
   drawerId,
   workspaceId,
+  expensesPanel,
 }: FinanceiroPageProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -343,7 +344,7 @@ export default function FinanceiroPageClient({
             </TabPanel>
             <TabPanel value="despesas">
               <Suspense fallback={<SectionSkeleton />}>
-                <ExpensesAsyncSection workspaceId={workspaceId} />
+                {expensesPanel}
               </Suspense>
             </TabPanel>
           </TabPanels>

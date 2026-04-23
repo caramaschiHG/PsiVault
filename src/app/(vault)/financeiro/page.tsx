@@ -11,6 +11,7 @@ import { resolveSession } from "@/lib/supabase/session";
 import FinanceiroPageClient from "./page-client";
 import { db } from "@/lib/db";
 import { AsyncBoundary } from "@/components/streaming/async-boundary";
+import { ExpensesAsyncSection } from "./components/expenses-async-section";
 import { ChartSkeleton } from "@/components/streaming/chart-skeleton";
 import { SectionSkeleton } from "@/components/streaming/section-skeleton";
 import TrendSection from "./sections/trend-section";
@@ -336,6 +337,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
         nextHref={nextMonthHref(year, month)}
         drawerId={params.drawer || null}
         workspaceId={workspaceId}
+        expensesPanel={<ExpensesAsyncSection workspaceId={workspaceId} />}
       />
 
       {/* Top patients — streams in */}
