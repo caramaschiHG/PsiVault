@@ -13,7 +13,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "postinstall": "prisma generate",
-    "metrics:cleanup": "node scripts/cleanup-metrics.mjs"
+    "metrics:cleanup": "node scripts/cleanup-metrics.mjs",
+    "performance:report": "node scripts/generate-performance-report.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
