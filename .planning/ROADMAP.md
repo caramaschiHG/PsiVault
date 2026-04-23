@@ -124,7 +124,12 @@ Plans:
   2. Ativando `prefers-reduced-motion: reduce` no sistema desativa instantaneamente todas as animações do app
   3. Utility classes `.motion-fade-in`, `.motion-slide-up`, `.motion-stagger` funcionam em Server Components sem JS
   4. Nenhum flash de conteúdo não-estilizado ocorre em primeiro paint (CSS síncrono)
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 32-01-PLAN.md — Motion Tokens & motion.css Foundation: tokens in :root, motion.css with keyframes/utilities/reduced-motion, import wiring
+- [ ] 32-02-PLAN.md — Migration of Existing Animations: transition tokenization, keyframe consolidation, deprecated token removal
+- [ ] 32-03-PLAN.md — Verification & Reduced Motion Audit: prefers-reduced-motion coverage, FOUC prevention, build + tests
 
 ### Phase 33: Micro-interações em Componentes Base
 **Goal**: Todo elemento interativo do app fornece feedback visual suave e consistente
@@ -191,7 +196,7 @@ Plans:
 | 29. Cache Seletivo e Seguro | v1.4 | 0/TBD | Not started | — |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
-| 32. Motion Tokens & Foundation CSS | v1.5 | 0/TBD | Not started | — |
+| 32. Motion Tokens & Foundation CSS | v1.5 | 0/3 | Planned | — |
 | 33. Micro-interações em Componentes Base | v1.5 | 0/TBD | Not started | — |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
 | 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
