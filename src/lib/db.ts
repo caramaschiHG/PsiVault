@@ -1,10 +1,5 @@
 import { PrismaClient, type Workspace } from "@prisma/client";
 
-declare global {
-  // eslint-disable-next-line no-var
-  var __psivaultPrisma__: PrismaClient | undefined;
-}
-
 const prismaClient = new PrismaClient({
   log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
 });
@@ -28,10 +23,17 @@ const extendedClient = prismaClient.$extends({
   },
 });
 
-export const db =
-  globalThis.__psivaultPrisma__ ?? extendedClient;
+type ExtendedPrisma = typeof extendedClient;
 
-globalThis.__psivaultPrisma__ = db;
+const globalForPrisma = globalThis as unknown as {
+  __psivaultPrisma__: ExtendedPrisma | undefined;
+};
+
+export const db = globalForPrisma.__psivaultPrisma__ ?? extendedClient;
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.__psivaultPrisma__ = db;
+}
 
 export function buildOwnedWorkspaceSelector(accountId: string, workspaceId: string) {
   return {

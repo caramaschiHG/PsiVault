@@ -1,35 +1,21 @@
 /**
- * /financeiro — Monthly financial summary with actions.
- *
- * Features:
- * - Month navigation
- * - Overdue indicators (auto-computed)
- * - Inadimplência cards (pending, overdue, received)
- * - Filters: status, patient
- * - Quick pay (1 click with payment method popover)
- * - Patient-grouped list with totals
- * - Monthly trend chart
- * - CSV export
+ * /financeiro — Interactive client parts: charge list, filters, tabs, drawer.
  */
 
 "use client";
 
-import { useTransition, useState, useMemo } from "react";
+import { useTransition, useState, useMemo, Suspense } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@/components/ui/tabs";
 import type { SessionCharge, Patient } from "./domain-types";
 import { EmptyState } from "@/app/(vault)/components/empty-state";
 import { ChargeSidePanel } from "./components/charge-side-panel";
-import { ExpensesSection } from "./components/expenses-section";
+import { ExpensesAsyncSection } from "./components/expenses-async-section";
+import { SectionSkeleton } from "@/components/streaming/section-skeleton";
 
 const ptBRDate = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
 const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
-
-const MONTH_LABELS = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
-];
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   pix: "PIX",
@@ -57,15 +43,8 @@ interface FinanceiroPageProps {
   monthLabel: string;
   prevHref: string;
   nextHref: string;
-  trends: { monthLabel: string; totalReceived: number; totalPending: number; totalSessions: number }[];
-  prevMonthReceived: number;
-  yearSummary: { month: number; monthLabel: string; received: number; pending: number; overdue: number; sessions: number }[];
-  topPatients: { name: string; received: number; sessions: number }[];
-  forecast: number;
-  scheduledCount: number;
   drawerId: string | null;
-  expenses?: import("@/lib/expenses/model").Expense[];
-  categories?: import("@/lib/expense-categories/model").ExpenseCategory[];
+  workspaceId: string;
 }
 
 export default function FinanceiroPageClient({
@@ -78,15 +57,8 @@ export default function FinanceiroPageClient({
   monthLabel,
   prevHref,
   nextHref,
-  trends,
-  prevMonthReceived,
-  yearSummary,
-  topPatients,
-  forecast,
-  scheduledCount,
   drawerId,
-  expenses: _expenses,
-  categories: _categories,
+  workspaceId,
 }: FinanceiroPageProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -101,8 +73,6 @@ export default function FinanceiroPageClient({
   const [undoingCharge, setUndoingCharge] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [showYearView, setShowYearView] = useState(false);
-  const [showTopPatients, setShowTopPatients] = useState(false);
 
   const patientMap = useMemo(() => {
     const map = new Map<string, Patient>();
@@ -231,30 +201,6 @@ export default function FinanceiroPageClient({
     }
   }
 
-  function handleExportIR(yearSummary: { month: number; monthLabel: string; received: number; pending: number; overdue: number; sessions: number }[], year: number) {
-    const header = "Mês,Total Recebido,Qtd Sessões,Média por Sessão";
-    const rows = yearSummary
-      .filter((m) => m.received > 0)
-      .map((m) => {
-        const avg = m.sessions > 0 ? m.received / m.sessions : 0;
-        return `${m.monthLabel},${currency.format(m.received)},${m.sessions},${currency.format(avg)}`;
-      });
-    const totalReceived = yearSummary.reduce((s, m) => s + m.received, 0);
-    const totalSessions = yearSummary.reduce((s, m) => s + m.sessions, 0);
-    rows.push("");
-    rows.push(`TOTAL ANO,${currency.format(totalReceived)},${totalSessions},`);
-
-    const csv = [header, ...rows].join("\n");
-    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `ir-psivault-${year}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast("Resumo IR exportado ✓");
-  }
-
   function renderChargeList(list: SessionCharge[]) {
     if (list.length === 0) {
       return <p style={noFilterResultStyle}>Nenhuma cobrança para os filtros selecionados.</p>;
@@ -316,95 +262,10 @@ export default function FinanceiroPageClient({
     );
   }
 
-  const maxTrend = Math.max(...trends.map((t) => t.totalReceived), 1);
-
   return (
-    <main style={shellStyle}>
+    <>
       {/* Toast */}
       {toast && <div style={toastStyle}>{toast}</div>}
-
-      {/* Page heading */}
-      <div style={headingBlockStyle}>
-        <p style={eyebrowStyle}>Resumo financeiro</p>
-        <h1 style={titleStyle}>Financeiro</h1>
-      </div>
-
-      {/* Month navigation */}
-      <div style={monthNavStyle}>
-        <a href={prevHref} style={navArrowStyle}>
-          ← Anterior
-        </a>
-        <span style={monthLabelStyle}>{monthLabel}</span>
-        <a href={nextHref} style={navArrowStyle}>
-          Próximo →
-        </a>
-      </div>
-
-      {/* Inadimplência cards */}
-      <div style={summaryCardsStyle}>
-        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-success-text)" }}>
-          <p style={miniCardLabelStyle}>Recebido</p>
-          <p style={miniCardValueStyle}>{currency.format(summary.totalReceivedCents / 100)}</p>
-          {prevMonthReceived > 0 && (
-            <p style={variationStyle}>
-              {summary.totalReceivedCents / 100 >= prevMonthReceived ? (
-                <span style={{ color: "var(--color-success-text)" }}>↑ +{Math.round(((summary.totalReceivedCents / 100 - prevMonthReceived) / prevMonthReceived) * 100)}%</span>
-              ) : (
-                <span style={{ color: "var(--color-error-text)" }}>↓ -{Math.round(((prevMonthReceived - summary.totalReceivedCents / 100) / prevMonthReceived) * 100)}%</span>
-              )}
-              <span style={{ color: "#999", marginLeft: "0.25rem" }}>vs {MONTH_LABELS[month === 1 ? 11 : month - 2]}</span>
-            </p>
-          )}
-        </div>
-        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-warning-text)" }}>
-          <p style={miniCardLabelStyle}>Pendente</p>
-          <p style={miniCardValueStyle}>{currency.format(summary.totalPendingCents / 100)}</p>
-        </div>
-        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-error-text)" }}>
-          <p style={miniCardLabelStyle}>Atrasado</p>
-          <p style={{ ...miniCardValueStyle, color: "var(--color-error-text)" }}>
-            {overdueCount} {overdueCount === 1 ? "cobrança" : "cobranças"}
-          </p>
-        </div>
-        {forecast > 0 && (
-          <div style={{ ...miniCardStyle, borderLeft: "3px solid #2563eb" }}>
-            <p style={miniCardLabelStyle}>Previsão</p>
-            <p style={miniCardValueStyle}>{currency.format(forecast)}</p>
-            <p style={{ ...variationStyle, color: "#999" }}>
-              {scheduledCount} sess{scheduledCount === 1 ? "ão" : "ões"}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Trend chart */}
-      {trends.length > 0 && (
-        <div style={trendCardStyle}>
-          <div style={trendHeaderStyle}>
-            <p style={trendLabelStyle}>Receita mensal</p>
-            <span style={trendTotalStyle}>
-              {currency.format(trends.reduce((s, t) => s + t.totalReceived, 0))}
-            </span>
-          </div>
-          <div style={chartContainerStyle}>
-            {[0, 25, 50, 75, 100].map((pct) => (
-              <div key={pct} style={{ position: "absolute", left: 0, right: 0, bottom: `${pct}%`, borderTop: "1px solid var(--color-border, #e5e5e5)", opacity: 0.4 }} />
-            ))}
-            {trends.map((t) => (
-              <div key={t.monthLabel} style={barWrapperStyle}>
-                <div
-                  style={{
-                    ...barStyle,
-                    height: `${(t.totalReceived / maxTrend) * 100}%`,
-                  }}
-                  title={`${t.monthLabel}: ${currency.format(t.totalReceived)}`}
-                />
-                <span style={barLabelStyle}>{t.monthLabel}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Actions bar */}
       <div style={actionsBarStyle}>
@@ -481,105 +342,13 @@ export default function FinanceiroPageClient({
               {renderChargeList(filteredCharges.filter((c) => c.status === "atrasado"))}
             </TabPanel>
             <TabPanel value="despesas">
-              <ExpensesSection expenses={_expenses ?? []} categories={_categories ?? []} />
+              <Suspense fallback={<SectionSkeleton />}>
+                <ExpensesAsyncSection workspaceId={workspaceId} />
+              </Suspense>
             </TabPanel>
           </TabPanels>
         </Tabs>
       )}
-
-      {/* ─── Top patients section ─────────────────────────────────────────── */}
-      {topPatients.length > 0 && (
-        <div style={insightSectionStyle}>
-          <button
-            style={insightToggleStyle}
-            onClick={() => setShowTopPatients((v) => !v)}
-          >
-            {showTopPatients ? "▾" : "▸"} Top pacientes por receita
-          </button>
-          {showTopPatients && (
-            <div style={insightContentStyle}>
-              {topPatients.map((p, i) => (
-                <div key={i} style={topPatientRowStyle}>
-                  <span style={topPatientRankStyle}>{i + 1}</span>
-                  <span style={topPatientNameStyle}>{p.name}</span>
-                  <span style={topPatientValueStyle}>
-                    {currency.format(p.received)}
-                  </span>
-                  <span style={topPatientSessionsStyle}>
-                    {p.sessions} sess{p.sessions === 1 ? "ão" : "ões"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ─── Year summary section ─────────────────────────────────────────── */}
-      <div style={insightSectionStyle}>
-        <button
-          style={insightToggleStyle}
-          onClick={() => setShowYearView((v) => !v)}
-        >
-          {showYearView ? "▾" : "▸"} Ver ano completo ({year})
-        </button>
-        {showYearView && (
-          <div style={insightContentStyle}>
-            <div style={yearTableStyle}>
-              <div style={yearTableHeaderStyle}>
-                <span style={{ flex: 2 }}>Mês</span>
-                <span style={yearTableColStyle}>Recebido</span>
-                <span style={yearTableColStyle}>Pendente</span>
-                <span style={yearTableColStyle}>Atrasado</span>
-                <span style={yearTableColStyle}>Sessões</span>
-              </div>
-              {yearSummary.map((m) => (
-                <div
-                  key={m.month}
-                  style={{
-                    ...yearTableRowStyle,
-                    ...(m.month === month ? yearTableCurrentMonthStyle : {}),
-                  }}
-                >
-                  <span style={{ flex: 2, fontWeight: m.month === month ? 700 : 400 }}>
-                    {m.monthLabel}
-                  </span>
-                  <span style={{ ...yearTableColStyle, color: "var(--color-success-text)" }}>
-                    {m.received > 0 ? currency.format(m.received) : "—"}
-                  </span>
-                  <span style={{ ...yearTableColStyle, color: "var(--color-warning-text)" }}>
-                    {m.pending > 0 ? currency.format(m.pending) : "—"}
-                  </span>
-                  <span style={{ ...yearTableColStyle, color: "var(--color-error-text)" }}>
-                    {m.overdue > 0 ? currency.format(m.overdue) : "—"}
-                  </span>
-                  <span style={yearTableColStyle}>{m.sessions || "—"}</span>
-                </div>
-              ))}
-              <div style={yearTableTotalStyle}>
-                <span style={{ flex: 2, fontWeight: 700 }}>Total</span>
-                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "var(--color-success-text)" }}>
-                  {currency.format(yearSummary.reduce((s, m) => s + m.received, 0))}
-                </span>
-                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "var(--color-warning-text)" }}>
-                  {currency.format(yearSummary.reduce((s, m) => s + m.pending, 0))}
-                </span>
-                <span style={{ ...yearTableColStyle, fontWeight: 700, color: "var(--color-error-text)" }}>
-                  {currency.format(yearSummary.reduce((s, m) => s + m.overdue, 0))}
-                </span>
-                <span style={{ ...yearTableColStyle, fontWeight: 700 }}>
-                  {yearSummary.reduce((s, m) => s + (m.sessions || 0), 0)}
-                </span>
-              </div>
-            </div>
-            <div style={{ marginTop: "1rem", display: "flex", gap: "0.5rem" }}>
-              <Button variant="ghost" size="sm" onClick={() => handleExportIR(yearSummary, year)}>
-                📄 Exportar resumo IR
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
 
       <ChargeSidePanel drawerId={drawerId} onClose={closeDrawer}>
         {drawerId === "nova" && (
@@ -647,7 +416,7 @@ export default function FinanceiroPageClient({
               </div>
 
               {c.status === "pago" ? (
-                <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1, #fafaf8)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
+                <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
                   <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--color-success-text)" }}>Pagamento recebido</p>
                   <p style={{ margin: "0 0 1rem", fontSize: "0.85rem", color: "#555" }}>
                     Forma de pagamento: <span style={{ fontWeight: 500 }}>{PAYMENT_METHOD_LABELS[c.paymentMethod || ""] ?? c.paymentMethod}</span>
@@ -662,7 +431,7 @@ export default function FinanceiroPageClient({
                   </Button>
                 </div>
               ) : (
-                <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1, #fafaf8)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
+                <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
                   <p style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", fontWeight: 600, color: "#111" }}>Registrar Recebimento</p>
                   <div style={{ display: "grid", gap: "0.5rem" }}>
                     {Object.entries(PAYMENT_METHOD_LABELS).map(([key, label]) => (
@@ -692,168 +461,24 @@ export default function FinanceiroPageClient({
           );
         })()}
       </ChargeSidePanel>
-    </main>
+    </>
   );
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
-
-const shellStyle: React.CSSProperties = {
-  padding: "2rem 2.5rem",
-  maxWidth: 960,
-  width: "100%",
-  display: "grid",
-  gap: "1.25rem",
-  alignContent: "start",
-};
 
 const toastStyle: React.CSSProperties = {
   position: "fixed",
   top: "1.5rem",
   right: "1.5rem",
   padding: "0.75rem 1.25rem",
-  borderRadius: "var(--radius-md, 8px)",
+  borderRadius: "var(--radius-md)",
   background: "var(--color-success-text)",
   color: "#fff",
   fontSize: "0.875rem",
   fontWeight: 600,
   zIndex: "var(--z-toast)",
   animation: "fadeIn 0.2s ease-out",
-};
-
-const headingBlockStyle: React.CSSProperties = { display: "grid", gap: "0.25rem" };
-
-const eyebrowStyle: React.CSSProperties = {
-  margin: 0,
-  textTransform: "uppercase",
-  letterSpacing: "0.12em",
-  fontSize: "0.7rem",
-  color: "var(--color-brown-mid, #a3784f)",
-  fontWeight: 600,
-};
-
-const titleStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: "1.5rem",
-  fontWeight: 700,
-  fontFamily: "var(--font-serif, Georgia, serif)",
-};
-
-const monthNavStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "1rem",
-  padding: "0.75rem 1.25rem",
-  borderRadius: "var(--radius-md, 8px)",
-  background: "var(--color-surface-1, #fafaf8)",
-  border: "1px solid var(--color-border, #e5e5e5)",
-};
-
-const navArrowStyle: React.CSSProperties = {
-  fontSize: "0.875rem",
-  padding: "0.375rem 0.75rem",
-  color: "var(--color-text-2, #444)",
-  textDecoration: "none",
-};
-
-const monthLabelStyle: React.CSSProperties = {
-  flex: 1,
-  textAlign: "center",
-  fontWeight: 600,
-  fontSize: "1rem",
-};
-
-const summaryCardsStyle: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-  gap: "0.75rem",
-};
-
-const miniCardStyle: React.CSSProperties = {
-  padding: "1rem 1.25rem",
-  borderRadius: "var(--radius-md, 8px)",
-  background: "var(--color-surface-1, #fafaf8)",
-  border: "1px solid var(--color-border, #e5e5e5)",
-};
-
-const miniCardLabelStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: "0.75rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  color: "#666",
-  fontWeight: 600,
-};
-
-const miniCardValueStyle: React.CSSProperties = {
-  margin: "0.25rem 0 0",
-  fontSize: "1.25rem",
-  fontWeight: 700,
-  color: "var(--color-text-1)",
-};
-
-const trendCardStyle: React.CSSProperties = {
-  padding: "1.25rem 1.5rem",
-  borderRadius: "var(--radius-md, 8px)",
-  background: "var(--color-surface-1, #fafaf8)",
-  border: "1px solid var(--color-border, #e5e5e5)",
-  display: "grid",
-  gap: "1rem",
-};
-
-const trendHeaderStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-};
-
-const trendLabelStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: "0.78rem",
-  textTransform: "uppercase",
-  letterSpacing: "0.1em",
-  color: "#888",
-  fontWeight: 600,
-};
-
-const trendTotalStyle: React.CSSProperties = {
-  fontSize: "1.25rem",
-  fontWeight: 700,
-  fontFamily: "var(--font-serif, Georgia, serif)",
-  color: "#222",
-  lineHeight: 1,
-};
-
-const chartContainerStyle: React.CSSProperties = {
-  position: "relative",
-  display: "flex",
-  alignItems: "flex-end",
-  gap: "0.75rem",
-  height: "120px",
-};
-
-const barWrapperStyle: React.CSSProperties = {
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "0.375rem",
-  height: "100%",
-  justifyContent: "flex-end",
-};
-
-const barStyle: React.CSSProperties = {
-  width: "100%",
-  maxWidth: "60px",
-  background: "var(--color-accent, #2d7d6f)",
-  borderRadius: "var(--radius-sm, 4px) var(--radius-sm, 4px) 0 0",
-  minHeight: "4px",
-};
-
-const barLabelStyle: React.CSSProperties = {
-  fontSize: "0.7rem",
-  color: "#888",
-  fontWeight: 500,
 };
 
 const actionsBarStyle: React.CSSProperties = {
@@ -867,9 +492,9 @@ const actionsBarStyle: React.CSSProperties = {
 const filterGroupStyle: React.CSSProperties = {
   display: "flex",
   gap: "0.25rem",
-  background: "var(--color-surface-1, #fafaf8)",
-  border: "1px solid var(--color-border, #e5e5e5)",
-  borderRadius: "var(--radius-md, 8px)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+  borderRadius: "var(--radius-md)",
   padding: "0.2rem",
 };
 
@@ -877,7 +502,7 @@ const filterBtnStyle: React.CSSProperties = {
   padding: "0.375rem 0.75rem",
   fontSize: "0.8rem",
   border: "none",
-  borderRadius: "var(--radius-sm, 4px)",
+  borderRadius: "var(--radius-sm)",
   background: "transparent",
   color: "#555",
   cursor: "pointer",
@@ -893,51 +518,23 @@ const filterBtnActiveStyle: React.CSSProperties = {
 const patientSelectStyle: React.CSSProperties = {
   padding: "0.375rem 0.75rem",
   fontSize: "0.85rem",
-  border: "1px solid var(--color-border, #e5e5e5)",
-  borderRadius: "var(--radius-sm, 4px)",
+  border: "1px solid var(--color-border)",
+  borderRadius: "var(--radius-sm)",
   background: "#fff",
   minWidth: 180,
-};
-
-const inlineFormCardStyle: React.CSSProperties = {
-  padding: "1.25rem",
-  borderRadius: "var(--radius-md, 8px)",
-  background: "var(--color-surface-1, #fafaf8)",
-  border: "1px solid var(--color-border, #e5e5e5)",
-};
-
-const inlineFormStyle: React.CSSProperties = {
-  display: "flex",
-  gap: "0.5rem",
-  alignItems: "flex-end",
-  flexWrap: "wrap",
 };
 
 const inputStyle: React.CSSProperties = {
   padding: "0.5rem 0.75rem",
   fontSize: "0.85rem",
-  border: "1px solid var(--color-border, #e5e5e5)",
-  borderRadius: "var(--radius-sm, 4px)",
+  border: "1px solid var(--color-border)",
+  borderRadius: "var(--radius-sm)",
 };
 
-const emptyContainerStyle: React.CSSProperties = {
-  display: "grid",
-  gap: "0.5rem",
-  padding: "2rem",
-  textAlign: "center",
-  alignItems: "center",
-};
-
-const emptyTitleStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: "1.125rem",
-  fontWeight: 600,
-};
-
-const emptyDescStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: "0.9rem",
-  color: "#888",
+const formErrorStyle: React.CSSProperties = {
+  margin: "0.5rem 0 0",
+  fontSize: "0.8rem",
+  color: "var(--color-error-text)",
 };
 
 const noFilterResultStyle: React.CSSProperties = {
@@ -949,16 +546,14 @@ const noFilterResultStyle: React.CSSProperties = {
 
 const listStyle: React.CSSProperties = { display: "grid", gap: "1rem" };
 
-
-
 const rowStyle: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   padding: "0.625rem 1rem",
-  borderRadius: "var(--radius-md, 8px)",
-  background: "var(--color-surface-1, #fafaf8)",
-  border: "1px solid var(--color-border, #e5e5e5)",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   gap: "0.75rem",
   flexWrap: "wrap",
 };
@@ -973,7 +568,7 @@ const rowLeftStyle: React.CSSProperties = {
 const statusBadgeStyle: React.CSSProperties = {
   fontSize: "0.72rem",
   padding: "0.2rem 0.5rem",
-  borderRadius: "var(--radius-sm, 4px)",
+  borderRadius: "var(--radius-sm)",
   fontWeight: 600,
 };
 
@@ -1006,177 +601,9 @@ const payBtnStyle: React.CSSProperties = {
   fontSize: "0.78rem",
   padding: "0.3rem 0.75rem",
   border: "none",
-  borderRadius: "var(--radius-sm, 4px)",
+  borderRadius: "var(--radius-sm)",
   background: "var(--color-success-text)",
   color: "#fff",
   cursor: "pointer",
   fontWeight: 600,
-};
-
-const undoBtnStyle: React.CSSProperties = {
-  fontSize: "0.72rem",
-  padding: "0.25rem 0.5rem",
-  border: "none",
-  borderRadius: "var(--radius-sm, 4px)",
-  background: "transparent",
-  color: "#999",
-  cursor: "pointer",
-};
-
-const paymentPopoverStyle: React.CSSProperties = {
-  position: "absolute",
-  right: 0,
-  top: "100%",
-  zIndex: "var(--z-dropdown)",
-  padding: "0.75rem",
-  borderRadius: "var(--radius-md, 8px)",
-  background: "#fff",
-  border: "1px solid var(--color-border, #e5e5e5)",
-  boxShadow: "var(--shadow-dropdown)",
-  minWidth: 200,
-};
-
-const paymentMethodsRowStyle: React.CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.375rem",
-};
-
-const methodBtnStyle: React.CSSProperties = {
-  fontSize: "0.78rem",
-  padding: "0.3rem 0.625rem",
-  border: "1px solid var(--color-border, #e5e5e5)",
-  borderRadius: "var(--radius-sm, 4px)",
-  background: "var(--color-surface-warm)",
-  cursor: "pointer",
-  fontWeight: 500,
-};
-
-const cancelPayStyle: React.CSSProperties = {
-  fontSize: "0.75rem",
-  padding: "0.25rem 0.5rem",
-  border: "none",
-  background: "transparent",
-  color: "#999",
-  cursor: "pointer",
-  marginTop: "0.375rem",
-};
-
-
-
-const formErrorStyle: React.CSSProperties = {
-  margin: "0.5rem 0 0",
-  fontSize: "0.8rem",
-  color: "var(--color-error-text)",
-};
-
-const variationStyle = {
-  margin: "0.375rem 0 0",
-  fontSize: "0.75rem",
-  fontWeight: 500,
-};
-
-// Insight sections
-const insightSectionStyle: React.CSSProperties = {
-  padding: "1rem 1.25rem",
-  borderRadius: "var(--radius-md, 8px)",
-  background: "var(--color-surface-1, #fafaf8)",
-  border: "1px solid var(--color-border, #e5e5e5)",
-  display: "grid",
-  gap: "0.75rem",
-};
-
-const insightToggleStyle: React.CSSProperties = {
-  background: "none",
-  border: "none",
-  fontSize: "0.85rem",
-  fontWeight: 600,
-  color: "var(--color-accent, #2d7d6f)",
-  cursor: "pointer",
-  textAlign: "left",
-  padding: 0,
-};
-
-const insightContentStyle: React.CSSProperties = {
-  display: "grid",
-  gap: "0.5rem",
-};
-
-// Top patients
-const topPatientRowStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.75rem",
-  padding: "0.5rem 0",
-  borderBottom: "1px solid var(--color-border, #e5e5e5)",
-};
-
-const topPatientRankStyle: React.CSSProperties = {
-  fontSize: "0.75rem",
-  fontWeight: 700,
-  color: "#888",
-  width: 20,
-  textAlign: "center",
-};
-
-const topPatientNameStyle: React.CSSProperties = {
-  flex: 1,
-  fontSize: "0.85rem",
-  fontWeight: 500,
-  color: "#333",
-};
-
-const topPatientValueStyle: React.CSSProperties = {
-  fontSize: "0.9rem",
-  fontWeight: 600,
-  color: "var(--color-success-text)",
-  fontVariantNumeric: "tabular-nums",
-};
-
-const topPatientSessionsStyle: React.CSSProperties = {
-  fontSize: "0.75rem",
-  color: "#888",
-};
-
-// Year table
-const yearTableStyle: React.CSSProperties = {
-  display: "grid",
-  gap: 0,
-};
-
-const yearTableHeaderStyle: React.CSSProperties = {
-  display: "flex",
-  padding: "0.5rem 0.75rem",
-  borderBottom: "2px solid var(--color-border, #e5e5e5)",
-  fontSize: "0.75rem",
-  fontWeight: 600,
-  color: "#666",
-  textTransform: "uppercase",
-};
-
-const yearTableColStyle: React.CSSProperties = {
-  flex: 1,
-  textAlign: "right" as const,
-  fontSize: "0.82rem",
-  fontVariantNumeric: "tabular-nums",
-};
-
-const yearTableRowStyle: React.CSSProperties = {
-  display: "flex",
-  padding: "0.5rem 0.75rem",
-  borderBottom: "1px solid var(--color-border, #e5e5e5)",
-  alignItems: "center",
-};
-
-const yearTableCurrentMonthStyle: React.CSSProperties = {
-  background: "rgba(45, 125, 111, 0.05)",
-  borderRadius: "var(--radius-sm, 4px)",
-};
-
-const yearTableTotalStyle: React.CSSProperties = {
-  display: "flex",
-  padding: "0.75rem",
-  borderTop: "2px solid var(--color-border, #e5e5e5)",
-  marginTop: "0.25rem",
-  alignItems: "center",
 };

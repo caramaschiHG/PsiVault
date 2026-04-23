@@ -1,5 +1,5 @@
 /**
- * /financeiro — Server component. Loads data, computes overdue status, delegates to client.
+ * /financeiro — Server component. Loads data, computes overdue status, renders shell + async sections.
  */
 
 import { getFinanceRepository } from "@/lib/finance/store";
@@ -10,8 +10,12 @@ import type { SessionCharge } from "@/lib/finance/model";
 import { resolveSession } from "@/lib/supabase/session";
 import FinanceiroPageClient from "./page-client";
 import { db } from "@/lib/db";
-import { getExpenseStore } from "@/lib/expenses/store";
-import { getExpenseCategoryStore } from "@/lib/expense-categories/store";
+import { AsyncBoundary } from "@/components/streaming/async-boundary";
+import { ChartSkeleton } from "@/components/streaming/chart-skeleton";
+import { SectionSkeleton } from "@/components/streaming/section-skeleton";
+import TrendSection from "./sections/trend-section";
+import TopPatientsSection from "./sections/top-patients-section";
+import YearSummarySection from "./sections/year-summary-section";
 
 const MONTH_LABELS = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -30,10 +34,6 @@ function nextMonthHref(year: number, month: number): string {
   let m = month + 1;
   if (m > 12) { m = 1; y += 1; }
   return `/financeiro?month=${m}&year=${y}`;
-}
-
-function monthAbbr(month: number): string {
-  return MONTH_LABELS[month - 1].slice(0, 3);
 }
 
 function groupChargesByMonth(charges: SessionCharge[]): Map<string, SessionCharge[]> {
@@ -61,6 +61,94 @@ function computeBreakdown(
 interface FinanceiroPageProps {
   searchParams: Promise<{ month?: string; year?: string; drawer?: string }>;
 }
+
+const shellStyle: React.CSSProperties = {
+  padding: "2rem 2.5rem",
+  maxWidth: 960,
+  width: "100%",
+  display: "grid",
+  gap: "1.25rem",
+  alignContent: "start",
+};
+
+const headingBlockStyle: React.CSSProperties = { display: "grid", gap: "0.25rem" };
+
+const eyebrowStyle: React.CSSProperties = {
+  margin: 0,
+  textTransform: "uppercase",
+  letterSpacing: "0.12em",
+  fontSize: "0.7rem",
+  color: "var(--color-brown-mid)",
+  fontWeight: 600,
+};
+
+const titleStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: "1.5rem",
+  fontWeight: 700,
+  fontFamily: "var(--font-serif)",
+};
+
+const monthNavStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: "1rem",
+  padding: "0.75rem 1.25rem",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+};
+
+const navArrowStyle: React.CSSProperties = {
+  fontSize: "0.875rem",
+  padding: "0.375rem 0.75rem",
+  color: "var(--color-text-2)",
+  textDecoration: "none",
+};
+
+const monthLabelStyle: React.CSSProperties = {
+  flex: 1,
+  textAlign: "center",
+  fontWeight: 600,
+  fontSize: "1rem",
+};
+
+const summaryCardsStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gap: "0.75rem",
+};
+
+const miniCardStyle: React.CSSProperties = {
+  padding: "1rem 1.25rem",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
+};
+
+const miniCardLabelStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: "0.75rem",
+  textTransform: "uppercase",
+  letterSpacing: "0.08em",
+  color: "#666",
+  fontWeight: 600,
+};
+
+const miniCardValueStyle: React.CSSProperties = {
+  margin: "0.25rem 0 0",
+  fontSize: "1.25rem",
+  fontWeight: 700,
+  color: "var(--color-text-1)",
+};
+
+const variationStyle: React.CSSProperties = {
+  margin: "0.375rem 0 0",
+  fontSize: "0.75rem",
+  fontWeight: 500,
+};
+
+const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 export default async function FinanceiroPage({ searchParams }: FinanceiroPageProps) {
   const { workspaceId, accountId } = await resolveSession();
@@ -94,7 +182,7 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   let prevMonth = month - 1;
   if (prevMonth < 1) { prevMonth = 12; prevYear -= 1; }
 
-  // Compute date range covering all months needed (trendMonths + yearMonths + prev)
+  // Compute date range covering all months needed
   const allMonthsList = [...trendMonths, ...yearMonths, { year: prevYear, month: prevMonth }];
   let minYear = allMonthsList[0].year, minMonth = allMonthsList[0].month;
   let maxYear = allMonthsList[0].year, maxMonth = allMonthsList[0].month;
@@ -107,22 +195,17 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     }
   }
   const rangeStart = new Date(Date.UTC(minYear, minMonth - 1, 1));
-  // rangeEnd = first day of the month AFTER maxMonth (exclusive upper bound)
-  const rangeEnd = new Date(Date.UTC(maxYear, maxMonth, 1)); // month is 1-based; maxMonth=12 normalises to Jan next year
+  const rangeEnd = new Date(Date.UTC(maxYear, maxMonth, 1));
 
-  // Revenue forecast range — rest of current selected month
-  const monthEnd = new Date(Date.UTC(year, month, 1)); // exclusive upper bound: start of next month
+  // Revenue forecast range
+  const monthEnd = new Date(Date.UTC(year, month, 1));
 
-  // Fan out every independent DB call in parallel.
-  // allChargesInRange replaces 20 individual listByWorkspaceAndMonth calls.
   const [
     activePatients,
     archivedPatients,
     profile,
     allChargesInRange,
     restOfMonth,
-    expenses,
-    categories,
   ] = await Promise.all([
     patientRepo.listActive(workspaceId),
     patientRepo.listArchived(workspaceId),
@@ -136,11 +219,9 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
       },
       select: { id: true, patientId: true, priceInCents: true },
     }),
-    getExpenseStore().repository.findByWorkspace(workspaceId),
-    getExpenseCategoryStore().repository.findActiveByWorkspace(workspaceId),
   ]);
 
-  // One appointment query for all apptIds across the full range (overdue detection)
+  // One appointment query for all apptIds across the full range
   const apptIds = [...new Set(
     allChargesInRange
       .filter((c) => c.appointmentId)
@@ -154,68 +235,20 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
     : [];
   const apptMap = new Map(appts.map((a) => [a.id, a.startsAt]));
 
-  // Compute all breakdowns in memory — zero extra DB queries
+  // Compute all breakdowns in memory
   const chargesByMonth = groupChargesByMonth(allChargesInRange);
   const current = computeBreakdown(year, month, chargesByMonth, apptMap, now);
   const prev = computeBreakdown(prevYear, prevMonth, chargesByMonth, apptMap, now);
-  const trendBreakdowns = trendMonths.map((tm) =>
-    computeBreakdown(tm.year, tm.month, chargesByMonth, apptMap, now),
-  );
-  const yearBreakdowns = yearMonths.map((ym) =>
-    computeBreakdown(ym.year, ym.month, chargesByMonth, apptMap, now),
-  );
 
   const allPatients = [...activePatients, ...archivedPatients];
   const patientIndex = new Map(allPatients.map((p) => [p.id, p]));
 
   const enrichedCharges = current.enriched;
   const summary = current.summary;
-  const overdueCount = enrichedCharges.filter((c: { status: string }) => c.status === "atrasado").length;
+  const overdueCount = enrichedCharges.filter((c) => c.status === "atrasado").length;
   const monthLabel = `${MONTH_LABELS[month - 1]} ${year}`;
 
-  const trendData = trendMonths.map((tm, i) => ({
-    monthLabel: monthAbbr(tm.month),
-    totalReceived: trendBreakdowns[i].summary.totalReceivedCents / 100,
-    totalPending: trendBreakdowns[i].summary.totalPendingCents / 100,
-    totalSessions: trendBreakdowns[i].summary.totalSessions,
-  }));
-
-  const prevSummary = prev.summary;
-
-  const yearSummary = yearMonths.map((ym, i) => {
-    const { enriched, summary: ymSummary } = yearBreakdowns[i];
-    const ymOverdue = enriched
-      .filter((c) => c.status === "atrasado")
-      .reduce((s, c) => s + (c.amountInCents ?? 0), 0);
-    return {
-      month: ym.month,
-      monthLabel: MONTH_LABELS[ym.month - 1],
-      received: ymSummary.totalReceivedCents / 100,
-      pending: ymSummary.totalPendingCents / 100,
-      overdue: ymOverdue / 100,
-      sessions: ymSummary.totalSessions,
-    };
-  });
-
-  // Top patients by revenue this month
-  const patientRevenue = new Map<string, { received: number; sessions: number; name: string }>();
-  for (const charge of enrichedCharges) {
-    if (!patientRevenue.has(charge.patientId)) {
-      const patient = patientIndex.get(charge.patientId);
-      patientRevenue.set(charge.patientId, {
-        received: 0,
-        sessions: 0,
-        name: patient?.socialName ?? patient?.fullName ?? charge.patientId,
-      });
-    }
-    const entry = patientRevenue.get(charge.patientId)!;
-    entry.sessions++;
-    if (charge.status === "pago" && charge.amountInCents) entry.received += charge.amountInCents / 100;
-  }
-  const topPatients = Array.from(patientRevenue.entries())
-    .map(([, data]) => data)
-    .sort((a, b) => b.received - a.received)
-    .slice(0, 5);
+  const prevMonthReceived = prev.summary.totalReceivedCents / 100;
 
   let forecastCents = 0;
   for (const appt of restOfMonth) {
@@ -229,25 +262,98 @@ export default async function FinanceiroPage({ searchParams }: FinanceiroPagePro
   }
 
   return (
-    <FinanceiroPageClient
-      initialCharges={enrichedCharges.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())}
-      patients={allPatients}
-      summary={summary}
-      overdueCount={overdueCount}
-      year={year}
-      month={month}
-      monthLabel={monthLabel}
-      prevHref={prevMonthHref(year, month)}
-      nextHref={nextMonthHref(year, month)}
-      trends={trendData}
-      prevMonthReceived={prevSummary.totalReceivedCents / 100}
-      yearSummary={yearSummary}
-      topPatients={topPatients}
-      forecast={forecastCents / 100}
-      scheduledCount={restOfMonth.length}
-      drawerId={params.drawer || null}
-      expenses={expenses}
-      categories={categories}
-    />
+    <main style={shellStyle}>
+      {/* Page heading */}
+      <div style={headingBlockStyle}>
+        <p style={eyebrowStyle}>Resumo financeiro</p>
+        <h1 style={titleStyle}>Financeiro</h1>
+      </div>
+
+      {/* Month navigation */}
+      <div style={monthNavStyle}>
+        <a href={prevMonthHref(year, month)} style={navArrowStyle}>← Anterior</a>
+        <span style={monthLabelStyle}>{monthLabel}</span>
+        <a href={nextMonthHref(year, month)} style={navArrowStyle}>Próximo →</a>
+      </div>
+
+      {/* Summary cards */}
+      <div style={summaryCardsStyle}>
+        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-success-text)" }}>
+          <p style={miniCardLabelStyle}>Recebido</p>
+          <p style={miniCardValueStyle}>{currency.format(summary.totalReceivedCents / 100)}</p>
+          {prevMonthReceived > 0 && (
+            <p style={variationStyle}>
+              {summary.totalReceivedCents / 100 >= prevMonthReceived ? (
+                <span style={{ color: "var(--color-success-text)" }}>↑ +{Math.round(((summary.totalReceivedCents / 100 - prevMonthReceived) / prevMonthReceived) * 100)}%</span>
+              ) : (
+                <span style={{ color: "var(--color-error-text)" }}>↓ -{Math.round(((prevMonthReceived - summary.totalReceivedCents / 100) / prevMonthReceived) * 100)}%</span>
+              )}
+              <span style={{ color: "#999", marginLeft: "0.25rem" }}>vs {MONTH_LABELS[month === 1 ? 11 : month - 2]}</span>
+            </p>
+          )}
+        </div>
+        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-warning-text)" }}>
+          <p style={miniCardLabelStyle}>Pendente</p>
+          <p style={miniCardValueStyle}>{currency.format(summary.totalPendingCents / 100)}</p>
+        </div>
+        <div style={{ ...miniCardStyle, borderLeft: "3px solid var(--color-error-text)" }}>
+          <p style={miniCardLabelStyle}>Atrasado</p>
+          <p style={{ ...miniCardValueStyle, color: "var(--color-error-text)" }}>
+            {overdueCount} {overdueCount === 1 ? "cobrança" : "cobranças"}
+          </p>
+        </div>
+        {forecastCents > 0 && (
+          <div style={{ ...miniCardStyle, borderLeft: "3px solid #2563eb" }}>
+            <p style={miniCardLabelStyle}>Previsão</p>
+            <p style={miniCardValueStyle}>{currency.format(forecastCents / 100)}</p>
+            <p style={{ ...variationStyle, color: "#999" }}>
+              {restOfMonth.length} sess{restOfMonth.length === 1 ? "ão" : "ões"}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Trend chart — streams in */}
+      <AsyncBoundary fallback={<ChartSkeleton height={120} barCount={6} />}>
+        <TrendSection
+          chargesByMonth={chargesByMonth}
+          trendMonths={trendMonths}
+          apptMap={apptMap}
+          now={now}
+        />
+      </AsyncBoundary>
+
+      {/* Interactive charge list */}
+      <FinanceiroPageClient
+        initialCharges={enrichedCharges.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())}
+        patients={allPatients}
+        summary={summary}
+        overdueCount={overdueCount}
+        year={year}
+        month={month}
+        monthLabel={monthLabel}
+        prevHref={prevMonthHref(year, month)}
+        nextHref={nextMonthHref(year, month)}
+        drawerId={params.drawer || null}
+        workspaceId={workspaceId}
+      />
+
+      {/* Top patients — streams in */}
+      <AsyncBoundary fallback={<SectionSkeleton />}>
+        <TopPatientsSection enrichedCharges={enrichedCharges} patientIndex={patientIndex} />
+      </AsyncBoundary>
+
+      {/* Year summary — streams in */}
+      <AsyncBoundary fallback={<SectionSkeleton />}>
+        <YearSummarySection
+          chargesByMonth={chargesByMonth}
+          yearMonths={yearMonths}
+          apptMap={apptMap}
+          year={year}
+          month={month}
+          now={now}
+        />
+      </AsyncBoundary>
+    </main>
   );
 }
