@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { createReminderAction, completeReminderAction } from "../../actions/reminders";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { useStreamedPromise } from "@/lib/react/use-streamed-promise";
 
 interface SerializedReminder {
   id: string;
@@ -11,11 +12,12 @@ interface SerializedReminder {
 }
 
 interface RemindersSectionProps {
-  reminders: SerializedReminder[];
+  remindersPromise: Promise<SerializedReminder[]>;
   workspaceId: string;
 }
 
-export function RemindersSection({ reminders, workspaceId }: RemindersSectionProps) {
+export function RemindersSection({ remindersPromise, workspaceId }: RemindersSectionProps) {
+  const reminders = useStreamedPromise(remindersPromise);
   const [state, formAction] = useActionState(createReminderAction, null);
   const titleRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
