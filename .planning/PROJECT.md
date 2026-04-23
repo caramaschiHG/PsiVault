@@ -8,6 +8,17 @@ PsiVault é uma plataforma web completa para psicólogos gerenciarem sua prátic
 
 Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
 
+## Current Milestone: v1.4 Performance Profunda
+
+**Goal:** Eliminar gargalos remanescentes de performance e atingir fluidez objetivamente mensurável via Core Web Vitals e métricas de runtime.
+
+**Target features:**
+- Diagnóstico completo de bundle size, re-renders e memory leaks
+- Otimização de queries no banco (indexing, connection pooling, query plans)
+- Streaming de Server Components com Suspense boundaries estratégicas
+- Otimização de assets (imagens, fontes, third-party scripts)
+- Métricas objetivas: LCP, INP, CLS, TTFB dentro dos thresholds do Google
+
 ## Current State (v1.3 Performance — Shipped 2026-04-22)
 
 Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:

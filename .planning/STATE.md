@@ -1,16 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: Performance
-status: Complete
-stopped_at: All 4 phases complete — lifecycle pending
-last_updated: "2026-04-22T00:00:00.000Z"
+milestone: v1.4
+milestone_name: Performance Profunda
+status: Defining requirements
+last_updated: "2026-04-23T00:00:00.000Z"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # STATE
@@ -18,17 +17,17 @@ progress:
 ## Project Reference
 
 **Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.3 Performance — COMPLETE (lifecycle: audit → complete → cleanup pending)
+**Current Focus**: Milestone v1.4 Performance Profunda — definindo requisitos
 
 ## Current Position
 
-Phase: Lifecycle
-Plan: audit → complete → cleanup
-**Status**: Phases complete, lifecycle pending
-**Last activity**: 2026-04-22 — Phase 26 complete (N+1 + column selection)
+Phase: Not started (defining requirements)
+Plan: —
+**Status**: Defining requirements
+**Last activity**: 2026-04-23 — Milestone v1.4 started
 
 **Progress**:
-[████████████████████████████████████████████████████] 100% (phases)
+[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (phases)
 
 ## Performance Metrics
 
@@ -57,6 +56,6 @@ Plan: audit → complete → cleanup
 
 ## Session Continuity
 
-Last session: 2026-04-22
-Stopped at: All phases complete — run lifecycle (audit → complete → cleanup)
+Last session: 2026-04-23
+Stopped at: Milestone v1.4 initialized — requirements definition
 Resume file: None
