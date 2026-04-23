@@ -42,7 +42,12 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
   3. Queries em `Appointment` e `SessionCharge` usam novos índices compostos
   4. Supavisor transaction mode está ativo sem erros em migrations
   5. Prisma loga queries lentas (>500ms) para revisão do desenvolvedor
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 27-01-PLAN.md — Schema Foundation: PerformanceMetric model + composite indexes + Supavisor docs
+- [ ] 27-02-PLAN.md — Bundle Analyzer e CWV: @next/bundle-analyzer, web-vitals, /api/metrics endpoint
+- [ ] 27-03-PLAN.md — Query Logging e Column Selection: Prisma $extends, searchByName, EXPLAIN ANALYZE
 
 ### Phase 28: Streaming e Suspense Granular
 **Goal**: Usuários percebem carregamento mais rápido em rotas pesadas com renderização progressiva
@@ -101,7 +106,7 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
 | 24. Wave 2 — Auth Deduplication | v1.3 | 1/1 | Complete | 2026-04-22 |
 | 25. Wave 3 — Finance Query Consolidation | v1.3 | 3/3 | Complete | 2026-04-22 |
 | 26. Wave 4 — N+1 e Column Selection | v1.3 | 2/2 | Complete | 2026-04-22 |
-| 27. Diagnóstico e Fundação de Dados | v1.4 | 0/TBD | Not started | — |
+| 27. Diagnóstico e Fundação de Dados | v1.4 | 0/3 | Planned | — |
 | 28. Streaming e Suspense Granular | v1.4 | 0/TBD | Not started | — |
 | 29. Cache Seletivo e Seguro | v1.4 | 0/TBD | Not started | — |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
