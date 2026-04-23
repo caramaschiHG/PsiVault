@@ -74,31 +74,31 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| PERF-01 | TBD | Pending |
-| PERF-02 | TBD | Pending |
-| PERF-03 | TBD | Pending |
-| PERF-04 | TBD | Pending |
-| PERF-05 | TBD | Pending |
-| PERF-06 | TBD | Pending |
-| STREAM-01 | TBD | Pending |
-| STREAM-02 | TBD | Pending |
-| STREAM-03 | TBD | Pending |
-| STREAM-04 | TBD | Pending |
-| STREAM-05 | TBD | Pending |
-| CACHE-01 | TBD | Pending |
-| CACHE-02 | TBD | Pending |
-| CACHE-03 | TBD | Pending |
-| CACHE-04 | TBD | Pending |
-| ASSET-01 | TBD | Pending |
-| ASSET-02 | TBD | Pending |
-| ASSET-03 | TBD | Pending |
-| ASSET-04 | TBD | Pending |
-| ASSET-05 | TBD | Pending |
-| OBS-01 | TBD | Pending |
-| OBS-02 | TBD | Pending |
-| OBS-03 | TBD | Pending |
-| OBS-04 | TBD | Pending |
-| OBS-05 | TBD | Pending |
+| PERF-01 | Phase 27 | Pending |
+| PERF-02 | Phase 27 | Pending |
+| PERF-03 | Phase 27 | Pending |
+| PERF-04 | Phase 27 | Pending |
+| PERF-05 | Phase 27 | Pending |
+| PERF-06 | Phase 27 | Pending |
+| STREAM-01 | Phase 28 | Pending |
+| STREAM-02 | Phase 28 | Pending |
+| STREAM-03 | Phase 28 | Pending |
+| STREAM-04 | Phase 28 | Pending |
+| STREAM-05 | Phase 28 | Pending |
+| CACHE-01 | Phase 29 | Pending |
+| CACHE-02 | Phase 29 | Pending |
+| CACHE-03 | Phase 29 | Pending |
+| CACHE-04 | Phase 29 | Pending |
+| ASSET-01 | Phase 30 | Pending |
+| ASSET-02 | Phase 30 | Pending |
+| ASSET-03 | Phase 30 | Pending |
+| ASSET-04 | Phase 30 | Pending |
+| ASSET-05 | Phase 30 | Pending |
+| OBS-01 | Phase 31 | Pending |
+| OBS-02 | Phase 31 | Pending |
+| OBS-03 | Phase 31 | Pending |
+| OBS-04 | Phase 31 | Pending |
+| OBS-05 | Phase 31 | Pending |
 
 ---
 *Requirements defined: 2026-04-23*
