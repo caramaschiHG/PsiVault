@@ -12,7 +12,8 @@
     "memlab": "memlab run --scenario tests/memory/patient-navigation.scenario.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "metrics:cleanup": "node scripts/cleanup-metrics.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

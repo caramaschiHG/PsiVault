@@ -8,3 +8,9 @@ export interface PerformanceMetric {
   sessionId: string | null;
   createdAt: Date;
 }
+
+export interface P75Metric {
+  pagePath: string;
+  metricName: string;
+  p75: number;
+}
