@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.5
-milestone_name: Motion & Feel — Interações Fluidas
-status: Roadmap created — ready for execution
-stopped_at: Milestone v1.5 roadmap created (5 phases, 26 requirements)
-last_updated: "2026-04-23T17:30:00.000Z"
+milestone: v1.4
+milestone_name: Performance Profunda
+status: In progress — Phase 28 complete, ready for Phase 29
+stopped_at: Phase 28 completed (4/4 plans). Awaiting Phase 29 planning/execution.
+last_updated: "2026-04-23T18:30:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  completed_phases: 2
+  total_plans: 7
+  completed_plans: 7
 ---
 
 # STATE
@@ -17,22 +17,25 @@ progress:
 ## Project Reference
 
 **Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.5 Motion & Feel — Interações Fluidas
+**Current Focus**: Milestone v1.4 Performance Profunda — Fase 29: Cache Seletivo e Seguro
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 28 — COMPLETE
 Plan: —
-**Status**: Defining requirements for milestone v1.5
-**Last activity**: 2026-04-23 — Milestone v1.5 initialized
+**Status**: Phase 28 fully executed and verified. Ready for Phase 29.
+**Last activity**: 2026-04-23 — Phase 28 completed with human visual verification approved.
 
 **Progress**:
-[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0% (0/0 phases)
+[████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 40% (2/5 phases)
 
 ## Performance Metrics
 
-- Tests: 407/407 passing (baseline from v1.3/v1.4)
+- Tests: 407+ passing (streaming integration tests added)
 - Build successful with no TypeScript errors
+- CWV collection active (Phase 27)
+- Bundle analyzer available (Phase 27)
+- Query logging active for slow queries >500ms (Phase 27)
 
 ## Accumulated Context
 
@@ -65,8 +68,9 @@ Plan: —
 
 ### Todos
 
-- Definir requisitos do milestone v1.5
-- Criar roadmap v1.5
+- Planejar/executar Phase 29: Cache Seletivo e Seguro
+- Planejar/executar Phase 30: Otimização de Assets e Bundle
+- Planejar/executar Phase 31: Medição, Observabilidade e Iteração
 
 ### Blockers
 
@@ -74,6 +78,6 @@ Plan: —
 
 ## Session Continuity
 
-Last session: 2026-04-23T17:00:00.000Z
-Stopped at: Milestone v1.5 initialized — awaiting requirements definition
+Last session: 2026-04-23T18:30:00.000Z
+Stopped at: Phase 28 complete — human verification approved. Ready for Phase 29.
 Resume file: N/A

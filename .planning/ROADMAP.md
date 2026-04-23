@@ -26,7 +26,7 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
 ### 📋 v1.4 Performance Profunda (Planned)
 
 - [x] **Phase 27: Diagnóstico e Fundação de Dados** — Baseline de bundle, CWV, índices DB e pooling (3/3 plans) — completed 2026-04-23
-- [ ] **Phase 28: Streaming e Suspense Granular** — loading.tsx, async sections, React 19 use API, skeletons
+- [x] **Phase 28: Streaming e Suspense Granular** — loading.tsx, async sections, React 19 use API, skeletons (4/4 plans) — completed 2026-04-23
 - [ ] **Phase 29: Cache Seletivo e Seguro** — unstable_cache, revalidateTag, workspace-scoped keys, revalidatePath audit
 - [ ] **Phase 30: Otimização de Assets e Bundle** — next/dynamic, optimizePackageImports, next/image, next/font, next/script
 - [ ] **Phase 31: Medição, Observabilidade e Iteração** — Lighthouse CI, RUM, memlab, react-scan, relatório before/after
@@ -64,10 +64,10 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 28-01-PLAN.md — Foundation: Skeletons, AsyncBoundary, useStreamedPromise hook
-- [ ] 28-02-PLAN.md — /financeiro Granular Suspense: async sections, page refactor, loading.tsx
-- [ ] 28-03-PLAN.md — /início Granular Suspense: async sections, React 19 use API, loading.tsx
-- [ ] 28-04-PLAN.md — Verification: integration tests, visual checkpoint
+- [x] 28-01-PLAN.md — Foundation: Skeletons, AsyncBoundary, useStreamedPromise hook
+- [x] 28-02-PLAN.md — /financeiro Granular Suspense: async sections, page refactor, loading.tsx
+- [x] 28-03-PLAN.md — /início Granular Suspense: async sections, React 19 use API, loading.tsx
+- [x] 28-04-PLAN.md — Verification: integration tests, visual checkpoint
 
 ### Phase 29: Cache Seletivo e Seguro
 **Goal**: Dados de leitura intensa carregam instantaneamente do cache sem risco de vazamento cross-tenant
@@ -187,7 +187,7 @@ Plans:
 | 25. Wave 3 — Finance Query Consolidation | v1.3 | 3/3 | Complete | 2026-04-22 |
 | 26. Wave 4 — N+1 e Column Selection | v1.3 | 2/2 | Complete | 2026-04-22 |
 | 27. Diagnóstico e Fundação de Dados | v1.4 | 3/3 | Complete | 2026-04-23 |
-| 28. Streaming e Suspense Granular | v1.4 | 0/4 | Planned | — |
+| 28. Streaming e Suspense Granular | v1.4 | 4/4 | Complete | 2026-04-23 |
 | 29. Cache Seletivo e Seguro | v1.4 | 0/TBD | Not started | — |
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 0/TBD | Not started | — |
