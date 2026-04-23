@@ -50,6 +50,7 @@ export function createInMemoryClinicalRepository(
     },
 
     async findByAppointmentIds(ids: string[], workspaceId: string): Promise<Set<string>> {
+      if (ids.length === 0) return new Set();
       const result = new Set<string>();
       const idSet = new Set(ids);
       for (const note of store.values()) {
