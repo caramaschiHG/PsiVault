@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Performance Profunda
 status: Roadmap defined — awaiting planning
-last_updated: "2026-04-23T12:00:00.000Z"
+stopped_at: Phase 27 context gathered
+last_updated: "2026-04-23T15:33:38.652Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
 ---
 
 # STATE
@@ -59,6 +59,6 @@ Plan: —
 
 ## Session Continuity
 
-Last session: 2026-04-23
-Stopped at: Roadmap v1.4 criado — 5 fases, 25 requisitos, 100% coverage
-Resume file: None
+Last session: 2026-04-23T15:33:38.631Z
+Stopped at: Phase 27 context gathered
+Resume file: .planning/phases/27-diagn-stico-e-funda-o-de-dados/27-CONTEXT.md
