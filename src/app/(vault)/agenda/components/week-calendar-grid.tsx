@@ -47,7 +47,7 @@ export function WeekCalendarGrid({
   onSlotClick,
 }: WeekCalendarGridProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -122,7 +122,12 @@ export function WeekCalendarGrid({
   return (
     <>
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div style={outerWrapStyle}>
+        <div style={{
+          ...outerWrapStyle,
+          opacity: isPending ? 0.6 : 1,
+          transition: "opacity var(--duration-100) ease-out",
+          cursor: isPending ? "wait" : "default",
+        }}>
           {/* Sticky header row: axis spacer + 7 day labels */}
           <div style={headerRowStyle}>
             <div /> {/* axis spacer */}

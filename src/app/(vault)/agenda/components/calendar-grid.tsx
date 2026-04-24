@@ -37,7 +37,7 @@ const SLOT_MINUTES = 15;
 
 export function CalendarGrid({ blocks, panels, patientNames, date, options, onSlotClick }: CalendarGridProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -104,7 +104,12 @@ export function CalendarGrid({ blocks, panels, patientNames, date, options, onSl
   return (
     <>
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div style={outerStyle}>
+        <div style={{
+          ...outerStyle,
+          opacity: isPending ? 0.6 : 1,
+          transition: "opacity var(--duration-100) ease-out",
+          cursor: isPending ? "wait" : "default",
+        }}>
           {/* Hour axis */}
           <div style={{ ...axisStyle, height: containerHeight }}>
             {hours.map((h) => {
