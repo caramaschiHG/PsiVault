@@ -36,7 +36,7 @@ Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, c
 - Otimização de assets (imagens, fontes, third-party scripts)
 - Métricas objetivas: LCP, INP, CLS, TTFB dentro dos thresholds do Google
 
-## Current State (v1.3 Performance — Shipped 2026-04-22)
+## Current State (v1.5 Motion & Feel — Phase 33 Complete)
 
 Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:
 - Navegação client-side via `<Link>` (zero full reloads)
@@ -46,7 +46,7 @@ Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:
 - `importantObservations` excluído de todas as queries de listagem
 
 Stack: Next.js 15, React 19, TypeScript 5.8 (strict), Prisma 6, PostgreSQL (Supabase), Supabase Auth (SSR)
-Tests: 407/407 passing
+Tests: 419/419 passing
 
 ## Requirements
 
@@ -74,6 +74,7 @@ Tests: 407/407 passing
 - ✓ revalidatePath com escopo "page" em 13 server actions — v1.3
 - ✓ Agenda: N+1 clinical notes → 1 batch query (findByAppointmentIds) — v1.3
 - ✓ importantObservations excluído de listActive/listArchived via LIST_SELECT — v1.3
+- ✓ Micro-interações em componentes base (hover, focus, active, floating labels, error shake, smooth scroll) — v1.5 Phase 33
 
 ### Active
 
@@ -128,4 +129,4 @@ Tests: 407/407 passing
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-04-23 after Phase 31: Medição, Observabilidade e Iteração (v1.4 Performance Profunda)*
+*Last updated: 2026-04-24 after Phase 33: Micro-interações em Componentes Base (v1.5 Motion & Feel)*
