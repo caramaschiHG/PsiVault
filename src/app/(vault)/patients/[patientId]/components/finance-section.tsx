@@ -99,66 +99,68 @@ export function FinanceSection({ charges, patientId: _patientId, updateChargeAct
                 </div>
 
                 {/* Inline collapsible edit form — zero JS with <details> */}
-                <details style={detailsStyle}>
+                <details style={detailsStyle} className="details-animated">
                   <summary style={summaryStyle}>Editar cobrança</summary>
-                  <form action={updateChargeAction} style={formStyle}>
-                    <input type="hidden" name="chargeId" value={charge.id} />
+                  <div className="details-animated-content">
+                    <form action={updateChargeAction} style={formStyle}>
+                      <input type="hidden" name="chargeId" value={charge.id} />
 
-                    <div style={fieldGroupStyle}>
-                      <label style={labelStyle} htmlFor={`status-${charge.id}`}>
-                        Status
-                      </label>
-                      <select
-                        id={`status-${charge.id}`}
-                        name="status"
-                        defaultValue={charge.status}
-                        style={selectStyle}
-                      >
-                        <option value="pendente">Pendente</option>
-                        <option value="pago">Pago</option>
-                        <option value="atrasado">Atrasado</option>
-                      </select>
-                    </div>
+                      <div style={fieldGroupStyle}>
+                        <label style={labelStyle} htmlFor={`status-${charge.id}`}>
+                          Status
+                        </label>
+                        <select
+                          id={`status-${charge.id}`}
+                          name="status"
+                          defaultValue={charge.status}
+                          style={selectStyle}
+                        >
+                          <option value="pendente">Pendente</option>
+                          <option value="pago">Pago</option>
+                          <option value="atrasado">Atrasado</option>
+                        </select>
+                      </div>
 
-                    <div style={fieldGroupStyle}>
-                      <label style={labelStyle} htmlFor={`amount-${charge.id}`}>
-                        Valor (R$)
-                      </label>
-                      <input
-                        id={`amount-${charge.id}`}
-                        type="number"
-                        name="amount"
-                        defaultValue={amountValue}
-                        min="0"
-                        step="0.01"
-                        placeholder="0,00"
-                        style={inputStyle}
-                      />
-                    </div>
+                      <div style={fieldGroupStyle}>
+                        <label style={labelStyle} htmlFor={`amount-${charge.id}`}>
+                          Valor (R$)
+                        </label>
+                        <input
+                          id={`amount-${charge.id}`}
+                          type="number"
+                          name="amount"
+                          defaultValue={amountValue}
+                          min="0"
+                          step="0.01"
+                          placeholder="0,00"
+                          style={inputStyle}
+                        />
+                      </div>
 
-                    <div style={fieldGroupStyle}>
-                      <label style={labelStyle} htmlFor={`paymentMethod-${charge.id}`}>
-                        Forma de pagamento
-                      </label>
-                      <select
-                        id={`paymentMethod-${charge.id}`}
-                        name="paymentMethod"
-                        defaultValue={charge.paymentMethod ?? ""}
-                        style={selectStyle}
-                      >
-                        <option value="">Não informado</option>
-                        <option value="pix">Pix</option>
-                        <option value="transferencia">Transferência</option>
-                        <option value="dinheiro">Dinheiro</option>
-                        <option value="cartao">Cartão</option>
-                        <option value="cheque">Cheque</option>
-                      </select>
-                    </div>
+                      <div style={fieldGroupStyle}>
+                        <label style={labelStyle} htmlFor={`paymentMethod-${charge.id}`}>
+                          Forma de pagamento
+                        </label>
+                        <select
+                          id={`paymentMethod-${charge.id}`}
+                          name="paymentMethod"
+                          defaultValue={charge.paymentMethod ?? ""}
+                          style={selectStyle}
+                        >
+                          <option value="">Não informado</option>
+                          <option value="pix">Pix</option>
+                          <option value="transferencia">Transferência</option>
+                          <option value="dinheiro">Dinheiro</option>
+                          <option value="cartao">Cartão</option>
+                          <option value="cheque">Cheque</option>
+                        </select>
+                      </div>
 
-                    <button type="submit" style={submitStyle}>
-                      Salvar
-                    </button>
-                  </form>
+                      <button type="submit" style={submitStyle}>
+                        Salvar
+                      </button>
+                    </form>
+                  </div>
                 </details>
               </div>
             );

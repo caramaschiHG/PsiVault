@@ -148,9 +148,9 @@ export function ExpenseFilters({ categories }: ExpenseFiltersProps) {
       <div style={desktopWrapStyle}>{filterContent}</div>
 
       {/* Mobile: collapsible */}
-      <details style={mobileWrapStyle}>
+      <details style={mobileWrapStyle} className="details-animated">
         <summary style={summaryStyle}>Filtros</summary>
-        <div style={mobileContentStyle}>{filterContent}</div>
+        <div style={mobileContentStyle} className="details-animated-content">{filterContent}</div>
       </details>
     </>
   );
