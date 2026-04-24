@@ -215,7 +215,7 @@ Plans:
 | 30. Otimização de Assets e Bundle | v1.4 | 0/TBD | Not started | — |
 | 31. Medição, Observabilidade e Iteração | v1.4 | 3/3 | Complete    | 2026-04-23 |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
-| 33. Micro-interações em Componentes Base | v1.5 | 3/3 | Complete   | 2026-04-23 |
+| 33. Micro-interações em Componentes Base | v1.5 | 3/3 | Complete    | 2026-04-24 |
 | 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
 | 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
