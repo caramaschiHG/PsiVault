@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useTransition, useState, useMemo, Suspense, type ReactNode } from "react";
+import { useTransition, useState, useMemo, useEffect, useRef, Suspense, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@/components/ui/tabs";
@@ -74,6 +74,26 @@ export default function FinanceiroPageClient({
   const [undoingCharge, setUndoingCharge] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [enteringIds, setEnteringIds] = useState<Set<string>>(new Set());
+  const [exitingIds, setExitingIds] = useState<Set<string>>(new Set());
+  const prevChargesRef = useRef(initialCharges);
+
+  useEffect(() => {
+    const prevIds = new Set(prevChargesRef.current.map((c) => c.id));
+    const newCharges = charges.filter((c) => !prevIds.has(c.id));
+    if (newCharges.length > 0) {
+      const newIds = new Set(newCharges.map((c) => c.id));
+      setEnteringIds((prev) => new Set([...prev, ...newIds]));
+      setTimeout(() => {
+        setEnteringIds((prev) => {
+          const next = new Set(prev);
+          newIds.forEach((id) => next.delete(id));
+          return next;
+        });
+      }, 250);
+    }
+    prevChargesRef.current = charges;
+  }, [charges]);
 
   const patientMap = useMemo(() => {
     const map = new Map<string, Patient>();
@@ -170,14 +190,22 @@ export default function FinanceiroPageClient({
       const mod = await import("./actions");
       const result = await mod.markChargeAsPaidAction(chargeId, method);
       if (result.ok) {
-        setCharges((prev) =>
-          prev.map((c) =>
-            c.id === chargeId
-              ? { ...c, status: "pago" as const, paymentMethod: method, paidAt: new Date() }
-              : c,
-          ),
-        );
-        showToast("Pagamento registrado ✓");
+        setExitingIds((prev) => new Set(prev).add(chargeId));
+        setTimeout(() => {
+          setCharges((prev) =>
+            prev.map((c) =>
+              c.id === chargeId
+                ? { ...c, status: "pago" as const, paymentMethod: method, paidAt: new Date() }
+                : c,
+            ),
+          );
+          setExitingIds((prev) => {
+            const next = new Set(prev);
+            next.delete(chargeId);
+            return next;
+          });
+          showToast("Pagamento registrado com sucesso");
+        }, 200);
       }
     } finally {
       setPayingCharge(null);
@@ -207,17 +235,24 @@ export default function FinanceiroPageClient({
       return <p style={noFilterResultStyle}>Nenhuma cobrança para os filtros selecionados.</p>;
     }
     return (
-      <div style={listStyle}>
-        {list.map((charge) => {
+      <div style={listStyle} className="motion-stagger">
+        {list.map((charge, i) => {
           const patient = patientMap.get(charge.patientId);
           const patientName = patient?.socialName ?? patient?.fullName ?? charge.patientId;
           const color = STATUS_COLORS[charge.status] ?? STATUS_COLORS.pendente;
           const isPaying = payingCharge === charge.id;
+          const isEntering = enteringIds.has(charge.id);
+          const isExiting = exitingIds.has(charge.id);
 
           return (
-            <div 
-              key={charge.id} 
-              style={{ ...rowStyle, cursor: "pointer" }}
+            <div
+              key={charge.id}
+              className={isEntering ? "list-item-start" : isExiting ? "list-item-exit" : undefined}
+              style={{
+                ...rowStyle,
+                cursor: "pointer",
+                ...(i < 10 ? ({ '--stagger-index': i } as React.CSSProperties) : {}),
+              }}
               onClick={() => openDrawer(charge.id)}
             >
               <div style={rowLeftStyle}>
