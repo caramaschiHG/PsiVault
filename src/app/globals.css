@@ -540,7 +540,7 @@ select.input-field {
 /* ─── Page transitions ──────────────────────────────────────────────────────── */
 
 .vault-page-transition {
-  animation: vaultPageIn var(--duration-200) var(--ease-out) both;
+  animation: vaultPageIn 150ms var(--ease-out) both;
 }
 
 /* ─── Toast animations ──────────────────────────────────────────────────────── */
@@ -650,7 +650,7 @@ label[for], .nav-link, summary {
 
 
 .vault-page-enter {
-  animation: vaultPageIn var(--duration-200) var(--ease-out) both;
+  animation: vaultPageIn 150ms var(--ease-out) both;
 }
 
 /* ─── Bottom nav mobile ──────────────────────────────────────────────────────── */

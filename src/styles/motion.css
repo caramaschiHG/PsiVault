@@ -54,8 +54,50 @@
 }
 
 .motion-stagger > * {
-  animation: fadeIn var(--duration-200) var(--ease-out) both;
+  animation: slideUp var(--duration-200) var(--ease-out) both;
   animation-delay: calc(var(--stagger-index, 0) * var(--stagger-gap));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPAND/COLLAPSE — Smooth height animation for <details> elements
+   ═══════════════════════════════════════════════════════════════ */
+
+.details-animated {
+  overflow: hidden;
+}
+.details-animated-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-300) var(--ease-out);
+}
+.details-animated[open] .details-animated-content {
+  grid-template-rows: 1fr;
+}
+.details-animated-content > * {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIST ITEM ENTER/EXIT — Client-side list add/remove animations
+   ═══════════════════════════════════════════════════════════════ */
+
+@starting-style {
+  .list-item-start {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+.list-item-start {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--duration-200) var(--ease-out), transform var(--duration-200) var(--ease-out);
+}
+
+.list-item-exit {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity var(--duration-200) var(--ease-out), transform var(--duration-200) var(--ease-out);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -163,8 +205,12 @@
   .tab-panel,
   .kbd-overlay,
   .skeleton-shimmer,
-  .input-error-shake {
+  .input-error-shake,
+  .details-animated-content,
+  .list-item-start,
+  .list-item-exit {
     animation: none !important;
+    transition: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
