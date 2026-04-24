@@ -340,17 +340,19 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           urlInputStyle={urlInputStyle}
           inlineFormStyle={inlineFormStyle}
         />
-        <details style={detailsStyle}>
+        <details style={detailsStyle} className="details-animated">
           <summary style={detailsSummaryStyle}>Problemas de conexão</summary>
-          {appt.remoteIssueNote && (
-            <p style={remoteIssueNoteStyle}>{appt.remoteIssueNote}</p>
-          )}
-          <RemoteIssueForm
-            appointmentId={appt.id}
-            remoteIssueNote={appt.remoteIssueNote ?? null}
-            inlineFormStyle={inlineFormStyle}
-            textareaStyle={textareaStyle}
-          />
+          <div className="details-animated-content">
+            {appt.remoteIssueNote && (
+              <p style={remoteIssueNoteStyle}>{appt.remoteIssueNote}</p>
+            )}
+            <RemoteIssueForm
+              appointmentId={appt.id}
+              remoteIssueNote={appt.remoteIssueNote ?? null}
+              inlineFormStyle={inlineFormStyle}
+              textareaStyle={textareaStyle}
+            />
+          </div>
         </details>
       </section>
     ) : null;

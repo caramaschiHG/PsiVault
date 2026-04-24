@@ -136,12 +136,12 @@ export default async function ProntuarioPatientPage({
 
         {/* Atendimentos concluídos ocultos */}
         {completedHidden.length > 0 && (
-          <details style={detailsStyle}>
+          <details style={detailsStyle} className="details-animated">
             <summary style={summaryStyle}>
               Ver mais ({completedHidden.length} atendimento
               {completedHidden.length !== 1 ? "s" : ""})
             </summary>
-            <div style={detailsBodyStyle}>
+            <div style={detailsBodyStyle} className="details-animated-content">
               {completedHidden.map((appt, idx) => {
                 const note = notesByAppointment.get(appt.id);
                 const sessionNum = completedVisible.length + idx + 1;
@@ -166,13 +166,13 @@ export default async function ProntuarioPatientPage({
 
         {/* Dispensados */}
         {dismissedAll.length > 0 && (
-          <details style={detailsStyle}>
+          <details style={detailsStyle} className="details-animated">
             <summary style={summaryStyle}>
               {dismissedAll.length} atendimento
               {dismissedAll.length !== 1 ? "s" : ""} dispensado
               {dismissedAll.length !== 1 ? "s" : ""}
             </summary>
-            <div style={detailsBodyStyle}>
+            <div style={detailsBodyStyle} className="details-animated-content">
               {dismissedAll.map((appt) => (
                 <div key={appt.id} style={dismissedEntryStyle}>
                   <span style={entryDateStyle}>{formatDate(appt.startsAt)}</span>
