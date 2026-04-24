@@ -123,7 +123,7 @@ Plans:
 - [x] **Phase 32: Motion Tokens & Foundation CSS** — Tokens de duration/easing/stagger, reduced motion fallback, utility classes
 - [x] **Phase 33: Micro-interações em Componentes Base** — Hover/focus/active states, focus rings, input micro-interactions, smooth scroll (completed 2026-04-23)
 - [ ] **Phase 34: Feedback de Ação e Loading** — Toast AnimatePresence, useTransition em botões, skeleton shimmer, spinner
-- [ ] **Phase 35: Listas e Transições de Página** — Staggered lists, page transition fade, layout animations expand/collapse
+- [x] **Phase 35: Listas e Transições de Página** — Staggered lists, page transition fade, layout animations expand/collapse (completed 2026-04-24)
 - [ ] **Phase 36: Polish, Accessibility & Measurement** — Motion audit, reduced motion test, INP/CLS validation, docs
 
 ## Phase Details
@@ -195,11 +195,11 @@ Plans:
 **Plans**: 5 plans in 2 waves
 
 Plans:
-- [ ] 35-01-PLAN.md — CSS Foundation: update motion.css (.motion-stagger → slideUp, .details-animated, .list-item-start/exit), adjust vault-page-enter to 150ms
-- [ ] 35-02-PLAN.md — LIST-01 Stagger: apply to /patients and /prontuario Server Component lists
-- [ ] 35-03-PLAN.md — LIST-03 Expand/Collapse: apply to agenda and prontuario/[patientId] details elements
-- [ ] 35-04-PLAN.md — LIST-03 Expand/Collapse: apply to financeiro expense-filters and patient finance-section details
-- [ ] 35-05-PLAN.md — LIST-01 + LIST-04 Financeiro: stagger charge list + add/remove enter/exit feedback
+- [x] 35-01-PLAN.md — CSS Foundation: update motion.css (.motion-stagger → slideUp, .details-animated, .list-item-start/exit), adjust vault-page-enter to 150ms
+- [x] 35-02-PLAN.md — LIST-01 Stagger: apply to /patients and /prontuario Server Component lists
+- [x] 35-03-PLAN.md — LIST-03 Expand/Collapse: apply to agenda and prontuario/[patientId] details elements
+- [x] 35-04-PLAN.md — LIST-03 Expand/Collapse: apply to financeiro expense-filters and patient finance-section details
+- [x] 35-05-PLAN.md — LIST-01 + LIST-04 Financeiro: stagger charge list + add/remove enter/exit feedback
 
 **UI hint**: yes
 
@@ -231,7 +231,7 @@ Plans:
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
 | 33. Micro-interações em Componentes Base | v1.5 | 3/3 | Complete    | 2026-04-24 |
 | 34. Feedback de Ação e Loading | v1.5 | 4/4 | Planned | — |
-| 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
+| 35. Listas e Transições de Página | v1.5 | 5/5 | Complete    | 2026-04-24 |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
 
 ---
