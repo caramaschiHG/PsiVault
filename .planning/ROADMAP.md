@@ -174,8 +174,14 @@ Plans:
   3. Skeletons exibem shimmer gradient orgânico em vez de pulse mecânico de opacidade
   4. Spinner leve (SVG + CSS) disponível para todos os estados de loading
   5. Erros de formulário acionam border color transition e shake sutil imediato
-**Plans**: TBD
+**Plans**: 4 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 34-01-PLAN.md — Toast Animation: enter slide+fade ≤300ms, exit fade ≤300ms, tokenized timing, prefers-reduced-motion
+- [ ] 34-02-PLAN.md — Skeleton Shimmer + Spinner Component: organic gradient shimmer 1.6s, standalone Spinner with 3 sizes
+- [ ] 34-03-PLAN.md — Button Loading State (useTransition): audit all ~10 components, wire isPending to Button[isLoading] or opacity/cursor feedback
+- [ ] 34-04-PLAN.md — Form Error Feedback: audit all forms for .input-error-shake wiring, border color transition, shake re-trigger via onAnimationEnd
 
 ### Phase 35: Listas e Transições de Página
 **Goal**: Navegação e listagens "respiram" — entram suavemente e transicionam sem cortes secos
@@ -216,7 +222,7 @@ Plans:
 | 31. Medição, Observabilidade e Iteração | v1.4 | 3/3 | Complete    | 2026-04-23 |
 | 32. Motion Tokens & Foundation CSS | v1.5 | 3/3 | Complete | 2026-04-23 |
 | 33. Micro-interações em Componentes Base | v1.5 | 3/3 | Complete    | 2026-04-24 |
-| 34. Feedback de Ação e Loading | v1.5 | 0/TBD | Not started | — |
+| 34. Feedback de Ação e Loading | v1.5 | 4/4 | Planned | — |
 | 35. Listas e Transições de Página | v1.5 | 0/TBD | Not started | — |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
 
