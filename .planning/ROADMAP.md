@@ -192,7 +192,15 @@ Plans:
   2. Navegação entre rotas do vault apresenta fade suave ≤150ms sem bloquear clicks rápidos
   3. Cards e filtros expansíveis animam altura suavemente sem layout shift
   4. Adição/remoção de itens em listas fornece feedback visual de movimento
-**Plans**: TBD
+**Plans**: 5 plans in 2 waves
+
+Plans:
+- [ ] 35-01-PLAN.md — CSS Foundation: update motion.css (.motion-stagger → slideUp, .details-animated, .list-item-start/exit), adjust vault-page-enter to 150ms
+- [ ] 35-02-PLAN.md — LIST-01 Stagger: apply to /patients and /prontuario Server Component lists
+- [ ] 35-03-PLAN.md — LIST-03 Expand/Collapse: apply to agenda and prontuario/[patientId] details elements
+- [ ] 35-04-PLAN.md — LIST-03 Expand/Collapse: apply to financeiro expense-filters and patient finance-section details
+- [ ] 35-05-PLAN.md — LIST-01 + LIST-04 Financeiro: stagger charge list + add/remove enter/exit feedback
+
 **UI hint**: yes
 
 ### Phase 36: Polish, Accessibility & Measurement
