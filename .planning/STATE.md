@@ -23,12 +23,12 @@ progress:
 ## Current Position
 
 Phase: 35
-Plan: Not started
-**Status**: Phase 34 fully executed and verified. All 4 plans complete. Build passes, 419 tests pass. Ready for Phase 35.
-**Last activity**: 2026-04-24 — Phase 34 completed with toast animations, spinner component, skeleton shimmer refinement, useTransition loading states, and form error shake feedback.
+Plan: 5 of 5 complete
+**Status**: Phase 35 fully executed and verified. All 5 plans complete. Build passes, 419 tests pass. Phase 35 is the last phase of the v1.5 Motion & Feel milestone.
+**Last activity**: 2026-04-24 — Phase 35 completed with list stagger animations, expand/collapse details animation, page transition reduction to 150ms, and client-side add/remove feedback.
 
 **Progress**:
-[████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 60% (3/5 phases)
+[████████████████████████████████████████████████████] 100% (5/5 phases)
 
 ## Performance Metrics
 
@@ -86,13 +86,19 @@ Plan: Not started
 - [Phase 31]: percentile_cont via  acceptable for internal analytics where Prisma ORM lacks native support
 - [Phase 31]: Build-time feature flag ENABLE_PERF_DASHBOARD appropriate for internal dev dashboard
 - [Phase 31-medi-o-observabilidade-e-itera-o]: Script generate-performance-report.mjs already existed in repo with correct implementation — verified and reused without modification
+- [Phase 35]: Vault page transition duration reduced to 150ms (hardcoded, not a new token)
+- [Phase 35]: Stagger animation uses inline `--stagger-index` custom property with `i < 10` cap
+- [Phase 35]: Server Component lists (/patients, /prontuario) animate via CSS hydration — zero JS overhead
+- [Phase 35]: Client Component list (financeiro) uses `enteringIds`/`exitingIds` state for add/remove feedback
+- [Phase 35]: Expand/collapse uses `grid-template-rows: 0fr → 1fr` technique — no max-height hacks
+- [Phase 35]: All new animation classes covered by `prefers-reduced-motion: reduce`
 
 ### Todos
 
-- Planejar/executar Phase 33: Scroll-Triggered Entrance Animations
-- Planejar/executar Phase 34: Micro-Interaction Polish
-- Planejar/executar Phase 35: Skeleton & Loading State Motion
-- Planejar/executar Phase 36: Feedback & Confirmation Animations
+- [x] Phase 33: Micro-interações em Componentes Base — completed
+- [x] Phase 34: Feedback de Ação e Loading — completed
+- [x] Phase 35: Listas e Transições de Página — completed
+- Phase 36: Polish, Accessibility & Measurement — planned
 
 ### Blockers
 
@@ -100,6 +106,6 @@ Plan: Not started
 
 ## Session Continuity
 
-Last session: 2026-04-24T18:23:17.681Z
-Stopped at: Phase 35 context gathered
+Last session: 2026-04-24T19:20:00Z
+Stopped at: Phase 35 execution complete. All 5 plans executed, build passes, 419 tests pass.
 Resume file: .planning/phases/35-listas-e-transi-es-de-p-gina/35-CONTEXT.md
