@@ -135,6 +135,15 @@
   100% { transform: translateX(0); }
 }
 
+@keyframes toastFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.toast-exit {
+  animation: toastFadeOut var(--duration-300) var(--ease-out) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .motion-fade-in,
   .motion-fade-out,
@@ -145,6 +154,7 @@
   .vault-page-transition,
   .vault-page-enter,
   .toast-enter,
+  .toast-exit,
   .fab-enter,
   .search-dropdown-enter,
   .side-panel-overlay,
@@ -157,5 +167,9 @@
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .toast-exit {
+    opacity: 0 !important;
   }
 }

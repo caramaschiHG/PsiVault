@@ -40,13 +40,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       return next.slice(-4); // max 4
     });
 
-    // Start fade at 3000ms, remove at 3500ms
+    // Start fade at 3000ms, remove at 3300ms (3000ms visible + 300ms fade)
     setTimeout(() => {
       setToasts((prev) => prev.map((t) => t.id === id ? { ...t, fading: true } : t));
     }, 3000);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 3500);
+    }, 3300);
   }, []);
 
   const borderColors: Record<ToastType, string> = {
@@ -63,12 +63,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           {toasts.map((t) => (
             <div
               key={t.id}
-              className={t.fading ? "" : "toast-enter"}
+              className={t.fading ? "toast-exit" : "toast-enter"}
               style={{
                 ...toastStyle,
                 borderLeftColor: borderColors[t.type],
                 opacity: t.fading ? 0 : 1,
-                transition: t.fading ? "opacity 500ms ease" : "none",
                 position: "relative",
                 pointerEvents: "auto",
               }}
@@ -112,7 +111,6 @@ const toastStyle = {
   fontSize: "0.875rem",
   borderLeft: "3px solid transparent",
   boxShadow: "var(--shadow-md)",
-  transition: "opacity 500ms ease",
   maxWidth: "320px",
   lineHeight: 1.4,
 } satisfies React.CSSProperties;
