@@ -27,7 +27,13 @@ export function RemoteIssueForm({
           name="remoteIssueNote"
           defaultValue={remoteIssueNote ?? ""}
           placeholder="Descreva o problema..."
+          className={state?.error ? "input-error input-error-shake" : ""}
           style={textareaStyle}
+          onAnimationEnd={(e) => {
+            if (e.animationName === "inputShake") {
+              e.currentTarget.classList.remove("input-error-shake");
+            }
+          }}
         />
         <SubmitButton label="Registrar" pendingLabel="Registrando..." />
       </form>

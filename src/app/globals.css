@@ -484,6 +484,7 @@ select.input-field {
 
 .input-error {
   border-color: var(--color-error-border) !important;
+  transition: border-color var(--duration-100) ease-out;
 }
 .input-error-shake {
   animation: inputShake var(--duration-200) var(--ease-in-out) 1;

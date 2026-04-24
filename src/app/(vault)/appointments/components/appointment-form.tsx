@@ -109,7 +109,13 @@ export function AppointmentForm({
               defaultValue={defaultPatientId ?? ""}
               name="patientId"
               required
+              className={state?.error ? "input-error input-error-shake" : ""}
               style={selectStyle}
+              onAnimationEnd={(e) => {
+                if (e.animationName === "inputShake") {
+                  e.currentTarget.classList.remove("input-error-shake");
+                }
+              }}
             >
               <option disabled value="">
                 Selecione um paciente
@@ -132,10 +138,16 @@ export function AppointmentForm({
           <input
             name="startsAt"
             required
+            className={state?.error ? "input-error input-error-shake" : ""}
             style={inputStyle}
             type="datetime-local"
             value={startsAtValue}
             onChange={(e) => setStartsAtValue(e.target.value)}
+            onAnimationEnd={(e) => {
+              if (e.animationName === "inputShake") {
+                e.currentTarget.classList.remove("input-error-shake");
+              }
+            }}
           />
         </label>
       </section>
@@ -156,8 +168,14 @@ export function AppointmentForm({
               min={15}
               name="durationMinutes"
               step={5}
+              className={state?.error ? "input-error input-error-shake" : ""}
               style={inputStyle}
               type="number"
+              onAnimationEnd={(e) => {
+                if (e.animationName === "inputShake") {
+                  e.currentTarget.classList.remove("input-error-shake");
+                }
+              }}
             />
           </label>
 
@@ -166,7 +184,13 @@ export function AppointmentForm({
             <select
               defaultValue={original?.careMode ?? defaultCareMode}
               name="careMode"
+              className={state?.error ? "input-error input-error-shake" : ""}
               style={selectStyle}
+              onAnimationEnd={(e) => {
+                if (e.animationName === "inputShake") {
+                  e.currentTarget.classList.remove("input-error-shake");
+                }
+              }}
             >
               <option value="IN_PERSON">Presencial</option>
               <option value="ONLINE">Online</option>
@@ -195,9 +219,15 @@ export function AppointmentForm({
             <select
               style={selectStyle}
               value={recurrenceType}
+              className={state?.error ? "input-error input-error-shake" : ""}
               onChange={(e) => {
                 setRecurrenceType(e.target.value as typeof recurrenceType);
                 setSelectedDays([]);
+              }}
+              onAnimationEnd={(e) => {
+                if (e.animationName === "inputShake") {
+                  e.currentTarget.classList.remove("input-error-shake");
+                }
               }}
             >
               <option value="none">Sessão única</option>

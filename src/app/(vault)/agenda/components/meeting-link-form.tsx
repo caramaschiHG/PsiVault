@@ -28,7 +28,13 @@ export function MeetingLinkForm({
           name="meetingLink"
           defaultValue={meetingLink ?? ""}
           placeholder="https://meet.google.com/..."
+          className={state?.error ? "input-error input-error-shake" : ""}
           style={urlInputStyle}
+          onAnimationEnd={(e) => {
+            if (e.animationName === "inputShake") {
+              e.currentTarget.classList.remove("input-error-shake");
+            }
+          }}
         />
         <SubmitButton label="Salvar link" pendingLabel="Salvando..." />
       </form>
