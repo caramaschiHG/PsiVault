@@ -1,6 +1,7 @@
 "use client";
 
 import { type ButtonHTMLAttributes, type AnchorHTMLAttributes, forwardRef } from "react";
+import { Spinner } from "./spinner";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md";
@@ -42,30 +43,6 @@ const sizeClasses: Record<ButtonSize, string> = {
   sm: "btn-sm",
 };
 
-function SpinnerIcon() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      style={{ animation: "spin 0.6s linear infinite", flexShrink: 0 }}
-      aria-hidden="true"
-    >
-      <circle
-        cx="7"
-        cy="7"
-        r="5.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeDasharray="22"
-        strokeDashoffset="8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
   function Button(
     {
@@ -96,7 +73,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
           aria-busy={isLoading ? "true" : undefined}
           {...anchorRest}
         >
-          {isLoading && <SpinnerIcon />}
+          {isLoading && <Spinner size="sm" aria-hidden="true" />}
           {isLoading && loadingLabel ? loadingLabel : children}
         </a>
       );
@@ -112,7 +89,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
         className={classes}
         {...buttonRest}
       >
-        {isLoading && <SpinnerIcon />}
+        {isLoading && <Spinner size="sm" aria-hidden="true" />}
         {isLoading && loadingLabel ? loadingLabel : children}
       </button>
     );
