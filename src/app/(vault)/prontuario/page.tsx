@@ -58,9 +58,15 @@ export default async function ProntuarioPage() {
           <p style={emptyStateTextStyle}>O histórico dos pacientes aparecerá aqui.</p>
         </div>
       ) : (
-        <ul style={listStyle}>
-          {patientsWithActivity.map(({ patient, latestNote }) => (
-            <li key={patient.id} style={cardStyle}>
+        <ul style={listStyle} className="motion-stagger">
+          {patientsWithActivity.map(({ patient, latestNote }, i) => (
+            <li
+              key={patient.id}
+              style={{
+                ...cardStyle,
+                ...(i < 10 ? ({ '--stagger-index': i } as React.CSSProperties) : {}),
+              }}
+            >
               <div style={cardContentStyle}>
                 <div style={patientNameRowStyle}>
                   <strong style={patientNameStyle}>{patient.fullName}</strong>

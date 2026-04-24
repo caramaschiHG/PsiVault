@@ -53,9 +53,13 @@ export default async function PatientsPage() {
             actionHref="#form"
           />
         ) : (
-          <List variant="bordered" aria-label="Lista de pacientes ativos">
-            {patients.map((patient) => (
-              <ListItem key={patient.id} href={`/patients/${patient.id}`}>
+          <List variant="bordered" aria-label="Lista de pacientes ativos" className="motion-stagger">
+            {patients.map((patient, i) => (
+              <ListItem
+                key={patient.id}
+                href={`/patients/${patient.id}`}
+                style={i < 10 ? ({ '--stagger-index': i } as React.CSSProperties) : undefined}
+              >
                 <div style={patientContentStyle}>
                   <div>
                     <strong style={patientNameStyle}>{patient.fullName}</strong>
