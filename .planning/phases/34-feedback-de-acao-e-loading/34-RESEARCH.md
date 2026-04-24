@@ -386,17 +386,13 @@ export function Spinner({ size = 14 }: { size?: number }) {
 | A3 | Skeleton gradient at 1.4s is close enough to "organic"; planner may adjust to 1.6s. | Skeleton Shimmer | Low — purely aesthetic preference |
 | A4 | All form inputs in the app use either `.input-field` or `.auth-input` classes. | Form Error Feedback | Medium — if there are custom inputs not using these classes, shake won't apply automatically |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should `useTransition` callers in calendar navigation show loading state?**
-   - What we know: `calendar-grid.tsx` and `week-calendar-grid.tsx` navigate dates via `useTransition` but discard `isPending`.
-   - What's unclear: Whether date navigation is fast enough that loading feedback would be distracting.
-   - Recommendation: Audit with `isPending` wired to `cursor: wait` and subtle opacity on the grid container. If it feels noisy, skip.
+1. **Should `useTransition` callers in calendar navigation show loading state?** ✅ RESOLVED
+   - Decision: Calendar navigation (`calendar-grid.tsx`, `week-calendar-grid.tsx`) does NOT need visual loading feedback. Date changes are fast enough that `cursor: wait` on the grid container is sufficient if any loading state is added. The executor decides per the plan.
 
-2. **Are there form inputs outside `.input-field` / `.auth-input` that need error shake wiring?**
-   - What we know: Auth pages, `expense-side-panel.tsx`, and `password-input.tsx` already use the pattern.
-   - What's unclear: Whether appointment forms, patient forms, settings forms, etc. apply `.input-error-shake` on validation errors.
-   - Recommendation: Grep for `formError`, `errorField`, `state?.error` across all form components and verify shake class is applied.
+2. **Are there form inputs outside `.input-field` / `.auth-input` that need error shake wiring?** ✅ RESOLVED
+   - Decision: All form components must be audited for `.input-error-shake` application on validation errors. The executor will grep for error patterns (`formError`, `errorField`, `state?.error`) and wire shake classes where missing.
 
 ## Environment Availability
 
