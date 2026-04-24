@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4
-milestone_name: Performance Profunda
-status: Ready to execute
-stopped_at: Phase 34 context gathered
-last_updated: "2026-04-24T13:06:44.791Z"
+milestone: v1.5
+milestone_name: Motion & Feel
+status: Phase 34 complete
+stopped_at: Phase 34 fully executed and verified
+last_updated: "2026-04-24T10:30:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 5
+  completed_phases: 2
   total_plans: 14
-  completed_plans: 14
-  percent: 100
+  completed_plans: 8
+  percent: 40
 ---
 
 # STATE
@@ -18,14 +18,14 @@ progress:
 ## Project Reference
 
 **Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.5 Motion & Feel — Phase 32: Motion Tokens Foundation complete
+**Current Focus**: Milestone v1.5 Motion & Feel — Phase 34: Feedback de Ação e Loading complete
 
 ## Current Position
 
-Phase: 33
-Plan: Not started
-**Status**: Phase 29 fully executed and verified. All 3 plans complete. Build passes, 419 tests pass. Ready for Phase 30.
-**Last activity**: 2026-04-23 — Phase 29 completed with cache foundation, revalidatePath scope audit, and revalidateTag integration.
+Phase: 34
+Plan: 4 of 4 complete
+**Status**: Phase 34 fully executed and verified. All 4 plans complete. Build passes, 419 tests pass. Ready for Phase 35.
+**Last activity**: 2026-04-24 — Phase 34 completed with toast animations, spinner component, skeleton shimmer refinement, useTransition loading states, and form error shake feedback.
 
 **Progress**:
 [████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 60% (3/5 phases)
