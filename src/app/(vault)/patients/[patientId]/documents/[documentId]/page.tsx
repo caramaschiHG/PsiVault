@@ -1,35 +1,28 @@
 /**
- * Document view page — read-only provenance view.
+ * Document view page — A4 paper layout.
  *
- * Shows the full document content with a provenance header.
+ * Shows the full document content in a simulated A4 paper view.
  * Provides download link, edit button, and archive action.
  * Only shown when document belongs to the given patient (cross-patient guard).
  */
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPatientRepository } from "../../../../../../lib/patients/store";
-import { getDocumentRepository } from "../../../../../../lib/documents/store";
-import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
-import { createClient } from "../../../../../../lib/supabase/server";
+import { getPatientRepository } from "@/lib/patients/store";
+import { getDocumentRepository } from "@/lib/documents/store";
+import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
+import { createClient } from "@/lib/supabase/server";
 import { archiveDocumentAction } from "./actions";
-import type { DocumentType } from "../../../../../../lib/documents/model";
+import { DocumentPaperView } from "../components/document-paper-view";
+import { DocumentPaperScaler } from "../components/document-paper-scaler";
+import { canSignDocument } from "@/lib/documents/model";
 import {
   DOCUMENT_TYPE_LABELS,
   canExportDocumentAsPdf,
   isPrivateDocumentType,
-} from "../../../../../../lib/documents/presenter";
-import { resolveSession } from "../../../../../../lib/supabase/session";
-import { richTextHtmlToPlainText, sanitizeRichTextHtml } from "../../../../../../lib/documents/rich-text";
-
-const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  dateStyle: "long",
-});
-
-const longDateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
-  dateStyle: "long",
-  timeStyle: "short",
-});
+} from "@/lib/documents/presenter";
+import { resolveSession } from "@/lib/supabase/session";
+import { richTextHtmlToPlainText } from "@/lib/documents/rich-text";
 
 interface DocumentViewPageProps {
   params: Promise<{ patientId: string; documentId: string }>;
@@ -84,66 +77,21 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
         <span style={navCurrentStyle}>{typeLabel}</span>
       </nav>
 
-      {/* Provenance header */}
-      <section style={provenanceStyle}>
-        <p style={eyebrowStyle}>Documento clínico</p>
-        <h1 style={titleStyle}>{typeLabel}</h1>
-        {isPrivate && <p style={privateNoticeStyle}>Uso exclusivo do psicólogo. Não entra no prontuário nem em exportações.</p>}
-        <div style={metaGridStyle}>
-          <div style={metaRowStyle}>
-            <span style={metaLabelStyle}>Paciente</span>
-            <span style={metaValueStyle}>{patient.fullName}</span>
-          </div>
-          <div style={metaRowStyle}>
-            <span style={metaLabelStyle}>Gerado por</span>
-            <span style={metaValueStyle}>{doc.createdByName}</span>
-          </div>
-          <div style={metaRowStyle}>
-            <span style={metaLabelStyle}>Criado em</span>
-            <span style={metaValueStyle}>{longDateFormatter.format(doc.createdAt)}</span>
-          </div>
-          {doc.editedAt && (
-            <div style={metaRowStyle}>
-              <span style={metaLabelStyle}>Editado em</span>
-              <span style={metaValueStyle}>{longDateTimeFormatter.format(doc.editedAt)}</span>
-            </div>
-          )}
-          {doc.archivedAt && (
-            <div style={metaRowStyle}>
-              <span style={metaLabelStyle}>Arquivado em</span>
-              <span style={{ ...metaValueStyle, color: "var(--color-rose)" }}>
-                {longDateFormatter.format(doc.archivedAt)}
-              </span>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Document content */}
-      <section style={contentSectionStyle}>
-        {doc.type === "session_record" ? (
-          <div
-            style={contentRichStyle}
-            dangerouslySetInnerHTML={{ __html: sanitizeRichTextHtml(doc.content) }}
-          />
-        ) : (
-          <pre style={contentPreStyle}>{doc.content}</pre>
-        )}
-
-        {signatureImageUrl && !isPrivate && (
-          <div style={signatureBlockStyle}>
-            {/* next/image não se aplica: signed URL do Supabase Storage com expiração de 1h.
-                O Supabase já serve imagens otimizadas; adicionar o domínio em images.remotePatterns
-                aumentaria a superfície de configuração sem ganho proporcional. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={signatureImageUrl}
-              alt="Assinatura profissional"
-              style={signatureImgStyle}
-            />
-          </div>
-        )}
-      </section>
+      {/* A4 Paper View */}
+      <DocumentPaperScaler>
+        <DocumentPaperView
+          typeLabel={typeLabel}
+          patientName={patient.fullName}
+          professionalName={doc.createdByName}
+          crp={profile.crp ?? "CRP não informado"}
+          createdAt={doc.createdAt}
+          editedAt={doc.editedAt}
+          status={doc.status}
+          content={doc.content}
+          isPrivate={isPrivate}
+          signatureImageUrl={signatureImageUrl}
+        />
+      </DocumentPaperScaler>
 
       {/* Actions */}
       <section style={actionsStyle}>
@@ -153,7 +101,7 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
           </a>
         )}
 
-        {!isPrivate && profile.signatureAsset && canExportDocumentAsPdf(doc.type) && (
+        {!isPrivate && canExportDocumentAsPdf(doc.type) && (
           <a
             href={`/api/patients/${patientId}/documents/${doc.id}/pdf`}
             style={downloadLinkStyle}
@@ -162,10 +110,24 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
           </a>
         )}
 
+        {/* Placeholder for Plan 39-03 preview modal */}
+        {!isPrivate && canExportDocumentAsPdf(doc.type) && (
+          <button disabled style={{ ...downloadLinkStyle, opacity: 0.5, cursor: "not-allowed" }}>
+            Visualizar PDF
+          </button>
+        )}
+
         {isActive && (
           <Link href={`/patients/${patientId}/documents/${doc.id}/edit`} style={editLinkStyle}>
             Editar documento
           </Link>
+        )}
+
+        {/* Placeholder for sign action (Plan 39-03) */}
+        {isActive && canSignDocument(doc) && (
+          <button disabled style={{ ...editLinkStyle, opacity: 0.5, cursor: "not-allowed" }}>
+            Assinar
+          </button>
         )}
 
         {isActive && (
@@ -216,81 +178,6 @@ const navCurrentStyle = {
   fontWeight: 500,
 } satisfies React.CSSProperties;
 
-const provenanceStyle = {
-  padding: "1.35rem 1.5rem",
-  borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 247, 237, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.16)",
-  display: "grid",
-  gap: "0.75rem",
-} satisfies React.CSSProperties;
-
-const eyebrowStyle = {
-  margin: 0,
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.14em",
-  fontSize: "0.72rem",
-  color: "var(--color-brown-mid)",
-} satisfies React.CSSProperties;
-
-const titleStyle = {
-  margin: 0,
-  fontSize: "1.5rem",
-  color: "var(--color-kbd-text)",
-} satisfies React.CSSProperties;
-
-const privateNoticeStyle = {
-  margin: 0,
-  fontSize: "0.88rem",
-  color: "var(--color-warning-text)",
-  fontWeight: 500,
-} satisfies React.CSSProperties;
-
-const metaGridStyle = {
-  display: "grid",
-  gap: "0.35rem",
-} satisfies React.CSSProperties;
-
-const metaRowStyle = {
-  display: "flex",
-  gap: "0.5rem",
-  fontSize: "0.88rem",
-  flexWrap: "wrap" as const,
-} satisfies React.CSSProperties;
-
-const metaLabelStyle = {
-  color: "var(--color-text-3)",
-  minWidth: "7rem",
-} satisfies React.CSSProperties;
-
-const metaValueStyle = {
-  color: "var(--color-kbd-text)",
-  fontWeight: 500,
-} satisfies React.CSSProperties;
-
-const contentSectionStyle = {
-  padding: "1.5rem",
-  borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
-} satisfies React.CSSProperties;
-
-const contentPreStyle = {
-  margin: 0,
-  fontFamily: "inherit",
-  fontSize: "0.95rem",
-  lineHeight: 1.75,
-  color: "var(--color-kbd-text)",
-  whiteSpace: "pre-wrap" as const,
-  wordBreak: "break-word" as const,
-} satisfies React.CSSProperties;
-
-const contentRichStyle = {
-  color: "var(--color-kbd-text)",
-  fontSize: "0.95rem",
-  lineHeight: 1.75,
-} satisfies React.CSSProperties;
-
 const actionsStyle = {
   display: "flex",
   alignItems: "center",
@@ -322,17 +209,6 @@ const editLinkStyle = {
 
 const archiveFormStyle = {
   display: "inline",
-} satisfies React.CSSProperties;
-
-const signatureBlockStyle = {
-  marginTop: "1.5rem",
-  paddingTop: "1rem",
-  borderTop: "1px solid rgba(146, 64, 14, 0.1)",
-} satisfies React.CSSProperties;
-
-const signatureImgStyle = {
-  maxHeight: "80px",
-  objectFit: "contain" as const,
 } satisfies React.CSSProperties;
 
 const archiveButtonStyle = {
