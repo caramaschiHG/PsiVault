@@ -123,7 +123,7 @@ export function SearchBar() {
 
   return (
     <div ref={containerRef} style={containerStyle}>
-      <div className="input-floating-label-wrap" style={{ position: "relative", paddingTop: 0 }}>
+      <div style={inputWrapperStyle}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={searchIconStyle} aria-hidden="true">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -142,7 +142,6 @@ export function SearchBar() {
           data-search-input
         />
         <span style={commandKHintStyle}>⌘K</span>
-        <label htmlFor="vault-search" className="input-floating-label" style={{ clip: "rect(0 0 0 0)", clipPath: "inset(50%)", height: "1px", overflow: "hidden", position: "absolute", whiteSpace: "nowrap", width: "1px" }}>Buscar</label>
       </div>
       {isOpen && results !== null && (
         <SearchDropdown results={results} onClose={() => setIsOpen(false)} />
@@ -167,6 +166,8 @@ const inputWrapperStyle: React.CSSProperties = {
 const searchIconStyle: React.CSSProperties = {
   position: "absolute",
   left: "0.625rem",
+  top: "50%",
+  transform: "translateY(-50%)",
   color: "var(--color-text-4)",
   pointerEvents: "none",
   flexShrink: 0,
@@ -175,12 +176,13 @@ const searchIconStyle: React.CSSProperties = {
 const searchInputStyle: React.CSSProperties = {
   width: "100%",
   paddingLeft: "2rem",
-  paddingRight: "0.625rem",
-  paddingTop: "0.4rem",
-  paddingBottom: "0.4rem",
+  paddingRight: "2.25rem",
+  paddingTop: "0.45rem",
+  paddingBottom: "0.45rem",
   fontSize: "0.8rem",
   borderRadius: "var(--radius-sm)",
-  background: "rgba(255, 255, 255, 0.7)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border-med)",
 };
 
 const dropdownStyle: React.CSSProperties = {
@@ -245,9 +247,12 @@ const emptyStyle: React.CSSProperties = {
 };
 
 const commandKHintStyle: React.CSSProperties = {
+  position: "absolute",
+  right: "0.625rem",
+  top: "50%",
+  transform: "translateY(-50%)",
   fontSize: "0.7rem",
-  color: "rgba(146, 64, 14, 0.5)",
+  color: "var(--color-text-4)",
   letterSpacing: "0.05em",
   pointerEvents: "none",
-  paddingRight: "0.375rem",
 };
