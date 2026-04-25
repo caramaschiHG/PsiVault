@@ -8,6 +8,7 @@
 - ✅ **v1.3 Performance** — Phases 23–26 (shipped 2026-04-22)
 - 📋 **v1.4 Performance Profunda** — Phases 27–31 (in progress)
 - 📋 **v1.5 Motion & Feel** — Phases 32–36 (planned)
+- 📋 **v1.6 Documentos — Workflow Clínico Impecável** — Phases 37–42 (planned)
 
 ## Phases
 
@@ -126,6 +127,15 @@ Plans:
 - [x] **Phase 35: Listas e Transições de Página** — Staggered lists, page transition fade, layout animations expand/collapse (completed 2026-04-24)
 - [ ] **Phase 36: Polish, Accessibility & Measurement** — Motion audit, reduced motion test, INP/CLS validation, docs
 
+### 📋 v1.6 Documentos — Workflow Clínico Impecável (Planned)
+
+- [ ] **Phase 37: Foundation & Security** — Repository extension, DB index, security patterns enforcement
+- [ ] **Phase 38: Document Dashboard & Navigation** — /documentos page, filters, breadcrumbs, patient profile tabs
+- [ ] **Phase 39: Clinical Timeline** — Visual timeline, simplified cards, drawer, grouping, cursor pagination
+- [ ] **Phase 40: Note Editor Enhancement** — Clinical templates, focus mode, auto-save indicator, encrypted drafts
+- [ ] **Phase 41: Document Composer & PDF Preview** — PDF preview modal, visual templates, lazy loading, variable substitution
+- [ ] **Phase 42: Integrated Session→Note Flow** — Quick actions from agenda and patient profile, back navigation
+
 ## Phase Details
 
 ### Phase 32: Motion Tokens & Foundation CSS
@@ -215,6 +225,79 @@ Plans:
   5. Todos os 407 testes existentes continuam passando
 **Plans**: TBD
 
+### Phase 37: Foundation & Security
+**Goal**: Data layer and security patterns ready for document workflow features
+**Depends on**: Phase 36
+**Requirements**: DASH-06, TIME-06, FLOW-04
+**Success Criteria** (what must be TRUE):
+  1. DocumentRepository.listActiveByWorkspace exists with workspace scoping and soft-delete filtering
+  2. New composite database index on PracticeDocument supports workspace-level queries
+  3. All new list queries explicitly exclude importantObservations (verified by tests)
+  4. Quick actions in Server Actions validate workspace + role and use repository pattern (no direct Prisma calls)
+**Plans**: TBD
+
+### Phase 38: Document Dashboard & Navigation
+**Goal**: Users can navigate and view all workspace documents from a central dashboard
+**Depends on**: Phase 37
+**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
+**Success Criteria** (what must be TRUE):
+  1. User can access `/documentos` and see all documents from their workspace
+  2. User can filter documents by type, date range, and patient
+  3. Documents are visually grouped by type with count badges
+  4. Breadcrumbs show hierarchical path in all document flows (e.g., Pacientes > Fulano > Documentos > Novo > Laudo)
+  5. Tabs in patient profile preserve active tab in URL for deep-linking and refresh
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 39: Clinical Timeline
+**Goal**: Users can view patient appointment history in a scannable, performant timeline
+**Depends on**: Phase 37
+**Requirements**: TIME-01, TIME-02, TIME-03, TIME-04, TIME-05
+**Success Criteria** (what must be TRUE):
+  1. Timeline displays appointments with vertical CSS connector line
+  2. Each card shows date, status, and note presence badge only (no sensitive content)
+  3. Communication and additional details accessible via expandable drawer
+  4. Appointments grouped by month or quarter with period headers
+  5. Timeline loads history progressively via cursor pagination (not all at once)
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 40: Note Editor Enhancement
+**Goal**: Users can compose clinical notes efficiently with templates and secure draft storage
+**Depends on**: Phase 37
+**Requirements**: NOTE-01, NOTE-02, NOTE-03, NOTE-04, NOTE-05
+**Success Criteria** (what must be TRUE):
+  1. User can select clinical template (SOAP, BIRP, Livre) that injects structure into editor
+  2. User can enter focus mode that collapses sidebar and hides optional fields
+  3. Auto-save indicator shows clear status with timestamp ("Salvo localmente às 14:32" / "Salvo no servidor")
+  4. Draft notes in localStorage are encrypted via Web Crypto API before persisting
+  5. Templates use PsiVault clinical vocabulary (no wellness/coach jargon)
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 41: Document Composer & PDF Preview
+**Goal**: Users can preview documents as PDF and compose with visual templates
+**Depends on**: Phase 37
+**Requirements**: DOCM-01, DOCM-02, DOCM-03, DOCM-04
+**Success Criteria** (what must be TRUE):
+  1. User can open PDF preview modal before saving document
+  2. Document composer offers visual templates per type (declaração, laudo, recibo, registro privado)
+  3. PDF preview component is lazy-loaded and doesn't impact initial route bundle
+  4. Templates safely substitute patient variables (name, date) into document content
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 42: Integrated Session→Note Flow
+**Goal**: Users can seamlessly create notes from completed appointments without context loss
+**Depends on**: Phase 38, Phase 39, Phase 40, Phase 41
+**Requirements**: FLOW-01, FLOW-02, FLOW-03
+**Success Criteria** (what must be TRUE):
+  1. After marking appointment as COMPLETED, user sees "Criar nota" quick action that redirects to note editor
+  2. User can create new document directly from patient profile via quick action button
+  3. Navigation preserves `from` parameter so back button returns to originating page intuitively
+**Plans**: TBD
+**UI hint**: yes
+
 ## Progress Table
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -233,7 +316,14 @@ Plans:
 | 34. Feedback de Ação e Loading | v1.5 | 4/4 | Planned | — |
 | 35. Listas e Transições de Página | v1.5 | 5/5 | Complete    | 2026-04-24 |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
+| 37. Foundation & Security | v1.6 | 0/TBD | Not started | — |
+| 38. Document Dashboard & Navigation | v1.6 | 0/TBD | Not started | — |
+| 39. Clinical Timeline | v1.6 | 0/TBD | Not started | — |
+| 40. Note Editor Enhancement | v1.6 | 0/TBD | Not started | — |
+| 41. Document Composer & PDF Preview | v1.6 | 0/TBD | Not started | — |
+| 42. Integrated Session→Note Flow | v1.6 | 0/TBD | Not started | — |
 
 ---
 *Milestone v1.4: Performance Profunda — roadmap created: 2026-04-23*
 *Milestone v1.5: Motion & Feel — roadmap updated: 2026-04-23*
+*Milestone v1.6: Documentos — Workflow Clínico Impecável — roadmap created: 2026-04-25*

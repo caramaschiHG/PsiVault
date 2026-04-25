@@ -79,36 +79,36 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DASH-01 | Phase TBD | Pending |
-| DASH-02 | Phase TBD | Pending |
-| DASH-03 | Phase TBD | Pending |
-| DASH-04 | Phase TBD | Pending |
-| DASH-05 | Phase TBD | Pending |
-| DASH-06 | Phase TBD | Pending |
-| TIME-01 | Phase TBD | Pending |
-| TIME-02 | Phase TBD | Pending |
-| TIME-03 | Phase TBD | Pending |
-| TIME-04 | Phase TBD | Pending |
-| TIME-05 | Phase TBD | Pending |
-| TIME-06 | Phase TBD | Pending |
-| NOTE-01 | Phase TBD | Pending |
-| NOTE-02 | Phase TBD | Pending |
-| NOTE-03 | Phase TBD | Pending |
-| NOTE-04 | Phase TBD | Pending |
-| NOTE-05 | Phase TBD | Pending |
-| DOCM-01 | Phase TBD | Pending |
-| DOCM-02 | Phase TBD | Pending |
-| DOCM-03 | Phase TBD | Pending |
-| DOCM-04 | Phase TBD | Pending |
-| FLOW-01 | Phase TBD | Pending |
-| FLOW-02 | Phase TBD | Pending |
-| FLOW-03 | Phase TBD | Pending |
-| FLOW-04 | Phase TBD | Pending |
+| DASH-01 | Phase 38 | Pending |
+| DASH-02 | Phase 38 | Pending |
+| DASH-03 | Phase 38 | Pending |
+| DASH-04 | Phase 38 | Pending |
+| DASH-05 | Phase 38 | Pending |
+| DASH-06 | Phase 37 | Pending |
+| TIME-01 | Phase 39 | Pending |
+| TIME-02 | Phase 39 | Pending |
+| TIME-03 | Phase 39 | Pending |
+| TIME-04 | Phase 39 | Pending |
+| TIME-05 | Phase 39 | Pending |
+| TIME-06 | Phase 37 | Pending |
+| NOTE-01 | Phase 40 | Pending |
+| NOTE-02 | Phase 40 | Pending |
+| NOTE-03 | Phase 40 | Pending |
+| NOTE-04 | Phase 40 | Pending |
+| NOTE-05 | Phase 40 | Pending |
+| DOCM-01 | Phase 41 | Pending |
+| DOCM-02 | Phase 41 | Pending |
+| DOCM-03 | Phase 41 | Pending |
+| DOCM-04 | Phase 41 | Pending |
+| FLOW-01 | Phase 42 | Pending |
+| FLOW-02 | Phase 42 | Pending |
+| FLOW-03 | Phase 42 | Pending |
+| FLOW-04 | Phase 37 | Pending |
 
 **Coverage:**
 - v1.6 requirements: 25 total
-- Mapped to phases: 0 (awaiting roadmap)
-- Unmapped: 25
+- Mapped to phases: 25 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-25*

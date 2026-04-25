@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: Documentos — Workflow Clínico Impecável
-status: Defining requirements
-stopped_at: Milestone initialized
-last_updated: "2026-04-25T00:00:00.000Z"
+status: Roadmap created
+stopped_at: Phase 37 planning
+last_updated: "2026-04-25T12:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,20 +20,20 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-25)
 
 **Core value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current focus:** Milestone v1.6 Documentos — defining requirements
+**Current focus:** Milestone v1.6 Documentos — Workflow Clínico Impecável
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 37 — Foundation & Security
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-25 — Milestone v1.6 started
+Status: Roadmap created, awaiting plan execution
+Last activity: 2026-04-25 — Milestone v1.6 roadmap created (Phases 37–42)
 
 ## Performance Metrics
 
 - Tests: 419 passing
 - Build successful with no TypeScript errors
-- Motion token system active (Phase 32-35) — all transitions use --duration-* and --ease-*
+- Motion token system active (Phases 32–35) — all transitions use --duration-* and --ease-*
 - CWV collection active (Phase 27)
 - Zero @keyframes in globals.css — all consolidated in motion.css
 - prefers-reduced-motion covers all app-specific animations
@@ -89,13 +89,19 @@ Last activity: 2026-04-25 — Milestone v1.6 started
 - [Phase 35]: Client Component list (financeiro) uses `enteringIds`/`exitingIds` state for add/remove feedback
 - [Phase 35]: Expand/collapse uses `grid-template-rows: 0fr → 1fr` technique — no max-height hacks
 - [Phase 35]: All new animation classes covered by `prefers-reduced-motion: reduce`
+- [v1.6 Roadmap]: Phase 37 first — repository extension and security patterns are true blockers for all downstream phases.
+- [v1.6 Roadmap]: Phase 38 second — highest user-visible value; validates repository work in real UI.
+- [v1.6 Roadmap]: Phases 39–41 parallelizable after Phase 37 — timeline, note editor, and document composer are independent vertical slices.
+- [v1.6 Roadmap]: Phase 42 last — integration phase requires stable pages from Phases 38–41.
 
 ### Todos
 
-- [x] Phase 33: Micro-interações em Componentes Base — completed
-- [x] Phase 34: Feedback de Ação e Loading — completed
-- [x] Phase 35: Listas e Transições de Página — completed
-- Phase 36: Polish, Accessibility & Measurement — planned
+- [ ] Phase 37: Foundation & Security — repository extension, index, security patterns
+- [ ] Phase 38: Document Dashboard & Navigation — /documentos, filters, breadcrumbs, tabs
+- [ ] Phase 39: Clinical Timeline — visual timeline, cards, drawer, pagination
+- [ ] Phase 40: Note Editor Enhancement — templates, focus mode, auto-save, encryption
+- [ ] Phase 41: Document Composer & PDF Preview — PDF preview, templates, lazy loading
+- [ ] Phase 42: Integrated Session→Note Flow — quick actions, redirects, back navigation
 
 ### Blockers
 
@@ -103,6 +109,6 @@ Last activity: 2026-04-25 — Milestone v1.6 started
 
 ## Session Continuity
 
-Last session: 2026-04-24T19:20:00Z
-Stopped at: Phase 35 execution complete. All 5 plans executed, build passes, 419 tests pass.
-Resume file: .planning/phases/35-listas-e-transi-es-de-p-gina/35-CONTEXT.md
+Last session: 2026-04-25T12:00:00Z
+Stopped at: Milestone v1.6 roadmap created. 25 requirements mapped to 6 phases (37–42). Awaiting approval to begin Phase 37 planning.
+Resume file: N/A (new milestone start)
