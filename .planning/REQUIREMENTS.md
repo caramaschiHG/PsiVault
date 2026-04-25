@@ -1,102 +1,115 @@
-# Milestone v1.5 Requirements — Motion & Feel
+# Requirements: PsiVault v1.6 Documentos — Workflow Clínico Impecável
 
-## Scope
+**Defined:** 2026-04-25
+**Core Value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
 
-Elevar a percepção de qualidade do PsiVault através de animações sutis, micro-interações e refinamentos visuais que criam uma experiência clinicamente calma, estável e agradável — sem cair em exagero decorativo e sem impactar a performance objetiva conquistada em v1.3/v1.4.
+## v1.6 Requirements
 
----
+### Dashboard & Navegação (DASH)
 
-## Requirements
+- [ ] **DASH-01**: Psicólogo pode acessar dashboard global `/documentos` com todos os documentos do workspace
+- [ ] **DASH-02**: Dashboard exibe filtros por tipo de documento, intervalo de datas e paciente
+- [ ] **DASH-03**: Documentos no dashboard são agrupados visualmente por tipo com contagem
+- [ ] **DASH-04**: Breadcrumbs hierárquicos presentes em todos os fluxos de documentos (Pacientes > Fulano > Documentos > Novo > Laudo)
+- [ ] **DASH-05**: Tabs no perfil do paciente preservam estado na URL (query params) para deep-linking e refresh seguro
+- [ ] **DASH-06**: Dashboard não inclui campos sensíveis (`importantObservations`) em nenhuma listagem
 
-### Motion Tokens & Foundation (MOTF)
+### Timeline Clínica (TIME)
 
-- [ ] **MOTF-01**: Design tokens de motion (`--duration-*`, `--ease-*`, `--stagger-gap`) criados e integrados ao design system existente
-- [ ] **MOTF-02**: Media query `prefers-reduced-motion: reduce` implementada como fallback global — todas as animações degradam para instantâneo
-- [ ] **MOTF-03**: Utility classes CSS de motion criadas (`.motion-fade-in`, `.motion-slide-up`, `.motion-stagger`, etc.)
-- [ ] **MOTF-04**: Arquivo `src/styles/motion.css` carregado no critical path (sem FOUC)
+- [ ] **TIME-01**: Timeline clínica exibe visual de linha do tempo com conector CSS vertical
+- [ ] **TIME-02**: Cards de atendimento simplificados: data, status e badge de presença de nota apenas
+- [ ] **TIME-03**: Comunicação e detalhes adicionais ficam em drawer colapsável sob demanda
+- [ ] **TIME-04**: Atendimentos agrupados por mês ou trimestre com header de período
+- [ ] **TIME-05**: Timeline usa cursor pagination para carregar histórico progressivamente (não tudo de uma vez)
+- [ ] **TIME-06**: Nenhuma query de timeline inclui conteúdo de `importantObservations`
 
-### Micro-interactions em Componentes Base (MICR)
+### Editor de Notas (NOTE)
 
-- [ ] **MICR-01**: Todos os botões interativos possuem estados de hover (`translateY`, sombra suave), active (`scale(0.98)`), e disabled/loading (`opacity`, cursor)
-- [ ] **MICR-02**: Todos os cards possuem hover state suave (elevação ou sombra)
-- [ ] **MICR-03**: Focus rings elegantes e visíveis em todos os elementos focáveis (botões, links, inputs, nav items) — WCAG 2.1 AA compliant
-- [ ] **MICR-04**: Inputs e campos de formulário possuem micro-interações: border glow suave no focus, transição de label (float), shake sutil em erro de validação
-- [ ] **MICR-05**: Itens de navegação (sidebar, top bar) possuem indicador de ativo com transição suave e hover background
-- [ ] **MICR-06**: Links e elementos clicáveis possuem cursor apropriado (`pointer`, `wait`, `not-allowed`, `grab`/`grabbing`)
-- [ ] **MICR-07**: Smooth scroll habilitado globalmente (`scroll-behavior: smooth`) com fallback para reduced motion
+- [ ] **NOTE-01**: Psicólogo pode selecionar template clínico visual (SOAP, BIRP, Livre) que injeta estrutura no editor
+- [ ] **NOTE-02**: Editor de notas possui modo foco que colapsa sidebar e oculta campos opcionais
+- [ ] **NOTE-03**: Indicador de auto-save visível com timestamp ("Salvo localmente às 14:32" / "Salvo no servidor")
+- [ ] **NOTE-04**: Rascunhos de notas em localStorage são criptografados via Web Crypto API antes de persistir
+- [ ] **NOTE-05**: Templates clínicos respeitam o vocabulário do PsiVault (não usam jargão de wellness/coach)
 
-### Feedback de Ação e Loading (FEED)
+### Editor de Documentos (DOCM)
 
-- [ ] **FEED-01**: Sistema de Toast existente integrado com `AnimatePresence` — enter (slide + fade), exit (fade), duração ≤300ms
-- [ ] **FEED-02**: Botões que disparam Server Actions utilizam `useTransition` para estado de loading visual (opacity, spinner, texto alternativo)
-- [ ] **FEED-03**: Skeletons substituem pulse mecânico por shimmer gradient orgânico (CSS animation, duração lenta 1.5–2s)
-- [ ] **FEED-04**: Componente `Spinner` leve criado (SVG animado via CSS, sem bibliotecas externas)
-- [ ] **FEED-05**: Estados de erro em formulários fornecem feedback visual imediato (border color transition, shake sutil) além de mensagem textual
+- [ ] **DOCM-01**: Psicólogo pode visualizar preview do PDF antes de salvar o documento (modal com react-pdf)
+- [ ] **DOCM-02**: Composer de documentos oferece templates visuais por tipo (declaração, laudo, recibo, registro privado)
+- [ ] **DOCM-03**: Preview de PDF usa lazy-loading para não impactar bundle de rotas que não precisam de PDF
+- [ ] **DOCM-04**: Templates de documentos usam variáveis de paciente (nome, data) com substituição segura
 
-### Listas e Transições de Página (LIST)
+### Fluxo Integrado (FLOW)
 
-- [ ] **LIST-01**: Listagens principais (pacientes, atendimentos, financeiro) possuem staggered animation de entrada — itens aparecem em sequência com delay progressivo (cap em 10 itens)
-- [ ] **LIST-02**: Transição suave entre rotas do vault — fade de conteúdo com duração ≤150ms, sem bloquear navegação rápida
-- [ ] **LIST-03**: Cards, filtros e seções expansíveis possuem layout animation de altura suave (expand/collapse sem "jump")
-- [ ] **LIST-04**: Reordenação ou adição/remoção de itens em listas possui feedback visual de movimento
+- [ ] **FLOW-01**: Ao marcar atendimento como COMPLETED na agenda, psicólogo vê quick action "Criar nota" que redireciona para editor com contexto preservado
+- [ ] **FLOW-02**: Botão de quick action para novo documento acessível diretamente no perfil do paciente
+- [ ] **FLOW-03**: Redirecionamento de fluxo preserva parâmetro `from` para navegação de volta intuitiva
+- [ ] **FLOW-04**: Quick actions não bypassam repository pattern — usam Server Actions validadas com workspace + role
 
-### Polish, Accessibility & Measurement (POLI)
+## v2 Requirements (Deferred)
 
-- [ ] **POLI-01**: Motion audit realizado em todas as páginas do vault — consistência de hover/focus/active verificada
-- [ ] **POLI-02**: Teste de `prefers-reduced-motion` realizado em TODAS as animações — nenhuma animação persiste indevidamente
-- [ ] **POLI-03**: Métricas de performance (INP, CLS) medidas antes e depois do milestone — sem regressão em relação ao baseline v1.4
-- [ ] **POLI-04**: Documentação de padrões de motion adicionada ao CLAUDE.md (regras de uso, tokens, anti-padrões)
-- [ ] **POLI-05**: Nenhum dos 407 testes existentes quebrado por mudanças de motion (visual-only, sem lógica)
+### Keyboard Shortcuts (SHORT)
 
----
+- **SHORT-01**: Atalhos com modificador (`Ctrl+Shift+N/D/E`) para ações de fluxo frequentes
+- **SHORT-02**: Modal de ajuda de atalhos acionado por `?`
+- **SHORT-03**: Atalhos respeitam foco em inputs e preferência de reduced motion
 
-## Future Requirements (Deferred)
+### Enhanced Note Flow
 
-- Number counting animation em dashboards estatísticos (complexidade baixa, mas impacto limitado)
-- Swipe to dismiss em notificações mobile-only (esperar estratégia mobile)
-- View Transition API nativa do browser quando suporte cross-browser for estável (progressive enhancement futura)
-- Ripple effect em botões (questionável para o tom PsiVault; prototipar antes)
+- **FLOW-05**: Drawer inline para criação de nota sem sair da página atual (alternativa ao redirect)
+- **FLOW-06**: Sugestão automática de conteúdo baseada em notas anteriores (sem AI — apenas estrutura)
+
+### Dashboard Advanced
+
+- **DASH-07**: Full-text search em metadados de documentos (não conteúdo clínico)
+- **DASH-08**: Exportação em lote de documentos filtrados
 
 ## Out of Scope
 
-- **Parallax scrolling** — viola o tom discreto e pode causar desconforto vestibular
-- **3D transforms, perspective, rotateX/Y** — anti-padrão visual do PsiVault (nada de glassmorphism/crypto aesthetic)
-- **Celebration effects (confetti, etc.)** — anti-padrão de tom (proibido pelo CLAUDE.md)
-- **Sound effects** — inapropriado para ambiente clínico
-- **Typing animation em textos funcionais** — aumenta tempo de leitura, frustra usuários experientes
-- **Full-screen loading spinners** — anti-padrão de UX; skeletons progressivos já implementados em v1.4
-- **Background animated gradients / mesh** — viola regra visual do PsiVault
-- **Dark mode motion tokens** — dark mode não está no roadmap atual
+| Feature | Reason |
+|---------|--------|
+| Inline note drawer (v1.6) | Redirect cobre 95% do valor com 5% do esforço; drawer é enhancement v2 |
+| Smart suggestions com AI | Anti-padrão de posicionamento PsiVault (não substituir julgamento clínico) |
+| Full-text search em conteúdo de documentos | Risco de segurança — conteúdo clínico não deve ser indexado para busca global |
+| Custom template builder drag-drop | Complexidade excessiva para usuário-alvo; templates hardcoded cobrem 95% dos casos |
+| Single-key shortcuts (`N`, `D`) | Viola WCAG 2.1 SC 2.1.1 — conflito com screen readers e navegação por teclado |
+| Client-side PDF generation pesado (html2canvas/jspdf) | Bundle bloat 500KB+, congela UI, problemas com acentuação pt-BR; usar react-pdf existente |
+| Real-time collaborative editing | Complexidade alta, não necessário para prática solo de psicólogos |
 
 ## Traceability
 
-| REQ-ID | Phase | Plan |
-|--------|-------|------|
-| MOTF-01 | 32 | TBD |
-| MOTF-02 | 32 | TBD |
-| MOTF-03 | 32 | TBD |
-| MOTF-04 | 32 | TBD |
-| MICR-01 | 33 | TBD |
-| MICR-02 | 33 | TBD |
-| MICR-03 | 33 | TBD |
-| MICR-04 | 33 | TBD |
-| MICR-05 | 33 | TBD |
-| MICR-06 | 33 | TBD |
-| MICR-07 | 33 | TBD |
-| FEED-01 | 34 | TBD |
-| FEED-02 | 34 | TBD |
-| FEED-03 | 34 | TBD |
-| FEED-04 | 34 | TBD |
-| FEED-05 | 34 | TBD |
-| LIST-01 | 35 | TBD |
-| LIST-02 | 35 | TBD |
-| LIST-03 | 35 | TBD |
-| LIST-04 | 35 | TBD |
-| POLI-01 | 36 | TBD |
-| POLI-02 | 36 | TBD |
-| POLI-03 | 36 | TBD |
-| POLI-04 | 36 | TBD |
-| POLI-05 | 36 | TBD |
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| DASH-01 | Phase TBD | Pending |
+| DASH-02 | Phase TBD | Pending |
+| DASH-03 | Phase TBD | Pending |
+| DASH-04 | Phase TBD | Pending |
+| DASH-05 | Phase TBD | Pending |
+| DASH-06 | Phase TBD | Pending |
+| TIME-01 | Phase TBD | Pending |
+| TIME-02 | Phase TBD | Pending |
+| TIME-03 | Phase TBD | Pending |
+| TIME-04 | Phase TBD | Pending |
+| TIME-05 | Phase TBD | Pending |
+| TIME-06 | Phase TBD | Pending |
+| NOTE-01 | Phase TBD | Pending |
+| NOTE-02 | Phase TBD | Pending |
+| NOTE-03 | Phase TBD | Pending |
+| NOTE-04 | Phase TBD | Pending |
+| NOTE-05 | Phase TBD | Pending |
+| DOCM-01 | Phase TBD | Pending |
+| DOCM-02 | Phase TBD | Pending |
+| DOCM-03 | Phase TBD | Pending |
+| DOCM-04 | Phase TBD | Pending |
+| FLOW-01 | Phase TBD | Pending |
+| FLOW-02 | Phase TBD | Pending |
+| FLOW-03 | Phase TBD | Pending |
+| FLOW-04 | Phase TBD | Pending |
+
+**Coverage:**
+- v1.6 requirements: 25 total
+- Mapped to phases: 0 (awaiting roadmap)
+- Unmapped: 25
 
 ---
-*Last updated: 2026-04-23 — Requirements defined for v1.5*
+*Requirements defined: 2026-04-25*
+*Last updated: 2026-04-25 after research and scoping*
