@@ -8,24 +8,32 @@ PsiVault é uma plataforma web completa para psicólogos gerenciarem sua prátic
 
 Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
 
-## Current Milestone: v1.5 Motion & Feel — Interações Fluidas
+## Current Milestone: v1.6 Documentos — Workflow Clínico Impecável
+
+**Goal:** Transformar a experiência de documentação clínica do PsiVault em um workflow fluido, seguro e clinicamente maduro — da sessão ao prontuário, do registro ao documento formal — com UX inspirada nos melhores sistemas de documentação médica do mundo.
+
+**Target features:**
+- Timeline clínica redesenhada: visual de linha do tempo com cards simplificados, agrupamento por período, escaneabilidade imediata
+- Editor de notas aprimorado: auto-save visível, modo foco, templates clínicos (SOAP, BIRP, livre), keyboard shortcuts
+- Editor de documentos premium: preview de PDF, templates visuais, toolbar rica com formatação real
+- Fluxo integrado sessão → nota: da agenda direto para registro de prontuário sem saltos de página
+- Dashboard de documentos: visão global `/documentos` com filtros por tipo, paciente, data; documentos recentes e pendentes
+- Navegação hierárquica: breadcrumbs, tabs no perfil do paciente (Visão Geral, Clínico, Documentos, Financeiro)
+- Quick actions e atalhos: criação de nota/documento em 1-2 cliques, keyboard shortcuts para ações de fluxo
+
+## Previous Milestone: v1.5 Motion & Feel — Interações Fluidas (Shipped)
 
 **Goal:** Elevar a percepção de qualidade do PsiVault através de animações sutis, micro-interações e refinamentos visuais que criam uma experiência clinicamente calma, estável e agradável — sem cair em exagero decorativo.
 
-**Target features:**
-- Transições de página e navegação fluidas (soft enter/exit)
-- Micro-interações em botões, cards e formulários (hover, focus, active states)
-- Estados de loading e skeletons com movimento orgânico
-- Animações em listas e tabelas (adicionar, remover, reordenar itens)
-- Feedback visual de ações bem-sucedidas e erros (toasts, subtle shakes, fades)
-- Refinamentos de tipografia, espaçamento e ritmo visual
-- Redução de "jump" em layouts via animações de altura/controladas
-- Cursor e scroll behavior refinado
-- Compatibilidade com preferência de reduced motion do sistema
+**Shipped:**
+- Motion tokens (duration, easing, stagger) e utility classes CSS
+- Micro-interações em botões, cards, inputs, navegação
+- Feedback de ação (toast animation, skeleton shimmer, button loading)
+- Animações em listas (staggered entry) e transições de página (fade 150ms)
+- Expand/collapse suave via grid-template-rows
+- Compatibilidade total com prefers-reduced-motion
 
-**Parallel milestone:** v1.4 Performance Profunda continua em execução em workstream separado.
-
-## Previous Milestone: v1.4 Performance Profunda (In Progress — Parallel)
+**Parallel milestone:** v1.4 Performance Profunda (Phases 27–31, shipped 2026-04-23).
 
 **Goal:** Eliminar gargalos remanescentes de performance e atingir fluidez objetivamente mensurável via Core Web Vitals e métricas de runtime.
 
@@ -36,7 +44,14 @@ Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, c
 - Otimização de assets (imagens, fontes, third-party scripts)
 - Métricas objetivas: LCP, INP, CLS, TTFB dentro dos thresholds do Google
 
-## Current State (v1.5 Motion & Feel — Phase 33 Complete)
+## Current State (v1.6 Documentos — Defining Requirements)
+
+Milestone v1.5 completou o sistema de motion e feel:
+- Motion tokens (duration, easing, stagger) consolidados em motion.css
+- Micro-interações em todos os componentes base
+- List stagger animations e page transitions
+- Expand/collapse orgânico sem layout shift
+- Zero regressão de performance, 419/419 tests passando
 
 Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:
 - Navegação client-side via `<Link>` (zero full reloads)
@@ -47,6 +62,12 @@ Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:
 
 Stack: Next.js 15, React 19, TypeScript 5.8 (strict), Prisma 6, PostgreSQL (Supabase), Supabase Auth (SSR)
 Tests: 419/419 passing
+
+**Contexto documentação existente:**
+- Document composer com RichTextEditor, auto-save indicator, agrupamento por tipo
+- Note composer com auto-save local, formatação básica
+- Documents section com grupos colapsáveis por tipo e badges de contagem
+- Análise UX prévia (`document-flow-ux-plan.md`) identifica 10 problemas críticos/importantes
 
 ## Requirements
 
@@ -78,12 +99,15 @@ Tests: 419/419 passing
 
 ### Active
 
-<!-- Next milestone scope — v1.4 -->
+<!-- Current milestone scope — v1.6 Documentos -->
 
-- [ ] Emissão de recibos em PDF para cobranças pagas (RECP-01, RECP-02)
-- [ ] Relatórios: DRE simples, export IRPF/Carnê-Leão (RELA-01, RELA-02)
-- [ ] Streaming visual de charts com Suspense (melhoria v1.4)
-- [ ] Column selection para endpoints de search de pacientes
+- [ ] Timeline clínica redesenhada com linha do tempo visual e cards simplificados (TIME-01, TIME-02)
+- [ ] Editor de notas com templates clínicos (SOAP, BIRP, livre) e modo foco (NOTE-01, NOTE-02)
+- [ ] Editor de documentos com preview de PDF e templates visuais (DOCM-01, DOCM-02)
+- [ ] Fluxo integrado sessão → nota direto da agenda (FLOW-01, FLOW-02)
+- [ ] Dashboard de documentos com filtros globais (DASH-01, DASH-02)
+- [ ] Navegação hierárquica: breadcrumbs e tabs no perfil do paciente (NAV-01, NAV-02)
+- [ ] Quick actions e keyboard shortcuts para ações de fluxo (QUICK-01, QUICK-02)
 
 ### Out of Scope
 
@@ -95,11 +119,11 @@ Tests: 419/419 passing
 
 ## Context
 
-- App estável com 407 testes, bundle lean
-- Performance resolvida em v1.3 — navegação, caching, queries
-- Design system maduro com 50+ CSS tokens, componentes reutilizáveis
+- App estável com 419 testes, bundle lean
+- Performance resolvida em v1.3-v1.4 — navegação, caching, queries, CWV
+- Design system maduro com 50+ CSS tokens, motion tokens, componentes reutilizáveis
 - Multi-tenant, workspace-scoped, audit trail completo
-- Próximas demandas: funcionalidades financeiras avançadas (recibos, relatórios)
+- Próximas demandas: workflow de documentação clínica (timeline, notas, documentos, fluxo integrado)
 
 ## Constraints
 
@@ -107,7 +131,7 @@ Tests: 419/419 passing
 - **Estilo**: Usar design tokens existentes, zero inline styles em componentes novos
 - **Segurança**: MFA/auth deve continuar funcionando corretamente após refatorações
 - **Sensibilidade**: importantObservations nunca em listagens — apenas findById e backup export
-- **Testes**: 407 testes existentes devem continuar passando
+- **Testes**: 419 testes existentes devem continuar passando
 
 ## Key Decisions
 
@@ -129,4 +153,4 @@ Tests: 419/419 passing
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-04-24 after Phase 33: Micro-interações em Componentes Base (v1.5 Motion & Feel)*
+*Last updated: 2026-04-25 after Milestone v1.6 started: Documentos — Workflow Clínico Impecável*

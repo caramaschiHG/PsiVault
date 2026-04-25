@@ -1,43 +1,40 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4
-milestone_name: Performance Profunda
-status: Milestone complete
-stopped_at: Phase 35 context gathered
-last_updated: "2026-04-24T19:19:13.179Z"
+milestone: v1.6
+milestone_name: Documentos — Workflow Clínico Impecável
+status: Defining requirements
+stopped_at: Milestone initialized
+last_updated: "2026-04-25T00:00:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # STATE
 
 ## Project Reference
 
-**Core Value**: Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current Focus**: Milestone v1.5 Motion & Feel — Phase 34: Feedback de Ação e Loading complete
+See: .planning/PROJECT.md (updated 2026-04-25)
+
+**Core value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
+**Current focus:** Milestone v1.6 Documentos — defining requirements
 
 ## Current Position
 
-Phase: 35
-Plan: 5 of 5 complete
-**Status**: Phase 35 fully executed and verified. All 5 plans complete. Build passes, 419 tests pass. Phase 35 is the last phase of the v1.5 Motion & Feel milestone.
-**Last activity**: 2026-04-24 — Phase 35 completed with list stagger animations, expand/collapse details animation, page transition reduction to 150ms, and client-side add/remove feedback.
-
-**Progress**:
-[████████████████████████████████████████████████████] 100% (5/5 phases)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-25 — Milestone v1.6 started
 
 ## Performance Metrics
 
-- Tests: 419 passing (12 new streaming integration tests from Phase 28)
+- Tests: 419 passing
 - Build successful with no TypeScript errors
+- Motion token system active (Phase 32-35) — all transitions use --duration-* and --ease-*
 - CWV collection active (Phase 27)
-- Bundle analyzer available (Phase 27)
-- Query logging active for slow queries >500ms (Phase 27)
-- Motion token system active (Phase 32) — all transitions use --duration-* and --ease-*
 - Zero @keyframes in globals.css — all consolidated in motion.css
 - prefers-reduced-motion covers all app-specific animations
 
