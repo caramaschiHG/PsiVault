@@ -1,467 +1,365 @@
-# Domain Pitfalls: Performance Optimization in Next.js 15 + Prisma 6 + Supabase
+# Pitfalls Research
 
-**Domain:** Multi-tenant SaaS (PsiVault — prontuário eletrônico para psicólogos)
-**Researched:** 2026-04-23
-**Context:** Adding deep performance optimizations to an existing production system with 407 tests, real users, MFA auth, workspace-scoped queries, soft deletes, and audit trail.
-
----
+**Domain:** Clinical documentation workflow (timeline, templates, PDF, shortcuts, dashboard) added to an existing Next.js psychology practice management system (PsiVault)
+**Researched:** 2026-04-25
+**Confidence:** HIGH
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites, outages, data leaks, or security regressions.
+### Pitfall 1: Leaking Sensitive Fields in New List Queries
 
-### Pitfall 1: Cache Poisoning / Cross-Tenant Data Leak via `unstable_cache` or `use cache`
-
-**What goes wrong:** Adding Next.js caching (`unstable_cache`, `use cache`, or `fetch` with `force-cache`) without including `workspaceId` in the cache key causes Tenant A's data to be served to Tenant B. The cache is shared across requests by default.
-
-**Why it happens:** Developers cache expensive queries (e.g., patient list, financial reports) keyed only by generic parameters like date range or pagination, forgetting that the same query shape returns different data per workspace.
-
-**Consequences:** HIPAA-level breach — one psychologist sees another's patients, appointments, or financial data.
-
-**Prevention:**
-- Every cache key MUST include `workspaceId` (and `accountId` where relevant).
-- Prefer `revalidateTag` scoped to workspace: `revalidateTag(\`patients:${workspaceId}\`)`.
-- Never cache `fetch` or ORM calls at the route level without explicit tag-based invalidation per workspace.
-- If using `unstable_cache`, the key array must be: `['patients', workspaceId, ...otherParams]`.
-
-**Detection:**
-- Code review rule: any `unstable_cache`, `use cache`, or `cache: 'force-cache'` must be accompanied by a workspace-scoped tag or key.
-- Integration test: two sessions, different workspaces, same query → assert different responses.
-
-**Phase to address:** Phase 1 (Diagnóstico e Cache Seguro) — audit all existing caches before adding new ones.
-
----
-
-### Pitfall 2: Connection Pool Exhaustion from Prisma + Supabase Under Load
-
-**What goes wrong:** After optimizing queries to run in parallel (e.g., `Promise.all([query1, query2, query3])`), the app hits `P1001` or `connection pool timeout` errors under load. Supabase compute tier has a hard connection limit.
+**What goes wrong:**
+The redesigned clinical timeline or global document search accidentally includes `importantObservations`, draft note content, or other sensitive PHI in list responses. This violates the project's hard security rule and can expose sensitive clinical data in search results, timeline cards, or dashboard previews.
 
 **Why it happens:**
-- Prisma 6's connection pool + Supabase's Supavisor pooler compete. Each Next.js serverless invocation creates its own Prisma client instance with its own pool.
-- Supabase transaction mode (port 6543) has a `max_pooler_clients` limit per compute tier. Small tiers (e.g., free/Pro) cap at 200–400 clients.
-- Prisma defaults to a pool size that, multiplied by concurrent Vercel functions, exceeds Supabase limits.
+Developers add new queries for timeline aggregation or global search and forget to apply the existing `LIST_SELECT` exclusion pattern. Global search especially tends to use `SELECT *` or broad `include` blocks to maximize discoverability, making it easy to pull in fields that should never leave the server in list context.
 
-**Consequences:** Cascading 500s, slow queries, database unavailability. In a clinical SaaS, this means psychologists cannot access patient records during sessions.
+**How to avoid:**
+- Enforce the existing `LIST_SELECT` pattern for every new query; never use `include: true` or `select: true` blindly.
+- Create a shared Prisma query extension or helper that strips sensitive fields by default for list operations.
+- Add automated tests that assert sensitive fields are absent in every new list/search endpoint response (fail the build if they appear).
+- For global search, explicitly whitelist search-result fields rather than blacklisting.
 
-**Prevention:**
-- Use Supabase **transaction mode** (port 6543) for runtime queries with `pgbouncer=true` in `DATABASE_URL`.
-- Set `connection_limit` low in the pooled URL (start with 1–2 for serverless; Prisma docs recommend 1 with PgBouncer).
-- Use `DIRECT_URL` (port 5432, session mode) ONLY for Prisma Migrate/CLI — never for runtime.
-- Monitor `pg_stat_activity` before and after optimization. Baseline current connections.
-- Avoid excessive `Promise.all()` parallelism against the same DB. Batch instead.
+**Warning signs:**
+- TypeScript types for list DTOs include `importantObservations` or `content` fields.
+- Snapshot tests show sensitive data in JSON responses.
+- Search results show clinical note snippets that should be private.
 
-**Detection:**
-- Supabase Dashboard → Observability → Database Connections.
-- Alert when connections exceed 80% of tier limit.
-- Load test with `k6` or `artillery` after each optimization.
-
-**Phase to address:** Phase 2 (Otimização de Queries e Pool) — connection tuning must be validated under load.
+**Phase to address:**
+Timeline (TIME-01, TIME-02) and Dashboard (DASH-01, DASH-02)
 
 ---
 
-### Pitfall 3: N+1 Reintroduced by "Optimizing" with Selective Queries
+### Pitfall 2: Bypassing Repository Pattern in New Features
 
-**What goes wrong:** A developer extracts a lean `select` for a list view to improve performance, then loops through results in a Server Component or utility to fetch related data (e.g., appointment status per patient), reintroducing N+1.
-
-**Why it happens:** The v1.3 fix used `include` or batch queries (`findByAppointmentIds`). When adding column selection or new endpoints, developers may revert to loop-based fetching for "flexibility."
-
-**Consequences:** What was 1 query becomes N+1. At 100 patients, that's 101 queries. At 1,000, the page times out.
-
-**Prevention:**
-- Ban loops with DB queries in Server Components. Use `include`, `in` filters, or `relationLoadStrategy: "join"`.
-- If column selection is needed, use Prisma's `select` WITH nested `select` or `include` — never loop.
-- Maintain the existing repository pattern: batch methods like `findByAppointmentIds` must be extended, not replaced with loops.
-
-**Detection:**
-- Enable Prisma query logging in staging: `log: ['query']`.
-- Assert query count in integration tests (e.g., `expect(queries).toHaveLength(3)`).
-
-**Phase to address:** Phase 2 (Otimização de Queries) — every new endpoint needs query-count assertion.
-
----
-
-### Pitfall 4: `importantObservations` Leaked via Cache or Over-Fetching
-
-**What goes wrong:** While optimizing queries, a developer removes the `LIST_SELECT` exclusion or adds a cached query that inadvertently fetches `importantObservations` for list views.
-
-**Why it happens:** Performance optimization focuses on reducing queries, and in consolidating selects, the sensitive field exclusion is missed.
-
-**Consequences:** Clinical observations (highly sensitive psychotherapy notes) appear in patient lists, search results, or cached payloads.
-
-**Prevention:**
-- `importantObservations` must be explicitly excluded in all list/search queries — never rely on "default" selects.
-- Add a TypeScript-level guard: create a `SafePatientSelect` type that omits `importantObservations`.
-- In code review, any change to `select` or `include` in Patient/Prontuario queries must be flagged.
-
-**Detection:**
-- Static analysis: grep for `importantObservations` in `src/lib/**/repository*.ts`. Should only appear in `findById` and backup-export paths.
-- Integration test: list patients → assert `importantObservations` is `undefined` for every record.
-
-**Phase to address:** Every phase — this is a cross-cutting invariant.
-
----
-
-### Pitfall 5: `dynamic = "force-dynamic"` Reintroduced During Refactoring
-
-**What goes wrong:** While adding Suspense boundaries or reorganizing pages, a developer copies an old page template that includes `export const dynamic = 'force-dynamic'`, or adds `cookies()`/`headers()` at the layout level, forcing the entire route tree dynamic.
-
-**Why it happens:** Next.js 15 makes routes dynamic by default when request-time APIs are used. Developers may add auth checks or session resolution at the layout level without realizing it opts the entire subtree out of static optimization.
-
-**Consequences:** Loss of all caching gains. Every request hits the database. CPU and connection usage spike.
-
-**Prevention:**
-- `dynamic = 'force-dynamic'` should not exist in the codebase post-v1.3. Any reintroduction is a regression.
-- Keep session resolution scoped to pages or specific Server Components, not layouts, where possible.
-- Use `React.cache()` for `resolveSession` (already done in v1.3) — it deduplicates without forcing dynamic.
-- If `cookies()` is needed in a layout, isolate it behind a Suspense boundary so the shell can still be cached.
-
-**Detection:**
-- `grep -r "dynamic = 'force-dynamic'" src/app` should return empty.
-- Build log analysis: check which routes are marked "dynamic" unexpectedly.
-
-**Phase to address:** Phase 1 (Diagnóstico) — audit route configs; Phase 3 (Streaming) — verify Suspense boundaries don't force dynamic unnecessarily.
-
----
-
-### Pitfall 6: Over-Caching Auth/Session Data Causing Stale MFA/Role State
-
-**What goes wrong:** Caching `resolveSession` or auth checks with a long TTL causes users to retain old roles, workspace assignments, or MFA status after changes.
-
-**Why it happens:** `React.cache()` only deduplicates within a single render pass — this is safe. But if someone wraps session resolution in `unstable_cache` or `use cache` with `revalidate: 3600`, the session becomes stale.
-
-**Consequences:**
-- A revoked user retains access for the cache duration.
-- Workspace role changes (e.g., admin → member) don't propagate.
-- MFA enforcement state is stale.
-
-**Prevention:**
-- NEVER cache auth/session resolution across requests. `React.cache()` (per-render-pass) is the only acceptable caching layer for auth.
-- If caching user metadata (name, avatar), use very short TTLs (≤ 60s) and tag with user ID for immediate revalidation on profile update.
-- MFA and role checks must always hit the session/token directly.
-
-**Detection:**
-- Security test: change a user's role → assert the change is reflected on next navigation within < 5s.
-
-**Phase to address:** Phase 1 (Diagnóstico) — audit what is cached; auth must be excluded.
-
----
-
-### Pitfall 7: Prisma `relationLoadStrategy: "join"` Used with Supabase RLS or Complex Filters
-
-**What goes wrong:** Using `relationLoadStrategy: "join"` (introduced in Prisma 5+) to reduce queries from 2 to 1, but the query includes relation filters, boolean operators, or workspace-scoped conditions that Prisma cannot translate into a valid JOIN.
-
-**Why it happens:** Prisma's `relationLoadStrategy: "join"` has strict limitations (from docs): all `where` criteria must be on scalar fields of the same model, using only `equals`, with no boolean operators or relation filters. In a multi-tenant app with `workspaceId` filtering and soft-delete conditions, it's easy to violate these constraints.
-
-**Consequences:** Silent fallback to query strategy (2 queries) — not a bug, but the optimization is ineffective. Or, in edge cases, incorrect query plans causing full table scans.
-
-**Prevention:**
-- Only use `relationLoadStrategy: "join"` when `where` contains ONLY scalar `equals` on the queried model.
-- For workspace-scoped lists with soft deletes, the existing 2-query pattern (findMany + in-filter) is often safer and more predictable.
-- Always verify with `EXPLAIN ANALYZE` when introducing JOINs.
-
-**Detection:**
-- Prisma query log: check if the optimized query still emits 2 SQL statements.
-- PostgreSQL slow query log after deployment.
-
-**Phase to address:** Phase 2 (Otimização de Queries) — validate each JOIN strategy with query log.
-
----
-
-### Pitfall 8: Suspense Boundaries Without Fallbacks or With DB Queries Above Them
-
-**What goes wrong:** Adding `<Suspense>` around charts or widgets, but the parent Server Component still awaits all data before rendering, negating streaming. Or, fallbacks are missing/ugly, causing layout shift (CLS).
+**What goes wrong:**
+New features (quick actions, timeline queries, dashboard aggregations) call Prisma Client directly in Server Actions or components, bypassing the repository layer. This silently disables soft-delete filtering, workspace scoping, and audit trail logging, causing data leaks and compliance gaps.
 
 **Why it happens:**
-- Developers wrap a component in Suspense but call its data fetcher directly in the parent: `const data = await getData(); return <Suspense><Widget data={data} /></Suspense>` — the await blocks streaming.
-- The data fetch must happen *inside* the Suspense-wrapped component.
-- Fallback UI doesn't match the final component dimensions, causing CLS.
+Time pressure makes the repository pattern feel like overhead for "simple" queries (e.g., "just mark appointment complete"). Developers may not realize that the repository layer also enforces `deletedAt: null`, `workspaceId` scoping, and audit logging.
 
-**Consequences:**
-- TTFB and LCP don't improve because the server still waits for all data.
-- CLS scores worsen, failing Core Web Vitals.
+**How to avoid:**
+- Mandate repository interface usage for every new domain operation; add a project lint rule that bans `@prisma/client` imports outside `*.prisma.ts` repository files.
+- Include "no raw Prisma in actions/components" in the code review checklist.
+- Write unit tests for new repositories using in-memory implementations to enforce the interface boundary.
 
-**Prevention:**
-- Data fetching must happen INSIDE the component wrapped by Suspense, not in the parent.
-- Fallback must have explicit `width`/`height` or skeleton that matches final layout.
-- Use `loading.tsx` only for initial page loads; prefer explicit `<Suspense>` boundaries for granular streaming.
+**Warning signs:**
+- `@prisma/client` imported in `actions.ts` or page files.
+- Queries missing `deletedAt: null` or `workspaceId` filters.
+- Audit trail logs missing entries for new mutations.
 
-**Detection:**
-- Web Vitals monitoring: if INP/TTFB don't improve after adding Suspense, the boundary is wrong.
-- Lighthouse CLS audit.
-
-**Phase to address:** Phase 3 (Streaming e Suspense) — each boundary must be validated with Lighthouse.
+**Phase to address:**
+All phases (especially Quick Actions QUICK-01 and Session Flow FLOW-01)
 
 ---
 
-### Pitfall 9: Hot Module Replacement (HMR) Creating Multiple Prisma Clients in Dev
+### Pitfall 3: Keyboard Shortcuts Breaking Accessibility and Browser Defaults
 
-**What goes wrong:** While optimizing, a developer refactors `prisma.ts` and accidentally removes the `globalThis` singleton pattern. In dev, every file save creates a new PrismaClient, exhausting the local/dev connection pool.
+**What goes wrong:**
+Custom single-key shortcuts (e.g., `N` for new note, `D` for new document) conflict with screen-reader shortcuts (NVDA/JAWS), browser navigation (`Ctrl+D` bookmark, `Ctrl+N` new window), or assistive technologies. This makes the app unusable for keyboard-only or visually impaired users, failing WCAG 2.1.1 and 2.1.4.
 
-**Why it happens:** The existing pattern stores PrismaClient on `globalThis` in dev to survive HMR. If refactored into a class or factory without preserving this guard, connections leak.
+**Why it happens:**
+Developers implement shortcut handlers with global `keydown` listeners without checking for active focus context or modifier keys. Single-letter shortcuts are common in English-centric apps but are notorious accessibility hazards.
 
-**Consequences:**
-- Dev environment becomes unusable with connection errors.
-- The same pattern, if deployed, causes connection exhaustion in production (though Vercel's serverless model is less prone to HMR, container reuse still matters).
+**How to avoid:**
+- Use modifier-key combos (`Ctrl+Shift+N`, `Ctrl+Shift+D`) instead of single-key shortcuts.
+- Implement a shortcuts context that disables global shortcuts when focus is inside input, textarea, contenteditable, or ARIA application roles.
+- Provide a discoverable help modal triggered by `?` (also gated) that lists all shortcuts.
+- Test with NVDA or JAWS; run axe-core accessibility audits in CI.
 
-**Prevention:**
-- Never refactor `prisma.ts` singleton without preserving the `globalThis` guard:
-  ```ts
-  const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-  export const prisma = globalForPrisma.prisma ?? new PrismaClient();
-  if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
-  ```
-- If introducing a driver adapter (e.g., for connection pooling), ensure the adapter instance is also singleton.
+**Warning signs:**
+- Shortcut handlers fire while user is typing in the rich-text editor.
+- Browser native actions (new window, bookmark) are hijacked.
+- Lighthouse or axe-core flags keyboard traps or missing alternatives.
 
-**Detection:**
-- Dev console: watch for `FATAL: sorry, too many clients already` after a few saves.
-- `pg_stat_activity` in dev/staging: count connections from `postgres` role.
-
-**Phase to address:** Phase 0 (Setup/Infra) — validate before any query changes.
+**Phase to address:**
+Quick Actions (QUICK-01, QUICK-02)
 
 ---
 
-### Pitfall 10: `revalidatePath` Scope Misuse Causing Cache Stampedes
+### Pitfall 4: Unencrypted Clinical Drafts in localStorage
 
-**What goes wrong:** Using `revalidatePath('/vault/pacientes', 'layout')` instead of `'page'` causes Next.js to revalidate the entire route subtree, including layouts, on every patient mutation. Under load, this creates a cache stampede.
+**What goes wrong:**
+The enhanced note composer stores draft clinical notes in browser localStorage as plain text. If the device is shared, stolen, or compromised, protected health information (PHI) is immediately readable. Additionally, if localStorage keys are not scoped by workspace and patient, drafts from one patient may leak to another.
 
-**Why it happens:** v1.3 correctly used `revalidatePath(..., 'page')` in 13 server actions. If new actions are added during v1.4 without specifying scope, the default may revalidate more than intended.
+**Why it happens:**
+localStorage is the easiest client-side persistence mechanism for auto-save. Encryption feels like extra complexity, and key scoping is often an afterthought.
 
-**Consequences:**
-- Database load spikes after every mutation (all revalidated routes refetch).
-- Next.js server CPU spikes.
-- Degraded user experience as cached pages are regenerated synchronously.
+**How to avoid:**
+- Encrypt drafts client-side using the Web Crypto API (e.g., AES-GCM with a key derived from the user's session token) before writing to localStorage.
+- Scope localStorage keys by `workspaceId` and `patientId` (e.g., `draft:{workspaceId}:{patientId}:note`).
+- Better yet: move drafts to a server-side `Draft` table with Supabase RLS, so they never reside on the client unprotected and are available across devices.
+- If localStorage must be used, clear draft keys on logout and set a TTL.
 
-**Prevention:**
-- Always specify `'page'` scope for `revalidatePath` unless layout revalidation is explicitly required.
-- Prefer `revalidateTag` over `revalidatePath` — it's more granular and doesn't walk the route tree.
+**Warning signs:**
+- DevTools Application tab shows readable clinical note text.
+- localStorage keys lack workspace/patient namespace.
+- Drafts persist after user logout.
 
-**Detection:**
-- Vercel function logs: look for spikes in execution duration after mutations.
-- Next.js build output: check which paths are revalidated.
-
-**Phase to address:** Phase 1 (Diagnóstico) — audit all `revalidatePath` calls; Phase 4 (Ações e Mutações).
-
----
-
-### Pitfall 11: Adding Indexes Without Analyzing Workspace-Scoped Query Patterns
-
-**What goes wrong:** Creating indexes on `patient.name` or `appointment.date` without including `workspaceId` as the leading column. PostgreSQL cannot use the index efficiently for the app's actual query pattern (`WHERE workspaceId = X AND ...`).
-
-**Why it happens:** Developers optimize based on generic advice ("index the filter columns") without considering that EVERY query in this app is scoped to `workspaceId`.
-
-**Consequences:**
-- Index is unused or only partially used.
-- Write performance degrades (index maintenance overhead) with no read benefit.
-- Disk usage grows.
-
-**Prevention:**
-- Every new index must be composite with `workspaceId` as the FIRST column: `[workspaceId, status, date]` not `[status, date]`.
-- Use `EXPLAIN ANALYZE` on production-like data volumes before adding indexes.
-- Test index impact on write paths (patient creation, appointment booking) — these are user-facing.
-
-**Detection:**
-- `EXPLAIN (ANALYZE, BUFFERS)` on slow queries — verify Index Scan vs Seq Scan.
-- `pg_stat_user_indexes` — check `idx_scan` count after deployment. Zero scans = unused index.
-
-**Phase to address:** Phase 2 (Otimização de Queries) — each index must be justified with query plan.
+**Phase to address:**
+Note Composer (NOTE-01, NOTE-02)
 
 ---
 
-### Pitfall 12: Soft-Delete Bypass in Optimized Raw Queries or Aggregations
+### Pitfall 5: Timeline Loading All History at Once (N+1 & Memory)
 
-**What goes wrong:** To optimize a slow aggregation (e.g., financial reports), a developer uses `prisma.$queryRaw` or `prisma.$executeRaw`. The raw query forgets the `deletedAt IS NULL` condition, returning archived/deleted records.
+**What goes wrong:**
+The redesigned clinical timeline fetches every appointment and note for a patient without pagination. For long-term patients (5+ years of weekly sessions), this results in massive initial page load, N+1 queries per timeline card, and browser memory bloat, regressing the v1.3 performance gains.
 
-**Why it happens:** Prisma's ORM layer normally handles soft deletes transparently via `findMany({ where: { deletedAt: null } })`. Raw SQL bypasses this guard.
+**Why it happens:**
+Timelines naturally look like infinite scroll feeds, but developers often start with a simple `findMany` without `take`/`skip` or cursor pagination, then load relations eagerly with `include`, triggering an N+1 for each card's note status.
 
-**Consequences:**
-- Financial reports include deleted transactions.
-- Patient counts include archived patients.
-- Audit trail integrity is compromised.
+**How to avoid:**
+- Implement cursor-based pagination (e.g., 20 entries per page) with an explicit "Carregar mais" button or infinite scroll.
+- Use a single batched query for note presence (as done in v1.3 with `findByAppointmentIds`), not per-card queries.
+- Perform month/trimester grouping server-side in SQL/Prisma, not client-side on a massive dataset.
+- Never load `importantObservations` in timeline queries.
 
-**Prevention:**
-- Ban raw queries for standard CRUD/list operations. Use only for complex analytics where ORM is insufficient.
-- If raw queries are unavoidable, require a mandatory `WHERE deleted_at IS NULL` clause, validated in code review.
-- Maintain a `BaseRepository` method for raw queries that auto-injects soft-delete filtering.
+**Warning signs:**
+- Patient page load time >2 seconds for long-term patients.
+- React DevTools shows hundreds of timeline entry components mounted at once.
+- Prisma query logs show repeated identical queries per appointment.
 
-**Detection:**
-- Code review: any `$queryRaw` must have a comment explaining why ORM can't be used, plus explicit soft-delete filter.
-- Integration test: create + soft-delete a record → assert it's excluded from all optimized endpoints.
-
-**Phase to address:** Phase 2 (Otimização de Queries) — raw queries are high-risk; gate them.
-
----
-
-### Pitfall 13: Streaming Data with `use` API and Unhandled Promise Rejections
-
-**What goes wrong:** Using React 19's `use` API to stream data from Server Component to Client Component, but the promise rejects (e.g., DB timeout). The error is not caught by an Error Boundary, crashing the Client Component tree.
-
-**Why it happens:** `use(promise)` throws on rejection. If the Client Component doesn't have an Error Boundary, the entire subtree unmounts. In Next.js, this can cause a white screen or confusing error UI.
-
-**Consequences:**
-- Poor UX — instead of a graceful fallback, the user sees an error or blank area.
-- Error boundaries may not catch Server Component errors properly in all Next.js 15 configurations.
-
-**Prevention:**
-- Always wrap `use`-consuming components in `<ErrorBoundary>` (or Next.js `error.tsx`).
-- Prefer `Suspense` + async Server Components for data fetching where possible; use `use` only for true streaming props.
-- Handle promise rejection before passing to Client Component, or pass a `Promise<Result | Error>` and handle inside.
-
-**Detection:**
-- Simulate slow DB (e.g., `pg_sleep(10)`) and verify graceful fallback.
-- Error tracking (Sentry/etc.): monitor for `use` related unhandled rejections.
-
-**Phase to address:** Phase 3 (Streaming e Suspense).
+**Phase to address:**
+Timeline (TIME-01, TIME-02)
 
 ---
 
-### Pitfall 14: Over-Optimization Breaking the Repository Pattern
+### Pitfall 6: Global Document Search Missing Workspace Scope or RLS
 
-**What goes wrong:** Developers inline Prisma queries into Server Components or pages "for performance," bypassing the repository abstraction. This duplicates query logic, breaks testability, and makes future optimizations harder.
+**What goes wrong:**
+The new `/documentos` dashboard with global search queries documents without strict `workspaceId` filtering, or uses raw SQL (`to_tsvector`) that bypasses Prisma's automatic scoping. This creates cross-tenant data leakage—one workspace can see another's documents.
 
-**Why it happens:** "The repository adds indirection — let's query directly in the page for speed."
+**Why it happens:**
+Global search is often built with raw SQL or dedicated search endpoints for performance. Developers optimize for query speed and forget to prepend the mandatory `workspaceId` filter, or they create database views without applying Supabase RLS policies.
 
-**Consequences:**
-- Query logic fragments across the codebase.
-- Unit tests with in-memory repositories break.
-- The 407 existing tests may pass, but new code paths are untested.
-- Security checks (workspace scoping, soft deletes) may be inconsistently applied.
+**How to avoid:**
+- Always prepend `workspaceId` to every search query, even if using full-text search.
+- If using raw SQL, parameterize `workspaceId` and never concatenate it into the query string.
+- Enable Supabase RLS on any new search-related views or tables.
+- Write integration tests that assert a user from workspace A cannot retrieve documents from workspace B via search.
 
-**Prevention:**
-- The repository pattern is non-negotiable. Optimizations belong in the repository implementation (`repository.prisma.ts`), not in pages/actions.
-- If a query is slow, optimize the repository method (add index, batch query, select tuning) — don't bypass it.
+**Warning signs:**
+- Staging tests show search results from other workspaces.
+- RLS policies missing on new tables or views.
+- Raw SQL strings contain unparameterized workspace identifiers.
 
-**Detection:**
-- `grep -r "prisma\." src/app` should return minimal hits (only repository imports).
-- Code review: any `prisma.patient.findMany` outside `src/lib/**/repository*.ts` is rejected.
-
-**Phase to address:** Every phase — architectural invariant.
-
----
-
-## Moderate Pitfalls
-
-### Pitfall 1: `React.cache()` Misunderstood as Cross-Request Cache
-
-**What goes wrong:** A developer thinks `React.cache()` persists across requests and skips adding proper Next.js caching, or conversely, adds `unstable_cache` where `React.cache()` was already sufficient.
-
-**Why it happens:** `React.cache()` only deduplicates within a SINGLE render pass. It does NOT cache across requests. The names are confusing.
-
-**Prevention:**
-- Use `React.cache()` for deduplication (e.g., `resolveSession` called 3x in one render).
-- Use `unstable_cache` or `use cache` for cross-request caching (with workspace-scoped keys).
-- Document the distinction in the codebase.
-
-**Phase to address:** Phase 1 (Diagnóstico).
+**Phase to address:**
+Dashboard (DASH-01, DASH-02)
 
 ---
 
-### Pitfall 2: `fetchCache = 'only-cache'` or Aggressive Static Rendering on Auth Routes
+### Pitfall 7: Client-Side PDF Generation Blocking the Main Thread
 
-**What goes wrong:** Applying aggressive caching configs to routes that contain user-specific data (e.g., `/vault/financeiro` with workspace-scoped charts).
+**What goes wrong:**
+The document composer's PDF preview or download uses client-side libraries (e.g., html2canvas + jsPDF). This freezes the UI for multiple seconds, blows up the JavaScript bundle by 500KB+, and produces poor-quality output on mobile or low-end devices.
 
-**Prevention:**
-- Auth-protected routes under `(vault)` should remain dynamic by default. Only cache sub-components or data segments explicitly.
-- Never use `fetchCache = 'only-cache'` or `dynamic = 'error'` in authenticated areas.
+**Why it happens:**
+Client-side PDF generation seems convenient because it reuses the same DOM as the editor preview. Server-side rendering with headless Chrome or dedicated PDF libraries appears heavier to set up.
 
-**Phase to address:** Phase 1 (Diagnóstico).
+**How to avoid:**
+- Generate PDFs server-side in a Next.js Route Handler using a lightweight library (`pdf-lib`, `react-pdf` server-side, or a headless Chromium function with caching).
+- Stream the generated PDF back to the client; keep the client bundle free of PDF libraries.
+- For preview, render the document in an iframe pointing to a preview route that uses the same server-side rendering engine, ensuring WYSIWYG fidelity.
 
----
+**Warning signs:**
+- Bundle analyzer shows massive new dependencies (`html2canvas`, `jspdf`).
+- Lighthouse INP score drops after adding PDF feature.
+- UI becomes unresponsive after clicking "Gerar PDF".
+- Portuguese accents (ç, ã, é) render as garbled characters.
 
-### Pitfall 3: Missing `pgbouncer=true` in New Environment Variables
-
-**What goes wrong:** When adding staging/preview environments for performance testing, the `DATABASE_URL` uses direct connection (port 5432) instead of pooled connection (port 6543).
-
-**Prevention:**
-- Enforce `DATABASE_URL` validation at startup: must contain `pooler.supabase.com:6543` and `pgbouncer=true` in production/staging.
-- Document connection string requirements in `CLAUDE.md` and `.env.example`.
-
-**Phase to address:** Phase 0 (Infra).
-
----
-
-### Pitfall 4: Bundle Bloat from New Charting/Visualization Libraries
-
-**What goes wrong:** Adding heavy charting libraries (e.g., Recharts, Chart.js, D3) for financial reports without code-splitting, increasing the client bundle significantly.
-
-**Prevention:**
-- Use dynamic imports (`next/dynamic`) for chart components.
-- Prefer Server-Rendered SVG charts where possible (no client JS).
-- Audit bundle size with `@next/bundle-analyzer` before and after adding visualization libs.
-
-**Phase to address:** Phase 3 (Assets e Bundle) / Phase 5 (Relatórios e PDFs).
+**Phase to address:**
+Document Composer (DOCM-01, DOCM-02)
 
 ---
 
-### Pitfall 5: `Promise.all()` with Uncapped Concurrency in Server Actions
+### Pitfall 8: Tab Restructure Breaking Deep Links and State
 
-**What goes wrong:** A server action uses `Promise.all(array.map(...))` with an unbounded array (e.g., generating 100 PDF receipts at once), overwhelming the event loop and DB.
+**What goes wrong:**
+Restructuring the patient profile into tabs (Visão Geral, Clínico, Documentos, Financeiro) using only client-side React state means the active tab is not reflected in the URL. Users cannot bookmark, share, or refresh to a specific tab; the browser back button behaves unexpectedly.
 
-**Prevention:**
-- Cap concurrency with `p-limit` or custom semaphore (e.g., max 5 parallel ops).
-- For bulk operations, use Prisma's `createMany`, `updateMany`, or queue jobs — don't parallelize unbounded arrays.
+**Why it happens:**
+Tabs are often implemented with a simple `useState` for active index. Persisting tab state in the URL requires additional Next.js routing logic that developers skip.
 
-**Phase to address:** Phase 4 (Ações e Mutações) / Phase 5 (Recibos e Relatórios).
+**How to avoid:**
+- Use query parameters (`?tab=clinical`) or Next.js parallel routes to persist active tab state in the URL.
+- Update all existing internal links to point to the correct tab segment when relevant.
+- If old URLs with hash fragments exist, implement redirects to the new query-param format.
+- Preserve scroll position when switching tabs using `scrollRestoration` or manual scroll state.
 
----
+**Warning signs:**
+- Refreshing the page resets to the first tab.
+- No `?tab=` or route segment in the URL.
+- Users report "I lost my place after clicking back."
 
-## Minor Pitfalls
-
-### Pitfall 1: Optimizing Dev Build Instead of Production
-
-**What goes wrong:** Measuring performance in `next dev` (no caching, no optimization) and making wrong conclusions.
-
-**Prevention:**
-- Always measure with `next build && next start` or production deployment.
-- Use Vercel Speed Insights or Web Vitals library for real-user monitoring.
-
-**Phase to address:** Phase 1 (Diagnóstico).
+**Phase to address:**
+Patient Profile Tabs (NAV-01, NAV-02)
 
 ---
 
-### Pitfall 2: Ignoring `pg_stat_statements` and Query Plans
+### Pitfall 9: Template Injection / XSS via Rich Text Templates
 
-**What goes wrong:** Adding indexes and caches without checking PostgreSQL's own slow-query log.
+**What goes wrong:**
+Clinical templates (SOAP, BIRP, livre) are stored as raw HTML strings in the database and injected directly into the rich-text editor or preview pane without sanitization. If templates are ever shared between users, imported, or edited collaboratively, malicious `<script>` tags or event handlers can execute in the clinician's browser.
 
-**Prevention:**
-- Enable `pg_stat_statements` extension in Supabase.
-- Run `EXPLAIN ANALYZE` before and after every optimization.
+**Why it happens:**
+Rich text editors naturally produce HTML. Storing that HTML directly is the path of least resistance. Without an allowlist or structured format, any HTML—including dangerous elements—gets persisted.
 
-**Phase to address:** Phase 2 (Otimização de Queries).
+**How to avoid:**
+- Store templates in a structured document format (e.g., JSON representing ProseMirror nodes or a custom block structure) rather than raw HTML.
+- If HTML must be stored or rendered, sanitize it server-side with DOMPurify or a similar allowlist-based sanitizer before saving and before rendering.
+- Never use `dangerouslySetInnerHTML` for template previews without sanitization.
+
+**Warning signs:**
+- Database template rows contain `<script>` or `onerror` attributes.
+- `dangerouslySetInnerHTML` appears in new component code.
+- Security scan flags stored XSS vulnerabilities.
+
+**Phase to address:**
+Templates (NOTE-02, DOCM-02)
+
+---
+
+### Pitfall 10: Quick Actions Causing Race Conditions and Missing Validation
+
+**What goes wrong:**
+The "mark appointment complete → create note" quick action triggers two separate server actions (or one action that isn't atomic). If the note creation fails, the appointment may be left marked complete without a note, or vice versa. Additionally, quick actions may bypass workspace and role validation because they are treated as "convenience" endpoints.
+
+**Why it happens:**
+Quick actions are composed of multiple domain operations that already exist separately. Developers wire them together on the client or in a shallow action without a transaction boundary.
+
+**How to avoid:**
+- Encapsulate each quick action in a single Server Action that runs all steps inside a Prisma `$transaction`.
+- Validate `workspaceId`, user role, and state machine preconditions (e.g., appointment must be `SCHEDULED`) before any mutation.
+- Provide optimistic UI updates with automatic rollback if the transaction fails.
+- Ensure every step is logged to the audit trail, just like standalone mutations.
+
+**Warning signs:**
+- Duplicate notes appear for a single appointment.
+- Appointment status is `COMPLETED` but no note exists.
+- Audit trail is missing entries for quick actions.
+- Cross-workspace quick actions succeed in integration tests.
+
+**Phase to address:**
+Session Flow (FLOW-01, FLOW-02) and Quick Actions (QUICK-01)
 
 ---
 
-## Phase-Specific Warnings
+## Technical Debt Patterns
 
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Diagnóstico de bundle | Misreading dev vs prod bundle | Measure production builds only |
-| Diagnóstico de bundle | Not checking client vs server split | Use bundle analyzer; verify Server Components aren't bloating client |
-| Cache | Cross-tenant cache leakage | Workspace ID in every key/tag |
-| Cache | Stale auth/session | No cross-request auth caching |
-| Queries | N+1 reintroduced | Ban loops with DB queries; enforce batch methods |
-| Queries | Connection pool exhaustion | Pooled URL, low connection_limit, monitor `pg_stat_activity` |
-| Queries | Unused indexes | `EXPLAIN ANALYZE`; verify `idx_scan > 0` after deploy |
-| Queries | Raw SQL soft-delete bypass | Gate raw queries; auto-inject `deleted_at IS NULL` |
-| Streaming | Suspense boundaries blocking | Fetch INSIDE Suspense component, not parent |
-| Streaming | Layout shift from poor fallbacks | Skeletons must match final dimensions |
-| Streaming | `use` API without Error Boundary | Wrap all `use` consumers in error handling |
-| Assets | Heavy chart libs without code-split | `next/dynamic` for charts; prefer server-rendered SVG |
-| Server Actions | `revalidatePath` without scope | Always use `'page'` scope or `revalidateTag` |
-| Server Actions | Unbounded `Promise.all` | Cap concurrency; use batch operations |
-| PDF/Reports | Generating large payloads in request | Stream PDFs; use background jobs for bulk exports |
-| Auth/MFA | Cache poisoning of session | Never cache auth; verify MFA state on every sensitive action |
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|---|---|---|---|
+| Storing draft notes in localStorage unencrypted | Fast auto-save, no backend change | PHI breach risk, cross-device loss, shared-device exposure | **Never** — encrypt with Web Crypto or move to server-side drafts |
+| Raw Prisma in new Server Actions | Faster initial coding | Bypasses audit trail, soft deletes, workspace scoping | **Never** — always route through repository |
+| Client-side PDF generation (html2canvas/jsPDF) | Easier preview, no server setup | Bundle bloat (+500KB), UI freeze, poor mobile, accent issues | **Never** for production — use server-side Route Handler |
+| Using `useState` only for tab navigation | Simple implementation | Broken deep links, lost state on refresh | **Never** — use query params or parallel routes |
+| Storing templates as raw HTML | Direct compatibility with editor | XSS risk, non-portable, hard to migrate | **Only during spike** — migrate to structured JSON before ship |
+| Skipping pagination for timeline MVP | Faster to build | Performance regression, memory bloat, poor UX for long-term patients | **Only if** hard-limited to <20 entries with explicit "ver mais" in MVP |
 
----
+## Integration Gotchas
+
+| Integration | Common Mistake | Correct Approach |
+|---|---|---|
+| **Supabase Auth (MFA)** | New server actions not checking AAL level or skipping `resolveSession` | Reuse existing `resolveSession` helper and JWT AAL fast-path; validate session in every new action |
+| **Prisma + Soft Deletes** | New queries forgetting `deletedAt: null` | Use repository pattern or Prisma middleware to auto-scope; never rely on manual filtering |
+| **Next.js Caching** | New dynamic routes (e.g., `/documentos`) accidentally cached after mutations | Use `revalidatePath` with scope `"page"` after create/update/delete; mark routes as `dynamic` if needed |
+| **Rich Text Editor (existing)** | Templates injected as `innerHTML` or `dangerouslySetInnerHTML` | Use the editor's native document model (JSON/block structure); sanitize if an HTML bridge is unavoidable |
+| **Supabase RLS** | New search views or draft tables created without RLS policies | Apply RLS to every new table/view; test with a service role vs. anon key |
+| **Motion System** | New tabs, modals, and drawers ignoring `prefers-reduced-motion` | Reuse existing motion tokens and `prefers-reduced-motion` media query wrappers for all new animations |
+
+## Performance Traps
+
+| Trap | Symptoms | Prevention | When It Breaks |
+|---|---|---|---|
+| Loading full timeline on initial page load | 3s+ TTFB for long-term patients; browser memory spikes | Cursor-based pagination (`take` + `cursor`) + batched note presence query | ~50+ appointments |
+| `ILIKE` search on document/note body | DB CPU spikes; query timeout >5s; slow dashboard | Use PostgreSQL `to_tsvector` full-text search with GIN index; search metadata first, content second | ~1,000+ documents per workspace |
+| Client-side PDF generation | Lighthouse INP drops; bundle +500KB; UI freeze on mobile | Server-side Route Handler with `pdf-lib` or headless Chromium; stream response | Any document generation |
+| Eager loading all tabs at once | Heavy initial patient page load even when user only wants timeline | Lazy load tab content (React.lazy, dynamic imports, or conditional Server Component fetch) | Tabs with many documents/notes/financial records |
+| Debounce missing on global search | Database query storm on every keystroke; high connection usage | 300ms debounce on input; abort in-flight requests; use a search endpoint with `cursor` | ~10+ concurrent users searching |
+| N+1 in timeline grouping | Prisma query logs show repeated identical queries | Group by month/trimester in SQL/Prisma aggregation, not client-side after full fetch | ~30+ appointments |
+
+## Security Mistakes
+
+| Mistake | Risk | Prevention |
+|---|---|---|
+| Search results include `importantObservations` | Leak of highly sensitive clinical data; compliance violation | Strict `LIST_SELECT` exclusions; automated tests asserting absence in list responses |
+| Draft notes stored in localStorage as plaintext | PHI exposure on shared or compromised devices | Encrypt with Web Crypto API before storage, or use server-side `Draft` table with RLS |
+| Template HTML stored unsanitized | Stored XSS if templates are shared, imported, or collaboratively edited | Store templates as structured JSON; sanitize any HTML before render |
+| Quick action missing workspace/role validation | Cross-tenant note creation or unauthorized status changes | Validate `workspaceId` and role in every Server Action; reuse existing auth middleware |
+| Global search bypasses RLS or workspace scope | Tenant isolation failure; data leakage between practices | Enable RLS on all search views; parameterize `workspaceId` in every query |
+| PDF preview route lacks authentication | Unauthorized access to generated clinical documents | Protect preview Route Handler with session validation; use signed URLs or short-lived tokens if sharing |
+| localStorage draft keys not scoped by patient | Draft from patient A visible when opening patient B | Namespace keys as `draft:{workspaceId}:{patientId}:{type}` |
+
+## UX Pitfalls
+
+| Pitfall | User Impact | Better Approach |
+|---|---|---|
+| Single-key shortcuts (`N`, `D`, `E`) | Blocks screen readers, browser navigation, and assistive tech | Use `Ctrl/Cmd+Shift+Key` combos; gate shortcuts when focus is in input fields |
+| Auto-save badge too subtle or absent | Clinician anxiety about data loss; distrust of system | High-contrast badge with timestamp: "Salvo localmente às 14:32" → "Salvo no servidor" |
+| Timeline cards with excessive detail | Cognitive overload; hard to scan history quickly | Show date + status + note badge only; move communication/details to expandable drawer |
+| Tab switch losing scroll position or context | Disorientation; feeling of "starting over" | Preserve scroll position in session state or use shallow routing with URL state |
+| PDF preview not matching final downloaded file | Mistrust; clinicians print preview thinking it's final | Use the exact same server-side rendering pipeline for both preview and download |
+| Keyboard shortcut help not discoverable | Users never learn available shortcuts | Show a non-intrusive hint (e.g., "Pressione ? para atalhos") on relevant pages |
+| Templates presented as rigid boilerplate | Clinicians produce generic, non-personalized notes | Templates should be starting scaffolding, not final text; encourage editing |
+| Motion on new tabs/drawers without reduced-motion support | Dizziness or discomfort for motion-sensitive users | Apply existing motion tokens and respect `prefers-reduced-motion` for all new transitions |
+
+## "Looks Done But Isn't" Checklist
+
+- [ ] **Timeline:** Paginação implementada com cursor? — verify `take`/`cursor` presente; teste com 200+ itens
+- [ ] **Timeline:** `importantObservations` excluído de toda query de listagem? — verify `LIST_SELECT` não inclui campo
+- [ ] **Dashboard Search:** Filtro `workspaceId` presente em *toda* query de busca? — verify com teste de isolamento cross-tenant
+- [ ] **Keyboard Shortcuts:** Testado com leitor de tela (NVDA/JAWS)? — verify a11y audit passa sem conflitos
+- [ ] **PDF Generation:** Fontes com suporte completo a pt-BR (ç, ã, é, õ)? — verify renderização correta em preview e download
+- [ ] **Auto-Save:** Draft criptografado ou armazenado no servidor? — verify localStorage não contém texto clínico legível
+- [ ] **Quick Actions:** Transação atômica (appointment + note)? — verify rollback em caso de falha parcial
+- [ ] **Tabs:** Estado da aba refletido na URL (deep-linkable)? — verify refresh mantém aba ativa
+- [ ] **Templates:** HTML sanitizado / armazenado como JSON estruturado? — verify rejeição de `<script>` e event handlers
+- [ ] **New Queries:** `deletedAt: null` e `workspaceId` presentes em *todas* as queries novas? — verify padrão repository
+- [ ] **Audit Trail:** Toda mutação nova (incluindo quick actions) gera log de auditoria? — verify tabela `AuditLog`
+- [ ] **Tests:** 419 testes existentes continuam passando? — verify `pnpm test` sem regressões
+
+## Recovery Strategies
+
+| Pitfall | Recovery Cost | Recovery Steps |
+|---|---|---|
+| Sensitive field leak in list/search | **HIGH** | Immediate hotfix to add `LIST_SELECT` exclusion; audit access logs; assess need for disclosure |
+| Unencrypted localStorage drafts | **MEDIUM** | Migrate to server-side `Draft` table; clear all localStorage draft keys on next logout/deploy |
+| Raw Prisma bypassing repository | **LOW** | Refactor queries into repository files retroactively; add missing `deletedAt`/`workspaceId` filters |
+| Client-side PDF bloat | **MEDIUM** | Extract PDF logic to Route Handler; remove client PDF libs; cache generated PDFs server-side |
+| Accessibility shortcut conflict | **LOW** | Remap shortcuts to modifier combos; release patch; update help modal |
+| Cross-workspace search leak | **HIGH** | Audit RLS policies; fix query scoping; rotate API keys if raw SQL was injectable |
+| Timeline performance regression | **MEDIUM** | Add pagination retroactively; implement batched note presence query; add DB index on `[workspaceId, patientId, date]` |
+| Tab state not in URL | **LOW** | Migrate from `useState` to query params; add redirects for old links |
+| Template XSS | **HIGH** | Sanitize existing template DB rows; migrate storage to JSON schema; audit for injected scripts |
+| Quick action race condition | **MEDIUM** | Wrap in `$transaction`; add compensating logic for partial failures; backfill missing audit logs |
+
+## Pitfall-to-Phase Mapping
+
+| Pitfall | Prevention Phase | Verification |
+|---|---|---|
+| Leaking sensitive fields (`importantObservations`) | Timeline (TIME-01), Dashboard (DASH-01) | Type-check list DTOs; snapshot tests; assert field absence |
+| Bypassing repository pattern | All phases | Lint rule banning Prisma imports outside repositories; code review checklist |
+| Keyboard shortcut a11y conflicts | Quick Actions (QUICK-01, QUICK-02) | Manual NVDA/JAWS test; axe-core CI gate |
+| Unencrypted drafts in localStorage | Note Composer (NOTE-01, NOTE-02) | Inspect localStorage in DevTools; security audit |
+| Timeline N+1 / no pagination | Timeline (TIME-01, TIME-02) | Load test with 200+ timeline entries; check Prisma query count |
+| Global search workspace leak | Dashboard (DASH-01, DASH-02) | Cross-workspace integration test; RLS policy audit |
+| Client-side PDF generation | Document Composer (DOCM-01, DOCM-02) | Bundle analyzer baseline; Lighthouse INP check |
+| Tab restructure breaking links | Patient Tabs (NAV-01, NAV-02) | E2E test verifying deep links and refresh behavior |
+| Template XSS / raw HTML storage | Templates (NOTE-02, DOCM-02) | HTML injection unit test; DOMPurify integration check |
+| Quick action race conditions | Session Flow (FLOW-01, FLOW-02) | E2E test: mark complete → note created atomically; verify audit log |
+| Motion regressions | All UI phases | `prefers-reduced-motion` system test; compare against motion.css tokens |
+| Existing test regressions | All phases | `pnpm test` must pass before phase merge; zero tolerance for breakage |
 
 ## Sources
 
-- Next.js Caching Docs (v16.2.4): https://nextjs.org/docs/app/guides/caching-without-cache-components — HIGH confidence
-- Next.js Streaming & Suspense: https://nextjs.org/docs/app/guides/streaming — HIGH confidence
-- Next.js Server Components: https://nextjs.org/docs/app/getting-started/server-and-client-components — HIGH confidence
-- Prisma Query Optimization: https://www.prisma.io/docs/orm/prisma-client/queries/query-optimization-performance — HIGH confidence
-- Prisma Database Connections: https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections — HIGH confidence
-- Supabase Connection Management: https://supabase.com/docs/guides/database/connection-management — HIGH confidence
-- Supabase Connecting to Postgres: https://supabase.com/docs/guides/database/connecting-to-postgres — HIGH confidence
-- Prisma + PgBouncer: https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections/pgbouncer — HIGH confidence
-- React `cache` API: https://react.dev/reference/react/cache — HIGH confidence
-- Context7: `/vercel/next.js`, `/llmstxt/prisma_io_llms-full_txt`, `/websites/supabase` — HIGH confidence
+- [WCAG 2.1 Understanding SC 2.1.1 Keyboard](https://www.w3.org/WAI/WCAG21/Understanding/keyboard.html) — HIGH confidence
+- [Prisma ORM CRUD & Query Patterns](https://www.prisma.io/docs/orm/prisma-client/queries/crud) — HIGH confidence
+- [React `useId` Documentation](https://react.dev/reference/react/useId) — HIGH confidence
+- [PsiVault PROJECT.md — Constraints, Decisions, Security Rules](.planning/PROJECT.md) — HIGH confidence
+- [PsiVault document-flow-ux-plan.md — UX Audit & Refactor Plan](.planning/document-flow-ux-plan.md) — HIGH confidence
+- [Next.js Documentation — Caching & Performance Optimization](https://nextjs.org/docs/app/building-your-application/optimizing) — MEDIUM confidence
+- Author's experience with multi-tenant clinical SaaS systems, HIPAA-aligned architecture, and Next.js App Router performance — MEDIUM confidence
+
+---
+*Pitfalls research for: Clinical documentation workflow (timeline, templates, PDF, shortcuts, dashboard) in PsiVault*
+*Researched: 2026-04-25*

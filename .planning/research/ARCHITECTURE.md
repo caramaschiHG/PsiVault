@@ -1,624 +1,227 @@
-# Architecture Patterns: Performance Optimization Integration
+# Architecture Patterns
 
-**Project:** PsiVault (PsiLock)
-**Domain:** Next.js 15 App Router + React 19 + Prisma 6 + PostgreSQL (Supabase)
-**Researched:** 2026-04-23
+**Domain:** Clinical documentation workflow (PsiVault v1.6)
+**Researched:** 2026-04-25
 **Confidence:** HIGH
 
 ## Executive Summary
 
-This document defines how v1.4 "Performance Profunda" optimizations integrate with PsiVault's existing architecture. The app already has a solid foundation: Next.js 15 App Router with Server Components by default, a strict repository pattern, workspace-scoped queries, and 407 passing tests. The v1.3 milestone resolved systemic slowness (N+1 queries eliminated, caching enabled, force-dynamic removed). v1.4 goes deeper: streaming UI with Suspense, strategic bundle splitting, database indexing, connection pooling tuning, and asset optimization — all while preserving the existing repository pattern, domain model separation, and zero breaking changes to tests.
+The v1.6 milestone adds clinical documentation workflow improvements to an established Next.js 15 + Prisma repository architecture. Most "foundational" UX work (tabs, timeline redesign, document grouping, auto-save, templates) is already shipped. The remaining architecture work centers on **four genuine integrations**: (1) a workspace-scoped document dashboard at `/documentos`, (2) inline note creation flow from the agenda, (3) PDF preview before document generation, and (4) an expanded keyboard shortcuts system. All four integrate cleanly with the existing repository pattern, server action conventions, and tab-based patient profile structure.
 
-The core architectural principle for v1.4 is **progressive enhancement**: every optimization is an additive layer. Repository interfaces don't change. Server Actions keep working. Workspace scoping remains invariant. We add Suspense boundaries around existing repository calls, split heavy client bundles dynamically, and tune the database layer underneath.
+The key architectural decision is whether the new dashboard page should reuse the existing `DocumentsSection` component (with filters injected) or build a separate `DocumentDashboard` view. Given the dashboard needs cross-patient filtering, global date ranges, and pending/recent views that don't exist in the per-patient tab, a separate page-specific component is correct — but it should share the same presentation utilities (`DOCUMENT_TYPE_LABELS`, `groupByType`, `DocumentRow`).
 
 ## Recommended Architecture
 
-### Layered Integration Model
+### New Features & Integration Points
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  PRESENTATION (Pages / Components)                          │
-│  • Server Components (default) → async data fetch           │
-│  • Suspense boundaries → streaming                          │
-│  • Dynamic imports → bundle splitting                       │
-│  • React 19 `use` → promise resolution in Client Components │
-├─────────────────────────────────────────────────────────────┤
-│  DATA ACCESS (Repository Pattern — UNCHANGED INTERFACES)    │
-│  • Repository interfaces: src/lib/[domain]/repository.ts    │
-│  • Prisma implementations: repository.prisma.ts             │
-│  • Singleton stores: store.ts (globalThis)                  │
-├─────────────────────────────────────────────────────────────┤
-│  CACHE & DEDUPLICATION                                      │
-│  • React.cache() → resolveSession (already implemented)     │
-│  • unstable_cache → expensive read-only queries             │
-│  • revalidatePath / revalidateTag → cache invalidation      │
-├─────────────────────────────────────────────────────────────┤
-│  DATABASE (Prisma 6 + PostgreSQL via Supabase)              │
-│  • Connection pooling: Prisma pool + Supavisor              │
-│  • Query optimization: indexes, select pruning, EXPLAIN     │
-│  • Multi-tenant scoping: workspaceId on every query         │
-└─────────────────────────────────────────────────────────────┘
-```
+| Feature | Integration Point | New vs Modified | Key File(s) |
+|---------|-------------------|-----------------|-------------|
+| Document dashboard (`/documentos`) | New route under `(vault)`; reuses doc repo + patient repo | **New page + components** | `src/app/(vault)/documentos/page.tsx`, `src/app/(vault)/documentos/components/document-dashboard.tsx` |
+| Dashboard filters (type, date, patient) | Client-side state in dashboard component; server fetches all docs then filters | **New** | Filter bar component + derived state |
+| Inline note creation from agenda | `AppointmentQuickActions` → redirect to `/sessions/{id}/note` or drawer | **Modified** | `appointment-quick-actions.tsx` |
+| PDF preview before save | `DocumentComposerForm` → client-side PDF preview modal using `@react-pdf/renderer` | **Modified** | `document-composer-form.tsx` + preview modal |
+| Breadcrumbs (hierarchical) | Replace simple breadcrumb in patient page; add to document composer | **Modified** | `patient-profile-tabs.tsx` or page wrappers |
+| Keyboard shortcuts expansion | Extend `KeyboardShortcutsProvider` + `useGlobalShortcuts` | **Modified** | `keyboard-shortcuts-provider.tsx`, page components |
+| Timeline visual connector | Pure CSS enhancement to `ClinicalTimeline` | **Modified** | `clinical-timeline.tsx` + CSS |
 
 ### Component Boundaries
 
 | Component | Responsibility | Communicates With |
 |-----------|---------------|-------------------|
-| `Page` (Server Component) | Orchestrate data fetching, define Suspense boundaries | Repositories, Client Components |
-| `AsyncSection` (Server Component) | Fetch data for one section, suspend until ready | Repository singletons |
-| `Skeleton` (Server/Client Component) | Render fallback UI while streaming | Suspense boundary |
-| `PageClient` (Client Component) | Interactivity: modals, forms, charts | Receives props from Page |
-| `DynamicChart` (dynamically imported) | Heavy chart library, loaded on demand | PageClient via `next/dynamic` |
-| Repository (Prisma impl) | Database access, workspace-scoped | PrismaClient |
-| Store (singleton) | Cache repository instance per request | globalThis |
+| `DocumentDashboard` (new) | Workspace-level document list with filters, search, grouping | `DocumentRepository`, `PatientRepository` (for names), filter state |
+| `DocumentFilterBar` (new) | Type chips, date range, patient search input | Local state only; callbacks to parent |
+| `InlineNoteDrawer` (new) | Drawer/modal for note creation without page navigation | `NoteComposerForm` (extracted), server actions |
+| `PdfPreviewModal` (new) | Client-side PDF render preview before saving document | `@react-pdf/renderer`, document content state |
+| `BreadcrumbNav` (new) | Reusable breadcrumb with structured segments | URL segments or explicit trail prop |
+| `ClinicalTimeline` (mod) | Timeline with visual connector line, grouped by month | Existing: receives `TimelineEntry[]` |
+| `KeyboardShortcutsProvider` (mod) | Global shortcut registration, context-aware bindings | `useGlobalShortcuts` hook, modal |
+| `AppointmentQuickActions` (mod) | Add "Criar nota" action after COMPLETED status | `router.push()` to note page or drawer trigger |
 
 ### Data Flow
 
-**Before v1.4 (blocking):**
+#### Document Dashboard Flow
+
 ```
-Page.tsx → await resolveSession()
-         → await Promise.all([repo1(), repo2(), repo3()])
-         → render full page → send HTML
+Server Component (/documentos/page.tsx)
+  ├── resolveSession() → workspaceId
+  ├── Promise.all([
+  │     docRepo.listActiveByWorkspace(workspaceId),   // NEW repo method
+  │     patientRepo.listActive(workspaceId)           // for name resolution
+  │   ])
+  └── <DocumentDashboard documents={docs} patients={patients} />
+
+Client Component (DocumentDashboard)
+  ├── Local state: filters { type, dateFrom, dateTo, patientQuery }
+  ├── Derived: filteredDocs = applyFilters(docs, filters)
+  ├── Group by type (reuses groupByType logic)
+  └── Render DocumentRow cards with patient names
 ```
 
-**After v1.4 (streaming):**
-```
-Page.tsx → await resolveSession() (blocking, required for auth)
-         → render shell + Suspense boundaries immediately
-         → stream fallback HTML
-         ├── Suspense boundary 1 → await repo1() → stream chunk 1
-         ├── Suspense boundary 2 → await repo2() → stream chunk 2
-         └── Suspense boundary 3 → await repo3() → stream chunk 3
+**Repository addition required:**
+
+```typescript
+// src/lib/documents/repository.ts
+interface PracticeDocumentRepository {
+  // ...existing methods...
+  listActiveByWorkspace(workspaceId: string): Promise<PracticeDocument[]>;
+}
 ```
 
-**Promise streaming (React 19 `use`):**
-```
-Page.tsx → const dataPromise = repo.findByWorkspace(...) // don't await
-         → <Suspense fallback={<Skeleton />}>
-             <ClientComponent dataPromise={dataPromise} />
-           </Suspense>
+This follows the exact pattern of `listActiveByPatient` but workspace-scoped. The Prisma implementation adds `where: { workspaceId, archivedAt: null }` with `orderBy: { createdAt: "desc" }`. An index `[workspaceId, archivedAt, createdAt]` is recommended for performance.
 
-ClientComponent.tsx → const data = use(dataPromise) // suspends here
+#### Inline Note Creation Flow (Agenda → Note)
+
 ```
+AppointmentCard (agenda)
+  └── AppointmentQuickActions
+        └── "Concluir" → completeAppointmentAction
+              └── onSuccess: router.push(`/sessions/${id}/note?from=agenda`)
+```
+
+Alternative (drawer mode, higher effort):
+```
+AppointmentQuickActions
+  └── "Registrar prontuário" → setShowNoteDrawer(true)
+        └── InlineNoteDrawer
+              └── NoteComposerForm (extracted shared component)
+                    └── createNoteAction → router.refresh() → close drawer
+```
+
+**Recommendation:** Start with redirect flow (1 line change). Drawer mode can be a later enhancement — it requires extracting `NoteComposerForm` into a shared component that works both in-page and in-drawer, plus managing drawer state in the agenda which is already complex.
+
+#### PDF Preview Flow
+
+```
+DocumentComposerForm
+  ├── contentValue state (already exists)
+  ├── "Preview PDF" button
+  │     └── setShowPreview(true)
+  └── PdfPreviewModal (lazy loaded)
+        └── Suspense → renderPracticeDocumentPdf({ content, ...profile })
+              └── Blob URL → <iframe> or <object> embed
+```
+
+The existing `renderPracticeDocumentPdf` in `src/lib/documents/pdf.tsx` already lazy-loads `@react-pdf/renderer` and returns a `Buffer`. For preview, we can reuse this function but render client-side:
+
+```typescript
+// In preview modal (client component)
+const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+useEffect(() => {
+  renderPracticeDocumentPdf({ ...input }).then(buffer => {
+    const blob = new Blob([buffer], { type: "application/pdf" });
+    setPdfUrl(URL.createObjectURL(blob));
+  });
+}, [input]);
+```
+
+Because `@react-pdf/renderer` is already dynamically imported, this adds no bundle cost to routes that don't use preview.
 
 ## Patterns to Follow
 
-### Pattern 1: Granular Suspense for Dashboard Pages
-**What:** Decompose heavy pages (e.g., `/financeiro`, `/inicio`) into independent async sections, each wrapped in its own `<Suspense>` boundary.
-
-**When:** A page loads data from multiple independent repositories and some sections are slower than others.
-
+### Pattern 1: Repository Extension for New Queries
+**What:** When a new page needs data not covered by existing repository methods, add a narrowly-scoped method to the interface and both implementations (Prisma + in-memory).
+**When:** Dashboard needs workspace-level document listing; no existing method covers this.
 **Example:**
-```tsx
-// app/(vault)/inicio/page.tsx
-import { Suspense } from 'react'
-import { TodaySection } from './sections/today-section'
-import { RemindersSection } from './sections/reminders-section'
-import { MonthlySummarySection } from './sections/monthly-summary-section'
-import { PendingChargesSection } from './sections/pending-charges-section'
-import { TodaySkeleton, RemindersSkeleton, SummarySkeleton } from './skeletons'
-
-export default async function InicioPage() {
-  const { workspaceId } = await resolveSession() // blocking: auth required
-
-  return (
-    <main>
-      <Suspense fallback={<TodaySkeleton />}>
-        <TodaySection workspaceId={workspaceId} />
-      </Suspense>
-
-      <Suspense fallback={<RemindersSkeleton />}>
-        <RemindersSection workspaceId={workspaceId} />
-      </Suspense>
-
-      <Suspense fallback={<SummarySkeleton />}>
-        <MonthlySummarySection workspaceId={workspaceId} />
-      </Suspense>
-
-      <Suspense fallback={<SummarySkeleton />}>
-        <PendingChargesSection workspaceId={workspaceId} />
-      </Suspense>
-    </main>
-  )
-}
-```
-
-**Key rule:** Each `*-section.tsx` is a **Server Component** that performs its own data fetch. The parent page does not await the data — it passes `workspaceId` and lets the child suspend.
-
-### Pattern 2: Promise Passing to Client Components (React 19 `use`)
-**What:** Initiate a fetch in a Server Component without awaiting, pass the promise to a Client Component, and consume it with React 19's `use` API inside a Suspense boundary.
-
-**When:** A Client Component needs server-fetched data but the Server Component shell should render immediately.
-
-**Example:**
-```tsx
-// Server Component
-import { Suspense } from 'react'
-import { getFinanceRepository } from '@/lib/finance/store'
-import { RevenueChartClient } from './revenue-chart-client'
-
-export default function RevenueSection({ workspaceId }: { workspaceId: string }) {
-  const financeRepo = getFinanceRepository()
-  // Start fetch but don't await
-  const statsPromise = financeRepo.listByWorkspaceAndDateRange(workspaceId, start, end)
-
-  return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <RevenueChartClient dataPromise={statsPromise} />
-    </Suspense>
-  )
-}
-
-// Client Component
-'use client'
-import { use } from 'react'
-
-export function RevenueChartClient({ dataPromise }: { dataPromise: Promise<Charge[]> }) {
-  const data = use(dataPromise) // Suspends until promise resolves
-  return <Chart data={data} />
-}
-```
-
-**Confidence:** HIGH — This is the idiomatic React 19 pattern for streaming data into Client Components. Source: React 19 stable docs, Next.js streaming guide.
-
-### Pattern 3: Dynamic Import for Heavy Client Components
-**What:** Use `next/dynamic` to lazy-load heavy Client Components (chart libraries, rich text editors, PDF viewers) so they don't bloat the initial JavaScript bundle.
-
-**When:** A component depends on a large third-party library that isn't needed for initial render.
-
-**Example:**
-```tsx
-'use client'
-import dynamic from 'next/dynamic'
-
-// Heavy chart library only loaded when the tab is active
-const RevenueChart = dynamic(() => import('@/components/charts/revenue-chart'), {
-  loading: () => <ChartSkeleton />,
-  ssr: false, // Only needed on client
-})
-
-export default function FinanceiroPageClient({ ...props }) {
-  const [showChart, setShowChart] = useState(false)
-
-  return (
-    <div>
-      <button onClick={() => setShowChart(true)}>Ver gráfico</button>
-      {showChart && <RevenueChart data={props.trends} />}
-    </div>
-  )
-}
-```
-
-**Note:** When a Server Component dynamically imports a Client Component, automatic code splitting is supported. `ssr: false` is not supported in Server Components — move it to the Client Component. Source: Next.js lazy-loading docs.
-
-### Pattern 4: Repository-Level `unstable_cache` for Read-Heavy Data
-**What:** Wrap expensive, read-only repository queries with `unstable_cache` from `next/cache` to cache results across requests.
-
-**When:** Data changes infrequently (e.g., workspace profile, expense categories) but is queried on every page load.
-
-**Example:**
-```tsx
-// src/lib/expense-categories/repository.prisma.ts
-import { unstable_cache } from 'next/cache'
-
-export function createPrismaExpenseCategoryRepository(): ExpenseCategoryRepository {
-  return {
-    findActiveByWorkspace: unstable_cache(
-      async (workspaceId: string) => {
-        return db.expenseCategory.findMany({
-          where: { workspaceId, archived: false, deletedAt: null },
-          orderBy: { name: 'asc' },
-        })
-      },
-      ['expense-categories', 'active'],
-      { revalidate: 60, tags: ['expense-categories'] }
-    ),
-    // ... other methods
-  }
-}
-```
-
-**Caution:** Cached functions must NOT depend on request-specific state (cookies, headers). Workspace-scoped queries are safe because `workspaceId` is part of the cache key. Source: Next.js caching docs.
-
-### Pattern 5: Database Indexing for Multi-Tenant Queries
-**What:** Ensure every frequent query pattern has a composite index with `workspaceId` as the leading column.
-
-**When:** Any table with `workspaceId` that is queried by additional filters (date ranges, status, patientId).
-
-**Current schema analysis:**
-
-| Table | Existing Indexes | Gap | Recommended Index |
-|-------|-----------------|-----|-------------------|
-| `Appointment` | `[workspaceId, startsAt]`, `[workspaceId, patientId]`, `[seriesId]` | Missing status+date filter | `[workspaceId, status, startsAt]` |
-| `Patient` | `[workspaceId, deletedAt]` | — | Adequate for list queries |
-| `SessionCharge` | `[workspaceId, createdAt]`, `[workspaceId, patientId]` | Missing status filter for pending/overdue | `[workspaceId, status, createdAt]` |
-| `ClinicalNote` | `[workspaceId, patientId]` | — | Adequate |
-| `PracticeDocument` | `[workspaceId, patientId]` | — | Adequate |
-| `AuditEvent` | `[workspaceId, occurredAt]` | — | Adequate |
-| `Reminder` | `[workspaceId, completedAt]`, `[workspaceId, linkType, linkId]` | — | Adequate |
-| `NotificationJob` | `[workspaceId, status, scheduledFor]`, `[appointmentId, type]` | — | Adequate |
-| `Expense` | `[workspaceId, deletedAt]`, `[workspaceId, dueDate]`, `[seriesId]` | — | Adequate |
-| `ExpenseCategory` | `[workspaceId, deletedAt]`, `[workspaceId, archived]` | — | Adequate |
-
-**Migration example:**
-```prisma
-// Add to schema.prisma
-model Appointment {
-  // ... existing fields
-  @@index([workspaceId, status, startsAt])
-}
-
-model SessionCharge {
-  // ... existing fields
-  @@index([workspaceId, status, createdAt])
-}
-```
-
-**Verification:** After adding indexes, verify with `EXPLAIN ANALYZE` on production-like data volumes:
-```sql
-EXPLAIN ANALYZE
-SELECT * FROM "appointments"
-WHERE "workspace_id" = 'ws_...'
-  AND "status" IN ('SCHEDULED', 'CONFIRMED')
-  AND "starts_at" >= '2026-04-01'
-  AND "starts_at" < '2026-05-01';
-```
-
-Expected: `Index Scan` using the new composite index, not `Seq Scan` or `Bitmap Heap Scan` with high cost.
-
-### Pattern 6: Connection Pooling with Supabase Supavisor
-**What:** Configure Prisma 6 to use Supabase's connection pooler (Supavisor) in transaction mode for serverless deployments, while keeping a direct connection for migrations.
-
-**When:** Deploying to Vercel or any serverless platform where function instances are ephemeral.
-
-**Current state:** The schema already defines `directUrl` and `url`. The `db.ts` singleton uses `new PrismaClient()` without a driver adapter.
-
-**Recommended configuration:**
-
-```env
-# .env
-# Direct connection for Prisma CLI (migrations, db push)
-DIRECT_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT].supabase.co:5432/postgres"
-
-# Pooled connection for application runtime (Supavisor transaction mode)
-# Port 6543 = transaction mode
-DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT].supabase.co:6543/postgres?pgbouncer=true"
-```
-
 ```typescript
-// src/lib/db.ts — keep singleton, no adapter needed for Prisma 6 + pooled URL
-import { PrismaClient } from '@prisma/client'
+// Interface
+listActiveByWorkspace(workspaceId: string): Promise<PracticeDocument[]>;
 
-declare global {
-  var __psivaultPrisma__: PrismaClient | undefined
+// Prisma impl
+async listActiveByWorkspace(workspaceId: string) {
+  const docs = await db.practiceDocument.findMany({
+    where: { workspaceId, archivedAt: null },
+    orderBy: { createdAt: "desc" },
+  });
+  return docs.map(mapToDomain);
 }
 
-export const db =
-  globalThis.__psivaultPrisma__ ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
-  })
-
-globalThis.__psivaultPrisma__ = db
-```
-
-**Important:** With `pgbouncer=true`, Prisma ORM disables prepared statements, which is required for transaction-mode poolers. Prisma Migrate requires the direct connection (no pooler) because it uses single long-running transactions. Source: Prisma PgBouncer docs, Supabase connection docs.
-
-**Prisma 6 pool defaults:**
-- Default connection limit: `num_cpus * 2 + 1` (e.g., 5 on a 2-core container)
-- Default pool timeout: 10s
-- For Supabase: the pool size is shared across all connections. Monitor `pg_stat_activity` to avoid exhaustion.
-
-### Pattern 7: Asset Optimization (Fonts, Images, Scripts)
-**What:** Leverage Next.js built-in optimizations and React 19 resource preloading APIs.
-
-**Fonts:** Currently using CSS custom properties for typography. If loading external fonts (e.g., from Google Fonts), use `next/font/google` for automatic self-hosting, subsetting, and `font-display: swap`:
-
-```tsx
-// app/layout.tsx
-import { Inter } from 'next/font/google'
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-sans',
-})
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="pt-BR" className={inter.variable}>
-      <body>{children}</body>
-    </html>
-  )
+// In-memory impl
+async listActiveByWorkspace(workspaceId: string) {
+  return Array.from(store.values())
+    .filter(d => d.workspaceId === workspaceId && d.archivedAt === null)
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 }
 ```
 
-**Images:** Use `next/image` for any user-uploaded avatars or document thumbnails:
-```tsx
-import Image from 'next/image'
-
-<Image
-  src={patient.avatarUrl}
-  alt={patient.fullName}
-  width={64}
-  height={64}
-  className="avatar"
-/>
-```
-
-**Resource preloading (React 19):**
-For anticipated navigations (e.g., hovering over "Financeiro" link), preload critical data or assets:
-```tsx
-'use client'
-import { preload } from 'react-dom'
-
-function NavLink({ href, children }) {
-  const handleMouseEnter = () => {
-    preload(href, { as: 'document' })
-  }
-
-  return (
-    <a href={href} onMouseEnter={handleMouseEnter}>
-      {children}
-    </a>
-  )
+### Pattern 2: Component Extraction for Shared UI
+**What:** When the same composer form needs to work in-page and in-drawer, extract the pure form into a shared component.
+**When:** If implementing inline note drawer from agenda.
+**Example:**
+```typescript
+// Extract from note-composer-form.tsx
+export function NoteComposerForm({
+  existingNote, appointmentId, patientId,
+  createAction, updateAction, onSuccess
+}: NoteComposerFormProps & { onSuccess?: () => void }) {
+  // ...pure form logic, no page-level concerns...
 }
 ```
 
-**Note:** PsiVault's design system uses CSS variables and inline `React.CSSProperties`, not Tailwind. Asset optimization should respect this — avoid importing Tailwind just for image classes.
+### Pattern 3: Client-Side Filtering with Server Hydration
+**What:** Load all workspace documents server-side, then filter/group client-side for responsiveness.
+**When:** Dashboard filters are toggled frequently; avoids server round-trips.
+**Trade-off:** Works well for hundreds of documents. If a workspace has 10K+ documents, add server-side pagination with cursor-based `skip/take`.
+
+### Pattern 4: Lazy-Loaded PDF Preview
+**What:** Keep PDF rendering out of the main bundle by dynamically importing the preview modal.
+**When:** PDF preview is a secondary action, not the primary flow.
+**Example:**
+```typescript
+const PdfPreviewModal = dynamic(
+  () => import("./pdf-preview-modal").then(m => m.PdfPreviewModal),
+  { ssr: false, loading: () => <Spinner /> }
+);
+```
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: Suspense Boundaries Around Synchronous Work
-**What:** Wrapping non-async components in `<Suspense>` that don't suspend.
+### Anti-Pattern 1: Reusing Patient-Tab Components for Dashboard
+**What:** Importing `DocumentsSection` or `PatientDocumentosTab` into the global dashboard.
+**Why bad:** These components expect `patientId`-scoped data and don't support cross-patient filtering, global date ranges, or patient name resolution. Forcing them to handle both cases creates prop sprawl and conditional logic.
+**Instead:** Build `DocumentDashboard` as a top-level component that shares only presentational utilities (`DocumentRow`, `groupByType`, `TypeGroup`).
 
-**Why bad:** Adds unnecessary React overhead, no streaming benefit.
+### Anti-Pattern 2: Adding Dashboard Logic to Existing Repositories
+**What:** Extending `listActiveByPatient` with optional filters for type, date, patient name.
+**Why bad:** Repositories should have narrow, explicit contracts. Optional filter objects make testing harder and blur the line between repository and service layer.
+**Instead:** Add `listActiveByWorkspace` for the base query; apply filters in the component or a dedicated dashboard service function.
 
-**Instead:** Only wrap components that perform async work (data fetching, lazy loading). Keep static shell (headers, layout, navigation) outside Suspense.
+### Anti-Pattern 3: Keyboard Shortcuts in Individual Components
+**What:** Each page registering its own `useEffect` keydown listeners.
+**Why bad:** Conflicts, duplicate handlers, no discoverability. The existing `useGlobalShortcuts` hook already solves this with a central binding registry.
+**Instead:** Extend `KeyboardShortcutsProvider` to accept route-specific bindings via context, or have pages call `useGlobalShortcuts` with their local bindings.
 
-### Anti-Pattern 2: Awaiting Everything in the Page Component
-**What:** Keeping the v1.3 pattern of `await Promise.all([...])` for all data in the top-level page.
-
-**Why bad:** Blocks HTML streaming until the slowest query finishes. Users see a blank screen.
-
-**Instead:** Identify the critical path (usually just `resolveSession()`) and stream everything else. Move independent data fetches into child Server Components wrapped in Suspense.
-
-### Anti-Pattern 3: Dynamic Imports in Server Components for Client Components with `ssr: false`
-**What:** Trying to use `next/dynamic(() => import('...'), { ssr: false })` directly in a Server Component.
-
-**Why bad:** Next.js throws an error. `ssr: false` is only valid in Client Components.
-
-**Instead:** Move the dynamic import into the Client Component file, or use a Client Component wrapper.
-
-### Anti-Pattern 4: Caching Workspace-Scoped Queries Without Workspace in Key
-**What:** Using `unstable_cache` with a cache key that doesn't include `workspaceId`.
-
-**Why bad:** Cross-tenant data leakage. One workspace sees another's cached data.
-
-**Instead:** Always include `workspaceId` in the cache key array:
-```tsx
-unstable_cache(
-  async (workspaceId) => { ... },
-  ['finance', 'charges'], // BAD — missing workspaceId
-  { tags: ['finance'] }
-)
-
-unstable_cache(
-  async (workspaceId) => { ... },
-  ['finance', workspaceId, 'charges'], // GOOD
-  { tags: ['finance'] }
-)
-```
-
-### Anti-Pattern 5: Adding DB Queries to Middleware
-**What:** Attempting to add Prisma queries in `src/middleware.ts` for "optimization."
-
-**Why bad:** Middleware runs on the Edge in many Next.js deployments. Prisma Client is not Edge-compatible without a driver adapter. Also adds latency to every request.
-
-**Instead:** Keep middleware auth-only (as it is now with JWT fast-path). Do workspace resolution in Server Components or Server Actions.
-
-### Anti-Pattern 6: Over-Indexing
-**What:** Adding indexes on every column combination.
-
-**Why bad:** Each index slows down writes (INSERT, UPDATE, DELETE) and consumes disk space.
-
-**Instead:** Index only query patterns proven by `EXPLAIN ANALYZE` to be slow. Prioritize reads over writes for PsiVault's workload (clinical reads are 10x+ more frequent than writes).
+### Anti-Pattern 4: Server-Side PDF Preview
+**What:** Calling `renderPracticeDocumentPdf` in a Server Action and streaming the buffer back.
+**Why bad:** Adds latency for a visual preview that should feel instant. The client already has all the data (content, patient name, profile).
+**Instead:** Render PDF client-side using the existing `@react-pdf/renderer` dynamic import.
 
 ## Scalability Considerations
 
-| Concern | At 1 workspace | At 100 workspaces | At 10K workspaces |
-|---------|---------------|-------------------|-------------------|
-| **DB Connections** | Singleton PrismaClient handles all | Supavisor pools ~30 backend connections | Must monitor Supavisor pool size; consider dedicated pooler (paid tier) |
-| **Query Performance** | Seq scans acceptable | Missing indexes cause visible latency | Composite indexes on `[workspaceId, ...]` essential |
-| **Bundle Size** | Not a concern | Dynamic imports for charts/modals reduce initial JS | Code splitting by route automatic in App Router |
-| **HTML Streaming** | Minimal benefit on fast queries | Significant perceived speedup on heavy pages | Required for good UX; use `loading.tsx` + Suspense |
-| **Cache Invalidation** | `revalidatePath` sufficient | Tag-based `revalidateTag` preferred | Need cache invalidation strategy per workspace |
+| Concern | At 100 docs/patient | At 1K docs/workspace | At 10K docs/workspace |
+|---------|---------------------|----------------------|-----------------------|
+| Dashboard load | All docs in one query | Add `take: 100` with "load more" | Cursor pagination + search index |
+| Timeline render | Client-side grouping fine | Virtualized list (react-window) | Paginate by year, lazy load |
+| PDF preview | Instant | Instant | Instant (client-side render) |
+| Keyboard shortcuts | Global registry O(n) | O(n) with 20-30 bindings | Still negligible |
 
-## Integration Points: New vs Modified
+## New Database Index Recommendations
 
-### New Files (Additive)
+```prisma
+// For workspace-level document queries (dashboard)
+@@index([workspaceId, archivedAt, createdAt])
 
-| File | Purpose | Location |
-|------|---------|----------|
-| `loading.tsx` | Route-level Suspense fallback | Adjacent to `page.tsx` in heavy routes |
-| `*-skeleton.tsx` | Section-specific skeleton UI | `app/(vault)/[route]/components/` |
-| `*-section.tsx` | Async Server Component for one data slice | `app/(vault)/[route]/sections/` |
-| `dynamic-*-client.tsx` | Client Component wrapper with `next/dynamic` | `components/dynamic/` |
-| `instrumentation.ts` | Web Vitals collection (Next.js 15) | `src/instrumentation.ts` |
-
-### Modified Files (Non-Breaking)
-
-| File | Change | Risk |
-|------|--------|------|
-| `page.tsx` (heavy routes) | Add Suspense boundaries, delegate to section components | LOW — same data, same repositories |
-| `next.config.ts` | Add `bundleAnalyzer`, `compress`, experimental flags | LOW — config only |
-| `schema.prisma` | Add composite indexes | LOW — additive, no data migration risk |
-| `.env` / `.env.local` | Switch `DATABASE_URL` to Supavisor pooler URL | MED — test connection in staging |
-| `db.ts` | Potentially add `$extends` for query logging/metrics | LOW — additive |
-| `server actions` | Add `unstable_cache` wrappers for read actions | LOW — same interfaces |
-
-### Unchanged (Invariant)
-
-| File | Why Unchanged |
-|------|---------------|
-| `src/lib/[domain]/repository.ts` | Interfaces remain the contract |
-| `src/lib/[domain]/model.ts` | Domain models unchanged |
-| `src/lib/[domain]/store.ts` | Singleton pattern still valid |
-| `src/middleware.ts` | No DB queries, auth-only |
-| `src/app/(auth)/*` | Public routes, no optimization needed |
-| All 407 tests | Additive changes don't break existing logic |
-
-## Suggested Build Order (Phase Dependencies)
-
-### Phase 1: Database Foundation (No Code Changes to App)
-**Goal:** Eliminate query-level slowness.
-
-1. Run `EXPLAIN ANALYZE` on top 10 slowest query patterns (identified by Prisma query logs or Supabase observability)
-2. Add missing composite indexes to `schema.prisma`:
-   - `Appointment`: `[workspaceId, status, startsAt]`
-   - `SessionCharge`: `[workspaceId, status, createdAt]`
-3. Run `prisma migrate dev` to apply indexes
-4. Configure `DATABASE_URL` to use Supavisor transaction mode (`:6543?pgbouncer=true`)
-5. Verify connection pooling in Supabase dashboard
-
-**Depends on:** Nothing. Can start immediately.
-**Blocks:** Nothing directly, but improves all subsequent phases.
-
-### Phase 2: Streaming Shell for Heavy Pages
-**Goal:** Improve perceived performance on `/financeiro` and `/inicio`.
-
-1. Create skeleton components matching the existing UI layout (use design tokens)
-2. Extract independent sections from `financeiro/page.tsx`:
-   - `TrendChartSection`
-   - `YearSummarySection`
-   - `TopPatientsSection`
-   - `PendingChargesSection`
-3. Wrap each section in `<Suspense>` with skeleton fallback
-4. Repeat for `/inicio`:
-   - `TodaySection`
-   - `RemindersSection`
-   - `MonthlySummarySection`
-   - `PendingChargesSection`
-
-**Depends on:** Phase 1 (queries should be fast before streaming them)
-**Blocks:** Phase 3
-
-### Phase 3: Bundle Splitting for Client Components
-**Goal:** Reduce initial JavaScript bundle.
-
-1. Identify heavy client dependencies:
-   - Chart library (if any)
-   - PDF generation library (for recibos — v1.4 feature)
-   - Date picker / calendar components
-   - Rich text editor (if used in clinical notes)
-2. Wrap each in `next/dynamic()` with `loading` prop
-3. Add `optimizePackageImports` to `next.config.ts` for any remaining large packages
-
-**Depends on:** Nothing technically, but best done after Phase 2 to measure impact.
-**Blocks:** Nothing.
-
-### Phase 4: Selective Caching
-**Goal:** Reduce redundant database queries.
-
-1. Identify read-heavy, rarely-changing data:
-   - `PracticeProfile`
-   - `ExpenseCategory` list
-   - `Workspace` metadata
-2. Wrap repository methods with `unstable_cache`
-3. Add `revalidateTag` calls in mutation Server Actions
-4. Consider `React.cache()` for request-scoped deduplication (already done for `resolveSession`)
-
-**Depends on:** Phase 1 (indexes must be in place so cached queries are fast)
-**Blocks:** Nothing.
-
-### Phase 5: Asset & Font Optimization
-**Goal:** Improve Core Web Vitals (LCP, CLS).
-
-1. Audit font loading strategy — switch to `next/font` if using external fonts
-2. Audit image usage — replace `<img>` with `next/image` where applicable
-3. Add `preload` / `preconnect` hints for critical third-party resources (e.g., Supabase auth endpoints)
-4. Implement `instrumentation.ts` for Web Vitals reporting
-
-**Depends on:** Nothing.
-**Blocks:** Nothing.
-
-### Phase 6: Measurement & Iteration
-**Goal:** Validate optimizations with objective metrics.
-
-1. Add `web-vitals` library or Next.js `instrumentation` to log LCP, INP, CLS, TTFB
-2. Run Lighthouse CI or PageSpeed Insights on key routes
-3. Compare before/after metrics
-4. Iterate on remaining bottlenecks
-
-**Depends on:** Phases 1–5.
-**Blocks:** Nothing.
-
-## Data Flow Changes
-
-### Before v1.4
-```
-Request → Middleware (auth) → Page (await all data) → HTML
+// For patient-name search in dashboard filters
+@@index([workspaceId, deletedAt, fullName])  // on Patient
 ```
 
-### After v1.4
-```
-Request → Middleware (auth) → Page (await session only)
-                                  ↓
-                        Shell HTML streamed immediately
-                                  ↓
-                        Suspense boundary 1 → fetch → stream chunk
-                        Suspense boundary 2 → fetch → stream chunk
-                        Suspense boundary 3 → fetch → stream chunk
-```
-
-### Cache Invalidation Flow
-```
-Client Action → Server Action → Prisma mutation → revalidateTag('finance')
-                                                           ↓
-                                              Next.js cache invalidated
-                                                           ↓
-                                              Next request → fresh data
-```
-
-## Risk Assessment
-
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Supavisor connection string breaks local dev | MED | HIGH | Keep separate `.env.local` with direct connection for local dev |
-| Suspense boundaries cause hydration mismatches | LOW | MED | Ensure skeletons match initial layout exactly; avoid `Date.now()` in skeletons |
-| `unstable_cache` cross-tenant leak | LOW | HIGH | Strict cache key discipline: always include `workspaceId` |
-| New indexes slow down writes | MED | LOW | Monitor write latency; remove unused indexes after 30 days |
-| Dynamic imports break SSR for critical components | LOW | HIGH | Test each dynamic import in production build; avoid `ssr: false` for above-fold content |
+The existing `@@index([workspaceId, patientId])` on `PracticeDocument` is sufficient for patient-scoped queries. The dashboard needs the additional triple index for efficient `workspaceId + archivedAt = null + orderBy createdAt` queries.
 
 ## Sources
 
-- **Next.js 15 Streaming & Suspense:** https://nextjs.org/docs/app/guides/streaming (Context7 `/vercel/next.js`)
-- **Next.js Lazy Loading:** https://nextjs.org/docs/app/guides/lazy-loading (Context7 `/vercel/next.js`)
-- **Next.js Loading UI:** https://nextjs.org/docs/app/api-reference/file-conventions/loading (WebFetch)
-- **React 19 `use` API & Suspense:** https://react.dev/blog/2024/12/05/react-19 (WebFetch)
-- **Prisma 6 Connection Pooling:** https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections/connection-pool (WebFetch)
-- **Prisma + PgBouncer/Supavisor:** https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections/pgbouncer (WebFetch)
-- **Supabase Connection Pooling:** https://supabase.com/docs/guides/database/connecting-to-postgres/serverless-drivers (WebFetch)
-- **Next.js Caching:** https://nextjs.org/docs/app/guides/caching-without-cache-components (WebFetch)
-- **PsiVault PROJECT.md:** `.planning/PROJECT.md` (Internal — v1.3 state, v1.4 targets)
-- **PsiVault Schema & Codebase:** `prisma/schema.prisma`, `src/lib/db.ts`, `src/lib/*/repository.prisma.ts`, `src/app/(vault)/*/page.tsx` (Internal)
-
-## Confidence Assessment
-
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Suspense Streaming | HIGH | Official Next.js 15 + React 19 patterns, well-documented |
-| Bundle Splitting | HIGH | `next/dynamic` is stable; main risk is component placement |
-| DB Indexing | HIGH | PostgreSQL composite indexes are standard; schema already follows pattern |
-| Connection Pooling | HIGH | Supabase + Prisma docs are explicit; `pgbouncer=true` is required for transaction mode |
-| Asset Optimization | MEDIUM | Depends on whether external fonts/images are actually in use (not visible in current codebase) |
-| React 19 `use` API | HIGH | Stable in React 19, but team's familiarity with "pass promise to client" pattern is assumed |
-| Integration with Repository Pattern | HIGH | Repositories already return Promises; no interface changes needed |
-
-## Gaps to Address
-
-1. **Actual query performance data:** We need `EXPLAIN ANALYZE` output from production-like data to confirm which indexes are needed. The recommendations above are based on schema analysis.
-2. **Bundle size baseline:** Need `@next/bundle-analyzer` run to identify the largest JS chunks before deciding what to split.
-3. **Font loading audit:** Current codebase uses CSS variables for typography. Need to verify if any external font requests are happening.
-4. **Edge runtime compatibility:** If PsiVault ever moves middleware or certain routes to Edge Runtime, Prisma Client will need a driver adapter (`@prisma/adapter-neon` or `@prisma/adapter-pg`). Current Node.js runtime is unaffected.
-5. **Cache invalidation granularity:** `revalidateTag` vs `revalidatePath` strategy needs definition per domain (finance, patients, appointments).
+- Existing codebase: `src/lib/documents/repository.ts`, `src/lib/clinical/repository.ts`, `src/lib/appointments/repository.ts`
+- Existing components: `clinical-timeline.tsx`, `documents-section.tsx`, `document-composer-form.tsx`, `note-composer-form.tsx`
+- Schema: `prisma/schema.prisma` (PracticeDocument, ClinicalNote, Appointment indexes)
+- PDF architecture: `src/lib/documents/pdf.tsx` (lazy-loaded @react-pdf/renderer)
+- Keyboard system: `src/components/ui/keyboard-shortcuts-modal.tsx`, `src/app/(vault)/components/keyboard-shortcuts-provider.tsx`
+- UX requirements: `.planning/document-flow-ux-plan.md`
+- Project context: `.planning/PROJECT.md`

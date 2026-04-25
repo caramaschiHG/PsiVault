@@ -1,206 +1,183 @@
 # Project Research Summary
 
-**Project:** PsiVault / PsiLock
-**Domain:** Next.js 15 SaaS — Prontuário Eletrônico para Psicólogos
-**Researched:** 2026-04-23
+**Project:** PsiVault v1.6 Documentos
+**Domain:** Clinical documentation workflow for psychology practice management
+**Researched:** 2026-04-25
 **Confidence:** HIGH
 
 ## Executive Summary
 
-PsiVault is a production multi-tenant SaaS for Brazilian psychologists, built on Next.js 15 with React 19, Prisma 6, and Supabase PostgreSQL. The v1.3 milestone resolved systemic slowness by eliminating N+1 queries, enabling caching, and removing forced dynamic rendering. The v1.4 "Performance Profunda" milestone goes deeper: streaming UI with granular Suspense, strategic bundle splitting, database indexing, connection pooling tuning, and Core Web Vitals instrumentation — all as progressive enhancements atop an existing architecture with 407 passing tests, real users, MFA auth, workspace-scoped queries, soft deletes, and audit trails.
+PsiVault v1.6 is an incremental milestone on an established Next.js 15 psychology practice management SaaS, focused on clinical documentation workflow improvements. Unlike a greenfield project, the majority of "foundational" UX work — patient profile tabs, clinical timeline, document grouping, auto-save, note templates, rich-text editor, and PDF generation — is already shipped. The remaining work centers on four genuine integrations: a workspace-scoped document dashboard (`/documentos`), a streamlined session-to-note creation flow, client-side PDF preview before save, and expanded keyboard shortcuts for power users.
 
-Research confirms the recommended approach is **measure first, optimize second**. The stack requires no radical changes — only additive diagnostics (`@next/bundle-analyzer`, `react-scan`, `web-vitals`), infrastructure configuration (Supabase Supavisor pooling), and architectural patterns already native to Next.js 15 / React 19 (Suspense streaming, `next/dynamic`, `unstable_cache`). Critically, every optimization must preserve the non-negotiable repository pattern, workspace-scoped multi-tenancy, and soft-delete invariants. The highest risks are cross-tenant cache poisoning, connection pool exhaustion under serverless load, and inadvertently reintroducing N+1 queries or `force-dynamic` during refactoring.
+The recommended approach is to extend the existing repository pattern with a single new method (`listActiveByWorkspace`), build the dashboard as a new page-specific component (not reuse patient-tab components), and leverage existing infrastructure for PDF preview and keyboard shortcuts. Most features are low-to-medium complexity because they build on patterns already proven in the codebase. The biggest architectural decision is whether to implement the session-to-note flow as a simple redirect (MVP) or an inline drawer (enhancement); research strongly recommends the redirect for immediate value.
+
+Key risks center on security and compliance in a clinical domain: leaking sensitive fields (`importantObservations`) in new list queries, bypassing the repository pattern in quick actions, and storing clinical drafts unencrypted in localStorage. These are all preventable by enforcing existing patterns (`LIST_SELECT` exclusions, mandatory repository usage, encrypted or server-side drafts) and adding automated assertions. Performance risks (timeline N+1, dashboard load) are well understood and mitigated with cursor pagination, batched queries, and targeted database indexes.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The base stack (Next.js 15.2.4, React 19, TypeScript 5.8, Prisma 6.6.0, Supabase Auth SSR) is sound and requires no replacements. v1.4 adds diagnostics, measurement, and infrastructure tuning layers.
+The current stack is mature and requires no new dependencies for v1.6. All capabilities exist in the established Next.js 15 + Prisma 6 + Supabase + `@react-pdf/renderer` setup. The only infrastructure addition is a composite database index to support workspace-level document queries.
 
-**Core additions:**
-- **`@next/bundle-analyzer@15.2.4`** — Bundle size visualization; official wrapper, version-locked to Next.js. Must match major/minor.
-- **`react-scan@0.5.3`** — Zero-config re-render overlay for dev; more actionable than React DevTools Profiler for spotting unnecessary renders.
-- **`web-vitals@5.2.0`** — Google's RUM library for LCP, INP, CLS, TTFB, FCP. Install as production dependency (runs in browser).
-- **`lighthouse@13.1.0`** + **`@lhci/cli@0.15.1`** — Automated lab auditing + CI gates to prevent performance regressions.
-- **`memlab@2.0.1`** — Meta's automated E2E memory leak detection via heap snapshot diffing.
-- **`@prisma/sqlcommenter-query-insights`** — SQL comment tagging for observability; groups slow query logs by Prisma model/action.
-- **Supabase Supavisor (Transaction Mode, port 6543)** — Already provisioned; only requires connection string change with `pgbouncer=true` and `prepareThreshold=0`. No new package.
+**Core technologies:**
+- **Next.js 15** (App Router, Server Components, Server Actions) — already established; no migration needed
+- **React 19 + TypeScript 5.8** — strict mode; runtime and type safety baseline
+- **Prisma 6 + PostgreSQL (Supabase)** — ORM and primary store; repository pattern built on it
+- **Supabase Auth** — SSR authentication with MFA and JWT AAL fast-path
+- **`@react-pdf/renderer` ^3.x** — PDF buffer generation and client preview; dynamically imported to avoid bundle bloat
+- **CSS custom properties + `React.CSSProperties`** — design tokens for static styles; inline styles only for dynamic values
 
-**What NOT to add:** Prisma Accelerate (redundant lock-in), TanStack Query (conflicts with Server Components + `React.cache`), Partytown (`next/script` `worker` strategy suffices), raw `webpack-bundle-analyzer` (use official wrapper), or a custom Redis cache layer (Next.js built-in caching is sufficient at current scale).
+**Database change:**
+- `@@index([workspaceId, archivedAt, createdAt])` on `PracticeDocument` — supports dashboard's `listActiveByWorkspace` query pattern
 
 ### Expected Features
 
-**Must have (table stakes):**
-- Bundle size analysis (`@next/bundle-analyzer` / `next experimental-analyze`)
-- Image/font/script optimization (`next/image`, `next/font`, `next/script`)
-- Core Web Vitals measurement (`web-vitals` + analytics endpoint)
-- Database composite indexing (`workspaceId` as leading column)
-- Connection pooling (Supavisor transaction mode)
-- Query deduplication (`React.cache()` — already in use for `resolveSession`)
-- Streaming with Suspense (`loading.tsx` + manual `<Suspense>` boundaries)
-- Selective field queries (Prisma `select` / `LIST_SELECT` pattern)
-- Targeted cache invalidation (`revalidatePath` with `'page'` scope, `revalidateTag`)
+Most table-stakes features are already implemented. v1.6 focuses on differentiators that improve daily clinical workflow efficiency.
 
-**Should have (differentiators):**
-- Granular Suspense boundaries for heavy pages (`/financeiro`, `/inicio`)
-- Prisma query plan analysis (`EXPLAIN`, `@prisma/sqlcommenter-query-insights`)
-- Partial (filtered) indexes for soft-deleted data (`deletedAt IS NULL`)
-- `unstable_after` for non-blocking audit/telemetry writes
-- `relationLoadStrategy: "join"` where query constraints allow
-- Column-level selection extended to search endpoints
-- Server Component boundary audit to reduce client JS
-- `next/dynamic` for heavy client components (charts, PDF, editors)
+**Must have (table stakes) — ALREADY SHIPPED:**
+- Patient profile tabs (geral/clinico/documentos/financeiro/config)
+- Clinical timeline with month grouping and simplified cards
+- Document grouping by type with collapsible sections and count badges
+- Auto-save indicator with localStorage persistence
+- Note templates (SOAP / BIRP / Livre)
+- Rich-text document editor with toolbar for all document types
+- PDF generation with lazy-loaded `@react-pdf/renderer`
 
-**Defer (post-v1.4):**
-- React Compiler (Babel-only currently, slower builds; wait for build-time performance improvements)
-- Deep memory leak investigation (only if field data shows INP degradation over time)
-- Raw SQL for report queries (optimize with ORM first; escalate only if reports are slow)
-- Full OpenTelemetry/Sentry instrumentation pipeline (start simple with `instrumentation.ts`)
+**Should have (differentiators) — NEW FOR v1.6:**
+- **Global document dashboard (`/documentos`)** — cross-patient view with type/date/patient filters; highest visible value, no competitor does this well for small practices
+- **PDF preview before save** — avoid "generate, download, realize error, regenerate" cycle; quick win reusing existing renderer
+- **Session→note integrated flow** — complete appointment → create note in 1-2 clicks; 1-line redirect change with massive UX impact
+- **Keyboard shortcuts for flow actions** — power user navigation without mouse friction; extend existing `useGlobalShortcuts`
+- **Focus mode for note editor** — already shipped; collapses sidebar, hides optional fields
+- **Visual timeline connector** — partially shipped; cosmetic CSS enhancement
+
+**Defer (v2+):**
+- Inline note drawer — requires component extraction; redirect is MVP-equivalent
+- Visual timeline connector line — cosmetic, low functional value
+- Smart document suggestions — requires AI/content analysis, out of scope
+- Full-text search across document content — security risk; search metadata only
+- Custom template builder (drag-drop) — too complex for target user; hardcoded templates cover 95%
 
 ### Architecture Approach
 
-The guiding principle is **progressive enhancement**: every optimization is an additive layer. Repository interfaces, domain models, Server Actions, and the 407 existing tests remain unchanged. The presentation layer decomposes heavy pages into independent async Server Components wrapped in `<Suspense>` boundaries. Data access stays behind the repository pattern. Caching and deduplication sit between presentation and database. The database layer gets composite indexes and pooled connections underneath.
+The architecture follows the established repository pattern, server action conventions, and tab-based patient profile structure. Four clean integrations are needed. The dashboard should be a new top-level component (`DocumentDashboard`) that shares only presentational utilities (`DocumentRow`, `groupByType`, `TypeGroup`) with the per-patient tab — reusing `DocumentsSection` directly is an anti-pattern because it expects `patientId`-scoped data.
 
 **Major components:**
-1. **Page (Server Component)** — Orchestrates data fetching, defines Suspense boundaries, awaits only `resolveSession()`
-2. **AsyncSection (Server Component)** — Fetches data for one independent slice; child of a Suspense boundary
-3. **Skeleton (Server/Client Component)** — Fallback UI matching final dimensions to prevent CLS
-4. **PageClient (Client Component)** — Interactivity: modals, forms, charts; receives props from Page
-5. **DynamicChunk (dynamically imported)** — Heavy libraries loaded on demand via `next/dynamic`
-6. **Repository (Prisma implementation)** — Database access, workspace-scoped, soft-delete aware
-7. **Store (singleton via `globalThis`)** — Caches repository instance per request; must survive HMR
+1. **`DocumentDashboard`** (new) — workspace-level document list with filters, search, and grouping; communicates with `DocumentRepository` and `PatientRepository`
+2. **`DocumentFilterBar`** (new) — type chips, date range, patient search; pure local state with callbacks
+3. **`PdfPreviewModal`** (new) — client-side PDF render before save; lazy-loaded, uses existing `renderPracticeDocumentPdf`
+4. **`NoteComposerForm`** (extract if drawer) — pure form logic shared between page and drawer; start with redirect instead
+5. **`KeyboardShortcutsProvider`** (modified) — global shortcut registration extended with route-aware bindings
+
+**Key patterns to follow:**
+- Repository extension for new queries (`listActiveByWorkspace`)
+- Client-side filtering with server hydration (responsive dashboard UX)
+- Lazy-loaded PDF preview (zero bundle cost on non-preview routes)
+- Component extraction for shared UI (if/when drawer mode is implemented)
 
 ### Critical Pitfalls
 
-1. **Cache poisoning / cross-tenant data leak** — Any `unstable_cache`, `use cache`, or `fetch` caching without `workspaceId` in the key/tag can serve Tenant A's patients to Tenant B. **Prevention:** Every cache key MUST include `workspaceId`; prefer `revalidateTag` scoped per workspace. This is a HIPAA-level breach risk.
+Research identified 10 pitfalls with concrete prevention strategies. The top 5 with highest impact:
 
-2. **Connection pool exhaustion** — Prisma 6's pool + Supavisor compete; serverless invocations multiply pool usage. Small Supabase tiers cap at 200–400 pooler clients. **Prevention:** Use transaction mode (`:6543?pgbouncer=true`), keep `connection_limit` low (start with 1–2), use `DIRECT_URL` (port 5432) ONLY for migrations.
-
-3. **N+1 reintroduced by "optimization"** — Extracting a lean `select` then looping to fetch related data reverts v1.3 fixes. **Prevention:** Ban loops with DB queries in Server Components; extend batch repository methods (`findByAppointmentIds`) instead.
-
-4. **`importantObservations` leaked** — Consolidating selects or adding cached queries may accidentally include sensitive clinical notes in list/search views. **Prevention:** Explicitly exclude in all list/search queries; add `SafePatientSelect` TypeScript guard; grep for `importantObservations` in repository files.
-
-5. **`dynamic = "force-dynamic"` reintroduced** — Adding auth checks or `cookies()` at layout level, or copying old page templates, opts entire subtrees out of static optimization. **Prevention:** `grep -r "dynamic = 'force-dynamic'" src/app` must stay empty; keep session resolution scoped to pages, not layouts.
-
-6. **Suspense boundaries without fallbacks or with DB queries above them** — Awaiting data in the parent component before passing it into `<Suspense>` negates streaming. **Prevention:** Fetch INSIDE the Suspense-wrapped component; fallback skeletons must match final layout dimensions exactly.
+1. **Leaking sensitive fields in new list queries** — `importantObservations` or draft content accidentally included in timeline/dashboard responses. **Avoid:** enforce `LIST_SELECT` exclusions; whitelist search-result fields; never use `include: true` blindly.
+2. **Bypassing repository pattern in new features** — calling Prisma directly in Server Actions disables soft-delete filtering, workspace scoping, and audit logging. **Avoid:** lint rule banning `@prisma/client` outside `*.prisma.ts` files; mandatory code review checklist item.
+3. **Keyboard shortcuts breaking accessibility** — single-key shortcuts (`N`, `D`) conflict with screen readers and browser defaults. **Avoid:** use modifier combos (`Ctrl+Shift+N`); gate shortcuts when focus is inside inputs; test with NVDA/JAWS.
+4. **Unencrypted clinical drafts in localStorage** — PHI exposed on shared or compromised devices. **Avoid:** encrypt with Web Crypto API before storage, or migrate to server-side `Draft` table with Supabase RLS; scope keys by `workspaceId` + `patientId`.
+5. **Timeline loading all history at once (N+1 & memory)** — long-term patients (5+ years) cause massive initial load. **Avoid:** cursor-based pagination (`take` + cursor); batched note presence query (`findByAppointmentIds`); never load `importantObservations` in timeline queries.
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure for v1.4:
+Based on research, suggested phase structure:
 
-### Phase 1: Diagnóstico e Fundação de Dados
-**Rationale:** Measure before optimizing. Database fixes benefit every subsequent phase, and diagnostics establish the baseline against which all improvements are validated.
-**Delivers:**
-- Bundle size baseline (`ANALYZE=true pnpm build`)
-- Core Web Vitals instrumentation endpoint (`web-vitals` + `useReportWebVitals`)
-- Missing composite indexes added to `schema.prisma` (`Appointment`, `SessionCharge`)
-- Supavisor transaction mode configured (`DATABASE_URL` with `pgbouncer=true`, `DIRECT_URL` for migrations)
-- Prisma query logging extension (`$extends` with `performance.now()` slow query warnings)
-**Addresses (FEATURES):** Bundle analysis, DB indexing, connection pooling, CWV measurement, query deduplication
-**Avoids (PITFALLS):** Connection pool exhaustion, unused indexes, optimizing dev instead of prod, `pgbouncer=true` missing in new envs
+### Phase 1: Repository & Index Foundation
+**Rationale:** Unblocks every downstream phase. The new `listActiveByWorkspace` method and database index are prerequisites for the dashboard and any workspace-scoped queries.
+**Delivers:** `listActiveByWorkspace` interface + Prisma + in-memory implementations; composite index migration; unit tests asserting workspace scoping and soft-delete filtering.
+**Addresses:** Dashboard data layer (FEATURES.md)
+**Avoids:** Bypassing repository pattern (PITFALLS.md #2); global search workspace leak (PITFALLS.md #6)
 
-### Phase 2: Streaming e Suspense Granular
-**Rationale:** The biggest perceived performance win for users. Heavy pages (`/financeiro`, `/inicio`) currently block on `Promise.all([...])`. Streaming requires fast queries (Phase 1) to be effective.
-**Delivers:**
-- `loading.tsx` for heavy routes
-- Section-level skeleton components matching design tokens
-- Async section components (`TodaySection`, `RemindersSection`, `TrendChartSection`, etc.)
-- Suspense boundaries around each section; data fetch happens INSIDE the wrapped component
-- React 19 `use` API for streaming promises into Client Components (with Error Boundaries)
-**Addresses (FEATURES):** Streaming with Suspense, granular Suspense boundaries, preload patterns
-**Avoids (PITFALLS):** Suspense boundaries blocking, layout shift from poor fallbacks, `use` API without Error Boundary, awaiting everything in the page component
+### Phase 2: Document Dashboard (`/documentos`)
+**Rationale:** Highest visible value feature; reusable pattern from finance refactor. Once the repository method exists, the page is a straightforward Server Component → Client Component filter/groups flow.
+**Delivers:** `/documentos` route, `DocumentDashboard` + `DocumentFilterBar`, type/date/patient filtering, document row cards with patient name resolution.
+**Uses:** Stack elements (Next.js App Router, Prisma, CSS custom properties); architecture pattern (client-side filtering with server hydration)
+**Avoids:** Reusing patient-tab components for dashboard (ARCHITECTURE.md anti-pattern #1); leaking sensitive fields (PITFALLS.md #1); missing workspace scope (PITFALLS.md #6)
 
-### Phase 3: Cache Seletivo e Seguro
-**Rationale:** Reduce redundant DB hits for read-heavy, rarely-changing data. Must come after streaming architecture is stable so caching doesn't mask structural slowness.
-**Delivers:**
-- `unstable_cache` wrappers for read-heavy repository methods (`PracticeProfile`, `ExpenseCategory` list, workspace metadata)
-- `revalidateTag` calls in mutation Server Actions
-- Cache key discipline enforced: `['domain', workspaceId, ...params]`
-- Audit of all existing `revalidatePath` calls to ensure `'page'` scope
-**Addresses (FEATURES):** Targeted cache invalidation, selective field queries, column-level selection for search
-**Avoids (PITFALLS):** Cross-tenant cache leakage, stale auth/session caching, `revalidatePath` scope misuse causing cache stampedes, `React.cache()` misunderstood as cross-request cache
+### Phase 3: PDF Preview Modal
+**Rationale:** Quick win that reuses existing `@react-pdf/renderer` infrastructure. Adds significant UX value (avoiding regenerate cycles) with minimal code.
+**Delivers:** Lazy-loaded `PdfPreviewModal` in `DocumentComposerForm`, client-side blob URL generation, iframe/object embed.
+**Uses:** Existing `renderPracticeDocumentPdf` and dynamic import pattern
+**Avoids:** Client-side PDF bloat (PITFALLS.md #7); server-side PDF preview latency (ARCHITECTURE.md anti-pattern #4)
 
-### Phase 4: Otimização de Assets e Bundle
-**Rationale:** Low-hanging fruit for LCP/CLS improvement and JS bundle reduction. Independent of prior phases but best measured after streaming and caching are in place.
-**Delivers:**
-- `next/dynamic()` wrappers for heavy Client Components (charts, PDF preview, date pickers, rich text editors)
-- `optimizePackageImports` in `next.config.ts` for any adopted utility libraries
-- Font loading audit; migrate external fonts to `next/font` if applicable
-- Image audit; replace raw `<img>` with `next/image` where applicable
-- `next/script` strategies for any third-party scripts
-**Addresses (FEATURES):** Image/font/script optimization, bundle splitting, `optimizePackageImports`
-**Avoids (PITFALLS):** Bundle bloat from chart libs, dynamic imports with `ssr: false` in Server Components, optimizing dev instead of prod
+### Phase 4: Session→Note Flow
+**Rationale:** Massive UX impact with minimal code — a 1-line redirect from agenda quick actions. Drawer mode can be a later enhancement.
+**Delivers:** "Criar nota" quick action after completing appointment; redirect to `/sessions/{id}/note?from=agenda`; back-navigation handling.
+**Avoids:** Quick action race conditions (PITFALLS.md #10) by keeping appointment completion and note creation as separate, validated actions; bypassing repository (PITFALLS.md #2)
 
-### Phase 5: Medição, Observabilidade e Iteração
-**Rationale:** Validate all prior work with objective metrics and establish continuous performance monitoring.
-**Delivers:**
-- Lighthouse CI configuration (`lighthouserc.js`) with pass/fail thresholds (LCP < 2.5s, CLS < 0.1)
-- Real User Monitoring (RUM) pipeline for CWV at 75th percentile
-- `memlab` scenario for patient navigation flow (heap snapshot diffing)
-- `react-scan` integrated into dev environment
-- `instrumentation.ts` with `register()` and `onRequestError` hooks
-- Before/after performance report with actionable next steps
-**Addresses (FEATURES):** Memory leak detection, instrumentation/observability, CWV measurement automation
-**Avoids (PITFALLS):** Misreading dev vs prod bundle, ignoring `pg_stat_statements`, unbounded `Promise.all()` in server actions
+### Phase 5: Keyboard Shortcuts & Polish
+**Rationale:** Completes the "power user" story. Depends on stable page routes from Phases 2–4 so shortcuts can target correct URLs.
+**Delivers:** Extended `KeyboardShortcutsProvider` with route-aware bindings; `?` help modal; modifier-key combos for dashboard, note, and document actions.
+**Avoids:** Accessibility conflicts (PITFALLS.md #3); keyboard traps; missing `prefers-reduced-motion` support
+
+### Phase 6: Timeline Performance & Visual Polish
+**Rationale:** Lowest priority — cosmetic and performance enhancements that improve feel but don't unblock core workflows.
+**Delivers:** Cursor-based pagination for timeline; batched note presence query; CSS visual connector line; tab state in URL (deep-linkable).
+**Avoids:** N+1 timeline queries (PITFALLS.md #5); tab state loss on refresh (PITFALLS.md #8)
 
 ### Phase Ordering Rationale
 
-- **Phase 1 first** because database performance is the foundation: indexes and pooling make streaming actually fast, and diagnostics provide the baseline metric.
-- **Phase 2 follows Phase 1** because Suspense streaming is only perceptually fast if the queries it streams are themselves fast.
-- **Phase 3 follows Phase 2** because caching should not be used to mask slow queries; once streaming architecture is correct, selective caching reduces redundant work safely.
-- **Phase 4 is parallel-friendly** after Phase 2 (asset optimization doesn't structurally depend on caching), but keeping it after Phase 3 prevents bundle-size wins from being confused with caching wins during measurement.
-- **Phase 5 last** because measurement requires all prior optimizations to be in place for a valid before/after comparison.
+- **Repository first** — every other feature queries documents; the new `listActiveByWorkspace` method and index are true blockers.
+- **Dashboard second** — highest user-visible value and validates the repository work in a real UI.
+- **PDF preview third** — independent of dashboard and note flow; can ship in parallel with Phase 4 if desired, but ordered after dashboard to keep focus.
+- **Note flow fourth** — depends on stable appointment completion actions; redirect is trivial, but must be tested against existing quick-action logic.
+- **Shortcuts fifth** — needs stable routes from dashboard and note pages to bind meaningful navigation shortcuts.
+- **Polish last** — pagination and visual enhancements are optimizations on existing shipped features.
 
 ### Research Flags
 
 Phases likely needing deeper research during planning:
-- **Phase 2 (Streaming):** React 19 `use` API integration with existing Client Components may need a spike to validate Error Boundary behavior in Next.js 15 App Router. The "pass promise to client" pattern is new to most teams.
-- **Phase 4 (Assets):** If the team adopts a charting library (e.g., Recharts, Chart.js) for v1.4 reports, research the specific bundling impact and dynamic import configuration. Not needed if reports use server-rendered SVG.
+- **Phase 4 (Session→Note Flow):** Needs validation on whether the redirect pattern preserves all form state correctly (e.g., `from=agenda` query param handling, back button behavior). If drawer mode is requested later, requires component extraction research.
+- **Phase 5 (Keyboard Shortcuts):** Needs accessibility audit research — specific NVDA/JAWS shortcut conflict lists, axe-core CI integration pattern.
 
-Phases with standard patterns (skip dedicated `/gsd-research-phase`):
-- **Phase 1 (Database Foundation):** Well-documented Prisma + Supabase patterns; `pgbouncer=true` is explicit in official docs.
-- **Phase 5 (Measurement):** Lighthouse CI and `web-vitals` are mature, well-documented Google tools with stable APIs.
+Phases with standard patterns (skip research-phase):
+- **Phase 1 (Repository & Index):** Well-established Prisma pattern; in-memory repo test pattern already exists.
+- **Phase 2 (Document Dashboard):** Standard Next.js App Router Server Component → Client Component with derived state; pattern identical to finance refactor.
+- **Phase 3 (PDF Preview):** Reuses existing `@react-pdf/renderer` dynamic import pattern; implementation is documented in ARCHITECTURE.md.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All packages verified against npm registry; `@next/bundle-analyzer` is official; Supavisor is built-in Supabase infrastructure |
-| Features | HIGH | Based on stable Next.js 15, React 19, and Prisma 6 APIs; no experimental features required for MVP scope |
-| Architecture | HIGH | Progressive enhancement on a solid v1.3 foundation; repository pattern and domain models remain unchanged |
-| Pitfalls | HIGH | Extensive official documentation plus domain-specific analysis of multi-tenant, soft-delete, and HIPAA-sensitive patterns |
+| Stack | HIGH | No new dependencies; all versions verified in `package.json` and existing usage |
+| Features | HIGH | Codebase audit confirmed which features are shipped vs. new; UX plan is explicit |
+| Architecture | HIGH | Repository pattern, Server Actions, and component boundaries are well established; new integrations are narrow |
+| Pitfalls | HIGH | 10 pitfalls mapped to concrete prevention strategies and phases; sourced from existing codebase, WCAG docs, and clinical SaaS experience |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-The following gaps need resolution during planning or early implementation:
-
-1. **Actual production query performance data:** Index recommendations are based on schema analysis, not `EXPLAIN ANALYZE` from production-like data volumes. During Phase 1, run `EXPLAIN ANALYZE` on the top 10 slowest queries to validate index choices.
-2. **Bundle size baseline:** The `@next/bundle-analyzer` run in Phase 1 will identify the largest JS chunks. This determines which components most urgently need `next/dynamic` splitting in Phase 4.
-3. **Font loading audit:** Current codebase uses CSS custom properties for typography. Need to verify whether any external font requests exist before deciding if `next/font` migration is needed.
-4. **Cache invalidation granularity per domain:** `revalidateTag` strategy needs explicit definition per domain (finance, patients, appointments) to avoid over-invalidation or stale data. Define tags during Phase 3 planning.
-5. **Edge runtime compatibility:** If PsiVault ever moves middleware or routes to Edge Runtime, Prisma Client will need a driver adapter. Current Node.js runtime is unaffected; document as architectural decision.
+- **Note flow UX validation:** Research recommends a redirect for MVP, but user testing should confirm this feels seamless vs. an inline drawer. During Phase 4 planning, validate whether `router.push()` with `from=agenda` preserves enough context.
+- **Draft encryption strategy:** PITFALLS.md flags unencrypted localStorage drafts as a critical issue. During Phase 1 or early Phase 4 planning, decide whether to encrypt client-side with Web Crypto API or migrate to a server-side `Draft` table — this affects the note composer architecture.
+- **Timeline pagination threshold:** Research recommends cursor pagination but doesn't specify the exact `take` limit (20? 50?). During Phase 6 planning, determine the optimal page size based on existing patient data distribution.
+- **Keyboard shortcut modifier choice:** PITFALLS.md recommends `Ctrl+Shift+Key` but specific keybindings need user-acceptance validation during Phase 5 planning to avoid conflicts with OS-level shortcuts.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- **Context7 `/vercel/next.js`** — Next.js 15 App Router caching, streaming, Suspense, `unstable_after`, `useReportWebVitals`, lazy loading, `optimizePackageImports`
-- **Context7 `/prisma/prisma`** — Prisma 6 query middleware (`$extends`), connection pooling, `relationLoadStrategy`, partial indexes, `$queryRaw`
-- **Context7 `/websites/supabase`** — Supavisor transaction/session mode, connection string formats, PgBouncer integration, `pg_stat_statements`
-- **React 19 Official Docs** — `use` API, Suspense improvements, React Compiler (experimental)
-- **web.dev** — Core Web Vitals thresholds (LCP < 2.5s, INP < 200ms, CLS < 0.1)
+- `prisma/schema.prisma` — existing schema, indexes, and `PracticeDocument` model
+- `src/lib/documents/repository.ts` — existing repository interface and patterns
+- `src/lib/documents/pdf.tsx` — existing `@react-pdf/renderer` usage and lazy-load pattern
+- `src/components/ui/keyboard-shortcuts-modal.tsx` — existing shortcut system
+- `.planning/PROJECT.md` — milestone scope, constraints, and security rules
+- `.planning/document-flow-ux-plan.md` — UX audit and planned features
 
-### Secondary (MEDIUM-HIGH confidence)
-- **GitHub `aidenybai/react-scan`** (v0.5.3) — Zero-config re-render detection, Next.js App Router setup
-- **GitHub `facebook/memlab`** (v2.0.1) — E2E memory leak detection, scenario file API
-- **npm registry** — Version verification for `web-vitals@5.2.0`, `lighthouse@13.1.0`, `@lhci/cli@0.15.1`, `memlab@2.0.1`
-- **PsiVault internal codebase** — `prisma/schema.prisma`, `src/lib/db.ts`, `src/lib/*/repository.prisma.ts`, `src/app/(vault)/*/page.tsx` (v1.3 state with 407 tests)
+### Secondary (MEDIUM confidence)
+- [WCAG 2.1 Understanding SC 2.1.1 Keyboard](https://www.w3.org/WAI/WCAG21/Understanding/keyboard.html) — accessibility guidance for keyboard shortcuts
+- [Prisma ORM CRUD & Query Patterns](https://www.prisma.io/docs/orm/prisma-client/queries/crud) — query optimization and pagination patterns
+- [Next.js Documentation — Caching & Performance Optimization](https://nextjs.org/docs/app/building-your-application/optimizing) — dynamic imports and route caching
 
-### Tertiary (MEDIUM confidence)
-- **React Compiler (Experimental)** — Build-time performance impact not yet benchmarked for this codebase; adopt incrementally
-- **Memory leak patterns** — General React knowledge; specific leaks require profiling with `memlab` and Chrome DevTools
+### Tertiary (LOW confidence)
+- Author's experience with multi-tenant clinical SaaS systems and HIPAA-aligned architecture — informed severity ranking of pitfalls
 
 ---
-*Research completed: 2026-04-23*
+*Research completed: 2026-04-25*
 *Ready for roadmap: yes*
