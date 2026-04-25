@@ -12,15 +12,10 @@ import { getPatientRepository } from "@/lib/patients/store";
 import { getDocumentRepository } from "@/lib/documents/store";
 import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
 import { createClient } from "@/lib/supabase/server";
-import { archiveDocumentAction } from "./actions";
 import { DocumentPaperView } from "../components/document-paper-view";
 import { DocumentPaperScaler } from "../components/document-paper-scaler";
-import { canSignDocument } from "@/lib/documents/model";
-import {
-  DOCUMENT_TYPE_LABELS,
-  canExportDocumentAsPdf,
-  isPrivateDocumentType,
-} from "@/lib/documents/presenter";
+import { DocumentActions } from "./components/document-actions";
+import { DOCUMENT_TYPE_LABELS, isPrivateDocumentType } from "@/lib/documents/presenter";
 import { resolveSession } from "@/lib/supabase/session";
 import { richTextHtmlToPlainText } from "@/lib/documents/rich-text";
 
@@ -94,52 +89,16 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
       </DocumentPaperScaler>
 
       {/* Actions */}
-      <section style={actionsStyle}>
-        {!isPrivate && (
-          <a href={dataUri} download={`${typeLabel}-${doc.id}.txt`} style={downloadLinkStyle}>
-            Baixar documento
-          </a>
-        )}
-
-        {!isPrivate && canExportDocumentAsPdf(doc.type) && (
-          <a
-            href={`/api/patients/${patientId}/documents/${doc.id}/pdf`}
-            style={downloadLinkStyle}
-          >
-            Baixar PDF
-          </a>
-        )}
-
-        {/* Placeholder for Plan 39-03 preview modal */}
-        {!isPrivate && canExportDocumentAsPdf(doc.type) && (
-          <button disabled style={{ ...downloadLinkStyle, opacity: 0.5, cursor: "not-allowed" }}>
-            Visualizar PDF
-          </button>
-        )}
-
-        {isActive && (
-          <Link href={`/patients/${patientId}/documents/${doc.id}/edit`} style={editLinkStyle}>
-            Editar documento
-          </Link>
-        )}
-
-        {/* Placeholder for sign action (Plan 39-03) */}
-        {isActive && canSignDocument(doc) && (
-          <button disabled style={{ ...editLinkStyle, opacity: 0.5, cursor: "not-allowed" }}>
-            Assinar
-          </button>
-        )}
-
-        {isActive && (
-          <form action={archiveDocumentAction} style={archiveFormStyle}>
-            <input type="hidden" name="documentId" value={doc.id} />
-            <input type="hidden" name="patientId" value={patientId} />
-            <button type="submit" style={archiveButtonStyle}>
-              Arquivar documento
-            </button>
-          </form>
-        )}
-      </section>
+      <DocumentActions
+        patientId={patientId}
+        documentId={documentId}
+        status={doc.status}
+        isPrivate={isPrivate}
+        hasSignature={!!profile.signatureAsset?.storageKey}
+        typeLabel={typeLabel}
+        dataUri={dataUri}
+        isActive={isActive}
+      />
     </main>
   );
 }
@@ -176,48 +135,4 @@ const navSepStyle = {
 const navCurrentStyle = {
   color: "var(--color-text-3)",
   fontWeight: 500,
-} satisfies React.CSSProperties;
-
-const actionsStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.75rem",
-  flexWrap: "wrap" as const,
-} satisfies React.CSSProperties;
-
-const downloadLinkStyle = {
-  fontSize: "0.875rem",
-  fontWeight: 500,
-  color: "var(--color-accent)",
-  textDecoration: "none",
-  padding: "0.45rem 1rem",
-  borderRadius: "var(--radius-pill)",
-  border: "1px solid rgba(146, 64, 14, 0.3)",
-  background: "rgba(255, 247, 237, 0.6)",
-} satisfies React.CSSProperties;
-
-const editLinkStyle = {
-  fontSize: "0.875rem",
-  fontWeight: 500,
-  color: "var(--color-accent)",
-  textDecoration: "none",
-  padding: "0.45rem 1rem",
-  borderRadius: "var(--radius-pill)",
-  border: "1px solid var(--color-border-med)",
-  background: "var(--color-accent-light)",
-} satisfies React.CSSProperties;
-
-const archiveFormStyle = {
-  display: "inline",
-} satisfies React.CSSProperties;
-
-const archiveButtonStyle = {
-  fontSize: "0.875rem",
-  fontWeight: 500,
-  color: "var(--color-text-3)",
-  cursor: "pointer",
-  padding: "0.45rem 1rem",
-  borderRadius: "var(--radius-pill)",
-  border: "1px solid rgba(120, 113, 108, 0.3)",
-  background: "rgba(248, 246, 243, 0.8)",
 } satisfies React.CSSProperties;

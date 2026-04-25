@@ -1,11 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { archivePracticeDocument } from "../../../../../../lib/documents/model";
-import { getDocumentRepository } from "../../../../../../lib/documents/store";
-import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
-import { getAuditRepository } from "../../../../../../lib/audit/store";
-import { resolveSession } from "../../../../../../lib/supabase/session";
+import { archivePracticeDocument, signDocument } from "@/lib/documents/model";
+import { getDocumentRepository } from "@/lib/documents/store";
+import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
+import { createDocumentAuditEvent } from "@/lib/documents/audit";
+import { getAuditRepository } from "@/lib/audit/store";
+import { resolveSession } from "@/lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -25,7 +26,6 @@ export async function archiveDocumentAction(formData: FormData): Promise<void> {
     const repo = getDocumentRepository();
     const doc = await repo.findById(documentId, workspaceId);
     if (!doc || doc.patientId !== patientId) {
-      // Already archived or not found — redirect silently
       notFoundRedirect = true;
     } else {
       const now = new Date();
@@ -37,7 +37,7 @@ export async function archiveDocumentAction(formData: FormData): Promise<void> {
         {
           type: "document.archived",
           document: archived,
-          actor: { accountId: accountId, workspaceId: workspaceId },
+          actor: { accountId, workspaceId },
         },
         { now, createId: generateId },
       );
@@ -51,4 +51,52 @@ export async function archiveDocumentAction(formData: FormData): Promise<void> {
   }
 
   if (notFoundRedirect || shouldRedirect) redirect(`/patients/${patientId}`);
+}
+
+export async function signDocumentAction(formData: FormData): Promise<void> {
+  const { accountId, workspaceId } = await resolveSession();
+  const documentId = String(formData.get("documentId") ?? "");
+  const patientId = String(formData.get("patientId") ?? "");
+
+  let shouldRedirect = false;
+  let guardRedirect = false;
+
+  try {
+    const repo = getDocumentRepository();
+    const doc = await repo.findById(documentId, workspaceId);
+    if (!doc || doc.patientId !== patientId) {
+      guardRedirect = true;
+    } else if (doc.status !== "finalized") {
+      guardRedirect = true;
+    } else {
+      const profile = await getPracticeProfileSnapshot(undefined, workspaceId);
+      if (!profile.signatureAsset?.storageKey) {
+        throw new Error("Configure sua assinatura em Perfil para finalizar este documento.");
+      }
+
+      const now = new Date();
+      const signed = signDocument(doc, accountId, { now });
+      await repo.save(signed);
+
+      const auditRepo = getAuditRepository();
+      const auditEvent = createDocumentAuditEvent(
+        {
+          type: "document.signed",
+          document: signed,
+          actor: { accountId, workspaceId },
+        },
+        { now, createId: generateId },
+      );
+      auditRepo.append(auditEvent);
+
+      shouldRedirect = true;
+    }
+  } catch (err) {
+    console.error("[signDocumentAction]", err);
+    return;
+  }
+
+  if (guardRedirect || shouldRedirect) {
+    redirect(`/patients/${patientId}/documents/${documentId}`);
+  }
 }

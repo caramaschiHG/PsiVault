@@ -56,7 +56,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
     generatedAtLabel,
     content: document.content,
     signatureDataUri,
-    isRichText: document.type === "session_record",
+    isRichText: document.content.includes("<") && document.content.includes(">"),
   });
 
   const filename = sanitizeFilename(`${title}-${patient.fullName}.pdf`);

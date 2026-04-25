@@ -13,6 +13,19 @@
 
 import type { DocumentType } from "./model";
 
+export interface DocumentSection {
+  id: string;
+  title: string;
+  placeholder: string;
+  required: boolean;
+}
+
+export interface DocumentTemplate {
+  type: DocumentType;
+  mode: "free" | "structured";
+  sections: DocumentSection[];
+}
+
 export interface PatientRecordSummaryEntry {
   sessionLabel: string;
   sessionDateLabel: string;
@@ -80,57 +93,38 @@ Valor: ${amount}${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}
 function buildAnamnesis(ctx: DocumentPreFillContext): string {
   const intakeDate = ctx.intakeDate ?? "________";
 
-  return `ANAMNESE PSICOLÓGICA
-
-Paciente: ${ctx.patientFullName}
-Profissional responsável: ${ctx.professionalName} (${ctx.crp})
-Data de início do atendimento: ${intakeDate}
-
-I. IDENTIFICAÇÃO
-Nome completo: ${ctx.patientFullName}
-Data de início: ${intakeDate}
-
-II. QUEIXA PRINCIPAL
-[A ser preenchido pelo profissional]
-
-III. HISTÓRIA DO PROBLEMA ATUAL
-[A ser preenchido pelo profissional]
-
-IV. HISTÓRIA PESSOAL E FAMILIAR
-[A ser preenchido pelo profissional]
-
-V. HISTÓRICO DE SAÚDE
-[A ser preenchido pelo profissional]
-
-VI. OBSERVAÇÕES CLÍNICAS
-[A ser preenchido pelo profissional]${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+  return `<h2>ANAMNESE PSICOLÓGICA</h2>
+<p>Paciente: ${ctx.patientFullName}<br>Profissional responsável: ${ctx.professionalName} (${ctx.crp})<br>Data de início do atendimento: ${intakeDate}</p>
+<h2>I. IDENTIFICAÇÃO</h2>
+<p>Nome completo: ${ctx.patientFullName}<br>Data de início: ${intakeDate}</p>
+<h2>II. QUEIXA PRINCIPAL</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>III. HISTÓRIA DO PROBLEMA ATUAL</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>IV. HISTÓRIA PESSOAL E FAMILIAR</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>V. HISTÓRICO DE SAÚDE</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>VI. OBSERVAÇÕES CLÍNICAS</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<p>Profissional: ${ctx.professionalName} — ${ctx.crp}<br>Data: ${ctx.todayLabel}</p>`;
 }
 
 function buildPsychologicalReport(ctx: DocumentPreFillContext): string {
-  return `LAUDO PSICOLÓGICO
-
-Profissional: ${ctx.professionalName}
-Registro profissional: ${ctx.crp}
-Avaliado(a): ${ctx.patientFullName}
-Data: ${ctx.todayLabel}
-
-I. IDENTIFICAÇÃO
-Nome: ${ctx.patientFullName}
-Profissional responsável: ${ctx.professionalName} (${ctx.crp})
-
-II. OBJETIVO DO LAUDO
-[A ser preenchido pelo profissional]
-
-III. PROCEDIMENTOS UTILIZADOS
-[A ser preenchido pelo profissional]
-
-IV. RESULTADOS E ANÁLISE
-[A ser preenchido pelo profissional]
-
-V. CONCLUSÃO
-[A ser preenchido pelo profissional]
-
-Este laudo foi elaborado com base em avaliação psicológica realizada conforme as normas do Conselho Federal de Psicologia.${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+  return `<h2>LAUDO PSICOLÓGICO</h2>
+<p>Profissional: ${ctx.professionalName}<br>Registro profissional: ${ctx.crp}<br>Avaliado(a): ${ctx.patientFullName}<br>Data: ${ctx.todayLabel}</p>
+<h2>I. IDENTIFICAÇÃO</h2>
+<p>Nome: ${ctx.patientFullName}<br>Profissional responsável: ${ctx.professionalName} (${ctx.crp})</p>
+<h2>II. OBJETIVO DO LAUDO</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>III. PROCEDIMENTOS UTILIZADOS</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>IV. RESULTADOS E ANÁLISE</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>V. CONCLUSÃO</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<p>Este laudo foi elaborado com base em avaliação psicológica realizada conforme as normas do Conselho Federal de Psicologia.</p>
+<p>Profissional: ${ctx.professionalName} — ${ctx.crp}<br>Data: ${ctx.todayLabel}</p>`;
 }
 
 function buildConsentAndServiceContract(ctx: DocumentPreFillContext): string {
@@ -166,26 +160,17 @@ Assinatura do(a) profissional: ________________________${signatureBlock(ctx.prof
 }
 
 function buildSessionNote(ctx: DocumentPreFillContext): string {
-  return `EVOLUÇÃO DE SESSÃO
-
-Paciente: ${ctx.patientFullName}
-Profissional: ${ctx.professionalName} (${ctx.crp})
-Data da sessão: ${ctx.todayLabel}
-
-————————————————————
-
-I. OBJETIVOS DA SESSÃO
-[A ser preenchido pelo profissional]
-
-II. CONTEÚDO E INTERVENÇÕES
-[A ser preenchido pelo profissional]
-
-III. EVOLUÇÃO E OBSERVAÇÕES
-[A ser preenchido pelo profissional]
-
-IV. PRÓXIMA SESSÃO
-Data prevista: ________
-Objetivos para a próxima sessão: [A ser preenchido pelo profissional]${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+  return `<h2>EVOLUÇÃO DE SESSÃO</h2>
+<p>Paciente: ${ctx.patientFullName}<br>Profissional: ${ctx.professionalName} (${ctx.crp})<br>Data da sessão: ${ctx.todayLabel}</p>
+<h2>I. OBJETIVOS DA SESSÃO</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>II. CONTEÚDO E INTERVENÇÕES</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>III. EVOLUÇÃO E OBSERVAÇÕES</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>IV. PRÓXIMA SESSÃO</h2>
+<p>Data prevista: ________<br>Objetivos para a próxima sessão: [A ser preenchido pelo profissional]</p>
+<p>Profissional: ${ctx.professionalName} — ${ctx.crp}<br>Data: ${ctx.todayLabel}</p>`;
 }
 
 function buildSessionRecord(): string {
@@ -193,34 +178,22 @@ function buildSessionRecord(): string {
 }
 
 function buildReferralLetter(ctx: DocumentPreFillContext): string {
-  return `CARTA DE ENCAMINHAMENTO
-
-${ctx.todayLabel}
-
-À(Ao) colega especialista,
-
-Encaminho para avaliação e acompanhamento o(a) paciente ${ctx.patientFullName}, que tem sido atendido(a) sob minha responsabilidade.
-
-I. MOTIVO DO ENCAMINHAMENTO
-[A ser preenchido pelo profissional]
-
-II. HISTÓRICO CLÍNICO RESUMIDO
-[A ser preenchido pelo profissional]
-
-III. HIPÓTESE DIAGNÓSTICA
-[A ser preenchido pelo profissional]
-
-IV. TRATAMENTO EM CURSO
-[A ser preenchido pelo profissional]
-
-V. OBSERVAÇÕES RELEVANTES
-[A ser preenchido pelo profissional]
-
-————————————————————
-
-Coloco-me à disposição para maiores informações por meio do contato profissional.
-
-Atenciosamente,${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+  return `<h2>CARTA DE ENCAMINHAMENTO</h2>
+<p>${ctx.todayLabel}</p>
+<p>À(Ao) colega especialista,</p>
+<p>Encaminho para avaliação e acompanhamento o(a) paciente ${ctx.patientFullName}, que tem sido atendido(a) sob minha responsabilidade.</p>
+<h2>I. MOTIVO DO ENCAMINHAMENTO</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>II. HISTÓRICO CLÍNICO RESUMIDO</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>III. HIPÓTESE DIAGNÓSTICA</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>IV. TRATAMENTO EM CURSO</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<h2>V. OBSERVAÇÕES RELEVANTES</h2>
+<p>[A ser preenchido pelo profissional]</p>
+<p>Coloco-me à disposição para maiores informações por meio do contato profissional.</p>
+<p>Atenciosamente,<br>Profissional: ${ctx.professionalName} — ${ctx.crp}<br>Data: ${ctx.todayLabel}</p>`;
 }
 
 function buildPatientRecordSummary(ctx: DocumentPreFillContext): string {
@@ -267,6 +240,62 @@ OBSERVAÇÕES FINAIS / ENCAMINHAMENTOS
 
 NOTA ÉTICA
 Este resumo deriva do prontuário psicológico e deve conter apenas as informações estritamente necessárias para a finalidade do compartilhamento com o(a) paciente, conforme avaliação técnica e ética da(o) profissional.${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+}
+
+export const DOCUMENT_TEMPLATES: Record<DocumentType, DocumentTemplate> = {
+  session_record: { type: "session_record", mode: "free", sections: [] },
+  psychological_report: {
+    type: "psychological_report",
+    mode: "structured",
+    sections: [
+      { id: "identification", title: "I. IDENTIFICAÇÃO", placeholder: "Nome completo, data de nascimento, encaminhante...", required: false },
+      { id: "objective", title: "II. OBJETIVO DO LAUDO", placeholder: "Descreva o objetivo da avaliação...", required: false },
+      { id: "procedures", title: "III. PROCEDIMENTOS UTILIZADOS", placeholder: "Instrumentos e técnicas aplicadas...", required: false },
+      { id: "results", title: "IV. RESULTADOS E ANÁLISE", placeholder: "Análise dos resultados obtidos...", required: false },
+      { id: "conclusion", title: "V. CONCLUSÃO", placeholder: "Conclusões e encaminhamentos...", required: false },
+    ],
+  },
+  anamnesis: {
+    type: "anamnesis",
+    mode: "structured",
+    sections: [
+      { id: "identification", title: "I. IDENTIFICAÇÃO", placeholder: "Nome, data de nascimento, ocupação...", required: false },
+      { id: "chief_complaint", title: "II. QUEIXA PRINCIPAL", placeholder: "Motivo da consulta...", required: false },
+      { id: "history", title: "III. HISTÓRIA DO PROBLEMA ATUAL", placeholder: "Descrição detalhada...", required: false },
+      { id: "personal_family", title: "IV. HISTÓRIA PESSOAL E FAMILIAR", placeholder: "Dados relevantes...", required: false },
+      { id: "health", title: "V. HISTÓRICO DE SAÚDE", placeholder: "Condições de saúde...", required: false },
+      { id: "observations", title: "VI. OBSERVAÇÕES CLÍNICAS", placeholder: "Observações do profissional...", required: false },
+    ],
+  },
+  session_note: {
+    type: "session_note",
+    mode: "structured",
+    sections: [
+      { id: "objectives", title: "I. OBJETIVOS DA SESSÃO", placeholder: "Objetivos traçados...", required: false },
+      { id: "content", title: "II. CONTEÚDO E INTERVENÇÕES", placeholder: "Registro da sessão...", required: false },
+      { id: "evolution", title: "III. EVOLUÇÃO E OBSERVAÇÕES", placeholder: "Observações clínicas...", required: false },
+      { id: "next", title: "IV. PRÓXIMA SESSÃO", placeholder: "Planejamento...", required: false },
+    ],
+  },
+  referral_letter: {
+    type: "referral_letter",
+    mode: "structured",
+    sections: [
+      { id: "reason", title: "I. MOTIVO DO ENCAMINHAMENTO", placeholder: "Razão do encaminhamento...", required: false },
+      { id: "history", title: "II. HISTÓRICO CLÍNICO RESUMIDO", placeholder: "Resumo do histórico...", required: false },
+      { id: "hypothesis", title: "III. HIPÓTESE DIAGNÓSTICA", placeholder: "Hipóteses formuladas...", required: false },
+      { id: "treatment", title: "IV. TRATAMENTO EM CURSO", placeholder: "Tratamento atual...", required: false },
+      { id: "observations", title: "V. OBSERVAÇÕES RELEVANTES", placeholder: "Informações complementares...", required: false },
+    ],
+  },
+  declaration_of_attendance: { type: "declaration_of_attendance", mode: "free", sections: [] },
+  receipt: { type: "receipt", mode: "free", sections: [] },
+  consent_and_service_contract: { type: "consent_and_service_contract", mode: "free", sections: [] },
+  patient_record_summary: { type: "patient_record_summary", mode: "free", sections: [] },
+};
+
+export function getDocumentTemplate(type: DocumentType): DocumentTemplate {
+  return DOCUMENT_TEMPLATES[type];
 }
 
 export function buildDocumentContent(type: DocumentType, context: DocumentPreFillContext): string {

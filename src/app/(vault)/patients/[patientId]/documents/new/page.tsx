@@ -153,34 +153,9 @@ export default async function DocumentComposerPage({
 
   const documentType = rawType as DocumentType;
 
-  // 3. Signature gate
+  // 3. Profile for pre-fill and signature notice
   const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
-  if (documentType !== "session_record" && !profile.signatureAsset) {
-    return (
-      <main style={shellStyle}>
-        <nav style={breadcrumbStyle}>
-          <Link href="/patients" style={breadcrumbLinkStyle}>
-            Pacientes
-          </Link>
-          <span style={breadcrumbSepStyle}>›</span>
-          <Link href={`/patients/${patient.id}`} style={breadcrumbLinkStyle}>
-            {patient.fullName}
-          </Link>
-          <span style={breadcrumbSepStyle}>›</span>
-          <span style={breadcrumbCurrentStyle}>Novo documento</span>
-        </nav>
-
-        <div style={gateNoticeStyle}>
-          <p style={gateNoticeTextStyle}>
-            Documentos requerem assinatura configurada.
-          </p>
-          <Link href="/settings/profile" style={gateNoticeLinkStyle}>
-            Configurar em Perfil
-          </Link>
-        </div>
-      </main>
-    );
-  }
+  const hasSignature = !!profile.signatureAsset;
 
   // 4. Pre-fill context assembly
   const appointmentRepo = getAppointmentRepository();
@@ -258,6 +233,14 @@ export default async function DocumentComposerPage({
         <p style={eyebrowStyle}>Documentos</p>
         <h1 style={titleStyle}>{typeLabel}</h1>
       </div>
+
+      {/* Signature notice (non-blocking) */}
+      {!hasSignature && (
+        <p style={noticeStyle}>
+          Para assinar documentos, configure sua assinatura em{" "}
+          <Link href="/settings/profile">Configurações → Perfil</Link>.
+        </p>
+      )}
 
       {/* 7. Document composer form */}
       <DocumentComposerForm
@@ -475,4 +458,13 @@ const gateNoticeLinkStyle = {
   fontWeight: 700,
   fontSize: "0.95rem",
   width: "fit-content",
+} satisfies React.CSSProperties;
+
+const noticeStyle = {
+  fontSize: "0.82rem",
+  color: "var(--color-text-2)",
+  padding: "0.75rem 1rem",
+  background: "rgba(248, 250, 252, 0.8)",
+  borderRadius: "var(--radius-md)",
+  marginBottom: "1rem",
 } satisfies React.CSSProperties;
