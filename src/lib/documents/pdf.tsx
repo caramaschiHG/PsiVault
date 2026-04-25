@@ -1,4 +1,5 @@
 import React from "react";
+import { htmlToPdfNodes, type PdfNode } from "./html-to-pdf-nodes";
 
 interface RenderPracticeDocumentPdfInput {
   title: string;
@@ -8,10 +9,10 @@ interface RenderPracticeDocumentPdfInput {
   generatedAtLabel: string;
   content: string;
   signatureDataUri?: string | null;
+  isRichText?: boolean;
 }
 
 // Cached module + stylesheet — populated on first call, reused afterwards.
-// Avoids paying the @react-pdf/renderer boot cost on routes that never render PDFs.
 let pdfModulePromise: Promise<typeof import("@react-pdf/renderer")> | null = null;
 let cachedStyles: ReturnType<typeof buildStyles> | null = null;
 
@@ -29,6 +30,10 @@ export async function renderPracticeDocumentPdf(
     await loadPdfModule();
 
   const styles = cachedStyles ?? (cachedStyles = buildStyles(StyleSheet));
+
+  const contentNodes = input.isRichText
+    ? htmlToPdfNodes(input.content)
+    : null;
 
   return renderToBuffer(
     <Document
@@ -52,7 +57,11 @@ export async function renderPracticeDocumentPdf(
         </View>
 
         <View style={styles.contentBlock}>
-          <Text style={styles.content}>{input.content}</Text>
+          {input.isRichText && contentNodes
+            ? contentNodes.map((node, i) => (
+                <PdfNodeRenderer key={i} node={node} styles={styles} Text={Text} View={View} />
+              ))
+            : <Text style={styles.content}>{input.content}</Text>}
         </View>
 
         {input.signatureDataUri ? (
@@ -68,71 +77,109 @@ export async function renderPracticeDocumentPdf(
   );
 }
 
+function PdfNodeRenderer({
+  node,
+  styles,
+  Text,
+  View,
+}: {
+  node: PdfNode;
+  styles: ReturnType<typeof buildStyles>;
+  Text: typeof import("@react-pdf/renderer").Text;
+  View: typeof import("@react-pdf/renderer").View;
+}): React.ReactElement {
+  if (node.type === "text") {
+    const textStyle: Record<string, unknown> = {
+      fontSize: 11,
+      lineHeight: 1.65,
+      ...node.style,
+    };
+    return (
+      <Text style={textStyle as any}>
+        {node.text}
+      </Text>
+    );
+  }
+
+  const viewStyle: Record<string, unknown> = {
+    ...node.style,
+  };
+
+  return (
+    <View style={viewStyle as any}>
+      {node.children?.map((child, i) => (
+        <PdfNodeRenderer key={i} node={child} styles={styles} Text={Text} View={View} />
+      )) ?? null}
+    </View>
+  );
+}
+
 function buildStyles(
   StyleSheet: typeof import("@react-pdf/renderer").StyleSheet,
 ) {
   return StyleSheet.create({
-  page: {
-    paddingTop: 44,
-    paddingRight: 42,
-    paddingBottom: 48,
-    paddingLeft: 42,
-    fontSize: 11,
-    color: "var(--color-text-1)",
-    fontFamily: "Helvetica",
-    backgroundColor: "var(--color-surface-1)",
-  },
-  header: {
-    marginBottom: 20,
-    paddingBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: "var(--color-kbd-border)",
-  },
-  kicker: {
-    marginBottom: 6,
-    fontSize: 9,
-    textTransform: "uppercase",
-    letterSpacing: 1.2,
-    color: "var(--color-accent)",
-  },
-  title: {
-    marginBottom: 10,
-    fontSize: 18,
-    fontFamily: "Helvetica-Bold",
-    color: "var(--color-kbd-text)",
-  },
-  metaBlock: {
-    gap: 4,
-  },
-  metaLine: {
-    fontSize: 10,
-    color: "var(--color-text-2)",
-    lineHeight: 1.4,
-  },
-  contentBlock: {
-    flexGrow: 1,
-  },
-  content: {
-    fontSize: 11,
-    lineHeight: 1.65,
-    whiteSpace: "pre-wrap",
-  },
-  signatureBlock: {
-    marginTop: 24,
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: "#e7e5e4",
-    alignItems: "flex-start",
-  },
-  signatureImage: {
-    width: 132,
-    height: 54,
-    objectFit: "contain",
-    marginBottom: 6,
-  },
-  signatureCaption: {
-    fontSize: 10,
-    color: "var(--color-warm-brown)",
-  },
+    page: {
+      paddingTop: 44,
+      paddingRight: 42,
+      paddingBottom: 48,
+      paddingLeft: 42,
+      fontSize: 11,
+      color: "var(--color-text-1)",
+      fontFamily: "Helvetica",
+      backgroundColor: "var(--color-surface-1)",
+    },
+    header: {
+      marginBottom: 20,
+      paddingBottom: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: "var(--color-kbd-border)",
+    },
+    kicker: {
+      marginBottom: 6,
+      fontSize: 9,
+      textTransform: "uppercase",
+      letterSpacing: 1.2,
+      color: "var(--color-accent)",
+    },
+    title: {
+      marginBottom: 10,
+      fontSize: 18,
+      fontFamily: "Helvetica-Bold",
+      color: "var(--color-kbd-text)",
+    },
+    metaBlock: {
+      gap: 4,
+    },
+    metaLine: {
+      fontSize: 10,
+      color: "var(--color-text-2)",
+      lineHeight: 1.4,
+    },
+    contentBlock: {
+      flexGrow: 1,
+      gap: 0,
+    },
+    content: {
+      fontSize: 11,
+      lineHeight: 1.65,
+      whiteSpace: "pre-wrap",
+    },
+    signatureBlock: {
+      marginTop: 24,
+      paddingTop: 14,
+      borderTopWidth: 1,
+      borderTopColor: "#e7e5e4",
+      alignItems: "flex-start",
+    },
+    signatureImage: {
+      width: 132,
+      height: 54,
+      objectFit: "contain",
+      marginBottom: 6,
+    },
+    signatureCaption: {
+      fontSize: 10,
+      color: "var(--color-warm-brown)",
+    },
   });
 }

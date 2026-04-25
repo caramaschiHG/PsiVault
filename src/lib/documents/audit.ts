@@ -16,7 +16,11 @@ import type { PracticeDocument } from "./model";
 export type DocumentAuditEventType =
   | "document.created"
   | "document.updated"
-  | "document.archived";
+  | "document.archived"
+  | "document.draft_saved"
+  | "document.finalized"
+  | "document.signed"
+  | "document.delivered";
 
 interface CreateDocumentAuditEventInput {
   type: DocumentAuditEventType;
@@ -33,6 +37,10 @@ const AUDIT_SUMMARIES: Record<DocumentAuditEventType, string> = {
   "document.created": "Documento criado.",
   "document.updated": "Documento editado.",
   "document.archived": "Documento arquivado.",
+  "document.draft_saved": "Rascunho salvo.",
+  "document.finalized": "Documento finalizado.",
+  "document.signed": "Documento assinado.",
+  "document.delivered": "Documento entregue.",
 };
 
 export function createDocumentAuditEvent(
@@ -48,9 +56,10 @@ export function createDocumentAuditEvent(
         id: input.document.id,
       },
       summary: AUDIT_SUMMARIES[input.type],
-      // SECU-05: only documentType in metadata — never document content
+      // SECU-05: only documentType and status in metadata — never document content
       metadata: {
         documentType: input.document.type,
+        status: input.document.status,
       },
     },
     {

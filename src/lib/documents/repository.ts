@@ -6,13 +6,25 @@
  * by workspaceId so they are O(n) — acceptable for the in-memory phase.
  */
 
-import type { PracticeDocument } from "./model";
+import type { DocumentStatus, PracticeDocument } from "./model";
 
 export interface PracticeDocumentRepository {
   save(doc: PracticeDocument): Promise<PracticeDocument>;
   findById(id: string, workspaceId: string): Promise<PracticeDocument | null>;
   listByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]>;
   listActiveByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]>;
+
+  // Phase 37: lifecycle queries
+  listByStatus(
+    workspaceId: string,
+    patientId: string,
+    status: DocumentStatus,
+  ): Promise<PracticeDocument[]>;
+  listDraftsByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]>;
+  findByAppointmentId(
+    workspaceId: string,
+    appointmentId: string,
+  ): Promise<PracticeDocument[]>;
 }
 
 export function createInMemoryDocumentRepository(
@@ -50,6 +62,39 @@ export function createInMemoryDocumentRepository(
           doc.patientId === patientId &&
           doc.workspaceId === workspaceId &&
           doc.archivedAt === null,
+      );
+    },
+
+    async listByStatus(
+      workspaceId: string,
+      patientId: string,
+      status: DocumentStatus,
+    ): Promise<PracticeDocument[]> {
+      return Array.from(store.values()).filter(
+        (doc) =>
+          doc.patientId === patientId &&
+          doc.workspaceId === workspaceId &&
+          doc.status === status,
+      );
+    },
+
+    async listDraftsByPatient(patientId: string, workspaceId: string): Promise<PracticeDocument[]> {
+      return Array.from(store.values()).filter(
+        (doc) =>
+          doc.patientId === patientId &&
+          doc.workspaceId === workspaceId &&
+          doc.status === "draft",
+      );
+    },
+
+    async findByAppointmentId(
+      workspaceId: string,
+      appointmentId: string,
+    ): Promise<PracticeDocument[]> {
+      return Array.from(store.values()).filter(
+        (doc) =>
+          doc.workspaceId === workspaceId &&
+          doc.appointmentId === appointmentId,
       );
     },
   };

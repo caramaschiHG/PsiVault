@@ -5,45 +5,55 @@
 
 ## v1.6 Requirements
 
-### Dashboard & Navegação (DASH)
+### Foundation & Migration (MIGR)
 
-- [ ] **DASH-01**: Psicólogo pode acessar dashboard global `/documentos` com todos os documentos do workspace
-- [ ] **DASH-02**: Dashboard exibe filtros por tipo de documento, intervalo de datas e paciente
+- [ ] **MIGR-01**: Schema `PracticeDocument` possui colunas novas: `status` (default "finalized"), `appointmentId` (nullable), `signedAt` (nullable), `signedByAccountId` (nullable), `deliveredAt` (nullable), `deliveredTo` (nullable), `deliveredVia` (nullable) — todas nullable para zero downtime
+- [ ] **MIGR-02**: Migration Prisma mapeia documentos existentes: `archivedAt != null` → `status='archived'`; demais → `status='finalized'`. Nenhum documento existente é perdido ou inacessível
+- [ ] **MIGR-03**: Índices compostos novos criados: `[workspaceId, patientId, status]`, `[workspaceId, patientId, createdAt]`, `[appointmentId]`
+- [ ] **MIGR-04**: Domain model inclui `DocumentStatus` como tipo canônico (`draft` | `finalized` | `signed` | `delivered` | `archived`), funções puras de transição com guards, e IDs com prefixo `doc_`
+- [ ] **MIGR-05**: Repository extended com `listByStatus`, `listDraftsByPatient`, `findByAppointmentId`, `listActiveByPatientWithStatus` — todos com workspace scoping
+
+### Estados e Rascunho (STAT)
+
+- [ ] **STAT-01**: Documento pode ser criado como `draft` via `createDocumentAction` — sempre salva no servidor, nunca em localStorage
+- [ ] **STAT-02**: Auto-save server-side de rascunho a cada 3s (debounce) via `saveDraftAction` — upsert de rascunho existente
+- [ ] **STAT-03**: Transições de estado são Server Actions: `finalizeDocumentAction`, `signDocumentAction`, `deliverDocumentAction`, `archiveDocumentAction` — cada uma valida workspace, role, e guards de transição
+- [ ] **STAT-04**: Listagem de documentos é cronológica (mais recente primeiro) com badges de estado: Rascunho, Pendente, Assinado, Entregue, Arquivado
+- [ ] **STAT-05**: Filtros rápidos na listagem: "Todos", "Rascunhos", "Pendentes", "Assinados", "Entregues", "Arquivados"
+- [ ] **STAT-06**: Documento `signed` torna conteúdo imutável (não editável). Documento `delivered` registra `deliveredAt`, `deliveredTo`, `deliveredVia` com audit trail
+
+### Editor Unificado e Preview (EDIT)
+
+- [ ] **EDIT-01**: `DocumentEditor` unificado com modo `free` (rich text completo, sem template — para `session_record`) e modo `structured` (seções pré-definidas pelo template — para documentos formais)
+- [ ] **EDIT-02**: Visualização de documento (`/documents/[id]`) renderiza em layout A4 simulado na tela: margens, tipografia adequada, cabeçalho com dados do profissional e paciente
+- [ ] **EDIT-03**: Todo documento `finalized` ou `signed` pode gerar PDF. Preview PDF embutido em modal sem precisar fazer download
+- [ ] **EDIT-04**: Assinatura digital é verificada apenas no momento de `sign` — documentos podem ser criados e editados sem assinatura configurada
+- [ ] **EDIT-05**: `@react-pdf/renderer` suporta rich text: HTML do editor é convertido para nodes do react-pdf (ou via `react-pdf-html` se compatível)
+- [ ] **EDIT-06**: Templates visuais por tipo com substituição segura de variáveis (`{{patientName}}`, `{{date}}`, etc.) — sanitização antes de renderização
+
+### Integração com Atendimentos (APPT)
+
+- [ ] **APPT-01**: Documento pode ter `appointmentId` opcional. Quando presente, visualização mostra contexto do atendimento (data, hora, tipo)
+- [ ] **APPT-02**: Criação de documento a partir da página de atendimento preenche `appointmentId` e dados da sessão automaticamente
+- [ ] **APPT-03**: Declaração de comparecimento (`attendance_certificate`) só pode ser criada vinculada a um atendimento específico
+- [ ] **APPT-04**: Pre-fill de relatórios usa apenas notas clínicas do período relevante (últimas N sessões até o atendimento vinculado), não todo histórico do paciente
+- [ ] **APPT-05**: Fluxo sessão→documento preserva parâmetro `from` para navegação de volta intuitiva
+
+### Dashboard e Navegação (DASH)
+
+- [ ] **DASH-01**: Psicólogo pode acessar dashboard global `/documentos` com todos os documentos do workspace, ordenados cronologicamente
+- [ ] **DASH-02**: Dashboard exibe filtros por tipo de documento, intervalo de datas, paciente e estado
 - [ ] **DASH-03**: Documentos no dashboard são agrupados visualmente por tipo com contagem
 - [ ] **DASH-04**: Breadcrumbs hierárquicos presentes em todos os fluxos de documentos (Pacientes > Fulano > Documentos > Novo > Laudo)
 - [ ] **DASH-05**: Tabs no perfil do paciente preservam estado na URL (query params) para deep-linking e refresh seguro
 - [ ] **DASH-06**: Dashboard não inclui campos sensíveis (`importantObservations`) em nenhuma listagem
 
-### Timeline Clínica (TIME)
+### Polish e Cleanup (CLEAN)
 
-- [ ] **TIME-01**: Timeline clínica exibe visual de linha do tempo com conector CSS vertical
-- [ ] **TIME-02**: Cards de atendimento simplificados: data, status e badge de presença de nota apenas
-- [ ] **TIME-03**: Comunicação e detalhes adicionais ficam em drawer colapsável sob demanda
-- [ ] **TIME-04**: Atendimentos agrupados por mês ou trimestre com header de período
-- [ ] **TIME-05**: Timeline usa cursor pagination para carregar histórico progressivamente (não tudo de uma vez)
-- [ ] **TIME-06**: Nenhuma query de timeline inclui conteúdo de `importantObservations`
-
-### Editor de Notas (NOTE)
-
-- [ ] **NOTE-01**: Psicólogo pode selecionar template clínico visual (SOAP, BIRP, Livre) que injeta estrutura no editor
-- [ ] **NOTE-02**: Editor de notas possui modo foco que colapsa sidebar e oculta campos opcionais
-- [ ] **NOTE-03**: Indicador de auto-save visível com timestamp ("Salvo localmente às 14:32" / "Salvo no servidor")
-- [ ] **NOTE-04**: Rascunhos de notas em localStorage são criptografados via Web Crypto API antes de persistir
-- [ ] **NOTE-05**: Templates clínicos respeitam o vocabulário do PsiVault (não usam jargão de wellness/coach)
-
-### Editor de Documentos (DOCM)
-
-- [ ] **DOCM-01**: Psicólogo pode visualizar preview do PDF antes de salvar o documento (modal com react-pdf)
-- [ ] **DOCM-02**: Composer de documentos oferece templates visuais por tipo (declaração, laudo, recibo, registro privado)
-- [ ] **DOCM-03**: Preview de PDF usa lazy-loading para não impactar bundle de rotas que não precisam de PDF
-- [ ] **DOCM-04**: Templates de documentos usam variáveis de paciente (nome, data) com substituição segura
-
-### Fluxo Integrado (FLOW)
-
-- [ ] **FLOW-01**: Ao marcar atendimento como COMPLETED na agenda, psicólogo vê quick action "Criar nota" que redireciona para editor com contexto preservado
-- [ ] **FLOW-02**: Botão de quick action para novo documento acessível diretamente no perfil do paciente
-- [ ] **FLOW-03**: Redirecionamento de fluxo preserva parâmetro `from` para navegação de volta intuitiva
-- [ ] **FLOW-04**: Quick actions não bypassam repository pattern — usam Server Actions validadas com workspace + role
+- [ ] **CLEAN-01**: Código legado removido: auto-save localStorage de documentos, textarea para documentos formais, visualização em `<pre>`, duplicação de `VALID_TYPES`
+- [ ] **CLEAN-02**: Todos os 419+ testes existentes passam; novos testes cobrem transições de estado, migração de dados, e geração de PDF
+- [ ] **CLEAN-03**: Documentos existentes de usuários reais permanecem intactos — validação via teste de migração em ambiente de staging
+- [ ] **CLEAN-04**: Audit trail cobre `document.finalized`, `document.signed`, `document.delivered`, `document.draft_saved` com metadados apropriados
 
 ## v2 Requirements (Deferred)
 
@@ -79,35 +89,42 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DASH-01 | Phase 38 | Pending |
-| DASH-02 | Phase 38 | Pending |
-| DASH-03 | Phase 38 | Pending |
-| DASH-04 | Phase 38 | Pending |
-| DASH-05 | Phase 38 | Pending |
-| DASH-06 | Phase 37 | Pending |
-| TIME-01 | Phase 39 | Pending |
-| TIME-02 | Phase 39 | Pending |
-| TIME-03 | Phase 39 | Pending |
-| TIME-04 | Phase 39 | Pending |
-| TIME-05 | Phase 39 | Pending |
-| TIME-06 | Phase 37 | Pending |
-| NOTE-01 | Phase 40 | Pending |
-| NOTE-02 | Phase 40 | Pending |
-| NOTE-03 | Phase 40 | Pending |
-| NOTE-04 | Phase 40 | Pending |
-| NOTE-05 | Phase 40 | Pending |
-| DOCM-01 | Phase 41 | Pending |
-| DOCM-02 | Phase 41 | Pending |
-| DOCM-03 | Phase 41 | Pending |
-| DOCM-04 | Phase 41 | Pending |
-| FLOW-01 | Phase 42 | Pending |
-| FLOW-02 | Phase 42 | Pending |
-| FLOW-03 | Phase 42 | Pending |
-| FLOW-04 | Phase 37 | Pending |
+| MIGR-01 | Phase 37 | Pending |
+| MIGR-02 | Phase 37 | Pending |
+| MIGR-03 | Phase 37 | Pending |
+| MIGR-04 | Phase 37 | Pending |
+| MIGR-05 | Phase 37 | Pending |
+| STAT-01 | Phase 38 | Pending |
+| STAT-02 | Phase 38 | Pending |
+| STAT-03 | Phase 38 | Pending |
+| STAT-04 | Phase 38 | Pending |
+| STAT-05 | Phase 38 | Pending |
+| STAT-06 | Phase 38 | Pending |
+| EDIT-01 | Phase 39 | Pending |
+| EDIT-02 | Phase 39 | Pending |
+| EDIT-03 | Phase 39 | Pending |
+| EDIT-04 | Phase 39 | Pending |
+| EDIT-05 | Phase 39 | Pending |
+| EDIT-06 | Phase 39 | Pending |
+| APPT-01 | Phase 40 | Pending |
+| APPT-02 | Phase 40 | Pending |
+| APPT-03 | Phase 40 | Pending |
+| APPT-04 | Phase 40 | Pending |
+| APPT-05 | Phase 40 | Pending |
+| DASH-01 | Phase 41 | Pending |
+| DASH-02 | Phase 41 | Pending |
+| DASH-03 | Phase 41 | Pending |
+| DASH-04 | Phase 41 | Pending |
+| DASH-05 | Phase 41 | Pending |
+| DASH-06 | Phase 41 | Pending |
+| CLEAN-01 | Phase 42 | Pending |
+| CLEAN-02 | Phase 42 | Pending |
+| CLEAN-03 | Phase 42 | Pending |
+| CLEAN-04 | Phase 42 | Pending |
 
 **Coverage:**
-- v1.6 requirements: 25 total
-- Mapped to phases: 25 ✓
+- v1.6 requirements: 32 total
+- Mapped to phases: 32 ✓
 - Unmapped: 0
 
 ---

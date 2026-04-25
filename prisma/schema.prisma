@@ -265,10 +265,28 @@ model PracticeDocument {
   archivedAt          DateTime? @map("archived_at")
   archivedByAccountId String?   @map("archived_by_account_id")
 
+  // Lifecycle status — Phase 37 migration maps existing data safely
+  status String @default("finalized") @map("status")
+
+  // Optional appointment linkage for contextual pre-fill
+  appointmentId String? @map("appointment_id")
+
+  // Signing snapshot (immutable after signed)
+  signedAt          DateTime? @map("signed_at")
+  signedByAccountId String?   @map("signed_by_account_id")
+
+  // Delivery record (immutable after delivered)
+  deliveredAt DateTime? @map("delivered_at")
+  deliveredTo String?   @map("delivered_to")
+  deliveredVia String?  @map("delivered_via")
+
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   patient   Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, patientId])
+  @@index([workspaceId, patientId, status])
+  @@index([workspaceId, patientId, createdAt])
+  @@index([appointmentId])
   @@map("practice_documents")
 }
 

@@ -1,13 +1,10 @@
-import { createClient } from "../../../../../../../lib/supabase/server";
-import { getDocumentRepository } from "../../../../../../../lib/documents/store";
-import { getPatientRepository } from "../../../../../../../lib/patients/store";
-import { getPracticeProfileSnapshot } from "../../../../../../../lib/setup/profile";
-import {
-  DOCUMENT_TYPE_LABELS,
-  canExportDocumentAsPdf,
-} from "../../../../../../../lib/documents/presenter";
-import { renderPracticeDocumentPdf } from "../../../../../../../lib/documents/pdf";
-import { resolveSession } from "../../../../../../../lib/supabase/session";
+import { createClient } from "@/lib/supabase/server";
+import { getDocumentRepository } from "@/lib/documents/store";
+import { getPatientRepository } from "@/lib/patients/store";
+import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
+import { DOCUMENT_TYPE_LABELS } from "@/lib/documents/presenter";
+import { renderPracticeDocumentPdf } from "@/lib/documents/pdf";
+import { resolveSession } from "@/lib/supabase/session";
 
 export const runtime = "nodejs";
 
@@ -32,24 +29,17 @@ export async function GET(_request: Request, { params }: RouteContext) {
     return Response.json({ error: "Documento não encontrado." }, { status: 404 });
   }
 
-  if (!canExportDocumentAsPdf(document.type)) {
-    return Response.json({ error: "Este documento não possui exportação em PDF." }, { status: 400 });
-  }
-
-  if (!profile.signatureAsset?.storageKey) {
+  if (document.status === "draft") {
     return Response.json(
-      { error: "Configure a assinatura profissional antes de gerar o PDF." },
-      { status: 412 },
+      { error: "Rascunhos não podem ser exportados em PDF." },
+      { status: 400 },
     );
   }
 
-  const signatureDataUri = await getSignatureDataUri(profile.signatureAsset.storageKey);
-
-  if (!signatureDataUri) {
-    return Response.json(
-      { error: "Não foi possível carregar a assinatura profissional." },
-      { status: 502 },
-    );
+  // Include signature only if document is signed and profile has a signature asset
+  let signatureDataUri: string | null = null;
+  if (document.status === "signed" && profile.signatureAsset?.storageKey) {
+    signatureDataUri = await getSignatureDataUri(profile.signatureAsset.storageKey);
   }
 
   const title = DOCUMENT_TYPE_LABELS[document.type];
@@ -66,6 +56,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
     generatedAtLabel,
     content: document.content,
     signatureDataUri,
+    isRichText: document.type === "session_record",
   });
 
   const filename = sanitizeFilename(`${title}-${patient.fullName}.pdf`);

@@ -1,12 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { deliverDocument } from "../../../../../../lib/documents/model";
-import { getDocumentRepository } from "../../../../../../lib/documents/store";
-import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
-import { getAuditRepository } from "../../../../../../lib/documents/audit";
-import { resolveSession } from "../../../../../../lib/supabase/session";
-import type { DeliverDocumentInput } from "../../../../../../lib/documents/model";
+import { deliverDocument } from "@/lib/documents/model";
+import { getDocumentRepository } from "@/lib/documents/store";
+import { createDocumentAuditEvent } from "@/lib/documents/audit";
+import { getAuditRepository } from "@/lib/audit/store";
+import { resolveSession } from "@/lib/supabase/session";
+import type { DeliverDocumentInput } from "@/lib/documents/model";
 
 function generateId() {
   const buffer = new Uint8Array(9);

@@ -445,6 +445,13 @@ describe("document domain", () => {
       editedAt: null,
       archivedAt: null,
       archivedByAccountId: null,
+      status: "finalized" as const,
+      appointmentId: null,
+      signedAt: null,
+      signedByAccountId: null,
+      deliveredAt: null,
+      deliveredTo: null,
+      deliveredVia: null,
     };
 
     it("metadata contains documentType", () => {

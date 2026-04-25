@@ -1,11 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { signDocument } from "../../../../../../lib/documents/model";
-import { getDocumentRepository } from "../../../../../../lib/documents/store";
-import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
-import { getAuditRepository } from "../../../../../../lib/documents/audit";
-import { resolveSession } from "../../../../../../lib/supabase/session";
+import { signDocument } from "@/lib/documents/model";
+import { getDocumentRepository } from "@/lib/documents/store";
+import { createDocumentAuditEvent } from "@/lib/documents/audit";
+import { getAuditRepository } from "@/lib/audit/store";
+import { resolveSession } from "@/lib/supabase/session";
 
 function generateId() {
   const buffer = new Uint8Array(9);

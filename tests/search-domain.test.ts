@@ -109,6 +109,13 @@ const document: PracticeDocument = {
   editedAt: null,
   archivedAt: null,
   archivedByAccountId: null,
+  status: "finalized",
+  appointmentId: null,
+  signedAt: null,
+  signedByAccountId: null,
+  deliveredAt: null,
+  deliveredTo: null,
+  deliveredVia: null,
 };
 
 const charge: SessionCharge = {

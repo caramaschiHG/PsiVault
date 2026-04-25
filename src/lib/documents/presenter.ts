@@ -12,8 +12,8 @@ export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   patient_record_summary: "Resumo de Prontuário",
 };
 
-export function canExportDocumentAsPdf(type: DocumentType): boolean {
-  return type === "patient_record_summary";
+export function canExportDocumentAsPdf(_type: DocumentType): boolean {
+  return true;
 }
 
 export function isPrivateDocumentType(type: DocumentType): boolean {
