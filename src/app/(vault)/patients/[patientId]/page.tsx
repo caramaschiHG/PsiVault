@@ -76,10 +76,10 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
   const docRepo = getDocumentRepository();
   const financeRepo = getFinanceRepository();
 
-  const [activeReminders, completedReminders, activeDocuments, charges] = await Promise.all([
+  const [activeReminders, completedReminders, allDocuments, charges] = await Promise.all([
     reminderRepo.listActiveByPatient(patient.id, workspaceId),
     reminderRepo.listCompletedByPatient(patient.id, workspaceId),
-    docRepo.listActiveByPatient(patient.id, workspaceId),
+    docRepo.listByPatient(patient.id, workspaceId),
     financeRepo.listByPatient(patient.id, workspaceId),
   ]);
   const financialStatus = deriveFinancialStatus(charges);
@@ -138,7 +138,7 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
         upcoming={upcomingEntries}
         completed={completedEntries}
         dismissed={dismissedEntries}
-        activeDocuments={activeDocuments}
+        activeDocuments={allDocuments}
         charges={charges}
         activeReminders={activeReminders}
         completedReminders={completedReminders}
