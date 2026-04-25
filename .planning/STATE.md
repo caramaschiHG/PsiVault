@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.6
-milestone_name: Documentos — Workflow Clínico Impecável
-status: Roadmap created
-stopped_at: Phase 37 planning
-last_updated: "2026-04-25T12:00:00.000Z"
+milestone: v1.4
+milestone_name: Performance Profunda
+status: executing
+stopped_at: Milestone v1.6 roadmap created. 25 requirements mapped to 6 phases (37–42). Awaiting approval to begin Phase 37 planning.
+last_updated: "2026-04-25T18:49:45.965Z"
+last_activity: 2026-04-25
 progress:
-  total_phases: 6
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
 ---
 
 # STATE
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-25)
 
 **Core value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current focus:** Milestone v1.6 Documentos — Workflow Clínico Impecável
+**Current focus:** Phase 38 — estados-e-rascunho
 
 ## Current Position
 
-Phase: 37 — Foundation & Security
-Plan: —
-Status: Roadmap created, awaiting plan execution
-Last activity: 2026-04-25 — Milestone v1.6 roadmap created (Phases 37–42)
+Phase: 38
+Plan: Not started
+Status: Executing Phase 38
+Last activity: 2026-04-25
 
 ## Performance Metrics
 
@@ -96,12 +96,12 @@ Last activity: 2026-04-25 — Milestone v1.6 roadmap created (Phases 37–42)
 
 ### Todos
 
-- [ ] Phase 37: Foundation & Security — repository extension, index, security patterns
-- [ ] Phase 38: Document Dashboard & Navigation — /documentos, filters, breadcrumbs, tabs
-- [ ] Phase 39: Clinical Timeline — visual timeline, cards, drawer, pagination
-- [ ] Phase 40: Note Editor Enhancement — templates, focus mode, auto-save, encryption
-- [ ] Phase 41: Document Composer & PDF Preview — PDF preview, templates, lazy loading
-- [ ] Phase 42: Integrated Session→Note Flow — quick actions, redirects, back navigation
+- [ ] Phase 37: Foundation & Migration — schema seguro, domain model com ciclo de vida, migration zero-downtime
+- [ ] Phase 38: Estados e Rascunho Server-Side — ciclo de vida draft→finalized→signed→delivered, auto-save server-side
+- [ ] Phase 39: Editor Unificado e Preview A4 — composer contextual, layout A4, PDF universal
+- [ ] Phase 40: Integração com Atendimentos — ligação appointment-document, pre-fill contextual
+- [ ] Phase 41: Dashboard e Navegação — /documentos global, filtros, breadcrumbs, tabs
+- [ ] Phase 42: Polish e Cleanup — remover legado, zero regressão, audit trail completo
 
 ### Blockers
 

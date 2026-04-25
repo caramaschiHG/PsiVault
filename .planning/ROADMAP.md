@@ -129,12 +129,12 @@ Plans:
 
 ### 📋 v1.6 Documentos — Workflow Clínico Impecável (Planned)
 
-- [ ] **Phase 37: Foundation & Security** — Repository extension, DB index, security patterns enforcement
-- [ ] **Phase 38: Document Dashboard & Navigation** — /documentos page, filters, breadcrumbs, patient profile tabs
-- [ ] **Phase 39: Clinical Timeline** — Visual timeline, simplified cards, drawer, grouping, cursor pagination
-- [ ] **Phase 40: Note Editor Enhancement** — Clinical templates, focus mode, auto-save indicator, encrypted drafts
-- [ ] **Phase 41: Document Composer & PDF Preview** — PDF preview modal, visual templates, lazy loading, variable substitution
-- [ ] **Phase 42: Integrated Session→Note Flow** — Quick actions from agenda and patient profile, back navigation
+- [ ] **Phase 37: Foundation & Migration** — Schema seguro com status/appointmentId, domain model com ciclo de vida, migration zero-downtime de documentos existentes, repository extension com índices
+- [x] **Phase 38: Estados e Rascunho Server-Side** — Ciclo de vida draft→finalized→signed→delivered, auto-save server-side de rascunhos, listagem cronológica com badges de estado, transições seguras via Server Actions (completed 2026-04-25)
+- [ ] **Phase 39: Editor Unificado e Preview A4** — Composer contextual (livre vs estruturado), visualização em layout A4 simulado, PDF universal para todos os tipos finalizados, preview embutido sem download
+- [ ] **Phase 40: Integração com Atendimentos** — Ligação opcional appointment-document, criação de documento a partir de atendimento, pre-fill contextual com dados da sessão, fluxo sessão→nota→documento
+- [ ] **Phase 41: Dashboard e Navegação** — Página `/documentos` com visão global, filtros por tipo/data/paciente/estado, breadcrumbs hierárquicos, tabs no perfil do paciente com deep-linking
+- [ ] **Phase 42: Polish e Cleanup** — Remover código legado de documentos, garantir zero regressão em 419+ testes, auditoria de segurança, documentação do novo fluxo
 
 ## Phase Details
 
@@ -225,78 +225,85 @@ Plans:
   5. Todos os 407 testes existentes continuam passando
 **Plans**: TBD
 
-### Phase 37: Foundation & Security
-**Goal**: Data layer and security patterns ready for document workflow features
+### Phase 37: Foundation & Migration
+**Goal**: Data layer e domain model preparados para o ciclo de vida completo de documentos, com migração 100% segura de dados existentes
 **Depends on**: Phase 36
-**Requirements**: DASH-06, TIME-06, FLOW-04
+**Requirements**: MIGR-01, MIGR-02, MIGR-03, MIGR-04, MIGR-05
 **Success Criteria** (what must be TRUE):
-  1. DocumentRepository.listActiveByWorkspace exists with workspace scoping and soft-delete filtering
-  2. New composite database index on PracticeDocument supports workspace-level queries
-  3. All new list queries explicitly exclude importantObservations (verified by tests)
-  4. Quick actions in Server Actions validate workspace + role and use repository pattern (no direct Prisma calls)
+   1. Schema possui `status`, `appointmentId`, `signedAt`, `signedByAccountId`, `deliveredAt`, `deliveredTo`, `deliveredVia` — todos nullable com defaults seguros
+   2. Migration Prisma mapeia documentos existentes: `archivedAt != null` → `status='archived'`; demais → `status='finalized'`
+   3. Índices compostos novos: `[workspaceId, patientId, status]`, `[workspaceId, patientId, createdAt]`, `[appointmentId]`
+   4. Domain model inclui `DocumentStatus` enum, funções de transição puras (`finalizeDocument`, `signDocument`, `deliverDocument`), guards imutáveis
+   5. Todos os documentos existentes continuam acessíveis e funcionais sem intervenção do usuário — zero downtime
+   6. Repository extended com `listByStatus`, `listDraftsByPatient`, `findByAppointmentId`
 **Plans**: TBD
 
-### Phase 38: Document Dashboard & Navigation
-**Goal**: Users can navigate and view all workspace documents from a central dashboard
+### Phase 38: Estados e Rascunho Server-Side
+**Goal**: Documentos têm ciclo de vida claro (draft→finalized→signed→delivered) com auto-save server-side e listagem inteligente
 **Depends on**: Phase 37
-**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04, DASH-05
+**Requirements**: STAT-01, STAT-02, STAT-03, STAT-04, STAT-05, STAT-06
 **Success Criteria** (what must be TRUE):
-  1. User can access `/documentos` and see all documents from their workspace
-  2. User can filter documents by type, date range, and patient
-  3. Documents are visually grouped by type with count badges
-  4. Breadcrumbs show hierarchical path in all document flows (e.g., Pacientes > Fulano > Documentos > Novo > Laudo)
-  5. Tabs in patient profile preserve active tab in URL for deep-linking and refresh
+   1. Documento pode ser criado como `draft` e persistir no servidor via auto-save debounce
+   2. Transições `finalize`, `sign`, `deliver` são Server Actions validadas com workspace + role
+   3. Listagem de documentos é cronológica com badges de estado visuais (Rascunho, Pendente, Assinado, Entregue, Arquivado)
+   4. Filtros rápidos: "Mostrar rascunhos", "Mostrar pendentes de assinatura", "Mostrar assinados"
+   5. Documento `signed` tem conteúdo imutável; `delivered` registra data/destino/método
+   6. Rascunhos de `session_record` são privados e nunca aparecem em exportações ou listagens globais
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 39: Clinical Timeline
-**Goal**: Users can view patient appointment history in a scannable, performant timeline
+### Phase 39: Editor Unificado e Preview A4
+**Goal**: Experiência de escrita e visualização de documentos é premium — editor contextual, preview como documento real, PDF universal
 **Depends on**: Phase 37
-**Requirements**: TIME-01, TIME-02, TIME-03, TIME-04, TIME-05
+**Requirements**: EDIT-01, EDIT-02, EDIT-03, EDIT-04, EDIT-05, EDIT-06
 **Success Criteria** (what must be TRUE):
-  1. Timeline displays appointments with vertical CSS connector line
-  2. Each card shows date, status, and note presence badge only (no sensitive content)
-  3. Communication and additional details accessible via expandable drawer
-  4. Appointments grouped by month or quarter with period headers
-  5. Timeline loads history progressively via cursor pagination (not all at once)
+   1. `DocumentEditor` único com modo `free` (rich text completo para session_record) e modo `structured` (seções guiadas para documentos formais)
+   2. Visualização de documento renderiza em layout A4 simulado na tela — tipografia, margens, cabeçalho com dados do profissional/paciente
+   3. Todo documento `finalized` ou `signed` pode gerar PDF; preview PDF embutido em modal sem precisar baixar
+   4. Assinatura digital é ritual de finalização, não gate no meio da criação
+   5. `@react-pdf/renderer` renderiza rich text convertendo HTML para nodes do react-pdf
+   6. Templates visuais por tipo (declaração, laudo, recibo, registro privado) com substituição segura de variáveis
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 40: Note Editor Enhancement
-**Goal**: Users can compose clinical notes efficiently with templates and secure draft storage
+### Phase 40: Integração com Atendimentos
+**Goal**: Documentos nascem do contexto clínico correto — ligados a atendimentos, com pre-fill preciso e fluxo contínuo
 **Depends on**: Phase 37
-**Requirements**: NOTE-01, NOTE-02, NOTE-03, NOTE-04, NOTE-05
+**Requirements**: APPT-01, APPT-02, APPT-03, APPT-04, APPT-05
 **Success Criteria** (what must be TRUE):
-  1. User can select clinical template (SOAP, BIRP, Livre) that injects structure into editor
-  2. User can enter focus mode that collapses sidebar and hides optional fields
-  3. Auto-save indicator shows clear status with timestamp ("Salvo localmente às 14:32" / "Salvo no servidor")
-  4. Draft notes in localStorage are encrypted via Web Crypto API before persisting
-  5. Templates use PsiVault clinical vocabulary (no wellness/coach jargon)
+   1. Documento pode ter `appointmentId` opcional; quando preenchido, exibe contexto da sessão na visualização
+   2. Criar documento a partir da página de atendimento preenche automaticamente data, hora, tipo de atendimento
+   3. Declaração de comparecimento nasce diretamente de um atendimento específico
+   4. Relatório de acompanhamento preenche com notas clínicas do período correto (últimas N sessões), não todas as notas do paciente
+   5. Fluxo sessão→nota→documento preserva contexto e parâmetro `from` para navegação de volta
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 41: Document Composer & PDF Preview
-**Goal**: Users can preview documents as PDF and compose with visual templates
-**Depends on**: Phase 37
-**Requirements**: DOCM-01, DOCM-02, DOCM-03, DOCM-04
+### Phase 41: Dashboard e Navegação
+**Goal**: Usuários navegam e visualizam todos os documentos do workspace de forma centralizada, com hierarquia clara
+**Depends on**: Phase 38, Phase 39
+**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, DASH-06
 **Success Criteria** (what must be TRUE):
-  1. User can open PDF preview modal before saving document
-  2. Document composer offers visual templates per type (declaração, laudo, recibo, registro privado)
-  3. PDF preview component is lazy-loaded and doesn't impact initial route bundle
-  4. Templates safely substitute patient variables (name, date) into document content
+   1. Página `/documentos` acessível com todos os documentos do workspace, ordenados cronologicamente
+   2. Filtros por tipo, intervalo de datas, paciente e estado do documento
+   3. Breadcrumbs hierárquicos em todos os fluxos (ex: Pacientes > Fulano > Documentos > Novo > Laudo)
+   4. Tabs no perfil do paciente preservam estado ativo na URL para deep-linking e refresh seguro
+   5. Documentos agrupados visualmente por tipo com badges de contagem
+   6. Nenhuma listagem inclui campos sensíveis (`importantObservations`)
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 42: Integrated Session→Note Flow
-**Goal**: Users can seamlessly create notes from completed appointments without context loss
+### Phase 42: Polish e Cleanup
+**Goal**: Código legado de documentos é removido, app estável, zero regressão, documentação atualizada
 **Depends on**: Phase 38, Phase 39, Phase 40, Phase 41
-**Requirements**: FLOW-01, FLOW-02, FLOW-03
+**Requirements**: CLEAN-01, CLEAN-02, CLEAN-03, CLEAN-04
 **Success Criteria** (what must be TRUE):
-  1. After marking appointment as COMPLETED, user sees "Criar nota" quick action that redirects to note editor
-  2. User can create new document directly from patient profile via quick action button
-  3. Navigation preserves `from` parameter so back button returns to originating page intuitively
+   1. Código do fluxo antigo de documentos (auto-save localStorage, textarea para documentos formais, visualização em `<pre>`) é removido
+   2. Todos os 419+ testes existentes continuam passando; novos testes cobrem transições de estado e migração
+   3. Documentos existentes de usuários reais permanecem intactos e acessíveis
+   4. Audit trail cobre todas as transições de estado (finalize, sign, deliver, archive)
+   5. CLAUDE.md atualizado com padrões do novo fluxo de documentos
 **Plans**: TBD
-**UI hint**: yes
 
 ## Progress Table
 
@@ -316,12 +323,12 @@ Plans:
 | 34. Feedback de Ação e Loading | v1.5 | 4/4 | Planned | — |
 | 35. Listas e Transições de Página | v1.5 | 5/5 | Complete    | 2026-04-24 |
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
-| 37. Foundation & Security | v1.6 | 0/TBD | Not started | — |
-| 38. Document Dashboard & Navigation | v1.6 | 0/TBD | Not started | — |
-| 39. Clinical Timeline | v1.6 | 0/TBD | Not started | — |
-| 40. Note Editor Enhancement | v1.6 | 0/TBD | Not started | — |
-| 41. Document Composer & PDF Preview | v1.6 | 0/TBD | Not started | — |
-| 42. Integrated Session→Note Flow | v1.6 | 0/TBD | Not started | — |
+| 37. Foundation & Migration | v1.6 | 5/5 | Complete | 2026-04-25 |
+| 38. Estados e Rascunho Server-Side | v1.6 | 1/1 | Complete    | 2026-04-25 |
+| 39. Editor Unificado e Preview A4 | v1.6 | 0/TBD | Not started | — |
+| 40. Integração com Atendimentos | v1.6 | 0/TBD | Not started | — |
+| 41. Dashboard e Navegação | v1.6 | 0/TBD | Not started | — |
+| 42. Polish e Cleanup | v1.6 | 0/TBD | Not started | — |
 
 ---
 *Milestone v1.4: Performance Profunda — roadmap created: 2026-04-23*
