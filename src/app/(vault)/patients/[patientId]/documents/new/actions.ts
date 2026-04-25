@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createDraftDocument } from "../../../../../../lib/documents/model";
+import { createDraftDocument, finalizeDocument, updatePracticeDocument } from "../../../../../../lib/documents/model";
 import { getDocumentRepository } from "../../../../../../lib/documents/store";
 import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
 import { getAuditRepository } from "../../../../../../lib/audit/store";
@@ -58,6 +58,7 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
   const patientId = String(formData.get("patientId") ?? "");
   const rawType = String(formData.get("documentType") ?? "");
   const rawContent = String(formData.get("content") ?? "");
+  const draftId = String(formData.get("draftId") ?? "");
 
   let shouldRedirect = false;
 
@@ -73,30 +74,43 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
       throw new Error("Document content is required");
     }
 
-    // Get professional name for provenance snapshot
-    const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
-
-    const now = new Date();
-    const doc = createDraftDocument(
-      {
-        workspaceId: workspaceId,
-        patientId,
-        type,
-        content,
-        createdByAccountId: accountId,
-        createdByName: profile.fullName ?? "",
-      },
-      { now, createId: generateId },
-    );
-
     const repo = getDocumentRepository();
+    const now = new Date();
+
+    let doc;
+    if (draftId) {
+      // Finalize existing draft
+      const existing = await repo.findById(draftId, workspaceId);
+      if (!existing || existing.patientId !== patientId || existing.status !== "draft") {
+        throw new Error("Draft not found or invalid");
+      }
+      // Update content first (in case it changed since last auto-save)
+      const updated = updatePracticeDocument(existing, { content }, { now });
+      doc = finalizeDocument(updated, { now });
+    } else {
+      // Create and immediately finalize (no auto-save used)
+      const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
+      doc = createDraftDocument(
+        {
+          workspaceId: workspaceId,
+          patientId,
+          type,
+          content,
+          createdByAccountId: accountId,
+          createdByName: profile.fullName ?? "",
+        },
+        { now, createId: generateId },
+      );
+      doc = finalizeDocument(doc, { now });
+    }
+
     await repo.save(doc);
 
     // Fire-and-forget audit (SECU-05: metadata contains only documentType)
     const auditRepo = getAuditRepository();
     const auditEvent = createDocumentAuditEvent(
       {
-        type: "document.draft_saved",
+        type: "document.finalized",
         document: doc,
         actor: { accountId: accountId, workspaceId: workspaceId },
       },

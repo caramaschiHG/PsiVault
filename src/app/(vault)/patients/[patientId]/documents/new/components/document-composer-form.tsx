@@ -5,16 +5,17 @@
  *
  * Improvements:
  * - ALL document types use RichTextEditor (consistent experience)
- * - Visible auto-save indicator
+ * - Server-side auto-save (no localStorage)
  * - Word count
  * - Cleaner layout
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { DocumentType } from "../../../../../../../lib/documents/model";
 import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { AutoSaveIndicator, useAutoSave } from "@/components/ui/auto-save-indicator";
+import { AutoSaveIndicator } from "@/components/ui/auto-save-indicator";
+import { useDocumentAutoSave } from "@/hooks/use-document-auto-save";
 
 interface DocumentComposerFormProps {
   defaultContent: string;
@@ -31,14 +32,14 @@ export function DocumentComposerForm({
 
   const [contentValue, setContentValue] = useState(defaultContent);
   const [wordCount, setWordCount] = useState(0);
-  const { status, lastSaved, markDirty } = useAutoSave(
-    `doc-draft-${patientId}-${documentType}`,
+  const { status, lastSaved, isDirty, markDirty, documentId: autoSaveDocId } = useDocumentAutoSave(
     contentValue,
-    2000,
+    { patientId, documentType, debounceMs: 3000 },
   );
 
+  const draftId = autoSaveDocId ?? "";
+
   // Warn on browser close
-  const isDirty = status !== "idle";
   useEffect(() => {
     if (!isDirty) return;
     const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
@@ -47,13 +48,14 @@ export function DocumentComposerForm({
   }, [isDirty]);
 
   function handleSubmitStart() {
-    markDirty(); // Reset indicator
+    // markDirty is no-op here since we're submitting
   }
 
   return (
     <form action={createDocumentAction} onSubmit={handleSubmitStart} style={formStyle}>
       <input type="hidden" name="patientId" value={patientId} />
       <input type="hidden" name="documentType" value={documentType} />
+      <input type="hidden" name="draftId" value={draftId} />
 
       {/* Hidden field with content for form submission */}
       <input type="hidden" name="content" value={contentValue} />
