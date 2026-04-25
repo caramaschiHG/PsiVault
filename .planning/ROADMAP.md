@@ -263,8 +263,13 @@ Plans:
    4. Assinatura digital é ritual de finalização, não gate no meio da criação
    5. `@react-pdf/renderer` renderiza rich text convertendo HTML para nodes do react-pdf
    6. Templates visuais por tipo (declaração, laudo, recibo, registro privado) com substituição segura de variáveis
-**Plans**: TBD
+**Plans**: 3 plans in 2 waves
 **UI hint**: yes
+
+Plans:
+- [ ] 39-01-PLAN.md — PDF Rich Text Foundation: custom HTML→react-pdf mapper, universal PDF generation, route updates
+- [ ] 39-02-PLAN.md — A4 Document View: paper layout component, view page refactor, responsive scaling
+- [ ] 39-03-PLAN.md — Preview Modal, Signature Ritual & Structured Editor: lazy-loaded modal, sign action gate, structured templates
 
 ### Phase 40: Integração com Atendimentos
 **Goal**: Documentos nascem do contexto clínico correto — ligados a atendimentos, com pre-fill preciso e fluxo contínuo
