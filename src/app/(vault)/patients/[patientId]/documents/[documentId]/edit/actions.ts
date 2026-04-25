@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { updatePracticeDocument } from "../../../../../../../lib/documents/model";
+import { updatePracticeDocument, canEditDocument } from "../../../../../../../lib/documents/model";
 import { getDocumentRepository } from "../../../../../../../lib/documents/store";
 import { createDocumentAuditEvent } from "../../../../../../../lib/documents/audit";
 import { getAuditRepository } from "../../../../../../../lib/audit/store";
@@ -29,7 +29,7 @@ export async function updateDocumentAction(formData: FormData): Promise<void> {
   try {
     const repo = getDocumentRepository();
     const doc = await repo.findById(documentId, workspaceId);
-    if (!doc || doc.patientId !== patientId || doc.archivedAt !== null) {
+    if (!doc || doc.patientId !== patientId || !canEditDocument(doc)) {
       guardRedirect = true;
     } else {
       const content = normalizeDocumentContent(doc.type, rawContent);

@@ -1,9 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createPracticeDocument } from "../../../../../../lib/documents/model";
+import { createDraftDocument } from "../../../../../../lib/documents/model";
 import { getDocumentRepository } from "../../../../../../lib/documents/store";
-import { getPatientRepository } from "../../../../../../lib/patients/store";
 import { createDocumentAuditEvent } from "../../../../../../lib/documents/audit";
 import { getAuditRepository } from "../../../../../../lib/audit/store";
 import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
@@ -78,7 +77,7 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
     const profile = await getPracticeProfileSnapshot(accountId, workspaceId);
 
     const now = new Date();
-    const doc = createPracticeDocument(
+    const doc = createDraftDocument(
       {
         workspaceId: workspaceId,
         patientId,
@@ -97,7 +96,7 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
     const auditRepo = getAuditRepository();
     const auditEvent = createDocumentAuditEvent(
       {
-        type: "document.created",
+        type: "document.draft_saved",
         document: doc,
         actor: { accountId: accountId, workspaceId: workspaceId },
       },
