@@ -10,6 +10,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPatientRepository } from "@/lib/patients/store";
 import { getDocumentRepository } from "@/lib/documents/store";
+import { getAppointmentRepository } from "@/lib/appointments/store";
 import { getPracticeProfileSnapshot } from "@/lib/setup/profile";
 import { createClient } from "@/lib/supabase/server";
 import { DocumentPaperView } from "../components/document-paper-view";
@@ -18,6 +19,7 @@ import { DocumentActions } from "./components/document-actions";
 import { DOCUMENT_TYPE_LABELS, isPrivateDocumentType } from "@/lib/documents/presenter";
 import { resolveSession } from "@/lib/supabase/session";
 import { richTextHtmlToPlainText } from "@/lib/documents/rich-text";
+import type { Appointment } from "@/lib/appointments/model";
 
 interface DocumentViewPageProps {
   params: Promise<{ patientId: string; documentId: string }>;
@@ -38,6 +40,12 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
 
   // Cross-patient guard (SECU-05)
   if (doc.patientId !== patient.id) notFound();
+
+  let appointment: Appointment | null = null;
+  if (doc.appointmentId) {
+    const apptRepo = getAppointmentRepository();
+    appointment = await apptRepo.findById(doc.appointmentId, workspaceId);
+  }
 
   const typeLabel = DOCUMENT_TYPE_LABELS[doc.type];
   const dataUri = `data:text/plain;charset=utf-8,${encodeURIComponent(
@@ -71,6 +79,26 @@ export default async function DocumentViewPage({ params }: DocumentViewPageProps
         <span style={navSepStyle}>›</span>
         <span style={navCurrentStyle}>{typeLabel}</span>
       </nav>
+
+      {/* Appointment meta-info */}
+      {appointment && (
+        <div style={metaStyle}>
+          <span style={metaLabelStyle}>Atendimento de{" "}</span>
+          <span style={metaValueStyle}>
+            {new Intl.DateTimeFormat("pt-BR", {
+              day: "2-digit", month: "2-digit", year: "numeric",
+              hour: "2-digit", minute: "2-digit", timeZone: "UTC",
+            }).format(appointment.startsAt)}
+            {" · "}
+            {appointment.careMode === "IN_PERSON" ? "Presencial" : "Online"}
+          </span>
+        </div>
+      )}
+      {doc.appointmentId && !appointment && (
+        <div style={metaStyle}>
+          <span style={metaRemovedStyle}>Atendimento removido</span>
+        </div>
+      )}
 
       {/* A4 Paper View */}
       <DocumentPaperScaler>
@@ -136,3 +164,27 @@ const navCurrentStyle = {
   color: "var(--color-text-3)",
   fontWeight: 500,
 } satisfies React.CSSProperties;
+
+const metaStyle: React.CSSProperties = {
+  padding: "0.5rem 0.75rem",
+  background: "rgba(248, 246, 243, 0.6)",
+  borderRadius: "var(--radius-md)",
+  border: "1px solid rgba(146, 64, 14, 0.08)",
+  fontSize: "0.78rem",
+};
+
+const metaLabelStyle: React.CSSProperties = {
+  color: "var(--color-text-3)",
+  fontWeight: 500,
+};
+
+const metaValueStyle: React.CSSProperties = {
+  color: "var(--color-text-2)",
+  fontWeight: 600,
+};
+
+const metaRemovedStyle: React.CSSProperties = {
+  color: "var(--color-text-4)",
+  fontWeight: 500,
+  fontStyle: "italic",
+};
