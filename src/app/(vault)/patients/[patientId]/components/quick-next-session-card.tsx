@@ -92,8 +92,8 @@ function DefaultPreviewItem({ label, value }: { label: string; value: string }) 
 const cardStyle = {
   padding: "1.35rem 1.5rem",
   borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 247, 237, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.18)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.85rem",
 } satisfies React.CSSProperties;

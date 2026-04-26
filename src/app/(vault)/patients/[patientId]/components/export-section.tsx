@@ -137,8 +137,8 @@ export function ExportSection({ patientId, patientName }: ExportSectionProps) {
 const sectionStyle = {
   padding: "1.35rem 1.5rem",
   borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 247, 237, 0.85)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.6rem",
 } satisfies React.CSSProperties;
@@ -168,7 +168,7 @@ const buttonStyle = {
   justifySelf: "start",
   padding: "0.5rem 1.1rem",
   borderRadius: "var(--radius-sm)",
-  border: "1px solid rgba(146, 64, 14, 0.3)",
+  border: "1px solid var(--color-border-med)",
   background: "transparent",
   color: "var(--color-accent)",
   fontWeight: 600,
@@ -217,7 +217,7 @@ const primaryButtonStyle = {
   borderRadius: "var(--radius-sm)",
   border: "none",
   background: "var(--color-accent)",
-  color: "#fff",
+  color: "#fff7ed",
   fontWeight: 600,
   fontSize: "0.875rem",
   cursor: "pointer",

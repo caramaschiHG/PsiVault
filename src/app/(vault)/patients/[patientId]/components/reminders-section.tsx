@@ -146,8 +146,8 @@ export function RemindersSection({
 const sectionStyle = {
   padding: "1.35rem 1.5rem",
   borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 252, 247, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.75rem",
 } satisfies React.CSSProperties;
@@ -193,8 +193,8 @@ const reminderCardStyle = {
   gap: "0.75rem",
   padding: "0.75rem 1rem",
   borderRadius: "var(--radius-md)",
-  background: "rgba(255, 247, 237, 0.7)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const reminderInfoStyle = {
@@ -216,7 +216,7 @@ const reminderDueDateStyle = {
 
 const newReminderFormContainerStyle = {
   paddingTop: "0.75rem",
-  borderTop: "1px solid rgba(146, 64, 14, 0.08)",
+  borderTop: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.5rem",
 } satisfies React.CSSProperties;
@@ -243,21 +243,21 @@ const titleInputStyle = {
   padding: "0.4rem 0.6rem",
   fontSize: "0.88rem",
   borderRadius: "var(--radius-sm)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "#fff",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-0)",
 } satisfies React.CSSProperties;
 
 const dateInputStyle = {
   padding: "0.4rem 0.6rem",
   fontSize: "0.88rem",
   borderRadius: "var(--radius-sm)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "#fff",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-0)",
 } satisfies React.CSSProperties;
 
 const completedSectionStyle = {
   paddingTop: "0.5rem",
-  borderTop: "1px solid rgba(146, 64, 14, 0.08)",
+  borderTop: "1px solid var(--color-border)",
   display: "grid",
   gap: "0.5rem",
 } satisfies React.CSSProperties;
@@ -277,8 +277,8 @@ const completedCardStyle = {
   gap: "0.75rem",
   padding: "0.6rem 0.875rem",
   borderRadius: "var(--radius-sm)",
-  background: "rgba(245, 245, 244, 0.7)",
-  border: "1px solid rgba(120, 113, 108, 0.15)",
+  background: "var(--color-surface-2)",
+  border: "1px solid var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const completedTitleStyle = {
@@ -286,7 +286,7 @@ const completedTitleStyle = {
   color: "var(--color-text-3)",
   flex: 1,
   textDecoration: "line-through",
-  textDecorationColor: "rgba(120, 113, 108, 0.4)",
+  textDecorationColor: "var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const completedAtStyle = {

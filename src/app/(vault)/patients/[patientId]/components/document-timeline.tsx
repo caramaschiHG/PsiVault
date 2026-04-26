@@ -157,7 +157,7 @@ export function DocumentTimeline({ documents, patientId, patientName, appointmen
               cursor: "pointer",
               ...(filter === opt.value
                 ? { background: "var(--color-accent)", color: "var(--color-surface-0)", borderColor: "var(--color-accent)" }
-                : { background: "var(--color-surface-0)", color: "var(--color-text-2)", borderColor: "rgba(146,64,14,0.2)" }
+                : { background: "var(--color-surface-0)", color: "var(--color-text-2)", borderColor: "var(--color-border-med)" }
               ),
             }}
           >
@@ -181,7 +181,7 @@ export function DocumentTimeline({ documents, patientId, patientName, appointmen
                 style={{
                   display: "grid", gap: "0.5rem",
                   padding: "0.85rem 1rem", borderRadius: "var(--radius-md)",
-                  background: "rgba(255,252,247,0.95)", border: "1px solid rgba(146,64,14,0.1)",
+                  background: "var(--color-surface-1)", border: "1px solid var(--color-border)",
                 }}
               >
                 {/* Header: type + status + date */}
@@ -193,7 +193,7 @@ export function DocumentTimeline({ documents, patientId, patientName, appointmen
                     {isPrivate && (
                       <span style={{
                         display: "inline-block", padding: "0.08rem 0.4rem", borderRadius: "var(--radius-pill)",
-                        background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)", fontSize: "0.68rem",
+                        background: "var(--color-accent-light)", color: "var(--color-warning-text)", fontSize: "0.68rem",
                         fontWeight: 600, textTransform: "uppercase",
                       }}>Privado</span>
                     )}
@@ -236,7 +236,7 @@ const primaryActionStyle: React.CSSProperties = {
 
 const secondaryActionStyle: React.CSSProperties = {
   padding: "0.25rem 0.6rem", borderRadius: "var(--radius-sm)",
-  background: "rgba(255,247,237,0.8)", color: "var(--color-accent)",
+  background: "var(--color-surface-2)", color: "var(--color-accent)",
   fontSize: "0.78rem", fontWeight: 500, textDecoration: "none",
-  border: "1px solid rgba(146,64,14,0.2)",
+  border: "1px solid var(--color-border-med)",
 };

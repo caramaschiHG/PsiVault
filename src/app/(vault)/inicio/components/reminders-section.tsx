@@ -110,7 +110,7 @@ const emptyStateStyle = {
   gap: "0.75rem",
   padding: "1rem",
   borderRadius: "var(--radius-md)",
-  background: "rgba(245, 245, 244, 0.5)",
+  background: "var(--color-surface-2)",
 } satisfies React.CSSProperties;
 
 const emptyStateTextStyle = {
@@ -135,7 +135,7 @@ const reminderCardStyle = {
   gap: "0.75rem",
   padding: "0.75rem 1rem",
   borderRadius: "var(--radius-md)",
-  background: "rgba(255, 247, 237, 0.6)",
+  background: "var(--color-surface-0)",
   border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 

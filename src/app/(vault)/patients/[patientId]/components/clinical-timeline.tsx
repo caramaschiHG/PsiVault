@@ -69,11 +69,11 @@ function groupByMonth(entries: TimelineEntry[]): [string, TimelineEntry[]][] {
 
 function StatusBadge({ status }: { status: TimelineEntry["status"] }) {
   const config = {
-    COMPLETED: { label: "Concluída", bg: "rgba(245,235,220,0.9)", color: "var(--color-warning-text)" },
-    SCHEDULED: { label: "Agendada", bg: "rgba(240,253,244,0.9)", color: "var(--color-success-text)" },
-    CONFIRMED: { label: "Confirmada", bg: "rgba(240,253,244,0.9)", color: "var(--color-success-text)" },
-    CANCELED: { label: "Cancelada", bg: "rgba(241,245,249,0.9)", color: "var(--color-slate)" },
-    NO_SHOW: { label: "Não compareceu", bg: "rgba(255,241,242,0.9)", color: "var(--color-rose)" },
+    COMPLETED: { label: "Concluída", bg: "var(--status-completed-bg)", color: "var(--color-accent)" },
+    SCHEDULED: { label: "Agendada", bg: "var(--status-scheduled-bg)", color: "var(--color-accent)" },
+    CONFIRMED: { label: "Confirmada", bg: "var(--status-confirmed-bg)", color: "var(--color-success-text)" },
+    CANCELED: { label: "Cancelada", bg: "var(--status-canceled-bg)", color: "var(--color-text-3)" },
+    NO_SHOW: { label: "Não compareceu", bg: "var(--status-no-show-bg)", color: "var(--color-error-text)" },
   }[status];
 
   return (
@@ -178,7 +178,7 @@ function CompletedEntryCard({ entry, patientId }: { entry: TimelineEntry; patien
 
 function ScheduledEntryCard({ entry, patientName, patientPhone }: { entry: TimelineEntry; patientName: string; patientPhone: string | null }) {
   return (
-    <div style={{ ...entryCardStyle, borderColor: "rgba(22,101,52,0.2)", background: "rgba(240,253,244,0.6)" }}>
+    <div style={{ ...entryCardStyle, borderColor: "var(--color-success-border)", background: "var(--color-success-bg)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.4rem" }}>
         <span style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--color-text-1)" }}>{formatDate(entry.startsAt)}</span>
         <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
@@ -195,7 +195,7 @@ function ScheduledEntryCard({ entry, patientName, patientPhone }: { entry: Timel
 
 function MutedEntryCard({ entry }: { entry: TimelineEntry }) {
   return (
-    <div style={{ ...entryCardStyle, opacity: 0.6, background: "rgba(248,246,243,0.6)" }}>
+    <div style={{ ...entryCardStyle, opacity: 0.6, background: "var(--color-surface-2)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.4rem" }}>
         <span style={{ fontSize: "0.85rem", color: "var(--color-text-3)" }}>{formatDate(entry.startsAt)}</span>
         <StatusBadge status={entry.status} />
@@ -290,7 +290,7 @@ export function ClinicalTimeline({ patientId, upcoming, completed, dismissed, pa
 
           {/* Dismissed */}
           {dismissed.length > 0 && (
-            <details style={{ borderRadius: "var(--radius-md)", border: "1px solid rgba(146,64,14,0.12)", overflow: "hidden" }}>
+            <details style={{ borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", overflow: "hidden" }}>
               <summary style={{ padding: "0.6rem 1rem", fontSize: "0.82rem", fontWeight: 500, color: "var(--color-text-3)", cursor: "pointer" }}>
                 {dismissedLabel}
               </summary>
@@ -309,8 +309,8 @@ export function ClinicalTimeline({ patientId, upcoming, completed, dismissed, pa
 
 const entryCardStyle: React.CSSProperties = {
   borderRadius: "var(--radius-lg)",
-  background: "rgba(255,252,247,0.95)",
-  border: "1px solid rgba(146,64,14,0.12)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
   padding: "1rem 1.25rem",
   display: "grid",
   gap: "0.25rem",
@@ -328,5 +328,5 @@ const actionLinkPrimaryStyle: React.CSSProperties = {
 const commLinkStyle: React.CSSProperties = {
   fontSize: "0.75rem", color: "var(--color-accent)", textDecoration: "none", fontWeight: 500,
   padding: "0.1rem 0.4rem", borderRadius: "var(--radius-xs)",
-  background: "rgba(255,247,237,0.8)", border: "1px solid rgba(146,64,14,0.15)",
+  background: "var(--color-surface-2)", border: "1px solid var(--color-border-med)",
 };

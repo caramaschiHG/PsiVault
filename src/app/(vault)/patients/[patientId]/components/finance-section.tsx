@@ -18,9 +18,9 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 });
 
 const CHARGE_STATUS_COLORS: Record<ChargeStatus, { background: string; color: string }> = {
-  pago: { background: "rgba(20, 83, 45, 0.1)", color: "#14532d" },
-  pendente: { background: "rgba(120, 53, 15, 0.1)", color: "var(--color-amber-dark)" },
-  atrasado: { background: "rgba(153, 27, 27, 0.1)", color: "var(--color-error-text)" },
+  pago: { background: "var(--charge-paid-bg)", color: "var(--charge-paid-text)" },
+  pendente: { background: "var(--charge-pending-bg)", color: "var(--charge-pending-text)" },
+  atrasado: { background: "var(--charge-overdue-bg)", color: "var(--charge-overdue-text)" },
 };
 
 const CHARGE_STATUS_LABELS: Record<ChargeStatus, string> = {
@@ -178,8 +178,8 @@ const sectionStyle = {
   gap: "0.75rem",
   padding: "1.35rem 1.5rem",
   borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 247, 237, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.16)",
+  background: "var(--color-surface-1)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const headingBlockStyle = {
@@ -217,8 +217,8 @@ const rowStyle = {
   gap: "0.5rem",
   padding: "0.875rem 1.1rem",
   borderRadius: "var(--radius-md)",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const rowInfoStyle = {
@@ -229,7 +229,7 @@ const rowInfoStyle = {
 const sessionLabelStyle = {
   fontWeight: 500,
   fontSize: "0.9rem",
-  color: "var(--color-kbd-text)",
+  color: "var(--color-text-1)",
 } satisfies React.CSSProperties;
 
 const metaRowStyle = {
@@ -275,8 +275,8 @@ const formStyle = {
   marginTop: "0.75rem",
   padding: "0.875rem",
   borderRadius: "var(--radius-sm)",
-  background: "rgba(255, 247, 237, 0.6)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
+  background: "var(--color-surface-2)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const fieldGroupStyle = {
@@ -293,8 +293,8 @@ const labelStyle = {
 const selectStyle = {
   padding: "0.4rem 0.6rem",
   borderRadius: "var(--radius-sm)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "rgba(255, 252, 247, 0.95)",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-0)",
   fontSize: "0.875rem",
   color: "var(--color-kbd-text)",
 } satisfies React.CSSProperties;
@@ -302,8 +302,8 @@ const selectStyle = {
 const inputStyle = {
   padding: "0.4rem 0.6rem",
   borderRadius: "var(--radius-sm)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "rgba(255, 252, 247, 0.95)",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-0)",
   fontSize: "0.875rem",
   color: "var(--color-kbd-text)",
   width: "100%",
@@ -314,8 +314,8 @@ const submitStyle = {
   justifySelf: "start",
   padding: "0.4rem 1rem",
   borderRadius: "var(--radius-pill)",
-  border: "1px solid rgba(146, 64, 14, 0.3)",
-  background: "rgba(255, 247, 237, 0.6)",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-2)",
   color: "var(--color-accent)",
   fontSize: "0.875rem",
   fontWeight: 500,

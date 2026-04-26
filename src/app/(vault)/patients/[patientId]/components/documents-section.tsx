@@ -34,7 +34,7 @@ export function DocumentsSection({ documents, patientId, patientName, appointmen
         <Link href={`/patients/${patientId}/documents/new`} style={{
           fontSize: "0.85rem", fontWeight: 500, color: "var(--color-accent)", textDecoration: "none",
           padding: "0.35rem 0.85rem", borderRadius: "var(--radius-pill)",
-          border: "1px solid rgba(146,64,14,0.3)", background: "rgba(255,247,237,0.6)",
+          border: "1px solid var(--color-border-med)", background: "var(--color-surface-2)",
         }}>
           Novo documento +
         </Link>

@@ -91,7 +91,7 @@ export default async function PatientsPage() {
           height: "3.5rem",
           borderRadius: "50%",
           backgroundColor: "var(--color-accent)",
-          color: "#fff",
+          color: "#fff7ed",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
