@@ -281,8 +281,12 @@ Plans:
    3. Declaração de comparecimento nasce diretamente de um atendimento específico
    4. Relatório de acompanhamento preenche com notas clínicas do período correto (últimas N sessões), não todas as notas do paciente
    5. Fluxo sessão→nota→documento preserva contexto e parâmetro `from` para navegação de volta
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 **UI hint**: yes
+
+Plans:
+- [ ] 40-01-PLAN.md — Appointment Link Core: pre-fill contextual, validação de vínculo, navegação de volta
+- [ ] 40-02-PLAN.md — Display + Quick Actions: badge na timeline, meta-info na view, quick action na agenda
 
 ### Phase 41: Dashboard e Navegação
 **Goal**: Usuários navegam e visualizam todos os documentos do workspace de forma centralizada, com hierarquia clara
@@ -331,7 +335,7 @@ Plans:
 | 37. Foundation & Migration | v1.6 | 5/5 | Complete | 2026-04-25 |
 | 38. Estados e Rascunho Server-Side | v1.6 | 1/1 | Complete    | 2026-04-25 |
 | 39. Editor Unificado e Preview A4 | v1.6 | 3/3 | Complete | 2026-04-25 |
-| 40. Integração com Atendimentos | v1.6 | 0/TBD | Not started | — |
+| 40. Integração com Atendimentos | v1.6 | 0/2 | Planned | — |
 | 41. Dashboard e Navegação | v1.6 | 0/TBD | Not started | — |
 | 42. Polish e Cleanup | v1.6 | 0/TBD | Not started | — |
 
