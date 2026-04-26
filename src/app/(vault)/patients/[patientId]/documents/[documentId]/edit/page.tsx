@@ -15,6 +15,7 @@ import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/present
 import Link from "next/link";
 import { resolveSession } from "../../../../../../../lib/supabase/session";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
 interface DocumentEditPageProps {
   params: Promise<{ patientId: string; documentId: string }>;
@@ -85,9 +86,11 @@ export default async function DocumentEditPage({ params }: DocumentEditPageProps
           />
         )}
         <div style={actionsStyle}>
-          <button type="submit" style={submitButtonStyle}>
-            Salvar alterações
-          </button>
+          <FormSubmitButton
+            label="Salvar alterações"
+            pendingLabel="Salvando..."
+            style={submitButtonStyle}
+          />
           <Link href={`/patients/${patientId}/documents/${documentId}`} style={cancelLinkStyle}>
             Cancelar
           </Link>

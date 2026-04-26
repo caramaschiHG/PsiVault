@@ -3,6 +3,7 @@ import { getPatientRepository } from "../../../../../lib/patients/store";
 import { getAppointmentRepository } from "../../../../../lib/appointments/store";
 import { archivePatientAction } from "../../actions";
 import { resolveSession } from "../../../../../lib/supabase/session";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 
 interface Props {
   params: Promise<{ patientId: string }>;
@@ -56,17 +57,21 @@ export default async function ArchiveConfirmPage({ params }: Props) {
               <form action={archivePatientAction}>
                 <input type="hidden" name="patientId" value={patientId} />
                 <input type="hidden" name="cancelFutureSessions" value="true" />
-                <button type="submit" style={dangerButtonStyle}>
-                  Cancelar todas e arquivar
-                </button>
+                <FormSubmitButton
+                  label="Cancelar todas e arquivar"
+                  pendingLabel="Arquivando..."
+                  style={dangerButtonStyle}
+                />
               </form>
 
               <form action={archivePatientAction}>
                 <input type="hidden" name="patientId" value={patientId} />
                 <input type="hidden" name="cancelFutureSessions" value="false" />
-                <button type="submit" style={secondaryButtonStyle}>
-                  Manter sessões e arquivar
-                </button>
+                <FormSubmitButton
+                  label="Manter sessões e arquivar"
+                  pendingLabel="Arquivando..."
+                  style={secondaryButtonStyle}
+                />
               </form>
             </div>
           </>
@@ -76,9 +81,11 @@ export default async function ArchiveConfirmPage({ params }: Props) {
             <form action={archivePatientAction}>
               <input type="hidden" name="patientId" value={patientId} />
               <input type="hidden" name="cancelFutureSessions" value="false" />
-              <button type="submit" style={dangerButtonStyle}>
-                Arquivar paciente
-              </button>
+              <FormSubmitButton
+                label="Arquivar paciente"
+                pendingLabel="Arquivando..."
+                style={dangerButtonStyle}
+              />
             </form>
           </>
         )}

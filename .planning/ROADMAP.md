@@ -123,7 +123,7 @@ Plans:
 
 - [x] **Phase 32: Motion Tokens & Foundation CSS** — Tokens de duration/easing/stagger, reduced motion fallback, utility classes
 - [x] **Phase 33: Micro-interações em Componentes Base** — Hover/focus/active states, focus rings, input micro-interactions, smooth scroll (completed 2026-04-23)
-- [ ] **Phase 34: Feedback de Ação e Loading** — Toast AnimatePresence, useTransition em botões, skeleton shimmer, spinner
+- [x] **Phase 34: Feedback de Ação e Loading** — Toast AnimatePresence, useTransition em botões, skeleton shimmer, spinner — completed 2026-04-26
 - [x] **Phase 35: Listas e Transições de Página** — Staggered lists, page transition fade, layout animations expand/collapse (completed 2026-04-24)
 - [ ] **Phase 36: Polish, Accessibility & Measurement** — Motion audit, reduced motion test, INP/CLS validation, docs
 

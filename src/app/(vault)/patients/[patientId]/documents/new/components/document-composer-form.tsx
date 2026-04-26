@@ -16,6 +16,7 @@ import type { DocumentType } from "../../../../../../../lib/documents/model";
 import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { AutoSaveIndicator } from "@/components/ui/auto-save-indicator";
+import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { useDocumentAutoSave } from "@/hooks/use-document-auto-save";
 
 interface DocumentComposerFormProps {
@@ -115,7 +116,11 @@ export function DocumentComposerForm({
         >
           Voltar
         </Link>
-        <button type="submit" style={submitButtonStyle}>Salvar documento</button>
+        <FormSubmitButton
+          label="Salvar documento"
+          pendingLabel="Salvando..."
+          style={submitButtonStyle}
+        />
       </div>
     </form>
   );
