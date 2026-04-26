@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4
-milestone_name: Performance Profunda
+milestone: v1.6
+milestone_name: Documentos — Workflow Clínico Impecável
 status: executing
 stopped_at: Plan 40-02 complete, ready for 40-03
 last_updated: "2026-04-26T01:15:00.000Z"
 last_activity: 2026-04-26 -- Plan 40-02 executed (appointment-document integration UI)
 progress:
-  total_phases: 5
-  completed_phases: 0
-  total_plans: 3
-  completed_plans: 2
+  total_phases: 6
+  completed_phases: 4
+  total_plans: 4
+  completed_plans: 3
 ---
 
 # STATE

@@ -29,7 +29,7 @@ Archive: `.planning/milestones/v1.3-ROADMAP.md`
 - [x] **Phase 27: Diagnóstico e Fundação de Dados** — Baseline de bundle, CWV, índices DB e pooling (3/3 plans) — completed 2026-04-23
 - [x] **Phase 28: Streaming e Suspense Granular** — loading.tsx, async sections, React 19 use API, skeletons (4/4 plans) — completed 2026-04-23
 - [x] **Phase 29: Cache Seletivo e Seguro** — unstable_cache, revalidateTag, workspace-scoped keys, revalidatePath audit
-- [ ] **Phase 30: Otimização de Assets e Bundle** — next/dynamic, optimizePackageImports, next/image, next/font, next/script
+- [x] **Phase 30: Otimização de Assets e Bundle** — next/dynamic, optimizePackageImports, next/image, next/font, next/script — completed 2026-04-26
 - [x] **Phase 31: Medição, Observabilidade e Iteração** — Lighthouse CI, RUM, memlab, react-scan, relatório before/after (completed 2026-04-23)
 
 ## Phase Details

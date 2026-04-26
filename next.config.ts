@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       "react-day-picker",
       "@dnd-kit/core",
       "@dnd-kit/utilities",
+      "@react-pdf/renderer",
     ],
   },
 };
