@@ -48,6 +48,10 @@ export interface DocumentPreFillContext {
   amountLabel?: string | null;
   paymentMethod?: string | null;
   patientRecordSummaryEntries?: PatientRecordSummaryEntry[] | null;
+  appointmentDateLabel?: string | null;
+  appointmentTimeLabel?: string | null;
+  appointmentCareModeLabel?: string | null;
+  singleSessionDateLabel?: string | null;
 }
 
 function signatureBlock(professionalName: string, crp: string, todayLabel: string): string {
@@ -55,6 +59,17 @@ function signatureBlock(professionalName: string, crp: string, todayLabel: strin
 }
 
 function buildDeclarationOfAttendance(ctx: DocumentPreFillContext): string {
+  if (ctx.singleSessionDateLabel) {
+    const timePart = ctx.appointmentTimeLabel ? `, ${ctx.appointmentTimeLabel}` : "";
+    return `DECLARAÇÃO DE COMPARECIMENTO
+
+Atendimento de ${ctx.singleSessionDateLabel}${timePart}.
+
+Declaramos que ${ctx.patientFullName} compareceu à consulta de psicologia realizada por ${ctx.professionalName} (${ctx.crp}).
+
+Esta declaração é fornecida para os fins que se fizerem necessários.${signatureBlock(ctx.professionalName, ctx.crp, ctx.todayLabel)}`;
+  }
+
   const sessionLine =
     ctx.sessionCount != null
       ? `Total de ${ctx.sessionCount} sessões`
@@ -160,8 +175,15 @@ Assinatura do(a) profissional: ________________________${signatureBlock(ctx.prof
 }
 
 function buildSessionNote(ctx: DocumentPreFillContext): string {
+  const dateLine = ctx.appointmentDateLabel
+    ? `Data da sessão: ${ctx.appointmentDateLabel}`
+    : `Data da sessão: ${ctx.todayLabel}`;
+  const careModeLine = ctx.appointmentCareModeLabel
+    ? `<br>Modalidade: ${ctx.appointmentCareModeLabel}`
+    : "";
+
   return `<h2>EVOLUÇÃO DE SESSÃO</h2>
-<p>Paciente: ${ctx.patientFullName}<br>Profissional: ${ctx.professionalName} (${ctx.crp})<br>Data da sessão: ${ctx.todayLabel}</p>
+<p>Paciente: ${ctx.patientFullName}<br>Profissional: ${ctx.professionalName} (${ctx.crp})<br>${dateLine}${careModeLine}</p>
 <h2>I. OBJETIVOS DA SESSÃO</h2>
 <p>[A ser preenchido pelo profissional]</p>
 <h2>II. CONTEÚDO E INTERVENÇÕES</h2>
