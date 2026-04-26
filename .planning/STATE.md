@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Performance Profunda
 status: executing
-stopped_at: Milestone v1.6 roadmap created. 25 requirements mapped to 6 phases (37–42). Awaiting approval to begin Phase 37 planning.
-last_updated: "2026-04-25T18:49:45.965Z"
+stopped_at: Phase 40 context gathered
+last_updated: "2026-04-26T00:19:29.076Z"
 last_activity: 2026-04-25
 progress:
   total_phases: 5
@@ -109,6 +109,6 @@ Last activity: 2026-04-25
 
 ## Session Continuity
 
-Last session: 2026-04-25T12:00:00Z
-Stopped at: Milestone v1.6 roadmap created. 25 requirements mapped to 6 phases (37–42). Awaiting approval to begin Phase 37 planning.
-Resume file: N/A (new milestone start)
+Last session: 2026-04-26T00:19:29.067Z
+Stopped at: Phase 40 context gathered
+Resume file: .planning/phases/40-integracao-atendimentos/40-CONTEXT.md
