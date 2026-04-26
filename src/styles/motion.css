@@ -186,6 +186,10 @@
   animation: toastFadeOut var(--duration-300) var(--ease-out) forwards;
 }
 
+.popover-enter {
+  animation: popoverFadeIn 120ms ease forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .motion-fade-in,
   .motion-fade-out,
@@ -217,5 +221,10 @@
 
   .toast-exit {
     opacity: 0 !important;
+  }
+
+  .popover-enter {
+    animation: none !important;
+    opacity: 1 !important;
   }
 }

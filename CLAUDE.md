@@ -62,6 +62,43 @@
 - Usar Context7 para docs atualizadas de Next.js, Prisma, Supabase
 - Usar Serena para navegação semântica do código
 
+## Sistema de Design
+
+- Leia `DESIGN.md` na raiz antes de gerar qualquer UI nova no app interno (`(vault)`).
+- `DESIGN.md` é a fonte de verdade para cores, tipografia, componentes, espaçamento, elevação e movimento do app.
+- Nunca use hex cru — sempre referencie `var(--token)` documentado em `DESIGN.md`.
+
+## Motion & Animation
+
+### Tokens
+- `--duration-100`: 100ms — micro-interações (hover, focus)
+- `--duration-200`: 200ms — entrada de elementos, toasts, modais
+- `--duration-300`: 300ms — expansão/colapso, transições de página
+- `--ease-out`: cubic-bezier(0.16, 1, 0.3, 1) — padrão para entrada
+- `--ease-in-out`: cubic-bezier(0.45, 0, 0.55, 1) — para animações simétricas
+- `--stagger-gap`: 60ms — delay entre itens em listas
+
+### Utility Classes (motion.css)
+- `.motion-fade-in` — fade + translateY(8px→0)
+- `.motion-slide-up` — slide de baixo
+- `.motion-slide-down` — slide de cima
+- `.motion-scale-in` — scale(0.95→1) + fade
+- `.motion-stagger` — aplica stagger gap via custom property `--stagger-index`
+- `.vault-page-transition` — transição de entrada de página (150ms)
+
+### Padrões
+- Animações só quando melhoram orientação ou resposta de interação — nada decorativo.
+- Todas as animações respeitam `prefers-reduced-motion: reduce` (motion.css).
+- Server Components usam classes CSS para animação (zero JS overhead).
+- Client Components usam `enteringIds`/`exitingIds` para feedback de add/remove em listas.
+- Expand/collapse usa `grid-template-rows: 0fr → 1fr` (sem max-height hacks).
+
+### Anti-padrões
+- Não criar novos keyframes sem adicionar a `prefers-reduced-motion`.
+- Não usar `transition: all` — sempre especificar propriedades.
+- Não animar `box-shadow` ou `border` — usar `opacity` ou `transform`.
+- Não exceder 300ms para qualquer animação de UI.
+
 ## Posicionamento Psicanalítico
 
 ### Nome de produto

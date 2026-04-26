@@ -101,6 +101,7 @@ export function QuickCreatePopover({
   return (
     <div
       ref={popoverRef}
+      className="popover-enter"
       style={{
         ...popoverStyle,
         top: popoverTop,
@@ -232,7 +233,6 @@ const popoverStyle = {
   padding: "var(--space-4)",
   zIndex: "var(--z-dropdown)",
   fontSize: "var(--font-size-meta)",
-  animation: "popoverFadeIn 120ms ease forwards",
 } satisfies React.CSSProperties;
 
 const headerStyle = {
