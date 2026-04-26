@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { DocumentType } from "../../../../../../../lib/documents/model";
 import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
@@ -22,10 +23,13 @@ interface DocumentComposerFormProps {
   patientId: string;
   documentType: DocumentType;
   createDocumentAction: (formData: FormData) => Promise<void>;
+  appointmentId: string | null;
+  from: string | null;
 }
 
 export function DocumentComposerForm({
   defaultContent, patientId, documentType, createDocumentAction,
+  appointmentId, from,
 }: DocumentComposerFormProps) {
   const typeLabel = DOCUMENT_TYPE_LABELS[documentType];
   const isSessionRecord = documentType === "session_record";
@@ -56,6 +60,15 @@ export function DocumentComposerForm({
       <input type="hidden" name="patientId" value={patientId} />
       <input type="hidden" name="documentType" value={documentType} />
       <input type="hidden" name="draftId" value={draftId} />
+      <input type="hidden" name="appointmentId" value={appointmentId ?? ""} />
+      <input type="hidden" name="from" value={from ?? ""} />
+
+      {/* Appointment link indicator */}
+      {appointmentId && (
+        <div style={linkIndicatorStyle}>
+          Vinculado ao atendimento
+        </div>
+      )}
 
       {/* Hidden field with content for form submission */}
       <input type="hidden" name="content" value={contentValue} />
@@ -96,6 +109,12 @@ export function DocumentComposerForm({
 
       {/* Submit */}
       <div style={formActionsStyle}>
+        <Link
+          href={from ?? `/patients/${patientId}?tab=documentos`}
+          style={backButtonStyle}
+        >
+          Voltar
+        </Link>
         <button type="submit" style={submitButtonStyle}>Salvar documento</button>
       </div>
     </form>
@@ -111,4 +130,14 @@ const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "ce
 const submitButtonStyle: React.CSSProperties = {
   padding: "0.75rem 1.5rem", borderRadius: "var(--radius-lg)", background: "var(--color-accent)", color: "var(--color-surface-0)",
   border: "none", fontWeight: 700, fontSize: "0.95rem", cursor: "pointer", fontFamily: "inherit",
+};
+
+const backButtonStyle: React.CSSProperties = {
+  padding: "0.75rem 1.5rem", borderRadius: "var(--radius-lg)", background: "var(--color-surface-0)", color: "var(--color-text-2)",
+  border: "1px solid rgba(146, 64, 14, 0.2)", fontWeight: 600, fontSize: "0.95rem", textDecoration: "none",
+  cursor: "pointer", fontFamily: "inherit",
+};
+
+const linkIndicatorStyle: React.CSSProperties = {
+  fontSize: "0.75rem", color: "var(--color-text-3)", fontWeight: 500, padding: "0.25rem 0",
 };

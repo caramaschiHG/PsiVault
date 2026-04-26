@@ -8,6 +8,7 @@ import { getAuditRepository } from "../../../../../../lib/audit/store";
 import { getPracticeProfileSnapshot } from "../../../../../../lib/setup/profile";
 import type { DocumentType } from "../../../../../../lib/documents/model";
 import { resolveSession } from "../../../../../../lib/supabase/session";
+import { getAppointmentRepository } from "../../../../../../lib/appointments/store";
 import {
   isMeaningfulDocumentContent,
   normalizeDocumentContent,
@@ -59,6 +60,8 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
   const rawType = String(formData.get("documentType") ?? "");
   const rawContent = String(formData.get("content") ?? "");
   const draftId = String(formData.get("draftId") ?? "");
+  const rawAppointmentId = nullCoerce(formData.get("appointmentId"));
+  const rawFrom = nullCoerce(formData.get("from"));
 
   let shouldRedirect = false;
 
@@ -72,6 +75,22 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
 
     if (!isMeaningfulDocumentContent(type, content)) {
       throw new Error("Document content is required");
+    }
+
+    // Validate appointment link
+    let appointmentId: string | null = null;
+    if (rawAppointmentId) {
+      const apptRepo = getAppointmentRepository();
+      const appt = await apptRepo.findById(rawAppointmentId, workspaceId);
+      if (!appt || appt.patientId !== patientId) {
+        throw new Error("Atendimento inválido ou não pertence a este paciente");
+      }
+      appointmentId = appt.id;
+    }
+
+    // APPT-03: declaration_of_attendance requires appointment link
+    if (type === "declaration_of_attendance" && !appointmentId) {
+      throw new Error("Declaração de comparecimento deve ser criada a partir de um atendimento específico");
     }
 
     const repo = getDocumentRepository();
@@ -98,6 +117,7 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
           content,
           createdByAccountId: accountId,
           createdByName: profile.fullName ?? "",
+          appointmentId,
         },
         { now, createId: generateId },
       );
@@ -124,5 +144,11 @@ export async function createDocumentAction(formData: FormData): Promise<void> {
     return;
   }
 
-  if (shouldRedirect) redirect(`/patients/${patientId}`);
+  // Safe redirect: validate `from` to prevent open redirect
+  const redirectTarget =
+    rawFrom && rawFrom.startsWith("/") && !rawFrom.startsWith("//") && !/[\r\n]/.test(rawFrom)
+      ? rawFrom
+      : `/patients/${patientId}?tab=documentos`;
+
+  if (shouldRedirect) redirect(redirectTarget);
 }

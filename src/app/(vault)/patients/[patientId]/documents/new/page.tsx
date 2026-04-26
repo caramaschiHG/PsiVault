@@ -24,6 +24,7 @@ import { createDocumentAction } from "./actions";
 import { resolveSession } from "../../../../../../lib/supabase/session";
 import { getClinicalNoteRepository } from "../../../../../../lib/clinical/store";
 import { deriveSessionNumber } from "../../../../../../lib/clinical/model";
+import type { Appointment } from "../../../../../../lib/appointments/model";
 
 const VALID_TYPES = new Set<DocumentType>([
   "declaration_of_attendance",
@@ -91,7 +92,7 @@ const TYPE_METADATA: Array<{
 
 interface DocumentComposerPageProps {
   params: Promise<{ patientId: string }>;
-  searchParams: Promise<{ type?: string }>;
+  searchParams: Promise<{ type?: string; appointmentId?: string; from?: string }>;
 }
 
 export default async function DocumentComposerPage({
@@ -100,13 +101,26 @@ export default async function DocumentComposerPage({
 }: DocumentComposerPageProps) {
   const { accountId, workspaceId } = await resolveSession();
   const { patientId } = await params;
-  const { type: rawType } = await searchParams;
+  const { type: rawType, appointmentId: rawAppointmentId, from: rawFrom } = await searchParams;
+  const appointmentId = rawAppointmentId ?? null;
+  const from = rawFrom ?? null;
 
   // 1. Patient guard (needed for both selection UI and composer)
   const patientRepo = getPatientRepository();
   const patient = await patientRepo.findById(patientId, workspaceId);
   if (!patient) {
     notFound();
+  }
+
+  // 1.5. Appointment lookup (if linked)
+  let appointment: Appointment | null = null;
+  if (appointmentId) {
+    const appointmentRepo = getAppointmentRepository();
+    const appt = await appointmentRepo.findById(appointmentId, workspaceId);
+    if (appt && appt.patientId === patient.id) {
+      appointment = appt;
+    }
+    // If cross-patient or not found, silently ignore (defensive)
   }
 
   // 2. Type validation — if absent/invalid, render selection grid
@@ -183,7 +197,7 @@ export default async function DocumentComposerPage({
 
   const patientRecordSummaryEntries =
     documentType === "patient_record_summary"
-      ? await buildPatientRecordSummaryEntries(patient.id, workspaceId, allAppointments)
+      ? await buildPatientRecordSummaryEntries(patient.id, workspaceId, allAppointments, appointment)
       : null;
 
   const todayLabel = new Intl.DateTimeFormat("pt-BR", {
@@ -201,6 +215,10 @@ export default async function DocumentComposerPage({
     amountLabel: null, // Phase 5 will enrich — priceInCents does not exist yet
     paymentMethod: null,
     patientRecordSummaryEntries,
+    appointmentDateLabel: appointment ? formatDateShort(appointment.startsAt) : null,
+    appointmentTimeLabel: appointment ? formatTime(appointment.startsAt) : null,
+    appointmentCareModeLabel: appointment ? (appointment.careMode === "IN_PERSON" ? "Presencial" : "Online") : null,
+    singleSessionDateLabel: appointment ? formatDateShort(appointment.startsAt) : null,
   };
 
   // 5. Build template content server-side
@@ -248,6 +266,8 @@ export default async function DocumentComposerPage({
         patientId={patient.id}
         documentType={documentType}
         createDocumentAction={createDocumentAction}
+        appointmentId={appointment?.id ?? null}
+        from={from}
       />
     </main>
   );
@@ -257,12 +277,13 @@ async function buildPatientRecordSummaryEntries(
   patientId: string,
   workspaceId: string,
   appointments: Awaited<ReturnType<ReturnType<typeof getAppointmentRepository>["listByPatient"]>>,
+  linkedAppointment: Appointment | null = null,
 ) {
   const clinicalRepo = getClinicalNoteRepository();
   const notes = await clinicalRepo.listByPatient(patientId, workspaceId);
   const appointmentById = new Map(appointments.map((appointment) => [appointment.id, appointment]));
 
-  return notes
+  let entries = notes
     .map((note) => {
       const appointment = appointmentById.get(note.appointmentId);
       if (!appointment) return null;
@@ -281,8 +302,17 @@ async function buildPatientRecordSummaryEntries(
         startsAt: appointment.startsAt,
       };
     })
-    .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+    .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
+
+  // Filter notes up to linked appointment date (APPT-04)
+  if (linkedAppointment) {
+    const cutoff = linkedAppointment.startsAt.getTime();
+    entries = entries.filter((e) => e.startsAt.getTime() <= cutoff);
+  }
+
+  return entries
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
+    .slice(0, 20)
     .map(({ startsAt: _startsAt, ...entry }) => entry);
 }
 
@@ -309,6 +339,14 @@ function formatDateShort(date: Date): string {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
+function formatTime(date: Date): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
     timeZone: "UTC",
   }).format(date);
 }
