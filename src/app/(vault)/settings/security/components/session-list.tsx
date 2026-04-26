@@ -87,8 +87,8 @@ const pillStyle = {
 
 const currentPillStyle = {
   ...pillStyle,
-  background: "rgba(5, 150, 105, 0.1)",
-  color: "var(--color-emerald)",
+  background: "var(--color-success-bg)",
+  color: "var(--color-success-text)",
 } satisfies React.CSSProperties;
 
 const detailStyle = {

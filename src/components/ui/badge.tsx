@@ -34,7 +34,7 @@ const variantStyles: Record<BadgeVariant, CSSProperties> = {
     color: "var(--color-error-text)",
   },
   neutral: {
-    background: "rgba(245, 245, 244, 0.8)",
+    background: "var(--color-surface-3)",
     color: "var(--color-text-3)",
   },
 };

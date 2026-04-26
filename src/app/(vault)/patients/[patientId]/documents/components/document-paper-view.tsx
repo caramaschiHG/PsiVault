@@ -112,13 +112,13 @@ export function DocumentPaperView({
 const paperStyle: React.CSSProperties = {
   width: "210mm",
   minHeight: "297mm",
-  background: "#fff",
-  boxShadow: "0 2px 8px rgba(0,0,0,0.08), 0 0 1px rgba(0,0,0,0.04)",
+  background: "var(--color-surface-0)",
+  boxShadow: "var(--shadow-sm)",
   padding: "25mm 20mm 30mm",
   fontFamily: "Georgia, 'Times New Roman', serif",
   fontSize: "11pt",
   lineHeight: 1.65,
-  color: "var(--color-kbd-text)",
+  color: "var(--color-text-1)",
   position: "relative",
   overflow: "hidden",
 };
@@ -139,18 +139,18 @@ const watermarkBase: React.CSSProperties = {
 
 const draftWatermarkStyle: React.CSSProperties = {
   ...watermarkBase,
-  color: "rgba(146, 64, 14, 0.06)",
+  color: "var(--color-border-med)",
 };
 
 const archivedWatermarkStyle: React.CSSProperties = {
   ...watermarkBase,
-  color: "rgba(120, 113, 108, 0.08)",
+  color: "var(--color-border)",
 };
 
 const headerStyle: React.CSSProperties = {
   marginBottom: "24px",
   paddingBottom: "16px",
-  borderBottom: "1px solid rgba(146, 64, 14, 0.1)",
+  borderBottom: "1px solid var(--color-border)",
 };
 
 const kickerStyle: React.CSSProperties = {
@@ -169,7 +169,7 @@ const paperTitleStyle: React.CSSProperties = {
   fontFamily: "Helvetica, Arial, sans-serif",
   fontWeight: 700,
   marginBottom: "12px",
-  color: "var(--color-kbd-text)",
+  color: "var(--color-text-1)",
 };
 
 const metaGridStyle: React.CSSProperties = {
@@ -192,7 +192,7 @@ const metaLabelStyle: React.CSSProperties = {
 };
 
 const metaValueStyle: React.CSSProperties = {
-  color: "var(--color-kbd-text)",
+  color: "var(--color-text-1)",
   fontSize: "11px",
   fontWeight: 500,
 };
@@ -220,7 +220,7 @@ const richTextStyle: React.CSSProperties = {
 const signatureBlockStyle: React.CSSProperties = {
   marginTop: "40px",
   paddingTop: "16px",
-  borderTop: "1px solid rgba(146, 64, 14, 0.1)",
+  borderTop: "1px solid var(--color-border)",
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-start",

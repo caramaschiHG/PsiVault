@@ -1984,6 +1984,187 @@ html[data-theme="dark"] .skeleton-shimmer {
   background-size: 200% 100%;
 }
 
+/* ─── Auth inputs dark overrides ───────────────────────────────────────────── */
+html[data-theme="dark"] .auth-input,
+html[data-theme="dark"] .auth-otp-digit {
+  background: var(--color-surface-0);
+  border-color: var(--color-border-med);
+  color: var(--color-text-1);
+}
+
+html[data-theme="dark"] .auth-input::placeholder,
+html[data-theme="dark"] .auth-otp-digit::placeholder {
+  color: var(--color-text-4);
+}
+
+html[data-theme="dark"] .auth-form-inner .auth-input {
+  background: var(--color-surface-0);
+}
+
+html[data-theme="dark"] .auth-form-panel {
+  background: #161412;
+}
+
+/* ─── Select arrow dark ────────────────────────────────────────────────────── */
+/* Replaces hardcoded dark arrow with light one when in dark mode */
+html[data-theme="dark"] select.input-field,
+html[data-theme="dark"] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a8a095' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+}
+
+/* ─── Document paper / PDF preview dark ────────────────────────────────────── */
+html[data-theme="dark"] .document-paper,
+html[data-theme="dark"] [class*="document-paper"] {
+  background: var(--color-surface-0);
+  color: var(--color-text-1);
+}
+
+/* ─── Toast dark fine-tuning ───────────────────────────────────────────────── */
+html[data-theme="dark"] .toast-enter,
+html[data-theme="dark"] .toast-exit {
+  background: rgba(28, 25, 23, 0.96);
+  color: #f0ebe2;
+}
+
+/* ─── Bottom nav mobile dark ───────────────────────────────────────────────── */
+html[data-theme="dark"] .vault-bottom-nav {
+  background-color: var(--color-surface-0);
+  border-top-color: var(--color-border);
+}
+
+/* ─── Avatar placeholder dark ──────────────────────────────────────────────── */
+html[data-theme="dark"] .avatar-placeholder {
+  background: var(--color-surface-2);
+  color: var(--color-text-2);
+}
+
+html[data-theme="dark"] .avatar-placeholder:hover {
+  background: var(--color-surface-3);
+}
+
+/* ─── Mini-calendar dark adjustments ───────────────────────────────────────── */
+html[data-theme="dark"] .mini-cal-arrow:hover {
+  background: var(--color-surface-1) !important;
+  color: var(--color-text-1) !important;
+}
+
+html[data-theme="dark"] .mini-cal-day:hover {
+  background: var(--color-surface-1) !important;
+}
+
+/* ─── Month calendar dark ──────────────────────────────────────────────────── */
+html[data-theme="dark"] .month-cal-cell:hover {
+  background: var(--color-surface-1);
+}
+
+/* ─── Side panel dark ──────────────────────────────────────────────────────── */
+html[data-theme="dark"] .side-panel-close {
+  border-color: var(--color-border);
+  color: var(--color-text-2);
+}
+
+html[data-theme="dark"] .side-panel-close:hover {
+  background: var(--color-surface-1);
+  color: var(--color-text-1);
+}
+
+/* ─── Agenda toolbar dark ──────────────────────────────────────────────────── */
+html[data-theme="dark"] .agenda-nav-btn:hover {
+  background: var(--color-surface-1) !important;
+  border-color: var(--color-border) !important;
+}
+
+html[data-theme="dark"] .agenda-view-tab:hover {
+  background: var(--color-surface-0) !important;
+}
+
+html[data-theme="dark"] .agenda-today-btn:hover {
+  color: var(--color-text-1) !important;
+}
+
+/* ─── Tabs dark ────────────────────────────────────────────────────────────── */
+html[data-theme="dark"] .tabs-list {
+  border-bottom-color: var(--color-border);
+}
+
+html[data-theme="dark"] .tab {
+  color: var(--color-text-3);
+}
+
+html[data-theme="dark"] .tab:hover {
+  color: var(--color-text-1);
+}
+
+html[data-theme="dark"] .tab--active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+/* ─── Breadcrumb dark ──────────────────────────────────────────────────────── */
+html[data-theme="dark"] .breadcrumb-link {
+  color: var(--color-text-2);
+}
+
+html[data-theme="dark"] .breadcrumb-link:hover {
+  color: var(--color-accent);
+}
+
+html[data-theme="dark"] .breadcrumb-current {
+  color: var(--color-text-1);
+}
+
+html[data-theme="dark"] .breadcrumb-sep {
+  color: var(--color-text-4);
+}
+
+/* ─── Auth brand panel dark (split layout) ─────────────────────────────────── */
+html[data-theme="dark"] .auth-brand-panel {
+  background: #0c0b0a;
+}
+
+html[data-theme="dark"] .auth-brand-panel::after {
+  background: radial-gradient(ellipse 80% 60% at 30% 80%, rgba(194, 106, 74, 0.1) 0%, transparent 70%);
+}
+
+/* ─── Notification dropdown dark ───────────────────────────────────────────── */
+html[data-theme="dark"] .notif-dropdown {
+  background: var(--color-surface-0);
+  border-color: var(--color-border);
+}
+
+html[data-theme="dark"] .notif-bell:hover {
+  background-color: var(--color-surface-1);
+}
+
+html[data-theme="dark"] .notif-item:hover {
+  background-color: var(--color-surface-1);
+}
+
+html[data-theme="dark"] .notif-item--unread {
+  background-color: rgba(194, 106, 74, 0.06);
+}
+
+/* ─── Quick create popover dark ────────────────────────────────────────────── */
+html[data-theme="dark"] .quick-create-close:hover {
+  background: var(--color-surface-1);
+  color: var(--color-text-1);
+}
+
+/* ─── Keyboard shortcuts modal dark ────────────────────────────────────────── */
+html[data-theme="dark"] .kbd-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ─── Template card dark ───────────────────────────────────────────────────── */
+html[data-theme="dark"] .template-card:hover {
+  border-color: var(--color-border-med);
+}
+
+/* ─── External link dark ───────────────────────────────────────────────────── */
+html[data-theme="dark"] .external-link::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c26a4a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6'/%3E%3Cpolyline points='15 3 21 3 21 9'/%3E%3Cline x1='10' y1='14' x2='21' y2='3'/%3E%3C/svg%3E");
+}
+
 /* Catch-all: all animations and transitions become instant.
    Utility-specific overrides live in motion.css. */
 @media (prefers-reduced-motion: reduce) {

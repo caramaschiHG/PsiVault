@@ -129,7 +129,7 @@ const overlayStyle: React.CSSProperties = {
 const modalStyle: React.CSSProperties = {
   width: "min(900px, 92vw)",
   height: "min(85vh, 800px)",
-  background: "#fff",
+  background: "var(--color-surface-0)",
   borderRadius: "var(--radius-lg)",
   boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
   display: "flex",
@@ -144,7 +144,7 @@ const headerStyle: React.CSSProperties = {
   alignItems: "center",
   justifyContent: "space-between",
   padding: "1rem 1.25rem",
-  borderBottom: "1px solid var(--color-border-light)",
+  borderBottom: "1px solid var(--color-border)",
   flexShrink: 0,
 };
 
@@ -185,7 +185,7 @@ const footerStyle: React.CSSProperties = {
   justifyContent: "flex-end",
   gap: "0.75rem",
   padding: "0.875rem 1.25rem",
-  borderTop: "1px solid var(--color-border-light)",
+  borderTop: "1px solid var(--color-border)",
   flexShrink: 0,
 };
 
@@ -206,7 +206,7 @@ const primaryButtonStyle: React.CSSProperties = {
   borderRadius: "var(--radius-md)",
   border: "none",
   background: "var(--color-accent)",
-  color: "#fff",
+  color: "#fff7ed",
   fontWeight: 600,
   fontSize: "0.875rem",
   textDecoration: "none",

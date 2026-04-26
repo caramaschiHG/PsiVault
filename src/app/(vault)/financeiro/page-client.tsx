@@ -391,7 +391,7 @@ export default function FinanceiroPageClient({
           <form action={handleAddCharge} style={{ display: "grid", gap: "1.25rem" }}>
             <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 600, fontFamily: "var(--font-serif)" }}>Nova Cobrança</h2>
             <div style={{ display: "grid", gap: "0.25rem" }}>
-              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "#444" }}>Paciente</label>
+              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--color-text-2)" }}>Paciente</label>
               <select name="patientId" required defaultValue="" style={inputStyle}>
                 <option value="" disabled>Selecione um paciente</option>
                 {patients.map((p) => (
@@ -400,11 +400,11 @@ export default function FinanceiroPageClient({
               </select>
             </div>
             <div style={{ display: "grid", gap: "0.25rem" }}>
-              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "#444" }}>Data da sessão</label>
+              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--color-text-2)" }}>Data da sessão</label>
               <input type="date" name="date" defaultValue={new Date().toISOString().split("T")[0]} style={inputStyle} />
             </div>
             <div style={{ display: "grid", gap: "0.25rem" }}>
-              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "#444" }}>Valor (R$)</label>
+              <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--color-text-2)" }}>Valor (R$)</label>
               <input type="number" name="amountBrl" placeholder="0.00" required min="0.01" step="0.01" style={inputStyle} />
             </div>
             
@@ -430,21 +430,21 @@ export default function FinanceiroPageClient({
               
               <div style={{ display: "grid", gap: "1rem" }}>
                 <div>
-                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Paciente</p>
-                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", fontWeight: 500, color: "#111" }}>{patientName}</p>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--color-text-3)", textTransform: "uppercase" }}>Paciente</p>
+                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", fontWeight: 500, color: "var(--color-text-1)" }}>{patientName}</p>
                 </div>
                 <div>
-                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Data da sessão</p>
-                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", color: "#111" }}>{ptBRDate.format(c.createdAt)}</p>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--color-text-3)", textTransform: "uppercase" }}>Data da sessão</p>
+                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", color: "var(--color-text-1)" }}>{ptBRDate.format(c.createdAt)}</p>
                 </div>
                 <div>
-                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Valor</p>
-                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", color: "#111" }}>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--color-text-3)", textTransform: "uppercase" }}>Valor</p>
+                  <p style={{ margin: "0.25rem 0 0", fontSize: "1rem", color: "var(--color-text-1)" }}>
                     {c.amountInCents !== null ? currency.format(c.amountInCents / 100) : "—"}
                   </p>
                 </div>
                 <div>
-                  <p style={{ margin: 0, fontSize: "0.75rem", color: "#666", textTransform: "uppercase" }}>Status</p>
+                  <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--color-text-3)", textTransform: "uppercase" }}>Status</p>
                   <span style={{ ...statusBadgeStyle, background: color.bg, color: color.text, display: "inline-block", marginTop: "0.25rem" }}>
                     {color.label}
                   </span>
@@ -454,7 +454,7 @@ export default function FinanceiroPageClient({
               {c.status === "pago" ? (
                 <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
                   <p style={{ margin: "0 0 0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "var(--color-success-text)" }}>Pagamento recebido</p>
-                  <p style={{ margin: "0 0 1rem", fontSize: "0.85rem", color: "#555" }}>
+                  <p style={{ margin: "0 0 1rem", fontSize: "0.85rem", color: "var(--color-text-2)" }}>
                     Forma de pagamento: <span style={{ fontWeight: 500 }}>{PAYMENT_METHOD_LABELS[c.paymentMethod || ""] ?? c.paymentMethod}</span>
                   </p>
                   <Button 
@@ -468,7 +468,7 @@ export default function FinanceiroPageClient({
                 </div>
               ) : (
                 <div style={{ marginTop: "1rem", padding: "1.25rem", background: "var(--color-surface-1)", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)" }}>
-                  <p style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", fontWeight: 600, color: "#111" }}>Registrar Recebimento</p>
+                  <p style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", fontWeight: 600, color: "var(--color-text-1)" }}>Registrar Recebimento</p>
                   <div style={{ display: "grid", gap: "0.5rem" }}>
                     {Object.entries(PAYMENT_METHOD_LABELS).map(([key, label]) => (
                       <button
@@ -479,12 +479,12 @@ export default function FinanceiroPageClient({
                           padding: "0.625rem",
                           border: "1px solid var(--color-border)",
                           borderRadius: "var(--radius-sm)",
-                          background: "#fff",
+                          background: "var(--color-surface-0)",
                           cursor: payingCharge === c.id ? "not-allowed" : "pointer",
                           fontSize: "0.85rem",
                           fontWeight: 500,
                           textAlign: "left",
-                          color: "#333",
+                          color: "var(--color-text-1)",
                         }}
                       >
                         {payingCharge === c.id ? "Salvando..." : label}
@@ -510,7 +510,7 @@ const toastStyle: React.CSSProperties = {
   padding: "0.75rem 1.25rem",
   borderRadius: "var(--radius-md)",
   background: "var(--color-success-text)",
-  color: "#fff",
+  color: "#fff7ed",
   fontSize: "0.875rem",
   fontWeight: 600,
   zIndex: "var(--z-toast)",
@@ -540,14 +540,14 @@ const filterBtnStyle: React.CSSProperties = {
   border: "none",
   borderRadius: "var(--radius-sm)",
   background: "transparent",
-  color: "#555",
+  color: "var(--color-text-2)",
   cursor: "pointer",
   fontWeight: 500,
 };
 
 const filterBtnActiveStyle: React.CSSProperties = {
   background: "var(--color-teal)",
-  color: "#fff",
+  color: "#fff7ed",
   fontWeight: 600,
 };
 
@@ -556,7 +556,7 @@ const patientSelectStyle: React.CSSProperties = {
   fontSize: "0.85rem",
   border: "1px solid var(--color-border)",
   borderRadius: "var(--radius-sm)",
-  background: "#fff",
+  background: "var(--color-surface-0)",
   minWidth: 180,
 };
 
@@ -576,7 +576,7 @@ const formErrorStyle: React.CSSProperties = {
 const noFilterResultStyle: React.CSSProperties = {
   textAlign: "center",
   padding: "2rem",
-  color: "#888",
+  color: "var(--color-text-4)",
   fontSize: "0.9rem",
 };
 
@@ -610,12 +610,12 @@ const statusBadgeStyle: React.CSSProperties = {
 
 const dateLabelStyle: React.CSSProperties = {
   fontSize: "0.8rem",
-  color: "#888",
+  color: "var(--color-text-4)",
 };
 
 const methodLabelStyle: React.CSSProperties = {
   fontSize: "0.72rem",
-  color: "#aaa",
+  color: "var(--color-text-4)",
   fontStyle: "italic",
 };
 
@@ -627,7 +627,7 @@ const rowRightStyle: React.CSSProperties = {
 
 const amountLabelStyle: React.CSSProperties = {
   fontSize: "0.9rem",
-  color: "#333",
+  color: "var(--color-text-1)",
   fontWeight: 600,
   minWidth: 80,
   textAlign: "right",
@@ -639,7 +639,7 @@ const payBtnStyle: React.CSSProperties = {
   border: "none",
   borderRadius: "var(--radius-sm)",
   background: "var(--color-success-text)",
-  color: "#fff",
+  color: "#fff7ed",
   cursor: "pointer",
   fontWeight: 600,
 };
