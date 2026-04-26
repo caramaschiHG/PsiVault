@@ -46,6 +46,13 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
 
   const appointments = await appointmentRepo.listByPatient(patient.id, workspaceId);
 
+  const appointmentMap = Object.fromEntries(
+    appointments.map((a) => [
+      a.id,
+      { startsAt: a.startsAt, careMode: a.careMode },
+    ]),
+  );
+
   const lastRelevantAppointment =
     appointments.find((a) => a.status === "COMPLETED") ??
     appointments.find((a) => a.status === "SCHEDULED" || a.status === "CONFIRMED") ??
@@ -145,6 +152,7 @@ export default async function PatientProfilePage({ params }: PatientProfilePageP
         createReminderAction={createReminderAction}
         completeReminderAction={completeReminderAction}
         updateChargeAction={updateChargeAction}
+        appointmentMap={appointmentMap}
       />
     </main>
   );

@@ -15,6 +15,7 @@ import Link from "next/link";
 import type { PracticeDocument, DocumentStatus } from "../../../../../lib/documents/model";
 import { DOCUMENT_TYPE_LABELS, isPrivateDocumentType } from "../../../../../lib/documents/presenter";
 import { STATUS_LABELS, STATUS_COLORS, FILTER_OPTIONS, type StatusFilter } from "./document-status-presenter";
+import type { AppointmentCareMode } from "../../../../../lib/appointments/model";
 
 const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" });
 const timeFormatter = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" });
@@ -23,6 +24,7 @@ interface DocumentTimelineProps {
   documents: PracticeDocument[];
   patientId: string;
   patientName: string;
+  appointments?: Record<string, { startsAt: Date; careMode: AppointmentCareMode }>;
 }
 
 function StatusBadge({ status }: { status: DocumentStatus }) {
@@ -36,6 +38,29 @@ function StatusBadge({ status }: { status: DocumentStatus }) {
     }}>
       {STATUS_LABELS[status]}
     </span>
+  );
+}
+
+function AppointmentBadge({ doc, appointments }: { doc: PracticeDocument; appointments?: Record<string, { startsAt: Date; careMode: AppointmentCareMode }> }) {
+  if (!doc.appointmentId) return null;
+  const appt = appointments?.[doc.appointmentId];
+  if (!appt) {
+    return (
+      <span style={{ fontSize: "0.72rem", color: "var(--color-text-4)", fontWeight: 500 }}>
+        Atendimento removido
+      </span>
+    );
+  }
+  const dateLabel = shortDateFormatter.format(appt.startsAt);
+  const timeLabel = timeFormatter.format(appt.startsAt);
+  return (
+    <Link
+      href="/agenda"
+      style={{ fontSize: "0.72rem", color: "var(--color-text-3)", fontWeight: 500, textDecoration: "none" }}
+      title={`Ver atendimento de ${dateLabel}, ${timeLabel}`}
+    >
+      Atendimento de {dateLabel}, {timeLabel}
+    </Link>
   );
 }
 
@@ -109,7 +134,7 @@ function DocumentActions({ doc, patientId }: { doc: PracticeDocument; patientId:
   );
 }
 
-export function DocumentTimeline({ documents, patientId, patientName }: DocumentTimelineProps) {
+export function DocumentTimeline({ documents, patientId, patientName, appointments }: DocumentTimelineProps) {
   const [filter, setFilter] = useState<StatusFilter>("all");
 
   const filteredDocuments = useMemo(() => {
@@ -173,6 +198,12 @@ export function DocumentTimeline({ documents, patientId, patientName }: Document
                       }}>Privado</span>
                     )}
                     <StatusBadge status={doc.status} />
+                    {doc.appointmentId && (
+                      <>
+                        <span style={{ color: "var(--color-text-4)", fontSize: "0.72rem" }}>·</span>
+                        <AppointmentBadge doc={doc} appointments={appointments} />
+                      </>
+                    )}
                   </div>
                   <span style={{ fontSize: "0.75rem", color: "var(--color-text-3)" }}>
                     {shortDateFormatter.format(doc.createdAt)} · {timeFormatter.format(doc.createdAt)}

@@ -13,6 +13,8 @@ import { PatientDocumentosTab } from "./patient-documentos-tab";
 import { PatientFinanceiroTab } from "./patient-financeiro-tab";
 import { PatientConfigTab } from "./patient-config-tab";
 
+import type { AppointmentCareMode } from "@/lib/appointments/model";
+
 interface PatientProfileTabsProps {
   patient: any;
   summary: any;
@@ -28,6 +30,7 @@ interface PatientProfileTabsProps {
   createReminderAction: any;
   completeReminderAction: any;
   updateChargeAction: any;
+  appointmentMap?: Record<string, { startsAt: Date; careMode: AppointmentCareMode }>;
 }
 
 export function PatientProfileTabs({
@@ -45,6 +48,7 @@ export function PatientProfileTabs({
   createReminderAction,
   completeReminderAction,
   updateChargeAction,
+  appointmentMap,
 }: PatientProfileTabsProps) {
   return (
     <>
@@ -90,6 +94,7 @@ export function PatientProfileTabs({
               patientId={patient.id}
               patientName={patientDisplayName}
               patientPhone={patient.phone}
+              appointmentMap={appointmentMap}
             />
           </TabPanel>
 

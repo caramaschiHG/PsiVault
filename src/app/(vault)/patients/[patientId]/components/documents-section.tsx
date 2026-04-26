@@ -11,6 +11,7 @@
 
 import Link from "next/link";
 import type { PracticeDocument } from "../../../../../lib/documents/model";
+import type { AppointmentCareMode } from "../../../../../lib/appointments/model";
 import { EmptyState } from "../../../components/empty-state";
 import { DocumentTimeline } from "./document-timeline";
 
@@ -19,9 +20,10 @@ interface DocumentsSectionProps {
   patientId: string;
   patientName: string;
   patientPhone: string | null;
+  appointmentMap?: Record<string, { startsAt: Date; careMode: AppointmentCareMode }>;
 }
 
-export function DocumentsSection({ documents, patientId, patientName }: DocumentsSectionProps) {
+export function DocumentsSection({ documents, patientId, patientName, appointmentMap }: DocumentsSectionProps) {
   return (
     <section style={{ display: "grid", gap: "0.75rem" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
@@ -51,6 +53,7 @@ export function DocumentsSection({ documents, patientId, patientName }: Document
           documents={documents}
           patientId={patientId}
           patientName={patientName}
+          appointments={appointmentMap}
         />
       )}
     </section>

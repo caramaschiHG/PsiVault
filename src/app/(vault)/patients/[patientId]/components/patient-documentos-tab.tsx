@@ -6,6 +6,7 @@
  */
 
 import type { PracticeDocument } from "@/lib/documents/model";
+import type { AppointmentCareMode } from "@/lib/appointments/model";
 import { DocumentsSection } from "./documents-section";
 
 interface PatientDocumentosTabProps {
@@ -13,6 +14,7 @@ interface PatientDocumentosTabProps {
   patientId: string;
   patientName: string;
   patientPhone: string | null;
+  appointmentMap?: Record<string, { startsAt: Date; careMode: AppointmentCareMode }>;
 }
 
 export function PatientDocumentosTab({
@@ -20,6 +22,7 @@ export function PatientDocumentosTab({
   patientId,
   patientName,
   patientPhone,
+  appointmentMap,
 }: PatientDocumentosTabProps) {
   return (
     <DocumentsSection
@@ -27,6 +30,7 @@ export function PatientDocumentosTab({
       patientId={patientId}
       patientName={patientName}
       patientPhone={patientPhone}
+      appointmentMap={appointmentMap}
     />
   );
 }
