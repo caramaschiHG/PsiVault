@@ -131,7 +131,7 @@ Plans:
 
 - [ ] **Phase 37: Foundation & Migration** — Schema seguro com status/appointmentId, domain model com ciclo de vida, migration zero-downtime de documentos existentes, repository extension com índices
 - [x] **Phase 38: Estados e Rascunho Server-Side** — Ciclo de vida draft→finalized→signed→delivered, auto-save server-side de rascunhos, listagem cronológica com badges de estado, transições seguras via Server Actions (completed 2026-04-25)
-- [ ] **Phase 39: Editor Unificado e Preview A4** — Composer contextual (livre vs estruturado), visualização em layout A4 simulado, PDF universal para todos os tipos finalizados, preview embutido sem download
+- [x] **Phase 39: Editor Unificado e Preview A4** — Composer contextual (livre vs estruturado), visualização em layout A4 simulado, PDF universal para todos os tipos finalizados, preview embutido sem download
 - [ ] **Phase 40: Integração com Atendimentos** — Ligação opcional appointment-document, criação de documento a partir de atendimento, pre-fill contextual com dados da sessão, fluxo sessão→nota→documento
 - [ ] **Phase 41: Dashboard e Navegação** — Página `/documentos` com visão global, filtros por tipo/data/paciente/estado, breadcrumbs hierárquicos, tabs no perfil do paciente com deep-linking
 - [ ] **Phase 42: Polish e Cleanup** — Remover código legado de documentos, garantir zero regressão em 419+ testes, auditoria de segurança, documentação do novo fluxo
@@ -267,9 +267,9 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 39-01-PLAN.md — PDF Rich Text Foundation: custom HTML→react-pdf mapper, universal PDF generation, route updates
-- [ ] 39-02-PLAN.md — A4 Document View: paper layout component, view page refactor, responsive scaling
-- [ ] 39-03-PLAN.md — Preview Modal, Signature Ritual & Structured Editor: lazy-loaded modal, sign action gate, structured templates
+- [x] 39-01-PLAN.md — PDF Rich Text Foundation: custom HTML→react-pdf mapper, universal PDF generation, route updates
+- [x] 39-02-PLAN.md — A4 Document View: paper layout component, view page refactor, responsive scaling
+- [x] 39-03-PLAN.md — Preview Modal, Signature Ritual & Structured Editor: lazy-loaded modal, sign action gate, structured templates
 
 ### Phase 40: Integração com Atendimentos
 **Goal**: Documentos nascem do contexto clínico correto — ligados a atendimentos, com pre-fill preciso e fluxo contínuo
@@ -330,7 +330,7 @@ Plans:
 | 36. Polish, Accessibility & Measurement | v1.5 | 0/TBD | Not started | — |
 | 37. Foundation & Migration | v1.6 | 5/5 | Complete | 2026-04-25 |
 | 38. Estados e Rascunho Server-Side | v1.6 | 1/1 | Complete    | 2026-04-25 |
-| 39. Editor Unificado e Preview A4 | v1.6 | 0/TBD | Not started | — |
+| 39. Editor Unificado e Preview A4 | v1.6 | 3/3 | Complete | 2026-04-25 |
 | 40. Integração com Atendimentos | v1.6 | 0/TBD | Not started | — |
 | 41. Dashboard e Navegação | v1.6 | 0/TBD | Not started | — |
 | 42. Polish e Cleanup | v1.6 | 0/TBD | Not started | — |

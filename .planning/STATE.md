@@ -20,18 +20,18 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-25)
 
 **Core value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
-**Current focus:** Phase 38 — estados-e-rascunho
+**Current focus:** Phase 40 — integração com atendimentos
 
 ## Current Position
 
-Phase: 39
-Plan: Planned
+Phase: 40
+Plan: Not started
 Status: Ready to execute
 Last activity: 2026-04-25
 
 ## Performance Metrics
 
-- Tests: 419 passing
+- Tests: 453 passing
 - Build successful with no TypeScript errors
 - Motion token system active (Phases 32–35) — all transitions use --duration-* and --ease-*
 - CWV collection active (Phase 27)
@@ -98,7 +98,7 @@ Last activity: 2026-04-25
 
 - [ ] Phase 37: Foundation & Migration — schema seguro, domain model com ciclo de vida, migration zero-downtime
 - [ ] Phase 38: Estados e Rascunho Server-Side — ciclo de vida draft→finalized→signed→delivered, auto-save server-side
-- [ ] Phase 39: Editor Unificado e Preview A4 — composer contextual, layout A4, PDF universal
+- [x] Phase 39: Editor Unificado e Preview A4 — composer contextual, layout A4, PDF universal
 - [ ] Phase 40: Integração com Atendimentos — ligação appointment-document, pre-fill contextual
 - [ ] Phase 41: Dashboard e Navegação — /documentos global, filtros, breadcrumbs, tabs
 - [ ] Phase 42: Polish e Cleanup — remover legado, zero regressão, audit trail completo
