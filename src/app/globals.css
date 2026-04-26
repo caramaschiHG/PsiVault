@@ -1819,6 +1819,171 @@ button, [role="button"], a, summary,
   }
 }
 
+/* ─── Dark Mode ─────────────────────────────────────────────────────────────── */
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Core palette */
+  --color-bg:           #161412;
+  --color-surface-0:    #1e1b18;
+  --color-surface-1:    #24201c;
+  --color-surface-2:    rgba(36, 32, 28, 0.95);
+  --color-surface-3:    #2a2622;
+  --color-border:       rgba(247, 243, 237, 0.08);
+  --color-border-med:   rgba(247, 243, 237, 0.14);
+  --color-text-1:       #f0ebe2;
+  --color-text-2:       #b8b0a4;
+  --color-text-3:       #a8a095;
+  --color-text-4:       #8a8278;
+  --color-accent:       #c26a4a;
+  --color-accent-hover: #e08a6a;
+  --color-accent-light: rgba(194, 106, 74, 0.12);
+  --color-brown-mid:    #d48c5e;
+  --color-focus-ring:   rgba(194, 106, 74, 0.35);
+
+  /* Sidebar */
+  --color-sidebar-bg:   #11100e;
+  --color-sidebar-bg-light: #1e1b18;
+  --color-sidebar-active: rgba(194, 106, 74, 0.15);
+
+  /* Semantic */
+  --color-warning-bg:   rgba(245, 158, 11, 0.12);
+  --color-warning-text: #fbbf24;
+  --color-success-bg:   rgba(34, 197, 94, 0.12);
+  --color-success-border: rgba(34, 197, 94, 0.35);
+  --color-success-text: #4ade80;
+  --color-error-bg:     rgba(239, 68, 68, 0.1);
+  --color-error-border: rgba(239, 68, 68, 0.35);
+  --color-error-text:   #f87171;
+
+  /* Landing (shared palette) */
+  --landing-bg: #1a1714;
+  --landing-surface: #24201c;
+  --landing-surface-strong: #2a2622;
+  --landing-text: #f0ebe2;
+  --landing-muted: #b8b0a4;
+  --landing-soft: #b8b0a4;
+  --landing-accent: #c26a4a;
+  --landing-accent-strong: #e08a6a;
+  --landing-border: rgba(247, 243, 237, 0.08);
+  --landing-border-strong: rgba(247, 243, 237, 0.14);
+
+  /* Surfaces */
+  --surface-base:      var(--color-surface-1);
+  --surface-raised:    var(--color-surface-0);
+  --surface-overlay:   var(--color-surface-0);
+
+  /* Shadows — menos intensas no dark */
+  --shadow-xs:  0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm:  0 2px 6px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-xl:  0 24px 60px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.35);
+  --shadow-2xl: 0 28px 90px rgba(0, 0, 0, 0.45);
+  --shadow-side-panel: -4px 0 24px rgba(0,0,0,0.4);
+  --shadow-fab: 0 4px 16px rgba(194, 106, 74, 0.35);
+  --shadow-dropdown: 0 4px 12px rgba(0,0,0,0.35);
+  --shadow-card-subtle: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-card-elevated: 0 22px 64px rgba(0, 0, 0, 0.4);
+
+  /* Status Colors */
+  --status-scheduled-bg:     rgba(194, 106, 74, 0.1);
+  --status-scheduled-border: rgba(194, 106, 74, 0.3);
+  --status-confirmed-bg:     rgba(34, 197, 94, 0.1);
+  --status-confirmed-border: rgba(34, 197, 94, 0.3);
+  --status-completed-bg:     rgba(168, 160, 149, 0.1);
+  --status-completed-border: rgba(168, 160, 149, 0.25);
+  --status-canceled-bg:      rgba(100, 116, 139, 0.12);
+  --status-canceled-border:  rgba(100, 116, 139, 0.3);
+  --status-no-show-bg:       rgba(244, 63, 94, 0.1);
+  --status-no-show-border:   rgba(244, 63, 94, 0.25);
+
+  /* Charge Status Colors */
+  --charge-paid-bg:      rgba(34, 197, 94, 0.12);
+  --charge-paid-text:    #4ade80;
+  --charge-pending-bg:   rgba(245, 158, 11, 0.12);
+  --charge-pending-text: #fbbf24;
+  --charge-overdue-bg:   rgba(239, 68, 68, 0.12);
+  --charge-overdue-text: #f87171;
+
+  /* Component-specific */
+  --color-rose:            #f43f5e;
+  --color-warm-brown:      #d4c5b5;
+  --color-kbd-text:        #f0ebe2;
+  --color-kbd-border:      #44403c;
+  --color-kbd-bg:          #2a2622;
+  --color-slate:           #94a3b8;
+  --color-forest:          #6ee7b7;
+  --color-overlay-bg:      #0c0b0a;
+  --color-deep-brown:      #e8ddd0;
+  --color-very-dark:       #f0ebe2;
+  --color-taupe:           #5c534a;
+  --color-teal:            #5eead4;
+  --color-brown:           #b8a090;
+  --color-amber-dark:      #fbbf24;
+  --color-surface-warm:    #1e1b18;
+  --color-surface-warm2:   #24201c;
+  --color-surface-peach:   #2a2622;
+  --color-border-light:    #2a2622;
+  --color-note-blue:       #60a5fa;
+  --color-emerald:         #34d399;
+  --color-warm-brown2:     #c4b5a0;
+  --color-surface-cream:   #1e1b18;
+  --color-border-warm:     #2a2622;
+  --color-border-warm2:    #3d3833;
+
+  /* Appointment status tokens */
+  --appt-scheduled-bg:       rgba(36, 32, 28, 0.96);
+  --appt-scheduled-border:   rgba(212, 197, 181, 0.2);
+  --appt-scheduled-text:     var(--color-warm-brown);
+  --appt-confirmed-bg:       rgba(20, 50, 30, 0.5);
+  --appt-confirmed-border:   rgba(34, 197, 94, 0.3);
+  --appt-confirmed-text:     var(--color-success-text);
+  --appt-completed-bg:       rgba(36, 32, 28, 0.96);
+  --appt-completed-border:   rgba(148, 163, 184, 0.25);
+  --appt-completed-text:     var(--color-text-3);
+  --appt-canceled-bg:        rgba(50, 20, 20, 0.5);
+  --appt-canceled-border:    rgba(220, 38, 38, 0.25);
+  --appt-canceled-text:      var(--color-error-text);
+  --appt-noshow-bg:         rgba(50, 30, 15, 0.5);
+  --appt-noshow-border:     rgba(234, 88, 12, 0.3);
+  --appt-noshow-text:       var(--color-accent);
+}
+
+/* Smooth theme transition for all color-related properties */
+html[data-theme="dark"],
+html[data-theme="dark"] body,
+html[data-theme="dark"] * {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/* Selection in dark mode */
+html[data-theme="dark"] ::selection {
+  background: rgba(194, 106, 74, 0.25);
+  color: var(--color-text-1);
+}
+
+/* Nav-link dark adaptations */
+html[data-theme="dark"] .nav-link:hover {
+  background: rgba(247, 243, 237, 0.06);
+  color: var(--color-text-1);
+}
+
+/* Auth card dark */
+html[data-theme="dark"] .auth-card {
+  background: rgba(30, 27, 24, 0.92);
+  border-color: rgba(247, 243, 237, 0.1);
+}
+
+/* Skeleton shimmer dark */
+html[data-theme="dark"] .skeleton-shimmer {
+  background: linear-gradient(90deg, #2a2622 25%, #3d3833 50%, #2a2622 75%);
+  background-size: 200% 100%;
+}
+
 /* Catch-all: all animations and transitions become instant.
    Utility-specific overrides live in motion.css. */
 @media (prefers-reduced-motion: reduce) {

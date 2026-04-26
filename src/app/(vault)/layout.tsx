@@ -7,11 +7,13 @@ import { NotificationProvider } from "@/components/ui/notification-context";
 import { TopBar } from "./components/top-bar";
 import { CwvCollector } from "@/components/cwv-collector";
 import { ReactScan } from "@/components/react-scan";
+import { DarkModeNotification } from "../components/dark-mode-notification";
 
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <KeyboardShortcutsProvider>
       <NotificationProvider>
+        <DarkModeNotification />
         <CwvCollector />
         <ReactScan />
         <div style={shellStyle}>

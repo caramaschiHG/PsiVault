@@ -8,6 +8,7 @@ const tabs = [
   { href: "/settings/security", label: "Segurança" },
   { href: "/settings/notificacoes", label: "Notificações" },
   { href: "/settings/dados-e-privacidade", label: "Dados e Privacidade" },
+  { href: "/settings/aparencia", label: "Aparência" },
 ];
 
 export function SettingsNav() {
