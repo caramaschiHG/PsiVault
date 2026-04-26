@@ -376,6 +376,18 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
       nextSessionActions[appt.id] = (
         <>
+          <Link
+            href={`/patients/${appt.patientId}/documents/new?type=declaration_of_attendance&appointmentId=${appt.id}&from=/agenda`}
+            style={createDocStyle}
+          >
+            Criar declaração
+          </Link>
+          <Link
+            href={`/patients/${appt.patientId}/documents/new?type=session_record&appointmentId=${appt.id}&from=/agenda`}
+            style={createDocStyleSecondary}
+          >
+            Criar nota
+          </Link>
           <CompletedAppointmentNextSessionAction
             appointmentId={appt.id}
             defaults={defaults}
@@ -835,6 +847,33 @@ const viewNoteStyle = {
   fontWeight: 600,
   fontSize: "var(--font-size-sm)",
 } satisfies React.CSSProperties;
+
+const createDocStyle: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.4rem",
+  padding: "0.48rem 1rem",
+  borderRadius: "var(--radius-md)",
+  background: "var(--color-accent)",
+  color: "var(--color-surface-0)",
+  textDecoration: "none",
+  fontWeight: 600,
+  fontSize: "0.85rem",
+};
+
+const createDocStyleSecondary: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "0.4rem",
+  padding: "0.48rem 1rem",
+  borderRadius: "var(--radius-md)",
+  background: "rgba(255, 247, 237, 0.9)",
+  border: "1px solid rgba(146, 64, 14, 0.2)",
+  color: "var(--color-warning-text)",
+  textDecoration: "none",
+  fontWeight: 600,
+  fontSize: "0.85rem",
+};
 
 // ─── Online care & communication styles ───────────────────────────────────────
 
