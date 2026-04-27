@@ -1,132 +1,81 @@
-# Requirements: PsiVault v1.6 Documentos — Workflow Clínico Impecável
+# Milestone v2.0 Requirements
 
-**Defined:** 2026-04-25
-**Core Value:** Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
+## Multi-Agent Architecture & Calm UX
 
-## v1.6 Requirements
+---
 
-### Foundation & Migration (MIGR)
+## Overview
 
-- [ ] **MIGR-01**: Schema `PracticeDocument` possui colunas novas: `status` (default "finalized"), `appointmentId` (nullable), `signedAt` (nullable), `signedByAccountId` (nullable), `deliveredAt` (nullable), `deliveredTo` (nullable), `deliveredVia` (nullable) — todas nullable para zero downtime
-- [ ] **MIGR-02**: Migration Prisma mapeia documentos existentes: `archivedAt != null` → `status='archived'`; demais → `status='finalized'`. Nenhum documento existente é perdido ou inacessível
-- [ ] **MIGR-03**: Índices compostos novos criados: `[workspaceId, patientId, status]`, `[workspaceId, patientId, createdAt]`, `[appointmentId]`
-- [ ] **MIGR-04**: Domain model inclui `DocumentStatus` como tipo canônico (`draft` | `finalized` | `signed` | `delivered` | `archived`), funções puras de transição com guards, e IDs com prefixo `doc_`
-- [ ] **MIGR-05**: Repository extended com `listByStatus`, `listDraftsByPatient`, `findByAppointmentId`, `listActiveByPatientWithStatus` — todos com workspace scoping
+Transformar o PsiVault de uma ferramenta passiva de registro em uma plataforma com agentes inteligentes especializados que operam em background, reduzindo carga cognitiva do psicólogo e aplicando princípios de Calm Technology e UX evidence-based.
 
-### Estados e Rascunho (STAT)
+---
 
-- [ ] **STAT-01**: Documento pode ser criado como `draft` via `createDocumentAction` — sempre salva no servidor, nunca em localStorage
-- [ ] **STAT-02**: Auto-save server-side de rascunho a cada 3s (debounce) via `saveDraftAction` — upsert de rascunho existente
-- [ ] **STAT-03**: Transições de estado são Server Actions: `finalizeDocumentAction`, `signDocumentAction`, `deliverDocumentAction`, `archiveDocumentAction` — cada uma valida workspace, role, e guards de transição
-- [ ] **STAT-04**: Listagem de documentos é cronológica (mais recente primeiro) com badges de estado: Rascunho, Pendente, Assinado, Entregue, Arquivado
-- [ ] **STAT-05**: Filtros rápidos na listagem: "Todos", "Rascunhos", "Pendentes", "Assinados", "Entregues", "Arquivados"
-- [ ] **STAT-06**: Documento `signed` torna conteúdo imutável (não editável). Documento `delivered` registra `deliveredAt`, `deliveredTo`, `deliveredVia` com audit trail
+## Requirements
 
-### Editor Unificado e Preview (EDIT)
+### Agente de Agenda & Lembretes
 
-- [ ] **EDIT-01**: `DocumentEditor` unificado com modo `free` (rich text completo, sem template — para `session_record`) e modo `structured` (seções pré-definidas pelo template — para documentos formais)
-- [ ] **EDIT-02**: Visualização de documento (`/documents/[id]`) renderiza em layout A4 simulado na tela: margens, tipografia adequada, cabeçalho com dados do profissional e paciente
-- [ ] **EDIT-03**: Todo documento `finalized` ou `signed` pode gerar PDF. Preview PDF embutido em modal sem precisar fazer download
-- [ ] **EDIT-04**: Assinatura digital é verificada apenas no momento de `sign` — documentos podem ser criados e editados sem assinatura configurada
-- [ ] **EDIT-05**: `@react-pdf/renderer` suporta rich text: HTML do editor é convertido para nodes do react-pdf (ou via `react-pdf-html` se compatível)
-- [ ] **EDIT-06**: Templates visuais por tipo com substituição segura de variáveis (`{{patientName}}`, `{{date}}`, etc.) — sanitização antes de renderização
+- [ ] **AGEND-01**: Sistema detecta padrões de faltas e no-shows por paciente e exibe alerta periférico (status light) no card do paciente, nunca como modal ou popup
+- [ ] **AGEND-02**: Agente envia lembretes proativos para pacientes via WhatsApp/SMS com batching diário, respeitando horário de preferência do paciente
+- [ ] **AGEND-03**: Agente sugere otimização de horários baseada em histórico de disponibilidade do psicólogo e padrões de comparecimento dos pacientes
+- [ ] **AGEND-04**: Notificações de agenda são agrupadas em "Resumo do Dia" exibido após o último atendimento do dia, nunca durante sessão
 
-### Integração com Atendimentos (APPT)
+### Calm UX & Accessibility
 
-- [ ] **APPT-01**: Documento pode ter `appointmentId` opcional. Quando presente, visualização mostra contexto do atendimento (data, hora, tipo)
-- [ ] **APPT-02**: Criação de documento a partir da página de atendimento preenche `appointmentId` e dados da sessão automaticamente
-- [ ] **APPT-03**: Declaração de comparecimento (`attendance_certificate`) só pode ser criada vinculada a um atendimento específico
-- [ ] **APPT-04**: Pre-fill de relatórios usa apenas notas clínicas do período relevante (últimas N sessões até o atendimento vinculado), não todo histórico do paciente
-- [ ] **APPT-05**: Fluxo sessão→documento preserva parâmetro `from` para navegação de volta intuitiva
+- [ ] **CALM-01**: Modo foco para escrita clínica que oculta sidebar, top-bar e notificações, exibindo apenas editor e identificação mínima do paciente
+- [ ] **CALM-02**: Editor de notas clínicas com largura máxima de ~70ch para conforto de leitura e escrita prolongada
+- [ ] **CALM-03**: Light mode como tema padrão; dark mode disponível como toggle manual explícito (não automático por preferência do OS)
+- [ ] **CALM-04**: Hierarquia de interrupção documentada e implementada: status light > badge > dropdown > modal; regra de ouro: nenhum popup durante sessão em andamento
+- [ ] **CALM-05**: Revisão de contraste em hover states, placeholders e elementos desabilitados para garantir WCAG 2.1 AA em ambos os temas
 
-### Dashboard e Navegação (DASH)
+### Arquitetura Multi-Agent
 
-- [ ] **DASH-01**: Psicólogo pode acessar dashboard global `/documentos` com todos os documentos do workspace, ordenados cronologicamente
-- [ ] **DASH-02**: Dashboard exibe filtros por tipo de documento, intervalo de datas, paciente e estado
-- [ ] **DASH-03**: Documentos no dashboard são agrupados visualmente por tipo com contagem
-- [ ] **DASH-04**: Breadcrumbs hierárquicos presentes em todos os fluxos de documentos (Pacientes > Fulano > Documentos > Novo > Laudo)
-- [ ] **DASH-05**: Tabs no perfil do paciente preservam estado na URL (query params) para deep-linking e refresh seguro
-- [ ] **DASH-06**: Dashboard não inclui campos sensíveis (`importantObservations`) em nenhuma listagem
+- [ ] **ARCH-01**: Sistema de orquestração onde cada agente opera em contexto isolado com própria fila de tarefas e lifecycle independente
+- [ ] **ARCH-02**: Priorização de interrupções por agente: crítico (segurança) > alto (falta iminente) > médio (lembrete) > baixo (resumo)
+- [ ] **ARCH-03**: Fallback graceful quando offline: local cache para ações pendentes, retry queue com backoff exponencial, sync automático na reconexão
+- [ ] **ARCH-04**: Interface de monitoramento de agentes em /settings/agentes mostrando status, logs recentes, configuração de intensidade (desligado/silencioso/normal)
 
-### Polish e Cleanup (CLEAN)
+---
 
-- [ ] **CLEAN-01**: Código legado removido: auto-save localStorage de documentos, textarea para documentos formais, visualização em `<pre>`, duplicação de `VALID_TYPES`
-- [ ] **CLEAN-02**: Todos os 419+ testes existentes passam; novos testes cobrem transições de estado, migração de dados, e geração de PDF
-- [ ] **CLEAN-03**: Documentos existentes de usuários reais permanecem intactos — validação via teste de migração em ambiente de staging
-- [ ] **CLEAN-04**: Audit trail cobre `document.finalized`, `document.signed`, `document.delivered`, `document.draft_saved` com metadados apropriados
+## Future Requirements
 
-## v2 Requirements (Deferred)
+- **AGEND-05**: Integração com Google Calendar/Outlook para sync bidirecional de horários
+- **AGEND-06**: Previsão de cancelamento com ML baseada em histórico do paciente
+- **CALM-06**: Customização de densidade visual (compacto/padrão/espacioso)
+- **CALM-07**: Fonte ajustável pelo usuário (tamanho e família)
+- **ARCH-05**: Plugin system para agentes de terceiros
+- **ARCH-06**: Agente de Pesquisa Psicanalítica (v2.1+)
+- **ARCH-07**: Agente de Documentação (auto-preenchimento, transcrição) (v2.1+)
 
-### Keyboard Shortcuts (SHORT)
-
-- **SHORT-01**: Atalhos com modificador (`Ctrl+Shift+N/D/E`) para ações de fluxo frequentes
-- **SHORT-02**: Modal de ajuda de atalhos acionado por `?`
-- **SHORT-03**: Atalhos respeitam foco em inputs e preferência de reduced motion
-
-### Enhanced Note Flow
-
-- **FLOW-05**: Drawer inline para criação de nota sem sair da página atual (alternativa ao redirect)
-- **FLOW-06**: Sugestão automática de conteúdo baseada em notas anteriores (sem AI — apenas estrutura)
-
-### Dashboard Advanced
-
-- **DASH-07**: Full-text search em metadados de documentos (não conteúdo clínico)
-- **DASH-08**: Exportação em lote de documentos filtrados
+---
 
 ## Out of Scope
 
-| Feature | Reason |
-|---------|--------|
-| Inline note drawer (v1.6) | Redirect cobre 95% do valor com 5% do esforço; drawer é enhancement v2 |
-| Smart suggestions com AI | Anti-padrão de posicionamento PsiVault (não substituir julgamento clínico) |
-| Full-text search em conteúdo de documentos | Risco de segurança — conteúdo clínico não deve ser indexado para busca global |
-| Custom template builder drag-drop | Complexidade excessiva para usuário-alvo; templates hardcoded cobrem 95% dos casos |
-| Single-key shortcuts (`N`, `D`) | Viola WCAG 2.1 SC 2.1.1 — conflito com screen readers e navegação por teclado |
-| Client-side PDF generation pesado (html2canvas/jspdf) | Bundle bloat 500KB+, congela UI, problemas com acentuação pt-BR; usar react-pdf existente |
-| Real-time collaborative editing | Complexidade alta, não necessário para prática solo de psicólogos |
+- **Pesquisa Psicanalítica**: Sumarização de obras, bibliografias, comparação de escolas — diferenciador para v2.1, requer modelo de linguagem e curadoria especializada
+- **Transcrição de sessões**: Requer consentimento explícito do paciente, infraestrutura de áudio, e compliance LGPD adicional
+- **Auto-preenchimento de notas**: Requer modelo de linguagem treinado em dados clínicos, risco de alucinação em contexto médico
+- **Notificações push real-time**: Infraestrutura adicional (Supabase real-time, service workers) — v2.2+
+- **Integração bancária/Open Finance**: Risco de segurança alto, complexidade regulatória
+
+---
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| MIGR-01 | Phase 37 | Pending |
-| MIGR-02 | Phase 37 | Pending |
-| MIGR-03 | Phase 37 | Pending |
-| MIGR-04 | Phase 37 | Pending |
-| MIGR-05 | Phase 37 | Pending |
-| STAT-01 | Phase 38 | Pending |
-| STAT-02 | Phase 38 | Pending |
-| STAT-03 | Phase 38 | Pending |
-| STAT-04 | Phase 38 | Pending |
-| STAT-05 | Phase 38 | Pending |
-| STAT-06 | Phase 38 | Pending |
-| EDIT-01 | Phase 39 | Pending |
-| EDIT-02 | Phase 39 | Pending |
-| EDIT-03 | Phase 39 | Pending |
-| EDIT-04 | Phase 39 | Pending |
-| EDIT-05 | Phase 39 | Pending |
-| EDIT-06 | Phase 39 | Pending |
-| APPT-01 | Phase 40 | Pending |
-| APPT-02 | Phase 40 | Pending |
-| APPT-03 | Phase 40 | Pending |
-| APPT-04 | Phase 40 | Pending |
-| APPT-05 | Phase 40 | Pending |
-| DASH-01 | Phase 41 | Pending |
-| DASH-02 | Phase 41 | Pending |
-| DASH-03 | Phase 41 | Pending |
-| DASH-04 | Phase 41 | Pending |
-| DASH-05 | Phase 41 | Pending |
-| DASH-06 | Phase 41 | Pending |
-| CLEAN-01 | Phase 42 | Pending |
-| CLEAN-02 | Phase 42 | Pending |
-| CLEAN-03 | Phase 42 | Pending |
-| CLEAN-04 | Phase 42 | Pending |
-
-**Coverage:**
-- v1.6 requirements: 32 total
-- Mapped to phases: 32 ✓
-- Unmapped: 0
+| Requirement | Phase | Plan | Status |
+|-------------|-------|------|--------|
+| AGEND-01 | — | — | Pending |
+| AGEND-02 | — | — | Pending |
+| AGEND-03 | — | — | Pending |
+| AGEND-04 | — | — | Pending |
+| CALM-01 | — | — | Pending |
+| CALM-02 | — | — | Pending |
+| CALM-03 | — | — | Pending |
+| CALM-04 | — | — | Pending |
+| CALM-05 | — | — | Pending |
+| ARCH-01 | — | — | Pending |
+| ARCH-02 | — | — | Pending |
+| ARCH-03 | — | — | Pending |
+| ARCH-04 | — | — | Pending |
 
 ---
-*Requirements defined: 2026-04-25*
-*Last updated: 2026-04-25 after research and scoping*
+
+*Last updated: 2026-04-27*
