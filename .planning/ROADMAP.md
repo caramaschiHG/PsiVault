@@ -167,10 +167,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 44-01: Agente de detecção de padrões de faltas
-- [ ] 44-02: Sistema de lembretes com batching
-- [ ] 44-03: Algoritmo de sugestão de horários
-- [ ] 44-04: Resumo do Dia com notificações adiadas
+- [ ] 44-01: Foundation & Schema — Prisma migration (reminder fields), buildAgentRegistry factory, AgendaAgent skeleton, schema push
+- [ ] 44-02: No-Show Detection — Algorithm with tests, 8px red dot on PatientSummaryCards / patient list / agenda cards, reactive task enqueue
+- [ ] 44-03: Reminders & Schedule Optimization — MockReminderSender with batching, schedule optimizer (raw SQL), suggestion badge in form, daily cron
+- [ ] 44-04: Resumo do Dia & Integration — Daily summary generation, agent_summary notification type, trigger on last appointment completion, 7-day auto-cleanup
 
 #### Phase 45: Calm UX — Modo Foco & Tipografia
 **Goal**: Modo foco para escrita clínica e largura otimizada de editor
