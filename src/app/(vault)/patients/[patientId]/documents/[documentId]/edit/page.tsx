@@ -11,10 +11,8 @@ import { getPatientRepository } from "../../../../../../../lib/patients/store";
 import { getDocumentRepository } from "../../../../../../../lib/documents/store";
 import { updateDocumentAction } from "./actions";
 import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
-import Link from "next/link";
 import { resolveSession } from "../../../../../../../lib/supabase/session";
-import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { FormSubmitButton } from "@/components/ui/form-submit-button";
+import { DocumentEditorForm } from "./components/document-editor-form";
 
 interface DocumentEditPageProps {
   params: Promise<{ patientId: string; documentId: string }>;
@@ -37,12 +35,16 @@ export default async function DocumentEditPage({ params }: DocumentEditPageProps
   if (doc.patientId !== patient.id) notFound();
 
   const typeLabel = DOCUMENT_TYPE_LABELS[doc.type];
-  const isSessionRecord = doc.type === "session_record";
+  const backHref = `/patients/${patientId}/documents/${documentId}`;
+
+  const patientDisplayName = patient.socialName
+    ? `${patient.fullName} (${patient.socialName})`
+    : patient.fullName;
 
   return (
     <main style={shellStyle}>
       {/* Breadcrumb */}
-      <nav style={navStyle}>
+      <nav style={navStyle} className="focus-mode-hideable">
         <Link href="/patients" style={navLinkStyle}>
           Pacientes
         </Link>
@@ -51,7 +53,7 @@ export default async function DocumentEditPage({ params }: DocumentEditPageProps
           {patient.fullName}
         </Link>
         <span style={navSepStyle}>/</span>
-        <Link href={`/patients/${patientId}/documents/${documentId}`} style={navLinkStyle}>
+        <Link href={backHref} style={navLinkStyle}>
           {typeLabel}
         </Link>
         <span style={navSepStyle}>/</span>
@@ -59,36 +61,20 @@ export default async function DocumentEditPage({ params }: DocumentEditPageProps
       </nav>
 
       {/* Page heading */}
-      <header style={headerStyle}>
+      <header style={headerStyle} className="focus-mode-hideable">
         <p style={eyebrowStyle}>Edição de documento</p>
         <h1 style={titleStyle}>Editar — {typeLabel}</h1>
       </header>
 
       {/* Edit form */}
-      <form action={updateDocumentAction} style={formStyle}>
-        <input type="hidden" name="documentId" value={doc.id} />
-        <input type="hidden" name="patientId" value={patientId} />
-        <RichTextEditor
-          name="content"
-          initialHtml={doc.content}
-          placeholder={
-            isSessionRecord
-              ? "Escreva livremente o que for necessário para seu uso clínico privado."
-              : `Edite o conteúdo do(a) ${typeLabel}...`
-          }
-          minHeight={520}
-        />
-        <div style={actionsStyle}>
-          <FormSubmitButton
-            label="Salvar alterações"
-            pendingLabel="Salvando..."
-            style={submitButtonStyle}
-          />
-          <Link href={`/patients/${patientId}/documents/${documentId}`} style={cancelLinkStyle}>
-            Cancelar
-          </Link>
-        </div>
-      </form>
+      <DocumentEditorForm
+        initialHtml={doc.content}
+        documentId={doc.id}
+        patientId={patientId}
+        patientName={patientDisplayName}
+        backHref={backHref}
+        updateAction={updateDocumentAction}
+      />
     </main>
   );
 }

@@ -18,6 +18,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { AutoSaveIndicator } from "@/components/ui/auto-save-indicator";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { useDocumentAutoSave } from "@/hooks/use-document-auto-save";
+import { useFocusMode } from "../../../../../../components/focus-mode-context";
 
 interface DocumentComposerFormProps {
   defaultContent: string;
@@ -26,14 +27,16 @@ interface DocumentComposerFormProps {
   createDocumentAction: (formData: FormData) => Promise<void>;
   appointmentId: string | null;
   from: string | null;
+  patientName?: string;
 }
 
 export function DocumentComposerForm({
   defaultContent, patientId, documentType, createDocumentAction,
-  appointmentId, from,
+  appointmentId, from, patientName,
 }: DocumentComposerFormProps) {
   const typeLabel = DOCUMENT_TYPE_LABELS[documentType];
   const isSessionRecord = documentType === "session_record";
+  const { focusMode, toggleFocusMode } = useFocusMode();
 
   const [contentValue, setContentValue] = useState(defaultContent);
   const [wordCount, setWordCount] = useState(0);
@@ -74,7 +77,7 @@ export function DocumentComposerForm({
       {/* Hidden field with content for form submission */}
       <input type="hidden" name="content" value={contentValue} />
 
-      {/* Toolbar: type label + auto-save + word count */}
+      {/* Toolbar: type label + auto-save + word count + focus mode */}
       <div style={toolbarStyle}>
         <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--color-text-2)" }}>
           {typeLabel}
@@ -89,8 +92,22 @@ export function DocumentComposerForm({
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <AutoSaveIndicator status={status} lastSaved={lastSaved} />
           <span style={{ fontSize: "0.72rem", color: "var(--color-text-3)" }}>{wordCount} palavras</span>
+          <button
+            type="button"
+            onClick={toggleFocusMode}
+            style={focusBtnStyle}
+          >
+            {focusMode ? "Sair do modo foco" : "Modo foco"}
+          </button>
         </div>
       </div>
+
+      {/* Minimal patient identification bar (focus mode only) */}
+      {focusMode && patientName && (
+        <div style={patientIdBarStyle}>
+          <span>{patientName}</span>
+        </div>
+      )}
 
       {/* Rich text editor for ALL types */}
       <div style={fieldGroupStyle}>
@@ -105,6 +122,7 @@ export function DocumentComposerForm({
           minHeight={480}
           onWordCountChange={setWordCount}
           onContentChange={(html) => { setContentValue(html); markDirty(); }}
+          focusMode={focusMode}
         />
       </div>
 
@@ -130,6 +148,8 @@ export function DocumentComposerForm({
 
 const formStyle: React.CSSProperties = { display: "grid", gap: "1.25rem" };
 const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-md)", background: "rgba(248,250,252,0.5)" };
+const focusBtnStyle: React.CSSProperties = { background: "transparent", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 8, padding: "0.3rem 0.65rem", fontSize: "0.78rem", cursor: "pointer", color: "var(--color-text-2)" };
+const patientIdBarStyle: React.CSSProperties = { fontSize: "var(--font-size-meta)", color: "var(--color-text-3)", textAlign: "center", padding: "0.5rem 0" };
 const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.5rem" };
 const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
 const submitButtonStyle: React.CSSProperties = {

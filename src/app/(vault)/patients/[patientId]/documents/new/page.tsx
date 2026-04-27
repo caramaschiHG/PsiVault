@@ -234,7 +234,7 @@ export default async function DocumentComposerPage({
   return (
     <main style={shellStyle}>
       {/* Breadcrumb */}
-      <nav style={breadcrumbStyle}>
+      <nav style={breadcrumbStyle} className="focus-mode-hideable">
         <Link href="/patients" style={breadcrumbLinkStyle}>
           Pacientes
         </Link>
@@ -268,6 +268,7 @@ export default async function DocumentComposerPage({
         createDocumentAction={createDocumentAction}
         appointmentId={appointment?.id ?? null}
         from={from}
+        patientName={patientDisplayName}
       />
     </main>
   );

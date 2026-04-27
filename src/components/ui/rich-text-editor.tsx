@@ -10,6 +10,7 @@ interface RichTextEditorProps {
   onDirtyChange?: (dirty: boolean) => void;
   onWordCountChange?: (count: number) => void;
   onContentChange?: (html: string) => void;
+  focusMode?: boolean;
 }
 
 type ToolbarAction =
@@ -71,6 +72,17 @@ const BUTTONS: Array<{ action: ToolbarAction; title: string }> = [
   { action: "redo", title: "Refazer (Ctrl+Y)" },
 ];
 
+const ESSENTIAL_BUTTONS: Array<{ action: ToolbarAction; title: string }> = [
+  { action: "bold", title: "Negrito (Ctrl+B)" },
+  { action: "italic", title: "It\u00E1lico (Ctrl+I)" },
+  { action: "underline", title: "Sublinhado (Ctrl+U)" },
+  { action: "paragraph", title: "Par\u00E1grafo" },
+  { action: "insertUnorderedList", title: "Lista com marcadores" },
+  { action: "insertOrderedList", title: "Lista numerada" },
+  { action: "undo", title: "Desfazer (Ctrl+Z)" },
+  { action: "redo", title: "Refazer (Ctrl+Y)" },
+];
+
 function getPlainText(html: string): string {
   return html
     .replace(/<(br|hr)\s*\/?>/gi, "\n")
@@ -99,6 +111,7 @@ export function RichTextEditor({
   onDirtyChange,
   onContentChange,
   onWordCountChange,
+  focusMode = false,
 }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState(initialHtml);
@@ -164,10 +177,21 @@ export function RichTextEditor({
     syncHtml();
   }
 
+  const visibleButtons = focusMode ? ESSENTIAL_BUTTONS : BUTTONS;
+
   return (
-    <div style={rootStyle}>
-      <div style={toolbarStyle}>
-        {BUTTONS.map((button) => (
+    <div style={{
+      ...rootStyle,
+      ...(focusMode ? { maxWidth: "70ch", margin: "0 auto", width: "100%" } : {}),
+    }}>
+      <div style={{
+        ...toolbarStyle,
+        ...(focusMode ? {
+          background: "transparent",
+          border: "1px solid var(--color-border)",
+        } : {}),
+      }}>
+        {visibleButtons.map((button) => (
           <button
             key={button.action}
             type="button"
@@ -187,7 +211,15 @@ export function RichTextEditor({
         ref={editorRef}
         contentEditable
         suppressContentEditableWarning
-        style={{ ...editorShellStyle, ...editorStyle }}
+        style={{
+          ...editorShellStyle,
+          ...editorStyle,
+          ...(focusMode ? {
+            maxWidth: "70ch",
+            margin: "0 auto",
+            fontSize: "1rem",
+          } : {}),
+        }}
         data-placeholder={placeholder}
         onInput={syncHtml}
         onPaste={handlePaste}
