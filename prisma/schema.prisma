@@ -191,6 +191,10 @@ model Patient {
   email String?
   phone String?
 
+  // Reminders (AGEND-02)
+  reminderPhone         String? @map("reminder_phone")
+  preferredReminderTime Int?    @default(20) @map("preferred_reminder_time")
+
   // Finance — session price override (falls back to PracticeProfile.defaultSessionPriceInCents)
   sessionPriceInCents Int? @map("session_price_in_cents")
 
