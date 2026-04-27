@@ -49,6 +49,8 @@ model Workspace {
   reminders        Reminder[]
   smtpConfig       WorkspaceSmtpConfig?
   notificationJobs NotificationJob[]
+  agentTasks       AgentTask[]
+  agentConfigs     WorkspaceAgentConfig[]
 
   @@unique([id, ownerAccountId])
   @@map("workspaces")
@@ -466,4 +468,46 @@ model PerformanceMetric {
   @@index([workspaceId, metricName, createdAt])
   @@index([createdAt])
   @@map("performance_metrics")
+}
+
+model AgentTask {
+  id             String    @id @default(uuid())
+  workspaceId    String    @map("workspace_id")
+  agentId        String    @map("agent_id")
+  type           String
+  status         String    @default("PENDING")
+  priority       String    @default("medium") @map("priority")
+  payload        Json      @default("{}")
+  scheduledFor   DateTime  @map("scheduled_for")
+  processedAt    DateTime? @map("processed_at")
+  failedAt       DateTime? @map("failed_at")
+  errorNote      String?   @map("error_note")
+  retryCount     Int       @default(0) @map("retry_count")
+  idempotencyKey String    @unique @map("idempotency_key")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, status, priority, scheduledFor])
+  @@index([workspaceId, agentId, status])
+  @@index([idempotencyKey])
+  @@map("agent_tasks")
+}
+
+model WorkspaceAgentConfig {
+  id          String   @id @default(uuid())
+  workspaceId String   @map("workspace_id")
+  agentId     String   @map("agent_id")
+  enabled     Boolean  @default(false)
+  intensity   String   @default("normal")
+  settings    Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, agentId])
+  @@index([workspaceId, enabled])
+  @@map("workspace_agent_configs")
 }
