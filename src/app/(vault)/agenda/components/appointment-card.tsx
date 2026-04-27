@@ -84,7 +84,15 @@ export function AppointmentCard({
       {/* Card content */}
       <div style={contentStyle}>
         {/* Patient name — primary info */}
-        <p style={patientNameStyle}>{patientDisplayName}</p>
+        <p style={patientNameStyle}>
+          {patientDisplayName}
+          {card.patientNoShowAlert && (
+            <span
+              title="2 faltas consecutivas detectadas"
+              style={noShowDotStyle}
+            />
+          )}
+        </p>
 
         {/* Time row */}
         <div style={timeRowStyle}>
@@ -161,6 +169,18 @@ const patientNameStyle = {
   fontSize: "1rem",
   color: "var(--color-text-1)",
   lineHeight: 1.3,
+  display: "flex",
+  alignItems: "center",
+  gap: "0.35rem",
+} satisfies React.CSSProperties;
+
+const noShowDotStyle = {
+  width: 8,
+  height: 8,
+  borderRadius: "50%",
+  backgroundColor: "var(--color-red-mid)",
+  display: "inline-block",
+  flexShrink: 0,
 } satisfies React.CSSProperties;
 
 const timeRowStyle = {

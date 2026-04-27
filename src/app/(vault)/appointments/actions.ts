@@ -709,6 +709,24 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ su
       ),
     );
 
+    // AGEND-01: trigger no-show re-evaluation when appointment is confirmed
+    try {
+      const orchestrator = getOrchestrator();
+      const agentId = "agenda";
+      if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+        await enqueueAgentTask(orchestrator, {
+          workspaceId,
+          agentId,
+          type: "no_show_detection",
+          priority: "high",
+          payload: { patientId: confirmed.patientId },
+          idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, confirmed.id, "no_show_detection"),
+        });
+      }
+    } catch (agentErr) {
+      console.error("[confirmAppointmentAction] Agent enqueue failed:", agentErr);
+    }
+
     revalidatePath("/agenda", "page");
     revalidateTag(CACHE_TAGS.appointments);
     return { success: true };
@@ -762,6 +780,15 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
           priority: "medium",
           payload: { appointmentId: completed.id, patientId: completed.patientId },
           idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, completed.id, "completed"),
+        });
+        // AGEND-01: trigger no-show re-evaluation when appointment is completed
+        await enqueueAgentTask(orchestrator, {
+          workspaceId,
+          agentId,
+          type: "no_show_detection",
+          priority: "high",
+          payload: { patientId: completed.patientId },
+          idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, completed.id, "no_show_detection"),
         });
       }
     } catch (agentErr) {
@@ -882,6 +909,15 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ suc
           priority: "high",
           payload: { appointmentId: noShow.id, patientId: noShow.patientId },
           idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, noShow.id, "no_show"),
+        });
+        // AGEND-01: trigger no-show detection when appointment is marked no-show
+        await enqueueAgentTask(orchestrator, {
+          workspaceId,
+          agentId,
+          type: "no_show_detection",
+          priority: "high",
+          payload: { patientId: noShow.patientId },
+          idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, noShow.id, "no_show_detection"),
         });
       }
     } catch (agentErr) {

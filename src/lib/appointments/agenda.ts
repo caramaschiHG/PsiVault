@@ -34,6 +34,8 @@ export interface AgendaCard {
   careMode: AppointmentCareMode;
   careModeLabel: string;
   seriesId: string | null;
+  /** AGEND-01: true when patient has 2+ consecutive no-shows */
+  patientNoShowAlert?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -61,7 +63,10 @@ const CARE_MODE_LABELS: Record<AppointmentCareMode, string> = {
  * Convert a single appointment occurrence into a privacy-safe agenda card.
  * Only scheduling-operational data is exposed — no clinical or sensitive fields.
  */
-export function deriveAgendaCard(appointment: Appointment): AgendaCard {
+export function deriveAgendaCard(
+  appointment: Appointment,
+  patientNoShowAlert?: boolean,
+): AgendaCard {
   return {
     appointmentId: appointment.id,
     patientId: appointment.patientId,
@@ -73,6 +78,7 @@ export function deriveAgendaCard(appointment: Appointment): AgendaCard {
     careMode: appointment.careMode,
     careModeLabel: CARE_MODE_LABELS[appointment.careMode],
     seriesId: appointment.seriesId,
+    patientNoShowAlert,
   };
 }
 
@@ -151,7 +157,7 @@ export function deriveDayAgenda(
 
   return {
     date,
-    cards: dayAppointments.map(deriveAgendaCard),
+    cards: dayAppointments.map((a) => deriveAgendaCard(a)),
   };
 }
 
