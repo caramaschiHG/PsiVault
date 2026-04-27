@@ -27,6 +27,9 @@ import { createChargeAuditEvent } from "../../../lib/finance/audit";
 import { resolveSession } from "../../../lib/supabase/session";
 import { queueAppointmentNotifications } from "../../../lib/notifications/queue";
 import { getSmtpConfigRepository } from "../../../lib/notifications/smtp-config-store";
+import type { CreateNotificationInput } from "../../../lib/notifications/types";
+import { startOfDay, endOfDay } from "date-fns";
+import { isLastAppointmentOfDay, generateDailySummary, buildDailySummaryIdempotencyKey } from "../../../lib/agents/agenda/daily-summary";
 import { createClinicalNote, updateClinicalNote } from "../../../lib/clinical/model";
 import { getClinicalNoteRepository } from "../../../lib/clinical/store";
 import { createClinicalNoteAuditEvent } from "../../../lib/clinical/audit";
@@ -738,7 +741,7 @@ export async function confirmAppointmentAction(formData: FormData): Promise<{ su
 
 // ─── Complete appointment ──────────────────────────────────────────────────────
 
-export async function completeAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+export async function completeAppointmentAction(formData: FormData): Promise<{ success: boolean; error?: string; dailySummary?: CreateNotificationInput }> {
   const { accountId, workspaceId } = await resolveSession();
   const repo = getAppointmentRepository();
   const audit = getAuditRepository();
@@ -858,11 +861,73 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
       );
     }
 
+    // Daily summary trigger (fire-and-forget)
+    let dailySummary: CreateNotificationInput | undefined;
+    try {
+      const now = new Date();
+      const startOfDayDate = startOfDay(now);
+      const endOfDayDate = endOfDay(now);
+      const todayAppointments = await repo.listByDateRange(workspaceId, startOfDayDate, endOfDayDate);
+      const isLast = isLastAppointmentOfDay(completed, todayAppointments);
+      if (isLast) {
+        const noShowsDetected = todayAppointments.filter((a) => a.status === "NO_SHOW").length;
+        const { getAgentTaskRepository } = await import("../../../lib/agents/store");
+        const taskRepo = getAgentTaskRepository();
+        const tasks = await taskRepo.listByWorkspace(workspaceId, 1000);
+        const todayTasks = tasks.filter(
+          (t) =>
+            t.status === "DONE" &&
+            t.processedAt &&
+            t.processedAt >= startOfDayDate &&
+            t.processedAt <= endOfDayDate,
+        );
+        const remindersSent = todayTasks.filter((t) => t.type === "reminder_batch").length;
+        const suggestionsGenerated = todayTasks.filter((t) => t.type === "schedule_suggestion").length;
+        const summary = generateDailySummary({
+          date: now,
+          workspaceId,
+          accountId,
+          noShowsDetected,
+          remindersSent,
+          suggestionsGenerated,
+        });
+        dailySummary = {
+          type: "agent_summary",
+          source: "agenda-agent",
+          summaryTitle: summary.title,
+          summaryDescription: summary.description,
+          date: now.toISOString(),
+          title: summary.title,
+          description: summary.description,
+        } as CreateNotificationInput;
+        const orchestrator = getOrchestrator();
+        if (await shouldProcessForWorkspace(orchestrator, workspaceId, "agenda")) {
+          await enqueueAgentTask(orchestrator, {
+            workspaceId,
+            agentId: "agenda",
+            type: "daily_summary",
+            priority: "low",
+            payload: {
+              workspaceId,
+              accountId,
+              date: now.toISOString(),
+              noShowsDetected,
+              remindersSent,
+              suggestionsGenerated,
+            },
+            idempotencyKey: buildDailySummaryIdempotencyKey(workspaceId, accountId, now),
+          });
+        }
+      }
+    } catch (summaryErr) {
+      console.error("[completeAppointmentAction] Daily summary failed:", summaryErr);
+    }
+
     revalidatePath("/agenda", "page");
     revalidatePath(`/patients/${completed.patientId}`, "page");
     revalidatePath(`/sessions/${completed.id}/note`, "page");
     revalidateTag(CACHE_TAGS.appointments);
-    return { success: true };
+    return { success: true, dailySummary };
   } catch (err) {
     console.error("[completeAppointmentAction]", err);
     return { success: false, error: "Erro ao concluir consulta. Tente novamente." };
