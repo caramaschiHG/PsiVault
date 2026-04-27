@@ -73,4 +73,9 @@ export type AppNotification = NotificationBase & (
 );
 
 // Input type for creating new notifications (id, read, createdAt are auto-generated)
-export type CreateNotificationInput = Omit<AppNotification, "id" | "read" | "createdAt">;
+export type CreateNotificationInput = Omit<AppNotification, "id" | "read" | "createdAt"> & {
+  level?: NotificationLevel;
+};
+
+// Interruption hierarchy for Calm UX — higher = more intrusive
+export type NotificationLevel = "status_light" | "badge" | "dropdown" | "modal";

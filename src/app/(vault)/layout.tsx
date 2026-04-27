@@ -9,13 +9,15 @@ import { CwvCollector } from "@/components/cwv-collector";
 import { ReactScan } from "@/components/react-scan";
 import { FocusModeProvider } from "./components/focus-mode-context";
 import { FocusModeShell } from "./components/focus-mode-shell";
+import { SessionActiveProvider } from "./components/session-active-context";
 
 export default function VaultLayout({ children }: { children: React.ReactNode }) {
   return (
     <FocusModeProvider>
       <KeyboardShortcutsProvider>
-        <NotificationProvider>
-          <CwvCollector />
+        <SessionActiveProvider>
+          <NotificationProvider>
+            <CwvCollector />
           <ReactScan />
           <FocusModeShell>
             {/* Skip link — acessibilidade teclado (CSS-only, sem event handlers) */}
@@ -58,7 +60,8 @@ export default function VaultLayout({ children }: { children: React.ReactNode })
             {/* Mobile bottom navigation */}
             <BottomNav />
           </FocusModeShell>
-        </NotificationProvider>
+          </NotificationProvider>
+        </SessionActiveProvider>
       </KeyboardShortcutsProvider>
     </FocusModeProvider>
   );

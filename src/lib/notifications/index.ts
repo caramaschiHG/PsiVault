@@ -4,6 +4,7 @@ export {
   type NotificationBase,
   type AppNotification,
   type CreateNotificationInput,
+  type NotificationLevel,
   type UpdateNotificationData,
   type SessionReminderData,
   type PaymentPendingData,

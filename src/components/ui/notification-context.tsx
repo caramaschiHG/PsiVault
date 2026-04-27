@@ -7,6 +7,7 @@ import {
   type NotificationStorage,
   defaultStorage,
 } from "@/lib/notifications";
+import { useSessionActive } from "@/app/(vault)/components/session-active-context";
 
 interface NotificationContextValue {
   notifications: AppNotification[];
@@ -30,7 +31,10 @@ export function NotificationProvider({
   storage = defaultStorage,
 }: NotificationProviderProps) {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [blockedModals, setBlockedModals] = useState<CreateNotificationInput[]>([]);
   const initialized = useRef(false);
+  const { isSessionActive } = useSessionActive();
+  const wasSessionActive = useRef(isSessionActive);
 
   // Load from storage on mount
   useEffect(() => {
@@ -40,26 +44,53 @@ export function NotificationProvider({
     }
   }, [storage]);
 
-  // Persist to storage on change
+  // Persist to storage on change (blockedModals intentionally NOT persisted)
   useEffect(() => {
     if (initialized.current) {
       storage.save(notifications);
     }
   }, [notifications, storage]);
 
+  // Release blocked modals when session ends
+  useEffect(() => {
+    if (wasSessionActive.current && !isSessionActive && blockedModals.length > 0) {
+      setNotifications((prev) => {
+        const released = blockedModals.map((n) => ({
+          ...n,
+          id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          read: false,
+          createdAt: Date.now(),
+        })) as AppNotification[];
+        return [...released, ...prev].slice(0, 50);
+      });
+      setBlockedModals([]);
+    }
+    wasSessionActive.current = isSessionActive;
+  }, [isSessionActive, blockedModals]);
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const addNotification = useCallback((n: CreateNotificationInput) => {
+    const { level, ...rest } = n;
+
+    if (level === "modal" && isSessionActive) {
+      setBlockedModals((prev) => {
+        const next = [...prev, n];
+        return next.slice(-50); // cap at 50, drop oldest
+      });
+      return;
+    }
+
     setNotifications((prev) => {
       const newNotif = {
-        ...n,
+        ...rest,
         id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         read: false,
         createdAt: Date.now(),
       } as AppNotification;
       return [newNotif, ...prev].slice(0, 50);
     });
-  }, []);
+  }, [isSessionActive]);
 
   const markAsRead = useCallback((id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
@@ -75,6 +106,7 @@ export function NotificationProvider({
 
   const clearAll = useCallback(() => {
     setNotifications([]);
+    setBlockedModals([]);
     storage.clear();
   }, [storage]);
 
