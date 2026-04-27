@@ -8,7 +8,20 @@ PsiVault é uma plataforma web completa para psicólogos gerenciarem sua prátic
 
 Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, com segurança e praticidade profissional.
 
-## Current Milestone: v1.6 Documentos — Workflow Clínico Impecável
+## Current Milestone: v2.0 Multi-Agent Architecture & Calm UX
+
+**Goal:** Transformar o PsiVault de uma ferramenta passiva de registro em uma plataforma com agentes inteligentes especializados que operam em background, reduzindo carga cognitiva do psicólogo e aplicando princípios de Calm Technology e UX evidence-based.
+
+**Target features:**
+- **Agente de Agenda & Lembretes** — otimização de horários, detecção de padrões de faltas, lembretes proativos para pacientes, batching de notificações (nunca interrompe sessão)
+- **Calm UX & Accessibility** — modo foco para escrita clínica, tipografia otimizada para texto longo (line-length ~70ch), light mode como default com toggle manual para dark, hierarquia de notificações baseada em evidências (NNGroup/Case)
+- **Arquitetura Multi-Agent** — sistema de orquestração onde cada agente opera em contexto isolado, com filas de tarefas, priorização de interrupções, e fallback graceful quando offline
+
+**Fora do escopo (v2.1+):**
+- Agente de Pesquisa Psicanalítica (bibliografia, comparação de escolas)
+- Agente de Documentação (auto-preenchimento de notas, transcrição de sessões)
+
+## Previous Milestone: v1.6 Documentos — Workflow Clínico Impecável (In Progress → v2.0)
 
 **Goal:** Transformar a experiência de documentação clínica do PsiVault em um workflow fluido, seguro e clinicamente maduro — da sessão ao prontuário, do registro ao documento formal — com UX inspirada nos melhores sistemas de documentação médica do mundo.
 
@@ -44,14 +57,23 @@ Psicólogos conseguem gerenciar toda sua prática clínica em um único lugar, c
 - Otimização de assets (imagens, fontes, third-party scripts)
 - Métricas objetivas: LCP, INP, CLS, TTFB dentro dos thresholds do Google
 
-## Current State (v1.6 Documentos — Defining Requirements)
+## Current State (v2.0 Multi-Agent & Calm UX — Defining Requirements)
+
+Milestone v1.6 completou o workflow de documentos clínicos:
+- Timeline clínica com visual de linha do tempo e cards simplificados
+- Editor de notas com templates clínicos (SOAP, BIRP, livre) e modo foco
+- Editor de documentos com preview de PDF e templates visuais
+- Fluxo integrado sessão → nota direto da agenda
+- Dashboard de documentos `/documentos` com filtros globais
+- Navegação hierárquica com breadcrumbs e tabs no perfil do paciente
+- Quick actions e keyboard shortcuts para ações de fluxo
 
 Milestone v1.5 completou o sistema de motion e feel:
 - Motion tokens (duration, easing, stagger) consolidados em motion.css
 - Micro-interações em todos os componentes base
 - List stagger animations e page transitions
 - Expand/collapse orgânico sem layout shift
-- Zero regressão de performance, 419/419 tests passando
+- Zero regressão de performance
 
 Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:
 - Navegação client-side via `<Link>` (zero full reloads)
@@ -61,13 +83,15 @@ Milestone v1.3 eliminou a lentidão sistêmica identificada em auditoria:
 - `importantObservations` excluído de todas as queries de listagem
 
 Stack: Next.js 15, React 19, TypeScript 5.8 (strict), Prisma 6, PostgreSQL (Supabase), Supabase Auth (SSR)
-Tests: 419/419 passing
+Tests: 453/453 passing
 
-**Contexto documentação existente:**
-- Document composer com RichTextEditor, auto-save indicator, agrupamento por tipo
-- Note composer com auto-save local, formatação básica
-- Documents section com grupos colapsáveis por tipo e badges de contagem
-- Análise UX prévia (`document-flow-ux-plan.md`) identifica 10 problemas críticos/importantes
+**Contexto pesquisa UX recente:**
+- Calm Technology (Weiser/Case): software clínico deve ficar na periferia da atenção
+- Cognitive Load Theory (NNGroup): reduzir carga extrínseca via memória externa, reconhecimento > recordação
+- Dark mode evidence (Piepenbrock et al.): light mode superior para performance visual, dark como opção manual
+- Legibilidade texto longo (Butterick/Nielsen): 16-18px base, line-height 120-145%, ~70ch max-width
+- Hierarquia notificações (Case): status light → tone → shout → popup; nunca interromper sessão
+- DESIGN.md criado como fonte de verdade visual do app interno
 
 ## Requirements
 
@@ -99,15 +123,26 @@ Tests: 419/419 passing
 
 ### Active
 
-<!-- Current milestone scope — v1.6 Documentos -->
+<!-- Current milestone scope — v2.0 Multi-Agent & Calm UX -->
 
-- [ ] Timeline clínica redesenhada com linha do tempo visual e cards simplificados (TIME-01, TIME-02)
-- [ ] Editor de notas com templates clínicos (SOAP, BIRP, livre) e modo foco (NOTE-01, NOTE-02)
-- [ ] Editor de documentos com preview de PDF e templates visuais (DOCM-01, DOCM-02)
-- [ ] Fluxo integrado sessão → nota direto da agenda (FLOW-01, FLOW-02)
-- [ ] Dashboard de documentos com filtros globais (DASH-01, DASH-02)
-- [ ] Navegação hierárquica: breadcrumbs e tabs no perfil do paciente (NAV-01, NAV-02)
-- [ ] Quick actions e keyboard shortcuts para ações de fluxo (QUICK-01, QUICK-02)
+- [ ] **Agente de Agenda & Lembretes (AGEND-01..04)**
+  - AGEND-01: Detecção de padrões de faltas e no-shows com alertas periféricos (status light)
+  - AGEND-02: Lembretes proativos para pacientes via WhatsApp/SMS (batch, nunca em sessão)
+  - AGEND-03: Otimização de horários sugerida baseada em histórico de disponibilidade
+  - AGEND-04: Batching de notificações em "Resumo do Dia" pós-sessão
+
+- [ ] **Calm UX & Accessibility (CALM-01..05)**
+  - CALM-01: Modo foco para escrita clínica (esconde sidebar, top-bar, notificações)
+  - CALM-02: Largura máxima do editor de notas em ~70ch para conforto de leitura
+  - CALM-03: Light mode como default; dark mode como toggle manual (não automático por OS)
+  - CALM-04: Hierarquia de interrupção documentada: status light > badge > dropdown > modal
+  - CALM-05: Revisão de contraste em hover states e placeholders para WCAG AA
+
+- [ ] **Arquitetura Multi-Agent (ARCH-01..04)**
+  - ARCH-01: Sistema de orquestração de agentes com contextos isolados
+  - ARCH-02: Fila de tarefas por agente com priorização de interrupções
+  - ARCH-03: Fallback graceful quando offline (local cache, retry queue)
+  - ARCH-04: Interface de monitoramento de agentes (status, logs, configuração)
 
 ### Out of Scope
 
@@ -119,19 +154,23 @@ Tests: 419/419 passing
 
 ## Context
 
-- App estável com 419 testes, bundle lean
+- App estável com 453 testes, bundle lean
 - Performance resolvida em v1.3-v1.4 — navegação, caching, queries, CWV
 - Design system maduro com 50+ CSS tokens, motion tokens, componentes reutilizáveis
+- DESIGN.md documenta sistema visual completo do app interno
 - Multi-tenant, workspace-scoped, audit trail completo
-- Próximas demandas: workflow de documentação clínica (timeline, notas, documentos, fluxo integrado)
+- Pesquisa UX recente identificou oportunidades em Calm Technology, Cognitive Load, e notificações
+- Próximas demandas: agentes inteligentes operando em background, UX calma e evidence-based
 
 ## Constraints
 
 - **Stack**: Next.js 15, React 19, Supabase, Prisma, CSS tokens (sem Tailwind)
-- **Estilo**: Usar design tokens existentes, zero inline styles em componentes novos
+- **Estilo**: Usar design tokens existentes (referenciar DESIGN.md), zero inline styles em componentes novos
 - **Segurança**: MFA/auth deve continuar funcionando corretamente após refatorações
 - **Sensibilidade**: importantObservations nunca em listagens — apenas findById e backup export
-- **Testes**: 419 testes existentes devem continuar passando
+- **Testes**: 453 testes existentes devem continuar passando
+- **Calm UX**: Nenhuma notificação crítica durante sessão em andamento; batching obrigatório
+- **Agentes**: Devem operar em background, nunca competir pela atenção central do psicólogo
 
 ## Key Decisions
 
@@ -147,10 +186,12 @@ Tests: 419/419 passing
 | findByAppointmentIds retorna Set<string> | Agenda só precisa de presença, não conteúdo da nota | ✓ Good |
 | listAllByWorkspace para backup | Backup precisa de dados completos — separado de listagens | ✓ Good |
 | JWT AAL fast-path no middleware | Decodifica claim do cookie, skipa API call para aal2 | ✓ Good |
+| Light mode como default (v2.0) | Evidência científica mostra performance visual superior em light mode para visão normal | → Implementando v2.0 |
+| Agente nunca interrompe sessão (v2.0) | Princípio de Calm Technology: software clínico deve ficar na periferia da atenção | → Implementando v2.0 |
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-04-25 after Milestone v1.6 started: Documentos — Workflow Clínico Impecável*
+*Last updated: 2026-04-27 after Milestone v2.0 started: Multi-Agent Architecture & Calm UX*
