@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { getPatientRepository } from "../../../lib/patients/store";
+import { getAppointmentRepository } from "../../../lib/appointments/store";
 import { PatientForm } from "./components/patient-form";
 import { EmptyState } from "../components/empty-state";
 import { resolveSession } from "../../../lib/supabase/session";
@@ -15,11 +16,22 @@ import { Section } from "@/components/ui/section";
 import { List, ListItem, ListEmpty } from "@/components/ui/list";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { hasConsecutiveNoShows } from "../../../lib/agents/agenda/no-show-detector";
 
 export default async function PatientsPage() {
   const { workspaceId } = await resolveSession();
-  const repo = getPatientRepository();
-  const patients = await repo.listActive(workspaceId);
+  const patientRepo = getPatientRepository();
+  const appointmentRepo = getAppointmentRepository();
+  const patients = await patientRepo.listActive(workspaceId);
+
+  // Compute no-show alerts per patient (AGEND-01)
+  const patientAlerts = new Map<string, boolean>();
+  await Promise.all(
+    patients.map(async (patient) => {
+      const appointments = await appointmentRepo.listByPatient(patient.id, workspaceId);
+      patientAlerts.set(patient.id, hasConsecutiveNoShows(appointments));
+    }),
+  );
 
   return (
     <main style={shellStyle}>
@@ -61,8 +73,14 @@ export default async function PatientsPage() {
                 style={i < 10 ? ({ '--stagger-index': i } as React.CSSProperties) : undefined}
               >
                 <div style={patientContentStyle}>
-                  <div>
+                  <div style={patientNameRowStyle}>
                     <strong style={patientNameStyle}>{patient.fullName}</strong>
+                    {patientAlerts.get(patient.id) && (
+                      <span
+                        title="2 faltas consecutivas detectadas"
+                        style={noShowDotStyle}
+                      />
+                    )}
                     {patient.socialName && (
                       <span style={socialNameStyle}> ({patient.socialName})</span>
                     )}
@@ -149,4 +167,19 @@ const patientMetaStyle: React.CSSProperties = {
   fontSize: "var(--font-size-sm)",
   color: "var(--color-text-3)",
   lineHeight: "var(--line-height-base)",
+};
+
+const patientNameRowStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.35rem",
+};
+
+const noShowDotStyle: React.CSSProperties = {
+  width: 8,
+  height: 8,
+  borderRadius: "50%",
+  backgroundColor: "var(--color-red-mid)",
+  display: "inline-block",
+  flexShrink: 0,
 };

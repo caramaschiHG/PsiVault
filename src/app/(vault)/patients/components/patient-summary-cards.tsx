@@ -20,7 +20,15 @@ interface PatientSummaryCardsProps {
 export function PatientSummaryCards({ summary }: PatientSummaryCardsProps) {
   return (
     <section style={sectionStyle}>
-      <p style={eyebrowStyle}>Resumo operacional</p>
+      <div style={headerRowStyle}>
+        <p style={eyebrowStyle}>Resumo operacional</p>
+        {summary.noShowAlert && (
+          <span
+            title="2 faltas consecutivas detectadas"
+            style={noShowDotStyle}
+          />
+        )}
+      </div>
 
       <div style={cardsGridStyle}>
         <SummaryCard
@@ -85,6 +93,21 @@ function SummaryCard({ label, value, isEmpty = false, fullWidth = false }: Summa
 const sectionStyle = {
   display: "grid",
   gap: "0.85rem",
+} satisfies React.CSSProperties;
+
+const headerRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "0.5rem",
+} satisfies React.CSSProperties;
+
+const noShowDotStyle = {
+  width: 8,
+  height: 8,
+  borderRadius: "50%",
+  backgroundColor: "var(--color-red-mid)",
+  display: "inline-block",
+  flexShrink: 0,
 } satisfies React.CSSProperties;
 
 const eyebrowStyle = {

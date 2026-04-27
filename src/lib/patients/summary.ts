@@ -11,6 +11,8 @@
  * the output shape or the consumer components.
  */
 
+import { hasConsecutiveNoShows } from "../agents/agenda/no-show-detector";
+
 export type FinancialStatus = "no_data" | "up_to_date" | "pending_payment" | "overdue";
 
 export interface PatientOperationalSummary {
@@ -30,6 +32,9 @@ export interface PatientOperationalSummary {
 
   /** High-level financial state — no_data until finance domain provides data. */
   financialStatus: FinancialStatus;
+
+  /** True when patient has 2+ consecutive no-shows (AGEND-01). */
+  noShowAlert?: boolean;
 }
 
 export interface DerivePatientSummaryInput {
@@ -98,6 +103,7 @@ export interface DerivePatientSummaryFromAppointmentsInput {
  * - nextSession: earliest future SCHEDULED or CONFIRMED appointment
  * - pendingItemsCount: count of future SCHEDULED appointments (upcoming
  *   appointments that still need confirmation — actionable scheduling pendency)
+ * - noShowAlert: true when 2+ consecutive NO_SHOWs detected
  */
 export function derivePatientSummaryFromAppointments(
   input: DerivePatientSummaryFromAppointmentsInput,
@@ -127,6 +133,9 @@ export function derivePatientSummaryFromAppointments(
       a.startsAt.getTime() > now.getTime(),
   ).length;
 
+  // No-show alert: 2+ consecutive NO_SHOWs
+  const noShowAlert = hasConsecutiveNoShows(input.appointments);
+
   return {
     patientId: input.patientId,
     lastSession,
@@ -134,6 +143,7 @@ export function derivePatientSummaryFromAppointments(
     pendingItemsCount,
     documentCount: input.documentCount ?? 0,
     financialStatus: input.financialStatus ?? "no_data",
+    noShowAlert,
   };
 }
 
