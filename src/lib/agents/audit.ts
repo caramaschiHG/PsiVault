@@ -37,7 +37,7 @@ export function buildAgentTaskAuditPayload(
   subjectKind: string;
   subjectId: string;
   summary: string;
-  metadata: AgentAuditPayload;
+  metadata: Record<string, unknown>;
 } {
   const summaryMap: Record<AgentAuditEventType, string> = {
     "agent.task.enqueued": `Tarefa enfileirada para agente ${task.agentId}`,
