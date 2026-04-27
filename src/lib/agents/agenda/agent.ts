@@ -1,4 +1,6 @@
 import type { Agent, AgentTask } from "../model";
+import { batchRemindersForDay, MockReminderSender } from "./reminder-sender";
+import { getPatientAttendanceBySlot, getTopSuggestions } from "./schedule-optimizer";
 
 /**
  * Create the Agenda Agent that handles background tasks for:
@@ -23,11 +25,30 @@ export function createAgendaAgent(): Agent {
         }
 
         case "reminder_batch": {
-          return { status: "SKIPPED", errorNote: "Not yet implemented — Plan 44-03" };
+          const { workspaceId, date } = task.payload as { workspaceId: string; date: string };
+          const { getAppointmentRepository } = await import("../../appointments/store");
+          const { getPatientRepository } = await import("../../patients/store");
+          const { PrismaClient } = await import("@prisma/client");
+
+          const result = await batchRemindersForDay(
+            workspaceId,
+            new Date(date),
+            {
+              listByDateRange: (ws, from, to) => getAppointmentRepository().listByDateRange(ws, from, to),
+              findPatientById: (id, ws) => getPatientRepository().findById(id, ws),
+              sender: new MockReminderSender(),
+            },
+          );
+          return { status: "DONE", output: { sent: result.sent, failed: result.failed } };
         }
 
         case "schedule_suggestion": {
-          return { status: "SKIPPED", errorNote: "Not yet implemented — Plan 44-03" };
+          const { patientId, workspaceId } = task.payload as { patientId: string; workspaceId: string };
+          const { PrismaClient } = await import("@prisma/client");
+          const prisma = new PrismaClient();
+          const slots = await getPatientAttendanceBySlot(prisma, patientId, workspaceId);
+          await prisma.$disconnect();
+          return { status: "DONE", output: { suggestions: getTopSuggestions(slots) } };
         }
 
         case "daily_summary": {

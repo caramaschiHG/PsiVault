@@ -316,6 +316,8 @@ describe("patient domain", () => {
             socialName: null,
             email: null,
             phone: null,
+            reminderPhone: null,
+            preferredReminderTime: null,
             sessionPriceInCents: null,
             guardianName: null,
             guardianPhone: null,

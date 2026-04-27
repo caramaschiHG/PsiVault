@@ -34,6 +34,8 @@ const patient: Patient = {
   socialName: null,
   email: "ana@example.com",
   phone: null,
+  reminderPhone: null,
+  preferredReminderTime: null,
   guardianName: null,
   guardianPhone: null,
   emergencyContactName: null,

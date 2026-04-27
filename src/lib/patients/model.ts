@@ -24,6 +24,10 @@ export interface Patient {
   email: string | null;
   phone: string | null;
 
+  // Reminders (AGEND-02)
+  reminderPhone: string | null;
+  preferredReminderTime: number | null;
+
   // Finance — session price override (falls back to PracticeProfile.defaultSessionPriceInCents)
   sessionPriceInCents: number | null;
 
@@ -52,6 +56,8 @@ export interface CreatePatientInput {
   socialName?: string | null;
   email?: string | null;
   phone?: string | null;
+  reminderPhone?: string | null;
+  preferredReminderTime?: number | null;
   sessionPriceInCents?: number | null;
   guardianName?: string | null;
   guardianPhone?: string | null;
@@ -83,6 +89,8 @@ export function createPatient(input: CreatePatientInput, deps: CreatePatientDeps
     socialName: trimOrNull(input.socialName),
     email: trimOrNull(input.email),
     phone: trimOrNull(input.phone),
+    reminderPhone: trimOrNull(input.reminderPhone),
+    preferredReminderTime: input.preferredReminderTime ?? null,
     sessionPriceInCents: input.sessionPriceInCents ?? null,
     guardianName: trimOrNull(input.guardianName),
     guardianPhone: trimOrNull(input.guardianPhone),
@@ -134,6 +142,9 @@ export function updatePatient(
     socialName: input.socialName !== undefined ? trimOrNull(input.socialName) : patient.socialName,
     email: input.email !== undefined ? trimOrNull(input.email) : patient.email,
     phone: input.phone !== undefined ? trimOrNull(input.phone) : patient.phone,
+    reminderPhone: input.reminderPhone !== undefined ? trimOrNull(input.reminderPhone) : patient.reminderPhone,
+    preferredReminderTime:
+      input.preferredReminderTime !== undefined ? input.preferredReminderTime : patient.preferredReminderTime,
     sessionPriceInCents:
       input.sessionPriceInCents !== undefined ? input.sessionPriceInCents : patient.sessionPriceInCents,
     guardianName: input.guardianName !== undefined ? trimOrNull(input.guardianName) : patient.guardianName,
