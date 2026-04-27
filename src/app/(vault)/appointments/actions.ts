@@ -30,6 +30,17 @@ import { getSmtpConfigRepository } from "../../../lib/notifications/smtp-config-
 import { createClinicalNote, updateClinicalNote } from "../../../lib/clinical/model";
 import { getClinicalNoteRepository } from "../../../lib/clinical/store";
 import { createClinicalNoteAuditEvent } from "../../../lib/clinical/audit";
+import { createAgentOrchestrator } from "../../../lib/agents/orchestrator";
+import { createAgentRegistry } from "../../../lib/agents/registry";
+import { enqueueAgentTask, shouldProcessForWorkspace, buildAppointmentAgentIdempotencyKey } from "../../../lib/agents/queue";
+
+function getOrchestrator() {
+  const registry = createAgentRegistry();
+  return createAgentOrchestrator(registry, {
+    now: new Date(),
+    createId: () => crypto.randomUUID(),
+  });
+}
 
 function generateId() {
   const buffer = new Uint8Array(9);
@@ -137,6 +148,26 @@ export async function createAppointmentAction(
         );
       }
 
+      // Enqueue agent tasks for series (fire-and-forget)
+      try {
+        const orchestrator = getOrchestrator();
+        const agentId = "agenda";
+        if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+          for (const occurrence of occurrences) {
+            await enqueueAgentTask(orchestrator, {
+              workspaceId,
+              agentId,
+              type: "appointment_created",
+              priority: "medium",
+              payload: { appointmentId: occurrence.id, patientId: occurrence.patientId, startsAt: occurrence.startsAt.toISOString() },
+              idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, occurrence.id, "created"),
+            });
+          }
+        }
+      } catch (agentErr) {
+        console.error("[createAppointmentAction] Agent enqueue failed (series):", agentErr);
+      }
+
       redirectPath = `/agenda`;
     } else {
       // Single appointment
@@ -174,6 +205,24 @@ export async function createAppointmentAction(
           { now, createId: generateId },
         ),
       );
+
+      // Enqueue agent task (fire-and-forget; must not block user response)
+      try {
+        const orchestrator = getOrchestrator();
+        const agentId = "agenda";
+        if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+          await enqueueAgentTask(orchestrator, {
+            workspaceId,
+            agentId,
+            type: "appointment_created",
+            priority: "medium",
+            payload: { appointmentId: appointment.id, patientId: appointment.patientId, startsAt: appointment.startsAt.toISOString() },
+            idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, appointment.id, "created"),
+          });
+        }
+      } catch (agentErr) {
+        console.error("[createAppointmentAction] Agent enqueue failed:", agentErr);
+      }
 
       if (patient.email) {
         const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
@@ -256,6 +305,24 @@ export async function createAppointmentQuickAction(
         { now, createId: generateId },
       ),
     );
+
+    // Enqueue agent task (fire-and-forget)
+    try {
+      const orchestrator = getOrchestrator();
+      const agentId = "agenda";
+      if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+        await enqueueAgentTask(orchestrator, {
+          workspaceId,
+          agentId,
+          type: "appointment_created",
+          priority: "medium",
+          payload: { appointmentId: appointment.id, patientId: appointment.patientId, startsAt: appointment.startsAt.toISOString() },
+          idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, appointment.id, "created"),
+        });
+      }
+    } catch (agentErr) {
+      console.error("[createAppointmentQuickAction] Agent enqueue failed:", agentErr);
+    }
 
     if (patient.email) {
       const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
@@ -364,6 +431,26 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
         );
       }
 
+      // Enqueue agent tasks for series (fire-and-forget)
+      try {
+        const orchestrator = getOrchestrator();
+        const agentId = "agenda";
+        if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+          for (const occ of rescheduledOccurrences) {
+            await enqueueAgentTask(orchestrator, {
+              workspaceId,
+              agentId,
+              type: "appointment_updated",
+              priority: "medium",
+              payload: { appointmentId: occ.id, patientId: occ.patientId, startsAt: occ.startsAt.toISOString() },
+              idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, occ.id, "updated"),
+            });
+          }
+        }
+      } catch (agentErr) {
+        console.error("[rescheduleAppointmentAction] Agent enqueue failed (series):", agentErr);
+      }
+
       const patientForSeriesNotif = await getPatientRepository().findById(existing.patientId, workspaceId);
       if (patientForSeriesNotif?.email) {
         const smtpPrefs = await getSmtpConfigRepository().findByWorkspace(workspaceId);
@@ -415,6 +502,24 @@ export async function rescheduleAppointmentAction(formData: FormData): Promise<{
           { now, createId: generateId },
         ),
       );
+
+      // Enqueue agent task (fire-and-forget)
+      try {
+        const orchestrator = getOrchestrator();
+        const agentId = "agenda";
+        if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+          await enqueueAgentTask(orchestrator, {
+            workspaceId,
+            agentId,
+            type: "appointment_updated",
+            priority: "medium",
+            payload: { appointmentId: rescheduled.id, patientId: rescheduled.patientId, startsAt: rescheduled.startsAt.toISOString() },
+            idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, rescheduled.id, "updated"),
+          });
+        }
+      } catch (agentErr) {
+        console.error("[rescheduleAppointmentAction] Agent enqueue failed:", agentErr);
+      }
 
       const patientForNotif = await getPatientRepository().findById(rescheduled.patientId, workspaceId);
       if (patientForNotif?.email) {
@@ -484,6 +589,24 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ suc
             { now, createId: generateId },
           ),
         );
+
+        // Enqueue agent task (fire-and-forget)
+        try {
+          const orchestrator = getOrchestrator();
+          const agentId = "agenda";
+          if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+            await enqueueAgentTask(orchestrator, {
+              workspaceId,
+              agentId,
+              type: "appointment_canceled",
+              priority: "medium",
+              payload: { appointmentId: canceled.id, patientId: canceled.patientId },
+              idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, canceled.id, "canceled"),
+            });
+          }
+        } catch (agentErr) {
+          console.error("[cancelAppointmentAction] Agent enqueue failed (series):", agentErr);
+        }
       }
 
       const patientForSeriesNotif = await getPatientRepository().findById(existing.patientId, workspaceId);
@@ -519,6 +642,24 @@ export async function cancelAppointmentAction(formData: FormData): Promise<{ suc
           { now, createId: generateId },
         ),
       );
+
+      // Enqueue agent task (fire-and-forget)
+      try {
+        const orchestrator = getOrchestrator();
+        const agentId = "agenda";
+        if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+          await enqueueAgentTask(orchestrator, {
+            workspaceId,
+            agentId,
+            type: "appointment_canceled",
+            priority: "medium",
+            payload: { appointmentId: canceled.id, patientId: canceled.patientId },
+            idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, canceled.id, "canceled"),
+          });
+        }
+      } catch (agentErr) {
+        console.error("[cancelAppointmentAction] Agent enqueue failed:", agentErr);
+      }
 
       const patientForNotif = await getPatientRepository().findById(canceled.patientId, workspaceId);
       if (patientForNotif?.email) {
@@ -608,6 +749,24 @@ export async function completeAppointmentAction(formData: FormData): Promise<{ s
         { now, createId: generateId },
       ),
     );
+
+    // Enqueue agent task (fire-and-forget)
+    try {
+      const orchestrator = getOrchestrator();
+      const agentId = "agenda";
+      if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+        await enqueueAgentTask(orchestrator, {
+          workspaceId,
+          agentId,
+          type: "appointment_completed",
+          priority: "medium",
+          payload: { appointmentId: completed.id, patientId: completed.patientId },
+          idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, completed.id, "completed"),
+        });
+      }
+    } catch (agentErr) {
+      console.error("[completeAppointmentAction] Agent enqueue failed:", agentErr);
+    }
 
     // Auto-create a SessionCharge (idempotent: skip if one already exists for this appointment)
     const financeRepo = getFinanceRepository();
@@ -710,6 +869,24 @@ export async function noShowAppointmentAction(formData: FormData): Promise<{ suc
         { now, createId: generateId },
       ),
     );
+
+    // Enqueue agent task (fire-and-forget) — no-show is higher priority
+    try {
+      const orchestrator = getOrchestrator();
+      const agentId = "agenda";
+      if (await shouldProcessForWorkspace(orchestrator, workspaceId, agentId)) {
+        await enqueueAgentTask(orchestrator, {
+          workspaceId,
+          agentId,
+          type: "appointment_no_show",
+          priority: "high",
+          payload: { appointmentId: noShow.id, patientId: noShow.patientId },
+          idempotencyKey: buildAppointmentAgentIdempotencyKey(agentId, noShow.id, "no_show"),
+        });
+      }
+    } catch (agentErr) {
+      console.error("[noShowAppointmentAction] Agent enqueue failed:", agentErr);
+    }
 
     revalidatePath("/agenda", "page");
     revalidateTag(CACHE_TAGS.appointments);
