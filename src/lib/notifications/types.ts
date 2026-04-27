@@ -5,6 +5,7 @@ export const NOTIFICATION_TYPES = {
   PAYMENT_PENDING: "payment_pending",
   PATIENT_NOSHOW: "patient_noshow",
   BIRTHDAY: "birthday",
+  AGENT_SUMMARY: "agent_summary",
 } as const;
 
 export type NotificationType = typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES];
@@ -53,6 +54,14 @@ export interface BirthdayData {
   birthDate: string; // ISO date string
 }
 
+export interface AgentSummaryData {
+  type: "agent_summary";
+  source: "agenda-agent";
+  summaryTitle: string;
+  summaryDescription: string;
+  date: string; // ISO date string
+}
+
 // Discriminated union — use switch(notification.type) for type narrowing
 export type AppNotification = NotificationBase & (
   | UpdateNotificationData
@@ -60,6 +69,7 @@ export type AppNotification = NotificationBase & (
   | PaymentPendingData
   | PatientNoshowData
   | BirthdayData
+  | AgentSummaryData
 );
 
 // Input type for creating new notifications (id, read, createdAt are auto-generated)

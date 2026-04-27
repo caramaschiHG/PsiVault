@@ -1,0 +1,626 @@
+{
+  "ehr-usability": [
+    {
+      "pmcid": "PMC3692322",
+      "title": "Evaluating the usability of a free electronic health record for training.",
+      "authors": [
+        "Hoyt R",
+        "Adler K",
+        "Ziesemer B"
+      ],
+      "source": "Perspect Health Inf Manag",
+      "pubdate": "2013"
+    },
+    {
+      "pmcid": "PMC11362862",
+      "title": "Electronic Health Record Usability, Satisfaction, and Burnout for Family Physicians.",
+      "authors": [
+        "Holmgren AJ",
+        "Hendrix N",
+        "Maisel N"
+      ],
+      "source": "JAMA Netw Open",
+      "pubdate": "2024 Aug 1"
+    },
+    {
+      "pmcid": "PMC10937093",
+      "title": "Vanderbilt Electronic Health Record Voice Assistant Supports Clinicians.",
+      "authors": [
+        "Kumah-Crystal YA",
+        "Lehmann CU",
+        "Albert D"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2024 Mar"
+    },
+    {
+      "pmcid": "PMC9095343",
+      "title": "Reporting Outcomes of Pediatric Intensive Care Unit Patients to Referring Physicians via an Electronic Health Record-Based Feedback System.",
+      "authors": [
+        "Cifra CL",
+        "Tigges CR",
+        "Miller SL"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2022 Mar"
+    },
+    {
+      "pmcid": "PMC3715367",
+      "title": "Enhancing patient safety and quality of care by improving the usability of electronic health record systems: recommendations from AMIA.",
+      "authors": [
+        "Middleton B",
+        "Bloomrosen M",
+        "Dente MA"
+      ],
+      "source": "J Am Med Inform Assoc",
+      "pubdate": "2013 Jun"
+    },
+    {
+      "pmcid": "PMC7651960",
+      "title": "Are informed policies in place to promote safe and usable EHRs? A cross-industry comparison.",
+      "authors": [
+        "Savage EL",
+        "Fairbanks RJ",
+        "Ratwani RM"
+      ],
+      "source": "J Am Med Inform Assoc",
+      "pubdate": "2017 Jul 1"
+    },
+    {
+      "pmcid": "PMC8890352",
+      "title": "Roadmap to a more useful and usable electronic health record.",
+      "authors": [
+        "Windle JR",
+        "Windle TA",
+        "Shamavu KY"
+      ],
+      "source": "Cardiovasc Digit Health J",
+      "pubdate": "2021 Dec"
+    },
+    {
+      "pmcid": "PMC5653954",
+      "title": "The E-health Literacy Demands of Australia's My Health Record: A Heuristic Evaluation of Usability.",
+      "authors": [
+        "Walsh L",
+        "Hemsley B",
+        "Allan M"
+      ],
+      "source": "Perspect Health Inf Manag",
+      "pubdate": "2017 Fall"
+    }
+  ],
+  "doc-burden": [
+    {
+      "pmcid": "PMC12267243",
+      "title": "Impact of artificial intelligence on electronic health record-related burnouts among healthcare professionals: systematic review.",
+      "authors": [
+        "Sarraf B",
+        "Ghasempour A"
+      ],
+      "source": "Front Public Health",
+      "pubdate": "2025"
+    },
+    {
+      "pmcid": "PMC12700715",
+      "title": "A Preliminary Conceptual Framework of Clinical Documentation Burden: Exploratory Factor Analysis Investigating Usability, Effort, and Perceived Burden among Health Care Providers.",
+      "authors": [
+        "Doherty R",
+        "Kazley AS",
+        "Karp E"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2025 Oct"
+    },
+    {
+      "pmcid": "PMC10134123",
+      "title": "Burnout Related to Electronic Health Record Use in Primary Care.",
+      "authors": [
+        "Budd J"
+      ],
+      "source": "J Prim Care Community Health",
+      "pubdate": "2023 Jan-Dec"
+    },
+    {
+      "pmcid": "PMC12413275",
+      "title": "Qualitative Verification of Machine Learning-Based Burnout Predictors in Primary Care Physicians: An Exploratory Study.",
+      "authors": [
+        "Tawfik D",
+        "Sebok-Syer SS",
+        "Bragdon C"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2025 Aug"
+    },
+    {
+      "pmcid": "PMC10764123",
+      "title": "Interventions to Reduce Electronic Health Record-Related Burnout: A Systematic Review.",
+      "authors": [
+        "Kang C",
+        "Sarkar IN"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2024 Jan"
+    },
+    {
+      "pmcid": "PMC11413435",
+      "title": "Accounting for taste: preferences mediate the relationship between documentation time and ambulatory physician burnout.",
+      "authors": [
+        "Apathy NC",
+        "Hartman-Hall H",
+        "Tran A"
+      ],
+      "source": "J Am Med Inform Assoc",
+      "pubdate": "2024 Oct 1"
+    },
+    {
+      "pmcid": "PMC7392132",
+      "title": "The Influence of Electronic Health Record Use on Physician Burnout: Cross-Sectional Survey.",
+      "authors": [
+        "Tajirian T",
+        "Stergiopoulos V",
+        "Strudwick G"
+      ],
+      "source": "J Med Internet Res",
+      "pubdate": "2020 Jul 15"
+    },
+    {
+      "pmcid": "PMC9581587",
+      "title": "Documentation Burden in Nursing and Its Role in Clinician Burnout Syndrome.",
+      "authors": [
+        "Gesner E",
+        "Dykes PC",
+        "Zhang L"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2022 Oct"
+    }
+  ],
+  "cognitive-workload": [
+    {
+      "pmcid": "PMC7239439",
+      "title": "Phenotyping physician practice patterns and associations with response to a nudge in the electronic health record for influenza vaccination: A quasi-experimental study.",
+      "authors": [
+        "Changolkar S",
+        "Rewley J",
+        "Balachandran M"
+      ],
+      "source": "PLoS One",
+      "pubdate": "2020"
+    },
+    {
+      "pmcid": "PMC6450327",
+      "title": "Association of the Usability of Electronic Health Records With Cognitive Workload and Performance Levels Among Physicians.",
+      "authors": [
+        "Mazur LM",
+        "Mosaly PR",
+        "Moore C"
+      ],
+      "source": "JAMA Netw Open",
+      "pubdate": "2019 Apr 5"
+    },
+    {
+      "pmcid": "PMC12973542",
+      "title": "Wave-off: a mechanism for physician-reduced demand.",
+      "authors": [
+        "Dai Y",
+        "Xu Y",
+        "Zhang J"
+      ],
+      "source": "BMC Health Serv Res",
+      "pubdate": "2026 Feb 5"
+    },
+    {
+      "pmcid": "PMC6991320",
+      "title": "Association of Health Record Visualizations With Physicians' Cognitive Load When Prioritizing Hospitalized Patients.",
+      "authors": [
+        "Pollack AH",
+        "Pratt W"
+      ],
+      "source": "JAMA Netw Open",
+      "pubdate": "2020 Jan 3"
+    },
+    {
+      "pmcid": "PMC9013225",
+      "title": "Evaluation of Physicians' Electronic Health Records Experience Using Actual and Perceived Measures.",
+      "authors": [
+        "Khairat S",
+        "Coleman C",
+        "Ottmar P"
+      ],
+      "source": "Perspect Health Inf Manag",
+      "pubdate": "2022 Winter"
+    },
+    {
+      "pmcid": "PMC6784746",
+      "title": "An Exploration of Barriers, Facilitators, and Suggestions for Improving Electronic Health Record Inbox-Related Usability: A Qualitative Analysis.",
+      "authors": [
+        "Murphy DR",
+        "Giardina TD",
+        "Satterly T"
+      ],
+      "source": "JAMA Netw Open",
+      "pubdate": "2019 Oct 2"
+    },
+    {
+      "pmcid": "PMC12266939",
+      "title": "Analyzing Physician In Basket Burden and Efficiency Using K-Means Clustering.",
+      "authors": [
+        "Lattanze V",
+        "Lan X",
+        "Vander Leest D"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2025 May"
+    },
+    {
+      "pmcid": "PMC8068426",
+      "title": "Measurement of clinical documentation burden among physicians and nurses using electronic health records: a scoping review.",
+      "authors": [
+        "Moy AJ",
+        "Schwartz JM",
+        "Chen R"
+      ],
+      "source": "J Am Med Inform Assoc",
+      "pubdate": "2021 Apr 23"
+    }
+  ],
+  "viz-cognitive": [
+    {
+      "pmcid": "PMC12292122",
+      "title": "Visual Perception and Pre-Attentive Attributes in Oncological Data Visualisation.",
+      "authors": [
+        "Fusco R",
+        "Granata V",
+        "Setola SV"
+      ],
+      "source": "Bioengineering (Basel)",
+      "pubdate": "2025 Jul 18"
+    },
+    {
+      "pmcid": "PMC3668565",
+      "title": "Integrated data visualisation: an approach to capture older adults' wellness.",
+      "authors": [
+        "Le T",
+        "Wilamowska K",
+        "Demiris G"
+      ],
+      "source": "Int J Electron Healthc",
+      "pubdate": "2012"
+    },
+    {
+      "pmcid": "PMC13075341",
+      "title": "Co-Design of Smartphone- and Smartwatch-Based Occupational Health Visualisations in Office Environments.",
+      "authors": [
+        "Probst P",
+        "Santos S",
+        "Barros G"
+      ],
+      "source": "Sensors (Basel)",
+      "pubdate": "2026 Apr 7"
+    },
+    {
+      "pmcid": "PMC12060258",
+      "title": "Visual communication of public health data: a scoping review.",
+      "authors": [
+        "Ofori MA",
+        "Lartey S",
+        "Durneva P"
+      ],
+      "source": "Front Digit Health",
+      "pubdate": "2025"
+    },
+    {
+      "pmcid": "PMC6416684",
+      "title": "Visual Analytics of Genomic and Cancer Data: A Systematic Review.",
+      "authors": [
+        "Qu Z",
+        "Lau CW",
+        "Nguyen QV"
+      ],
+      "source": "Cancer Inform",
+      "pubdate": "2019"
+    },
+    {
+      "pmcid": "PMC11618013",
+      "title": "Toward Guidelines for Designing Holistic Integrated Information Visualizations for Time-Critical Contexts: Systematic Review.",
+      "authors": [
+        "Patel AM",
+        "Baxter W",
+        "Porat T"
+      ],
+      "source": "J Med Internet Res",
+      "pubdate": "2024 Nov 20"
+    },
+    {
+      "pmcid": "PMC12982204",
+      "title": "GazePlotter: An open-source solution for the automatic generation of scarf plots from eye-tracking data.",
+      "authors": [
+        "Vojtechovska M",
+        "Popelka S"
+      ],
+      "source": "Behav Res Methods",
+      "pubdate": "2026 Mar 12"
+    },
+    {
+      "pmcid": "PMC4419889",
+      "title": "Cognitive design of a digital desk for the emergency room setting.",
+      "authors": [
+        "Bang M",
+        "Prytz E",
+        "Rybing J"
+      ],
+      "source": "AMIA Annu Symp Proc",
+      "pubdate": "2014"
+    }
+  ],
+  "alert-fatigue": [
+    {
+      "pmcid": "PMC9132737",
+      "title": "Clinical Decision Support Stewardship: Best Practices and Techniques to Monitor and Improve Interruptive Alerts.",
+      "authors": [
+        "Chaparro JD",
+        "Beus JM",
+        "Dziorny AC"
+      ],
+      "source": "Appl Clin Inform",
+      "pubdate": "2022 May"
+    },
+    {
+      "pmcid": "PMC6080211",
+      "title": "Evaluation of User-Interface Alert Displays for Clinical Decision Support Systems for Sepsis.",
+      "authors": [
+        "Long D",
+        "Capan M",
+        "Mascioli S"
+      ],
+      "source": "Crit Care Nurse",
+      "pubdate": "2018 Aug"
+    },
+    {
+      "pmcid": "PMC3197997",
+      "title": "Making electronic prescribing alerts more effective: scenario-based experimental study in junior doctors.",
+      "authors": [
+        "Scott GP",
+        "Shah P",
+        "Wyatt JC"
+      ],
+      "source": "J Am Med Inform Assoc",
+      "pubdate": "2011 Nov-Dec"
+    },
+    {
+      "pmcid": "PMC7439664",
+      "title": "Translation of evidence into kidney transplant clinical practice: managing drug-lab interactions by a context-aware clinical decision support system.",
+      "authors": [
+        "Niazkhani Z",
+        "Fereidoni M",
+        "Rashidi Khazaee P"
+      ],
+      "source": "BMC Med Inform Decis Mak",
+      "pubdate": "2020 Aug 20"
+    },
+    {
+      "pmcid": "PMC8864797",
+      "title": "Overall performance of a drug-drug interaction clinical decision support system: quantitative evaluation and end-user survey.",
+      "authors": [
+        "Van De Sijpe G",
+        "Quintens C",
+        "Walgraeve K"
+      ],
+      "source": "BMC Med Inform Decis Mak",
+      "pubdate": "2022 Feb 22"
+    },
+    {
+      "pmcid": "PMC6231757",
+      "title": "Clinical Decision Support Systems for Drug Allergy Checking: Systematic Review.",
+      "authors": [
+        "Légat L",
+        "Van Laere S",
+        "Nyssen M"
+      ],
+      "source": "J Med Internet Res",
+      "pubdate": "2018 Sep 7"
+    },
+    {
+      "pmcid": "PMC4955849",
+      "title": "Clinically Inconsequential Alerts: The Characteristics of Opioid Drug Alerts and Their Utility in Preventing Adverse Drug Events in the Emergency Department.",
+      "authors": [
+        "Genco EK",
+        "Forster JE",
+        "Flaten H"
+      ],
+      "source": "Ann Emerg Med",
+      "pubdate": "2016 Feb"
+    },
+    {
+      "pmcid": "PMC7647300",
+      "title": "The tradeoffs between safety and alert fatigue: Data from a national evaluation of hospital medication-related clinical decision support.",
+      "authors": [
+        "Co Z",
+        "Holmgren AJ",
+        "Classen DC"
+      ],
+      "source": "J Am Med Inform Assoc",
+      "pubdate": "2020 Aug 1"
+    }
+  ],
+  "mental-health-ehr": [
+    {
+      "pmcid": "PMC11404022",
+      "title": "Differences in changes of data completeness after the implementation of an electronic medical record in three surgical departments of a German hospital-a longitudinal comparative document analysis.",
+      "authors": [
+        "Wurster F",
+        "Herrmann C",
+        "Beckmann M"
+      ],
+      "source": "BMC Med Inform Decis Mak",
+      "pubdate": "2024 Sep 16"
+    },
+    {
+      "pmcid": "PMC8765238",
+      "title": "Experiences from using patient accessible electronic health records - a qualitative study within Sámi mental health patients in Norway.",
+      "authors": [
+        "Fagerlund AJ",
+        "Kristiansen E",
+        "Simonsen RA"
+      ],
+      "source": "Int J Circumpolar Health",
+      "pubdate": "2022 Dec"
+    },
+    {
+      "pmcid": "PMC3351696",
+      "title": "Naturalistic observation of health-relevant social processes: the electronically activated recorder methodology in psychosomatics.",
+      "authors": [
+        "Mehl MR",
+        "Robbins ML",
+        "Deters FG"
+      ],
+      "source": "Psychosom Med",
+      "pubdate": "2012 May"
+    },
+    {
+      "pmcid": "PMC8941946",
+      "title": "Patient and Provider Experience of Electronic Patient Portals and Secure Messaging in Mental Health Treatment.",
+      "authors": [
+        "Turvey CL",
+        "Fuhrmeister LA",
+        "Klein DM"
+      ],
+      "source": "Telemed J E Health",
+      "pubdate": "2022 Feb"
+    },
+    {
+      "pmcid": "PMC12844583",
+      "title": "Observer: creation of a novel multimodal dataset for outpatient care research.",
+      "authors": [
+        "Johnson KB",
+        "Alasaly B",
+        "Jang KJ"
+      ],
+      "source": "J Am Med Inform Assoc",
+      "pubdate": "2026 Feb 1"
+    },
+    {
+      "pmcid": "PMC11681280",
+      "title": "Enhancing Standardized and Structured Recording by Elderly Care Physicians for Reusing Electronic Health Record Data: Interview Study.",
+      "authors": [
+        "Albers CAW",
+        "Wieland-Jorna Y",
+        "de Bruijne MC"
+      ],
+      "source": "JMIR Med Inform",
+      "pubdate": "2024 Dec 13"
+    },
+    {
+      "pmcid": "PMC12852219",
+      "title": "How Often, where and by whom are Adverse Experiences Recorded in Clinical Records of Service-Users Under the Care of an Early Intervention in Psychosis (EIP) Service?",
+      "authors": [
+        "Davison H",
+        "Sopp M",
+        "Bennetts A"
+      ],
+      "source": "Community Ment Health J",
+      "pubdate": "2026 Feb"
+    },
+    {
+      "pmcid": "PMC9588722",
+      "title": "Collection and Utilization of Patient-Reported Outcome Measures in a Colorectal Surgery Clinic.",
+      "authors": [
+        "Harrison NJ",
+        "Lopez AA",
+        "Shroder MM"
+      ],
+      "source": "J Surg Res",
+      "pubdate": "2022 Dec"
+    }
+  ],
+  "healthcare-accessibility": [
+    {
+      "pmcid": "PMC10001568",
+      "title": "Learning Designers as Expert Evaluators of Usability: Understanding Their Potential Contribution to Improving the Universality of Interface Design for Health Resources.",
+      "authors": [
+        "Adams A",
+        "Miller-Lewis L",
+        "Tieman J"
+      ],
+      "source": "Int J Environ Res Public Health",
+      "pubdate": "2023 Mar 5"
+    },
+    {
+      "pmcid": "PMC13015912",
+      "title": "Co-Designing a Digital Platform to Support a Culturally Adapted Family Intervention (CaFI:Digital) for Psychosis Among People of Sub-Saharan African and Caribbean Descent: Agile Co-Design Approach.",
+      "authors": [
+        "Whelan P",
+        "Lemetyinen H",
+        "Morley H"
+      ],
+      "source": "JMIR Form Res",
+      "pubdate": "2026 Mar 25"
+    },
+    {
+      "pmcid": "PMC4765673",
+      "title": "Analysis of empty responses from electronic resources in infobutton managers.",
+      "authors": [
+        "Long J",
+        "Hulse NC",
+        "Tao C"
+      ],
+      "source": "AMIA Annu Symp Proc",
+      "pubdate": "2015"
+    },
+    {
+      "pmcid": "PMC12188898",
+      "title": "Inaccessible and Deceptive: Examining Experiences of Deceptive Design with People Who Use Visual Accessibility Technology.",
+      "authors": [
+        "Lewis A",
+        "Martinez JJ",
+        "Das M"
+      ],
+      "source": "Proc SIGCHI Conf Hum Factor Comput Syst",
+      "pubdate": "2025"
+    },
+    {
+      "pmcid": "PMC4265225",
+      "title": "Designing a patient-centered user interface for access decisions about EHR data: implications from patient interviews.",
+      "authors": [
+        "Caine K",
+        "Kohn S",
+        "Lawrence C"
+      ],
+      "source": "J Gen Intern Med",
+      "pubdate": "2015 Jan"
+    },
+    {
+      "pmcid": "PMC10952138",
+      "title": "Application and evolution of design in oral health: A systematic mapping study with an interactive evidence map.",
+      "authors": [
+        "Leason I",
+        "Longridge N",
+        "Nickpour F"
+      ],
+      "source": "Community Dent Oral Epidemiol",
+      "pubdate": "2024 Feb"
+    },
+    {
+      "pmcid": "PMC6277116",
+      "title": "Rosetta FunFolDes - A general framework for the computational design of functional proteins.",
+      "authors": [
+        "Bonet J",
+        "Wehrle S",
+        "Schriever K"
+      ],
+      "source": "PLoS Comput Biol",
+      "pubdate": "2018 Nov"
+    },
+    {
+      "pmcid": "PMC7659481",
+      "title": "Biosensing and Actuation-Platforms Coupling Body Input-Output Modalities for Affective Technologies.",
+      "authors": [
+        "Alfaras M",
+        "Primett W",
+        "Umair M"
+      ],
+      "source": "Sensors (Basel)",
+      "pubdate": "2020 Oct 22"
+    }
+  ]
+}

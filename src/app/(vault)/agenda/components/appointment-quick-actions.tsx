@@ -18,6 +18,7 @@ import {
 } from "../../appointments/actions";
 import { RecurrenceScopeDialog } from "../../appointments/components/recurrence-scope-dialog";
 import { useToast } from "../../../../components/ui/toast-provider";
+import { useNotifications } from "../../../../components/ui/notification-context";
 import type { AppointmentStatus } from "../../../../lib/appointments/model";
 
 interface AppointmentQuickActionsProps {
@@ -38,6 +39,7 @@ export function AppointmentQuickActions({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
+  const { addNotification } = useNotifications();
 
   if (status !== "SCHEDULED" && status !== "CONFIRMED") return null;
 
@@ -95,6 +97,9 @@ export function AppointmentQuickActions({
               const result = await completeAppointmentAction(formData);
               if (result.success) {
                 toast("Consulta concluída");
+                if (result.dailySummary) {
+                  addNotification(result.dailySummary);
+                }
                 setShowCompleteForm(false);
                 setPatientRecordEntry("");
                 router.refresh();

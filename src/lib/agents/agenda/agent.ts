@@ -1,6 +1,7 @@
 import type { Agent, AgentTask } from "../model";
 import { batchRemindersForDay, MockReminderSender } from "./reminder-sender";
 import { getPatientAttendanceBySlot, getTopSuggestions } from "./schedule-optimizer";
+import { generateDailySummary } from "./daily-summary";
 
 /**
  * Create the Agenda Agent that handles background tasks for:
@@ -52,7 +53,17 @@ export function createAgendaAgent(): Agent {
         }
 
         case "daily_summary": {
-          return { status: "SKIPPED", errorNote: "Not yet implemented — Plan 44-04" };
+          const { workspaceId, accountId, date, noShowsDetected, remindersSent, suggestionsGenerated } =
+            task.payload as { workspaceId: string; accountId: string; date: string; noShowsDetected: number; remindersSent: number; suggestionsGenerated: number };
+          const summary = generateDailySummary({
+            date: new Date(date),
+            workspaceId,
+            accountId,
+            noShowsDetected: noShowsDetected ?? 0,
+            remindersSent: remindersSent ?? 0,
+            suggestionsGenerated: suggestionsGenerated ?? 0,
+          });
+          return { status: "DONE", output: { summary } };
         }
 
         default: {

@@ -9,6 +9,7 @@ export {
   type PaymentPendingData,
   type PatientNoshowData,
   type BirthdayData,
+  type AgentSummaryData,
 } from "./types";
 
 export {

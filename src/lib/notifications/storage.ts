@@ -9,6 +9,7 @@ export interface NotificationStorage {
 
 const STORAGE_KEY = "psivault_notifications_v2";
 const MAX_STORED = 50;
+const AGENT_SUMMARY_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 // localStorage implementation
 export class LocalNotificationStorage implements NotificationStorage {
@@ -16,7 +17,20 @@ export class LocalNotificationStorage implements NotificationStorage {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return [];
-      return JSON.parse(raw) as AppNotification[];
+      const all = JSON.parse(raw) as AppNotification[];
+      const now = Date.now();
+      // Remove agent_summary notifications older than 7 days
+      const filtered = all.filter((n) => {
+        if (n.type === "agent_summary") {
+          return now - n.createdAt < AGENT_SUMMARY_MAX_AGE_MS;
+        }
+        return true;
+      });
+      // Persist the cleanup
+      if (filtered.length < all.length) {
+        this.save(filtered);
+      }
+      return filtered;
     } catch {
       return [];
     }
