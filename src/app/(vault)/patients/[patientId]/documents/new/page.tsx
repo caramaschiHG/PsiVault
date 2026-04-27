@@ -147,10 +147,10 @@ export default async function DocumentComposerPage({
             <Link
               key={type}
               href={`/patients/${patientId}/documents/new?type=${type}`}
-              style={typeCardStyle}
+              className="document-type-card"
             >
               <div style={typeCardHeaderStyle}>
-                <span style={typeCardAccentStyle} aria-hidden="true" />
+                <span className="document-type-accent" aria-hidden="true" />
                 <span style={typeCardCategoryStyle}>{category}</span>
               </div>
               <strong style={typeCardNameStyle}>{DOCUMENT_TYPE_LABELS[type]}</strong>
@@ -254,7 +254,7 @@ export default async function DocumentComposerPage({
 
       {/* Signature notice (non-blocking) */}
       {!hasSignature && (
-        <p style={noticeStyle}>
+        <p className="inline-notice">
           Para assinar documentos, configure sua assinatura em{" "}
           <Link href="/settings/profile">Configurações → Perfil</Link>.
         </p>
@@ -414,30 +414,10 @@ const typeGridStyle = {
   gap: "1rem",
 } satisfies React.CSSProperties;
 
-const typeCardStyle = {
-  display: "grid",
-  gap: "0.75rem",
-  padding: "1.2rem 1.25rem",
-  borderRadius: "var(--radius-lg)",
-  background: "linear-gradient(180deg, rgba(255, 253, 250, 0.98) 0%, rgba(250, 247, 243, 0.96) 100%)",
-  border: "1px solid rgba(146, 64, 14, 0.1)",
-  textDecoration: "none",
-  boxShadow: "var(--shadow-card-subtle)",
-  minHeight: "196px",
-  alignContent: "start",
-} satisfies React.CSSProperties;
-
 const typeCardHeaderStyle = {
   display: "flex",
   alignItems: "center",
   gap: "0.6rem",
-} satisfies React.CSSProperties;
-
-const typeCardAccentStyle = {
-  width: "2.1rem",
-  height: "1px",
-  background: "rgba(120, 53, 15, 0.55)",
-  flexShrink: 0,
 } satisfies React.CSSProperties;
 
 const typeCardCategoryStyle = {
@@ -468,42 +448,4 @@ const typeCardActionStyle = {
   color: "var(--color-accent)",
   fontWeight: 600,
   letterSpacing: "0.04em",
-} satisfies React.CSSProperties;
-
-const gateNoticeStyle = {
-  padding: "2rem",
-  borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
-  boxShadow: "var(--shadow-xs)",
-  display: "grid",
-  gap: "1rem",
-} satisfies React.CSSProperties;
-
-const gateNoticeTextStyle = {
-  margin: 0,
-  fontSize: "1rem",
-  color: "var(--color-text-1)",
-  fontWeight: 500,
-} satisfies React.CSSProperties;
-
-const gateNoticeLinkStyle = {
-  display: "inline-block",
-  padding: "0.75rem 1.5rem",
-  borderRadius: "var(--radius-md)",
-  background: "var(--color-accent)",
-  color: "var(--color-surface-0)",
-  textDecoration: "none",
-  fontWeight: 700,
-  fontSize: "0.95rem",
-  width: "fit-content",
-} satisfies React.CSSProperties;
-
-const noticeStyle = {
-  fontSize: "0.82rem",
-  color: "var(--color-text-2)",
-  padding: "0.75rem 1rem",
-  background: "rgba(248, 250, 252, 0.8)",
-  borderRadius: "var(--radius-md)",
-  marginBottom: "1rem",
 } satisfies React.CSSProperties;

@@ -190,8 +190,8 @@ const totalsValueStyle = {
 const sidebarCardStyle = {
   padding: "1.5rem",
   borderRadius: "var(--radius-xl)",
-  background: "rgba(255, 252, 247, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.14)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
   boxShadow: "var(--shadow-card-elevated)",
   display: "grid",
   gap: "0.9rem",

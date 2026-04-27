@@ -867,8 +867,8 @@ const createDocStyleSecondary: React.CSSProperties = {
   gap: "0.4rem",
   padding: "0.48rem 1rem",
   borderRadius: "var(--radius-md)",
-  background: "rgba(255, 247, 237, 0.9)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
+  background: "var(--color-accent-light)",
+  border: "1px solid var(--color-border-med)",
   color: "var(--color-warning-text)",
   textDecoration: "none",
   fontWeight: 600,
@@ -915,8 +915,8 @@ const commLinkStyle = {
   fontWeight: 500,
   padding: "0.15rem 0.55rem",
   borderRadius: "var(--radius-xs)",
-  background: "rgba(255, 247, 237, 0.8)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
+  background: "var(--color-accent-light)",
+  border: "1px solid var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const onlineSectionStyle = {

@@ -134,8 +134,8 @@ const downloadLinkStyle: React.CSSProperties = {
   textDecoration: "none",
   padding: "0.45rem 1rem",
   borderRadius: "var(--radius-pill)",
-  border: "1px solid rgba(146, 64, 14, 0.3)",
-  background: "rgba(255, 247, 237, 0.6)",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-1)",
   cursor: "pointer",
   fontFamily: "inherit",
 };
@@ -170,8 +170,8 @@ const archiveButtonStyle: React.CSSProperties = {
   cursor: "pointer",
   padding: "0.45rem 1rem",
   borderRadius: "var(--radius-pill)",
-  border: "1px solid rgba(120, 113, 108, 0.3)",
-  background: "rgba(248, 246, 243, 0.8)",
+  border: "1px solid var(--color-border)",
+  background: "var(--color-surface-1)",
   fontFamily: "inherit",
 };
 

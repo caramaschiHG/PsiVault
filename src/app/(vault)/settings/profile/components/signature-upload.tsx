@@ -280,16 +280,16 @@ const dropZoneStyle = {
   justifyItems: "center",
   padding: "1.75rem 1.25rem",
   borderRadius: "var(--radius-md)",
-  border: "2px dashed rgba(146, 64, 14, 0.25)",
-  background: "rgba(255, 247, 237, 0.5)",
+  border: "2px dashed var(--color-border-med)",
+  background: "var(--color-accent-light)",
   cursor: "pointer",
   textAlign: "center" as const,
   transition: "border-color 0.15s, background 0.15s",
 } satisfies React.CSSProperties;
 
 const dropZoneActiveStyle = {
-  borderColor: "rgba(146, 64, 14, 0.6)",
-  background: "rgba(255, 237, 213, 0.5)",
+  borderColor: "var(--color-accent)",
+  background: "var(--color-accent-light)",
 } satisfies React.CSSProperties;
 
 const previewEyebrowStyle = {

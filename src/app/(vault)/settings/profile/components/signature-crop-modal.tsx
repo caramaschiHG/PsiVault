@@ -477,15 +477,15 @@ const resultPanelBase = {
 // Painel "Original" — dashed border, fundo levemente cinza-quente
 const resultPanelOriginalStyle = {
   ...resultPanelBase,
-  background: "rgba(247, 244, 240, 0.9)",
-  border: "1px dashed rgba(146, 64, 14, 0.2)",
+  background: "var(--color-surface-1)",
+  border: "1px dashed var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 // Painel "Digitalizada" — solid border + shadow: é o output, hierarquia visual superior
 const resultPanelDigitalStyle = {
   ...resultPanelBase,
   background: "var(--color-surface-1)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
+  border: "1px solid var(--color-border-med)",
   boxShadow: "var(--shadow-sm)",
 } satisfies React.CSSProperties;
 

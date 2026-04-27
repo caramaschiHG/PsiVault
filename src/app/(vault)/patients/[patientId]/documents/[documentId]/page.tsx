@@ -167,9 +167,9 @@ const navCurrentStyle = {
 
 const metaStyle: React.CSSProperties = {
   padding: "0.5rem 0.75rem",
-  background: "rgba(248, 246, 243, 0.6)",
+  background: "var(--color-surface-1)",
   borderRadius: "var(--radius-md)",
-  border: "1px solid rgba(146, 64, 14, 0.08)",
+  border: "1px solid var(--color-border)",
   fontSize: "0.78rem",
 };
 

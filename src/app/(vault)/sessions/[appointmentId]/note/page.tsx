@@ -181,8 +181,8 @@ const titleStyle = {
 const sessionHeaderStyle = {
   padding: "1rem 1.25rem",
   borderRadius: "var(--radius-lg)",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
   boxShadow: "var(--shadow-card-subtle)",
   display: "grid",
   gap: "0.4rem",

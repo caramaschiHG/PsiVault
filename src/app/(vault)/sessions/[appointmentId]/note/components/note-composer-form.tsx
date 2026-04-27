@@ -115,7 +115,7 @@ export function NoteComposerForm({
         <div style={toolbarStyle}>
           <AutoSaveIndicator status={status} lastSaved={lastSaved} />
           <span style={{ fontSize: "0.72rem", color: "var(--color-text-3)" }}>{wordCount} palavras</span>
-          <button type="button" onClick={() => toggleFocusMode()} style={focusBtnStyle}>
+          <button type="button" onClick={() => toggleFocusMode()} className="focus-btn">
             {focusMode ? "Sair do modo foco" : "Modo foco"}
           </button>
         </div>
@@ -131,18 +131,18 @@ export function NoteComposerForm({
 
         {/* Template cards (shown when empty or on click) */}
         {!focusMode && showTemplates && (
-          <div style={templateGridStyle}>
+          <div className="template-grid">
             <p style={{ gridColumn: "1/-1", margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Escolha um template
             </p>
             {TEMPLATES.map((t) => (
-              <button key={t.id} type="button" onClick={() => applyTemplate(t.id)} style={templateCardStyle}>
+              <button key={t.id} type="button" onClick={() => applyTemplate(t.id)} className="template-card-solid">
                 <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--color-text-1)" }}>{t.label}</span>
                 <span style={{ fontSize: "0.78rem", color: "var(--color-text-3)" }}>{t.desc}</span>
               </button>
             ))}
             {!existingNote && (
-              <button type="button" onClick={() => setShowTemplates(false)} style={{ ...templateCardStyle, opacity: 0.6 }}>
+              <button type="button" onClick={() => setShowTemplates(false)} className="template-card-solid" style={{ opacity: 0.6 }}>
                 <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "var(--color-text-2)" }}>Começar em branco</span>
               </button>
             )}
@@ -166,12 +166,8 @@ export function NoteComposerForm({
             id="freeText" name="freeText" value={freeTextValue}
             placeholder="Escreva o registro clínico que deve compor o prontuário."
             onChange={handleFreeTextChange}
-            style={{
-              ...primaryTextareaStyle,
-              ...(focusMode ? {
-                fontSize: "1rem",
-              } : {}),
-            }}
+            className="note-textarea-primary"
+            style={focusMode ? { fontSize: "1rem" } : undefined}
             required
           />
         </div>
@@ -179,7 +175,7 @@ export function NoteComposerForm({
 
       {/* Optional structured fields — hidden in focus mode */}
       {!focusMode && (
-        <section style={optionalSectionStyle} className="focus-mode-hideable">
+        <section className="optional-section focus-mode-hideable">
           <h2 style={optionalSectionHeadingStyle}>Campos opcionais</h2>
           <div style={optionalFieldsGridStyle}>
             {[
@@ -191,7 +187,7 @@ export function NoteComposerForm({
             ].map((f) => (
               <div key={f.id} style={fieldGroupStyle}>
                 <label htmlFor={f.id} style={labelStyle}>{f.label}</label>
-                <textarea id={f.id} name={f.id} defaultValue={f.default ?? ""} placeholder={f.placeholder} onChange={() => markDirty()} rows={3} style={secondaryTextareaStyle} />
+                <textarea id={f.id} name={f.id} defaultValue={f.default ?? ""} placeholder={f.placeholder} onChange={() => markDirty()} rows={3} className="note-textarea-secondary" />
               </div>
             ))}
           </div>
@@ -213,19 +209,12 @@ export function NoteComposerForm({
 
 const formStyle: React.CSSProperties = { display: "grid", gap: "1.25rem" };
 const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" };
-const focusBtnStyle: React.CSSProperties = { background: "transparent", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 8, padding: "0.3rem 0.65rem", fontSize: "0.78rem", cursor: "pointer", color: "var(--color-text-2)" };
-
-const templateGridStyle: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0.5rem", padding: "1rem", borderRadius: "var(--radius-md)", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.7)" };
-const templateCardStyle: React.CSSProperties = { display: "grid", gap: "0.15rem", padding: "0.75rem 1rem", borderRadius: "var(--radius-md)", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.95)", cursor: "pointer", textAlign: "left", transition: "border-color 120ms ease, box-shadow 120ms ease" };
 
 const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.4rem" };
 const labelStyle: React.CSSProperties = { fontSize: "0.875rem", fontWeight: 600, color: "var(--color-text-1)" };
-const primaryTextareaStyle: React.CSSProperties = { width: "100%", minHeight: "200px", padding: "0.875rem 1rem", borderRadius: "var(--radius-md)", border: "1px solid rgba(146,64,14,0.2)", background: "rgba(255,252,247,0.95)", fontSize: "0.95rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.6", outline: "none", boxSizing: "border-box" };
 
-const optionalSectionStyle: React.CSSProperties = { display: "grid", gap: "1rem", padding: "1.25rem", borderRadius: "var(--radius-lg)", background: "rgba(248,250,252,0.6)", border: "1px solid rgba(226,232,240,0.8)" };
 const optionalSectionHeadingStyle: React.CSSProperties = { margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-4)", textTransform: "uppercase", letterSpacing: "0.1em" };
 const optionalFieldsGridStyle: React.CSSProperties = { display: "grid", gap: "1rem" };
-const secondaryTextareaStyle: React.CSSProperties = { width: "100%", padding: "0.75rem 0.875rem", borderRadius: "var(--radius-sm)", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.9)", fontSize: "0.875rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.55", outline: "none", boxSizing: "border-box" };
 
 const editorContainerNormalStyle: React.CSSProperties = { width: "100%" };
 const editorContainerFocusStyle: React.CSSProperties = { maxWidth: "70ch", margin: "0 auto", width: "100%" };

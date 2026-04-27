@@ -279,8 +279,8 @@ const completeContainerStyle = {
   gap: "0.75rem",
   padding: "0.8rem",
   borderRadius: "var(--radius-md)",
-  background: "rgba(255, 252, 247, 0.95)",
-  border: "1px solid rgba(146, 64, 14, 0.12)",
+  background: "var(--color-surface-0)",
+  border: "1px solid var(--color-border)",
 } satisfies React.CSSProperties;
 
 const completeFormStyle = {
@@ -298,8 +298,8 @@ const completeTextareaStyle = {
   width: "100%",
   padding: "0.75rem 0.9rem",
   borderRadius: "var(--radius-md)",
-  border: "1px solid rgba(146, 64, 14, 0.16)",
-  background: "rgba(255,255,255,0.98)",
+  border: "1px solid var(--color-border-med)",
+  background: "var(--color-surface-0)",
   fontSize: "0.85rem",
   lineHeight: 1.6,
   resize: "vertical" as const,

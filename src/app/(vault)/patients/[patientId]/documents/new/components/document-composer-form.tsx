@@ -78,13 +78,13 @@ export function DocumentComposerForm({
       <input type="hidden" name="content" value={contentValue} />
 
       {/* Toolbar: type label + auto-save + word count + focus mode */}
-      <div style={toolbarStyle}>
+      <div className="document-toolbar">
         <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--color-text-2)" }}>
           {typeLabel}
           {isSessionRecord && (
             <span style={{
               display: "inline-block", marginLeft: "0.4rem", padding: "0.08rem 0.4rem",
-              borderRadius: "var(--radius-pill)", background: "rgba(146,64,14,0.1)", color: "var(--color-warning-text)",
+              borderRadius: "var(--radius-pill)", background: "var(--color-accent-light)", color: "var(--color-warning-text)",
               fontSize: "0.68rem", fontWeight: 600, textTransform: "uppercase",
             }}>Privado</span>
           )}
@@ -95,7 +95,7 @@ export function DocumentComposerForm({
           <button
             type="button"
             onClick={toggleFocusMode}
-            style={focusBtnStyle}
+            className="focus-btn"
           >
             {focusMode ? "Sair do modo foco" : "Modo foco"}
           </button>
@@ -147,8 +147,6 @@ export function DocumentComposerForm({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const formStyle: React.CSSProperties = { display: "grid", gap: "1.25rem" };
-const toolbarStyle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-md)", background: "rgba(248,250,252,0.5)" };
-const focusBtnStyle: React.CSSProperties = { background: "transparent", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 8, padding: "0.3rem 0.65rem", fontSize: "0.78rem", cursor: "pointer", color: "var(--color-text-2)" };
 const patientIdBarStyle: React.CSSProperties = { fontSize: "var(--font-size-meta)", color: "var(--color-text-3)", textAlign: "center", padding: "0.5rem 0" };
 const fieldGroupStyle: React.CSSProperties = { display: "grid", gap: "0.5rem" };
 const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
@@ -159,7 +157,7 @@ const submitButtonStyle: React.CSSProperties = {
 
 const backButtonStyle: React.CSSProperties = {
   padding: "0.75rem 1.5rem", borderRadius: "var(--radius-lg)", background: "var(--color-surface-0)", color: "var(--color-text-2)",
-  border: "1px solid rgba(146, 64, 14, 0.2)", fontWeight: 600, fontSize: "0.95rem", textDecoration: "none",
+  border: "1px solid var(--color-border-med)", fontWeight: 600, fontSize: "0.95rem", textDecoration: "none",
   cursor: "pointer", fontFamily: "inherit",
 };
 

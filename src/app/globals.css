@@ -1360,6 +1360,165 @@ label[for], .nav-link, summary {
   transform: scale(0.98);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT-SPECIFIC UTILITIES — Dark-mode safe via tokens
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Template grid & cards (note composer) ─────────────────────────── */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-0);
+  border: 1px solid var(--color-border);
+}
+
+.template-card-solid {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-1);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.template-card-solid:hover {
+  border-color: var(--color-border-med);
+  box-shadow: var(--shadow-xs);
+}
+.template-card-solid:active {
+  transform: scale(0.98);
+}
+
+/* ─── Note composer textareas ───────────────────────────────────────── */
+.note-textarea-primary {
+  width: 100%;
+  min-height: 200px;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-med);
+  background: var(--color-surface-0);
+  font-size: 0.95rem;
+  color: var(--color-text-1);
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.6;
+  outline: none;
+  box-sizing: border-box;
+}
+.note-textarea-primary:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.note-textarea-secondary {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-0);
+  font-size: 0.875rem;
+  color: var(--color-text-1);
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.55;
+  outline: none;
+  box-sizing: border-box;
+}
+.note-textarea-secondary:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+/* ─── Optional section (note composer) ──────────────────────────────── */
+.optional-section {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+}
+
+/* ─── Focus button ──────────────────────────────────────────────────── */
+.focus-btn {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--color-text-2);
+  transition: border-color var(--duration-100), color var(--duration-100);
+}
+.focus-btn:hover {
+  border-color: var(--color-border-med);
+  color: var(--color-text-1);
+}
+
+/* ─── Document composer toolbar ─────────────────────────────────────── */
+.document-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-1);
+}
+
+/* ─── Document type selection cards ─────────────────────────────────── */
+.document-type-card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.2rem 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-0);
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  box-shadow: var(--shadow-card-subtle);
+  min-height: 196px;
+  align-content: start;
+  transition: border-color var(--duration-100), box-shadow var(--duration-100), transform var(--duration-200) var(--ease-out);
+}
+.document-type-card:hover {
+  border-color: var(--color-border-med);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.document-type-accent {
+  width: 2.1rem;
+  height: 1px;
+  background: var(--color-border-med);
+  flex-shrink: 0;
+}
+
+/* ─── Gate notice ───────────────────────────────────────────────────── */
+.gate-notice {
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-0);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xs);
+  display: grid;
+  gap: 1rem;
+}
+
+/* ─── Inline notice ─────────────────────────────────────────────────── */
+.inline-notice {
+  font-size: 0.82rem;
+  color: var(--color-text-2);
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-1);
+  border-radius: var(--radius-md);
+}
+
 /* ─── External link indicator ─────────────────────────────────────────── */
 .external-link {
   position: relative;

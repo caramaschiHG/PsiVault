@@ -21,8 +21,8 @@ export function SetupStepCard({
     <article
       style={{
         ...cardStyle,
-        borderColor: highlight ? "rgba(180, 83, 9, 0.38)" : "rgba(146, 64, 14, 0.12)",
-        background: highlight ? "rgba(255, 247, 237, 0.96)" : "rgba(255, 255, 255, 0.72)",
+        borderColor: highlight ? "var(--color-accent)" : "var(--color-border)",
+        background: highlight ? "var(--color-accent-light)" : "var(--color-surface-0)",
       }}
     >
       <div style={indexBadgeStyle}>{index.toString().padStart(2, "0")}</div>
@@ -39,8 +39,8 @@ export function SetupStepCard({
               ...chipStyle,
               color: step.required ? "var(--color-accent)" : "var(--color-text-2)",
               background: step.required
-                ? "rgba(251, 191, 36, 0.18)"
-                : "rgba(214, 211, 209, 0.4)",
+                ? "var(--color-warning-bg)"
+                : "var(--color-surface-1)",
             }}
           >
             {step.required ? "Agora" : "Depois"}

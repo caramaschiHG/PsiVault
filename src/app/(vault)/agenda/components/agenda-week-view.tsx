@@ -105,8 +105,8 @@ const dayHeadingStyle = {
 } satisfies React.CSSProperties;
 
 const todayHeadingStyle = {
-  background: "rgba(255, 247, 237, 0.8)",
-  border: "1px solid rgba(146, 64, 14, 0.16)",
+  background: "var(--color-accent-light)",
+  border: "1px solid var(--color-border-med)",
 } satisfies React.CSSProperties;
 
 const dayNameStyle = {
