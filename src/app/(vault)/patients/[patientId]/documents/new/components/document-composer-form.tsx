@@ -18,7 +18,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { AutoSaveIndicator } from "@/components/ui/auto-save-indicator";
 import { FormSubmitButton } from "@/components/ui/form-submit-button";
 import { useDocumentAutoSave } from "@/hooks/use-document-auto-save";
-import { useFocusMode } from "../../../../../../components/focus-mode-context";
+import { useFocusMode } from "../../../../../components/focus-mode-context";
 
 interface DocumentComposerFormProps {
   defaultContent: string;

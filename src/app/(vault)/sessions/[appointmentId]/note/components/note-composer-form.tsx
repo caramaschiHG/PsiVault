@@ -129,49 +129,52 @@ export function NoteComposerForm({
           </div>
         )}
 
-      {/* Template cards (shown when empty or on click) */}
-      {showTemplates && (
-        <div style={templateGridStyle}>
-          <p style={{ gridColumn: "1/-1", margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            Escolha um template
-          </p>
-          {TEMPLATES.map((t) => (
-            <button key={t.id} type="button" onClick={() => applyTemplate(t.id)} style={templateCardStyle}>
-              <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--color-text-1)" }}>{t.label}</span>
-              <span style={{ fontSize: "0.78rem", color: "var(--color-text-3)" }}>{t.desc}</span>
-            </button>
-          ))}
-          {!existingNote && (
-            <button type="button" onClick={() => setShowTemplates(false)} style={{ ...templateCardStyle, opacity: 0.6 }}>
-              <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "var(--color-text-2)" }}>Começar em branco</span>
-            </button>
-          )}
-        </div>
-      )}
+        {/* Template cards (shown when empty or on click) */}
+        {!focusMode && showTemplates && (
+          <div style={templateGridStyle}>
+            <p style={{ gridColumn: "1/-1", margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-3)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Escolha um template
+            </p>
+            {TEMPLATES.map((t) => (
+              <button key={t.id} type="button" onClick={() => applyTemplate(t.id)} style={templateCardStyle}>
+                <span style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--color-text-1)" }}>{t.label}</span>
+                <span style={{ fontSize: "0.78rem", color: "var(--color-text-3)" }}>{t.desc}</span>
+              </button>
+            ))}
+            {!existingNote && (
+              <button type="button" onClick={() => setShowTemplates(false)} style={{ ...templateCardStyle, opacity: 0.6 }}>
+                <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "var(--color-text-2)" }}>Começar em branco</span>
+              </button>
+            )}
+          </div>
+        )}
 
-      {/* Primary free-text area */}
-      <div style={fieldGroupStyle}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "0.5rem" }}>
-          <label htmlFor="freeText" style={labelStyle}>Registro principal do prontuário</label>
-          {!showTemplates && existingNote && (
-            <button type="button" onClick={() => setShowTemplates(true)} style={{ fontSize: "0.75rem", color: "var(--color-accent)", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}>
-              Templates
-            </button>
+        {/* Primary free-text area */}
+        <div style={fieldGroupStyle}>
+          {!focusMode && (
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "0.5rem" }}>
+              <label htmlFor="freeText" style={labelStyle}>Registro principal do prontuário</label>
+              {!showTemplates && existingNote && (
+                <button type="button" onClick={() => setShowTemplates(true)} style={{ fontSize: "0.75rem", color: "var(--color-accent)", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}>
+                  Templates
+                </button>
+              )}
+            </div>
           )}
-        </div>
 
-        <textarea
-          id="freeText" name="freeText" value={freeTextValue}
-          placeholder="Escreva o registro clínico que deve compor o prontuário."
-          onChange={handleFreeTextChange}
-          style={{
-            ...primaryTextareaStyle,
-            ...(focusMode ? {
-              fontSize: "1rem",
-            } : {}),
-          }}
-          required
-        />
+          <textarea
+            id="freeText" name="freeText" value={freeTextValue}
+            placeholder="Escreva o registro clínico que deve compor o prontuário."
+            onChange={handleFreeTextChange}
+            style={{
+              ...primaryTextareaStyle,
+              ...(focusMode ? {
+                fontSize: "1rem",
+              } : {}),
+            }}
+            required
+          />
+        </div>
       </div>
 
       {/* Optional structured fields — hidden in focus mode */}
@@ -196,10 +199,12 @@ export function NoteComposerForm({
       )}
 
       {/* Form actions */}
-      <div style={formActionsStyle}>
-        <SubmitButton label={submitLabel} />
-        <Link href={backHref} style={cancelLinkStyle} onClick={handleCancelClick}>Cancelar</Link>
-      </div>
+      {!focusMode && (
+        <div style={formActionsStyle}>
+          <SubmitButton label={submitLabel} />
+          <Link href={backHref} style={cancelLinkStyle} onClick={handleCancelClick}>Cancelar</Link>
+        </div>
+      )}
     </form>
   );
 }

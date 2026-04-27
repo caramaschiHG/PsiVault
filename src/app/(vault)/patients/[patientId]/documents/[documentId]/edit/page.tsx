@@ -7,6 +7,7 @@
  */
 
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { getPatientRepository } from "../../../../../../../lib/patients/store";
 import { getDocumentRepository } from "../../../../../../../lib/documents/store";
 import { updateDocumentAction } from "./actions";
