@@ -73,7 +73,7 @@ export default async function NotePage({ params }: NotePageProps) {
   return (
     <main style={shellStyle}>
       {/* Breadcrumb */}
-      <nav style={breadcrumbStyle}>
+      <nav style={breadcrumbStyle} className="focus-mode-hideable" aria-label="breadcrumb">
         <Link href="/patients" style={breadcrumbLinkStyle}>
           Pacientes
         </Link>
@@ -86,7 +86,7 @@ export default async function NotePage({ params }: NotePageProps) {
       </nav>
 
       {/* Page heading */}
-      <div style={headingStyle}>
+      <div style={headingStyle} className="focus-mode-hideable">
         <p style={eyebrowStyle}>Prontuário clínico</p>
         <h1 style={titleStyle}>
           {existingNote ? "Editar registro do prontuário" : "Registrar prontuário"}
@@ -94,7 +94,7 @@ export default async function NotePage({ params }: NotePageProps) {
       </div>
 
       {/* Read-only session context header */}
-      <section style={sessionHeaderStyle}>
+      <section style={sessionHeaderStyle} className="focus-mode-hideable">
         <p style={sessionEyebrowStyle}>Sessão</p>
         <div style={sessionMetaRowStyle}>
           <span style={sessionLabelStyle}>{sessionLabel}</span>
@@ -115,6 +115,8 @@ export default async function NotePage({ params }: NotePageProps) {
         backHref={backHref}
         createAction={createNoteAction}
         updateAction={updateNoteAction}
+        patientName={patientDisplayName}
+        appointmentDate={dateLabel}
       />
     </main>
   );

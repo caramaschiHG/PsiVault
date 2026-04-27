@@ -16,6 +16,7 @@ import Link from "next/link";
 import type { ClinicalNote } from "../../../../../../lib/clinical/model";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { AutoSaveIndicator, useAutoSave } from "@/components/ui/auto-save-indicator";
+import { useFocusMode } from "../../../../components/focus-mode-context";
 
 const TEMPLATES = [
   { id: "livre", label: "Livre", desc: "Texto livre" },
@@ -40,14 +41,17 @@ interface NoteComposerFormProps {
   backHref: string;
   createAction: (formData: FormData) => Promise<void>;
   updateAction: (formData: FormData) => Promise<void>;
+  patientName: string;
+  appointmentDate: string;
 }
 
 export function NoteComposerForm({
   existingNote, appointmentId, patientId, backHref, createAction, updateAction,
+  patientName, appointmentDate,
 }: NoteComposerFormProps) {
+  const { focusMode, toggleFocusMode } = useFocusMode();
   const [freeTextValue, setFreeTextValue] = useState(existingNote?.freeText ?? "");
   const [isDirty, setIsDirty] = useState(false);
-  const [focusMode, setFocusMode] = useState(false);
   const [showTemplates, setShowTemplates] = useState(!existingNote?.freeText);
 
   const { status, lastSaved, markDirty } = useAutoSave(
@@ -105,14 +109,25 @@ export function NoteComposerForm({
       <input type="hidden" name="patientId" value={patientId} />
       {existingNote && <input type="hidden" name="noteId" value={existingNote.id} />}
 
-      {/* Toolbar: auto-save + focus mode */}
-      <div style={toolbarStyle}>
-        <AutoSaveIndicator status={status} lastSaved={lastSaved} />
-        <span style={{ fontSize: "0.72rem", color: "var(--color-text-3)" }}>{wordCount} palavras</span>
-        <button type="button" onClick={() => { setFocusMode((f) => !f); document.querySelector<HTMLElement>(".vault-sidebar")?.classList.toggle("collapsed"); }} style={focusBtnStyle}>
-          {focusMode ? "Sair do modo foco" : "Modo foco"}
-        </button>
-      </div>
+      {/* Editor container: toolbar + patient ID + textarea */}
+      <div style={focusMode ? editorContainerFocusStyle : editorContainerNormalStyle}>
+        {/* Toolbar: auto-save + focus mode */}
+        <div style={toolbarStyle}>
+          <AutoSaveIndicator status={status} lastSaved={lastSaved} />
+          <span style={{ fontSize: "0.72rem", color: "var(--color-text-3)" }}>{wordCount} palavras</span>
+          <button type="button" onClick={() => toggleFocusMode()} style={focusBtnStyle}>
+            {focusMode ? "Sair do modo foco" : "Modo foco"}
+          </button>
+        </div>
+
+        {/* Minimal patient identification bar (focus mode only) */}
+        {focusMode && (
+          <div style={patientIdBarStyle}>
+            <span>{patientName}</span>
+            <span style={{ margin: "0 0.5rem", opacity: 0.4 }}>·</span>
+            <span>{appointmentDate}</span>
+          </div>
+        )}
 
       {/* Template cards (shown when empty or on click) */}
       {showTemplates && (
@@ -149,29 +164,36 @@ export function NoteComposerForm({
           id="freeText" name="freeText" value={freeTextValue}
           placeholder="Escreva o registro clínico que deve compor o prontuário."
           onChange={handleFreeTextChange}
-          style={primaryTextareaStyle}
+          style={{
+            ...primaryTextareaStyle,
+            ...(focusMode ? {
+              fontSize: "1rem",
+            } : {}),
+          }}
           required
         />
       </div>
 
-      {/* Optional structured fields */}
-      <section style={optionalSectionStyle}>
-        <h2 style={optionalSectionHeadingStyle}>Campos opcionais</h2>
-        <div style={optionalFieldsGridStyle}>
-          {[
-            { id: "demand", label: "Demanda / queixa", placeholder: "O que trouxe o paciente nesta sessão...", default: existingNote?.demand },
-            { id: "observedMood", label: "Humor observado", placeholder: "Como o paciente se apresentou emocionalmente...", default: existingNote?.observedMood },
-            { id: "themes", label: "Temas trabalhados", placeholder: "Principais assuntos abordados na sessão...", default: existingNote?.themes },
-            { id: "clinicalEvolution", label: "Evolução clínica", placeholder: "Como o paciente progrediu em relação ao objetivo terapêutico...", default: existingNote?.clinicalEvolution },
-            { id: "nextSteps", label: "Próximos passos", placeholder: "O que ficou combinado ou será retomado na próxima sessão...", default: existingNote?.nextSteps },
-          ].map((f) => (
-            <div key={f.id} style={fieldGroupStyle}>
-              <label htmlFor={f.id} style={labelStyle}>{f.label}</label>
-              <textarea id={f.id} name={f.id} defaultValue={f.default ?? ""} placeholder={f.placeholder} onChange={() => markDirty()} rows={3} style={secondaryTextareaStyle} />
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Optional structured fields — hidden in focus mode */}
+      {!focusMode && (
+        <section style={optionalSectionStyle} className="focus-mode-hideable">
+          <h2 style={optionalSectionHeadingStyle}>Campos opcionais</h2>
+          <div style={optionalFieldsGridStyle}>
+            {[
+              { id: "demand", label: "Demanda / queixa", placeholder: "O que trouxe o paciente nesta sessão...", default: existingNote?.demand },
+              { id: "observedMood", label: "Humor observado", placeholder: "Como o paciente se apresentou emocionalmente...", default: existingNote?.observedMood },
+              { id: "themes", label: "Temas trabalhados", placeholder: "Principais assuntos abordados na sessão...", default: existingNote?.themes },
+              { id: "clinicalEvolution", label: "Evolução clínica", placeholder: "Como o paciente progrediu em relação ao objetivo terapêutico...", default: existingNote?.clinicalEvolution },
+              { id: "nextSteps", label: "Próximos passos", placeholder: "O que ficou combinado ou será retomado na próxima sessão...", default: existingNote?.nextSteps },
+            ].map((f) => (
+              <div key={f.id} style={fieldGroupStyle}>
+                <label htmlFor={f.id} style={labelStyle}>{f.label}</label>
+                <textarea id={f.id} name={f.id} defaultValue={f.default ?? ""} placeholder={f.placeholder} onChange={() => markDirty()} rows={3} style={secondaryTextareaStyle} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Form actions */}
       <div style={formActionsStyle}>
@@ -199,6 +221,10 @@ const optionalSectionStyle: React.CSSProperties = { display: "grid", gap: "1rem"
 const optionalSectionHeadingStyle: React.CSSProperties = { margin: 0, fontSize: "0.78rem", fontWeight: 600, color: "var(--color-text-4)", textTransform: "uppercase", letterSpacing: "0.1em" };
 const optionalFieldsGridStyle: React.CSSProperties = { display: "grid", gap: "1rem" };
 const secondaryTextareaStyle: React.CSSProperties = { width: "100%", padding: "0.75rem 0.875rem", borderRadius: "var(--radius-sm)", border: "1px solid rgba(146,64,14,0.15)", background: "rgba(255,252,247,0.9)", fontSize: "0.875rem", color: "var(--color-text-1)", resize: "vertical", fontFamily: "inherit", lineHeight: "1.55", outline: "none", boxSizing: "border-box" };
+
+const editorContainerNormalStyle: React.CSSProperties = { width: "100%" };
+const editorContainerFocusStyle: React.CSSProperties = { maxWidth: "70ch", margin: "0 auto", width: "100%" };
+const patientIdBarStyle: React.CSSProperties = { fontSize: "var(--font-size-meta)", color: "var(--color-text-3)", textAlign: "center", padding: "0.5rem 0" };
 
 const formActionsStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "1.25rem", paddingTop: "0.5rem" };
 const cancelLinkStyle: React.CSSProperties = { fontSize: "0.9rem", color: "var(--color-text-3)", textDecoration: "none", fontWeight: 500 };
