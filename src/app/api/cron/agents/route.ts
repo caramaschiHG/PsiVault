@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 
 import { type NextRequest } from "next/server";
 import { getAgentTaskRepository } from "../../../../lib/agents/store";
-import { createAgentRegistry } from "../../../../lib/agents/registry";
+import { buildAgentRegistry } from "../../../../lib/agents/build-registry";
 import { processAgentTasks } from "../../../../lib/agents/processor";
 import { buildAgentTaskAuditPayload } from "../../../../lib/agents/audit";
 import { getAuditRepository } from "../../../../lib/audit/store";
@@ -31,24 +31,7 @@ export async function GET(request: NextRequest) {
   const auditRepo = getAuditRepository();
 
   // ── Build agent registry ────────────────────────────────────────────────
-  // For Phase 43, we register the "agenda" agent stub.
-  // Future phases will register additional agents here or via dynamic imports.
-  const registry = createAgentRegistry();
-
-  // Stub agenda agent — Phase 44 will replace with real implementation
-  registry.register({
-    id: "agenda",
-    name: "Agente de Agenda",
-    description: "Detecta padrões de faltas, envia lembretes e sugere otimizações de horários.",
-    defaultPriority: "medium",
-    version: "1.0.0",
-    capabilities: ["no_show_detection", "reminder_batching", "schedule_suggestion"],
-    async executeTask(task) {
-      // Phase 44 will implement actual logic
-      // For now, mark as SKIPPED to avoid false errors
-      return { status: "SKIPPED", errorNote: "Agenda agent not yet implemented — Phase 44" };
-    },
-  });
+  const registry = buildAgentRegistry();
 
   // ── Discover workspaces with pending tasks ──────────────────────────────
   const pendingTasks = await taskRepo.listPendingAcrossWorkspaces(now, 500);
