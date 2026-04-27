@@ -184,8 +184,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 45-01: Implementar modo foco com toggle global
-- [ ] 45-02: Configurar largura máxima do editor e testar legibilidade
+- [ ] 45-01-PLAN.md — Focus Mode Core Infrastructure (context, shortcut, CSS, VaultLayout)
+- [ ] 45-02-PLAN.md — Editor Integration & Typography (note composer, RichTextEditor, 70ch width)
 
 #### Phase 46: Calm UX — Tema & Hierarquia de Notificações
 **Goal**: Light mode default, dark mode manual, hierarquia de interrupção documentada
