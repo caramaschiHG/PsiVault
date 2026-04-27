@@ -1,4 +1,4 @@
-import type { DocumentType } from "./model";
+import type { DocumentType, DocumentStatus } from "./model";
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   declaration_of_attendance: "Declaração de Comparecimento",
@@ -26,4 +26,15 @@ export function canShareDocument(type: DocumentType): boolean {
 
 export function canIncludeDocumentInPatientExports(type: DocumentType): boolean {
   return !isPrivateDocumentType(type);
+}
+
+export function statusLabel(status: DocumentStatus): string {
+  const labels: Record<DocumentStatus, string> = {
+    draft: "Rascunho",
+    finalized: "Finalizado",
+    signed: "Assinado",
+    delivered: "Entregue",
+    archived: "Arquivado",
+  };
+  return labels[status];
 }

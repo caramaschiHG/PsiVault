@@ -86,7 +86,7 @@ export function DocumentPaperView({
             dangerouslySetInnerHTML={{ __html: sanitizeRichTextHtml(content) }}
           />
         ) : (
-          <pre style={preStyle}>{content}</pre>
+          <div style={plainTextStyle}>{content}</div>
         )}
       </div>
 
@@ -201,7 +201,7 @@ const contentStyle: React.CSSProperties = {
   marginTop: "24px",
 };
 
-const preStyle: React.CSSProperties = {
+const plainTextStyle: React.CSSProperties = {
   margin: 0,
   fontFamily: "inherit",
   fontSize: "inherit",

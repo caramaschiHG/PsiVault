@@ -30,7 +30,7 @@ const VALID_TYPES = new Set<DocumentType>([
 
 /**
  * Converts a FormData entry to string | null.
- * Empty strings (blank textareas) are treated as "not filled" → null.
+ * Empty strings (blank content) are treated as "not filled" → null.
  * Security: document content must never leak into audit metadata (SECU-05).
  */
 function nullCoerce(value: FormDataEntryValue | null): string | null {

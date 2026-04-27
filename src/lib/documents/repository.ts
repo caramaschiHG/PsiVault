@@ -25,6 +25,9 @@ export interface PracticeDocumentRepository {
     workspaceId: string,
     appointmentId: string,
   ): Promise<PracticeDocument[]>;
+
+  // Phase 41: global dashboard
+  listAllByWorkspace(workspaceId: string): Promise<PracticeDocument[]>;
 }
 
 export function createInMemoryDocumentRepository(
@@ -95,6 +98,12 @@ export function createInMemoryDocumentRepository(
         (doc) =>
           doc.workspaceId === workspaceId &&
           doc.appointmentId === appointmentId,
+      );
+    },
+
+    async listAllByWorkspace(workspaceId: string): Promise<PracticeDocument[]> {
+      return Array.from(store.values()).filter(
+        (doc) => doc.workspaceId === workspaceId,
       );
     },
   };

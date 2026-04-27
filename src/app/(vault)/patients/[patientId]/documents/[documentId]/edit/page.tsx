@@ -2,7 +2,7 @@
  * Document edit page — /patients/[patientId]/documents/[documentId]/edit
  *
  * Server component. Guards: patient exists, document exists and is not archived.
- * Pre-fills textarea with current doc.content (locked mutability decision from CONTEXT.md).
+ * Pre-fills editor with current doc.content (locked mutability decision from CONTEXT.md).
  * Submits via updateDocumentAction which fires document.updated audit event.
  */
 
@@ -10,7 +10,6 @@ import { notFound } from "next/navigation";
 import { getPatientRepository } from "../../../../../../../lib/patients/store";
 import { getDocumentRepository } from "../../../../../../../lib/documents/store";
 import { updateDocumentAction } from "./actions";
-import type { DocumentType } from "../../../../../../../lib/documents/model";
 import { DOCUMENT_TYPE_LABELS } from "../../../../../../../lib/documents/presenter";
 import Link from "next/link";
 import { resolveSession } from "../../../../../../../lib/supabase/session";
@@ -69,22 +68,16 @@ export default async function DocumentEditPage({ params }: DocumentEditPageProps
       <form action={updateDocumentAction} style={formStyle}>
         <input type="hidden" name="documentId" value={doc.id} />
         <input type="hidden" name="patientId" value={patientId} />
-        {isSessionRecord ? (
-          <RichTextEditor
-            name="content"
-            initialHtml={doc.content}
-            placeholder="Escreva livremente o que for necessário para seu uso clínico privado."
-            minHeight={520}
-          />
-        ) : (
-          <textarea
-            name="content"
-            defaultValue={doc.content}
-            rows={24}
-            required
-            style={textareaStyle}
-          />
-        )}
+        <RichTextEditor
+          name="content"
+          initialHtml={doc.content}
+          placeholder={
+            isSessionRecord
+              ? "Escreva livremente o que for necessário para seu uso clínico privado."
+              : `Edite o conteúdo do(a) ${typeLabel}...`
+          }
+          minHeight={520}
+        />
         <div style={actionsStyle}>
           <FormSubmitButton
             label="Salvar alterações"
@@ -156,20 +149,6 @@ const titleStyle = {
 const formStyle = {
   display: "grid",
   gap: "1rem",
-} satisfies React.CSSProperties;
-
-const textareaStyle = {
-  width: "100%",
-  fontFamily: "ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace",
-  fontSize: "0.9rem",
-  lineHeight: 1.75,
-  padding: "1.25rem",
-  borderRadius: "var(--radius-lg)",
-  border: "1px solid rgba(146, 64, 14, 0.2)",
-  background: "rgba(255, 252, 247, 0.95)",
-  color: "var(--color-kbd-text)",
-  resize: "vertical" as const,
-  boxSizing: "border-box" as const,
 } satisfies React.CSSProperties;
 
 const actionsStyle = {

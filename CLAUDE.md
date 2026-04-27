@@ -99,6 +99,37 @@
 - Não animar `box-shadow` ou `border` — usar `opacity` ou `transform`.
 - Não exceder 300ms para qualquer animação de UI.
 
+## Documentos — Workflow Clínico
+
+### Ciclo de vida
+- `draft` → `finalized` → `signed` → `delivered` → `archived`
+- Transições puras em `src/lib/documents/model.ts`: `finalizeDocument`, `signDocument`, `deliverDocument`, `archivePracticeDocument`
+- `session_record` é sempre privado; nunca aparece em exportações nem listagens globais
+
+### Editor
+- **RichTextEditor único** para todos os tipos de documento (não há mais textarea para documentos formais)
+- `session_record` tem placeholder orientado ao uso clínico privado; demais tipos têm placeholder contextual
+- Auto-save server-side via `useDocumentAutoSave` (debounce 3s) — nunca localStorage
+
+### Visualização
+- A4 simulado em tela via `DocumentPaperView` + `DocumentPaperScaler`
+- Conteúdo HTML renderizado via `sanitizeRichTextHtml`; texto plano usa `<div>` com `white-space: pre-wrap`
+- Watermark visual para `draft` e `archived`
+
+### Assinatura
+- Ritual de finalização: só documentos `finalized` podem ser assinados
+- Assinatura vem do asset configurado em Perfil (`signatureAsset.storageKey`)
+- Documento `signed` tem conteúdo imutável
+
+### Audit trail
+- Todas as transições de estado emitem evento de audit:
+  `document.created`, `document.draft_saved`, `document.updated`, `document.finalized`, `document.signed`, `document.delivered`, `document.archived`
+- Actions em `src/app/(vault)/patients/[patientId]/documents/[documentId]/*/actions.ts`
+
+### Navegação
+- Breadcrumbs hierárquicos em todos os fluxos: Pacientes > {nome} > {tipo} > Ação
+- `/documentos` é o dashboard global com filtros por tipo, status e paciente
+
 ## Posicionamento Psicanalítico
 
 ### Nome de produto

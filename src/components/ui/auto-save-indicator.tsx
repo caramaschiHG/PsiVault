@@ -35,6 +35,34 @@ function AlertTriangleIcon() {
   );
 }
 
+// ─── Hook: useAutoSave (localStorage-based — used by clinical notes, NOT documents) ─────────────
+
+export function useAutoSave(storageKey: string, value: string, debounceMs = 2000) {
+  const [status, setStatus] = useState<SaveStatus>("idle");
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!isDirty) return;
+    timer.current = setTimeout(() => {
+      localStorage.setItem(storageKey, value);
+      setLastSaved(new Date());
+      setStatus("saved");
+    }, debounceMs);
+    return () => { if (timer.current) clearTimeout(timer.current); };
+  }, [value, isDirty, storageKey, debounceMs]);
+
+  // Re-render indicator every 30s
+  useEffect(() => {
+    if (!lastSaved) return;
+    const t = setInterval(() => setLastSaved((d) => d ? new Date(d) : null), 30_000);
+    return () => clearInterval(t);
+  }, [lastSaved]);
+
+  return { status, lastSaved, isDirty, markDirty: () => setIsDirty(true) };
+}
+
 const CONFIG: Record<SaveStatus, { icon: React.ReactNode; color: string; bg: string }> = {
   idle: { icon: <CheckCircleIcon />, color: "var(--color-success-text)", bg: "rgba(240,253,244,0.95)" },
   saving: { icon: <LoaderIcon />, color: "var(--color-brown-mid)", bg: "rgba(254,243,199,0.95)" },
@@ -86,30 +114,4 @@ export function AutoSaveIndicator({ status, lastSaved, className = "" }: {
   );
 }
 
-// ─── Hook: useAutoSave ──────────────────────────────────────────────────────
 
-export function useAutoSave(storageKey: string, value: string, debounceMs = 2000) {
-  const [status, setStatus] = useState<SaveStatus>("idle");
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [isDirty, setIsDirty] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (!isDirty) return;
-    timer.current = setTimeout(() => {
-      localStorage.setItem(storageKey, value);
-      setLastSaved(new Date());
-      setStatus("saved");
-    }, debounceMs);
-    return () => { if (timer.current) clearTimeout(timer.current); };
-  }, [value, isDirty, storageKey, debounceMs]);
-
-  // Re-render indicator every 30s
-  useEffect(() => {
-    if (!lastSaved) return;
-    const t = setInterval(() => setLastSaved((d) => d ? new Date(d) : null), 30_000);
-    return () => clearInterval(t);
-  }, [lastSaved]);
-
-  return { status, lastSaved, isDirty, markDirty: () => setIsDirty(true) };
-}

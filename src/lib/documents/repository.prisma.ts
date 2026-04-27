@@ -111,5 +111,13 @@ export function createPrismaDocumentRepository(): PracticeDocumentRepository {
       });
       return docs.map(mapToDomain);
     },
+
+    async listAllByWorkspace(workspaceId: string): Promise<PracticeDocument[]> {
+      const docs = await db.practiceDocument.findMany({
+        where: { workspaceId },
+        orderBy: { createdAt: "desc" },
+      });
+      return docs.map(mapToDomain);
+    },
   };
 }
