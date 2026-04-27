@@ -2170,3 +2170,36 @@ html[data-theme="dark"] .external-link::after {
     scroll-behavior: auto !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   FOCUS MODE
+   ═══════════════════════════════════════════════════════════════ */
+
+.vault-sidebar,
+.vault-top-bar-wrapper {
+  transition: transform var(--duration-200) var(--ease-out),
+              opacity var(--duration-200) var(--ease-out);
+}
+
+[data-focus-mode="true"] .vault-sidebar {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-focus-mode="true"] .vault-top-bar-wrapper {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-focus-mode="true"] .focus-mode-hideable {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vault-sidebar,
+  .vault-top-bar-wrapper {
+    transition: none !important;
+  }
+}
