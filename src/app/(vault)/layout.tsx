@@ -7,7 +7,6 @@ import { NotificationProvider } from "@/components/ui/notification-context";
 import { TopBar } from "./components/top-bar";
 import { CwvCollector } from "@/components/cwv-collector";
 import { ReactScan } from "@/components/react-scan";
-import { DarkModeNotification } from "../components/dark-mode-notification";
 import { FocusModeProvider } from "./components/focus-mode-context";
 import { FocusModeShell } from "./components/focus-mode-shell";
 
@@ -16,7 +15,6 @@ export default function VaultLayout({ children }: { children: React.ReactNode })
     <FocusModeProvider>
       <KeyboardShortcutsProvider>
         <NotificationProvider>
-          <DarkModeNotification />
           <CwvCollector />
           <ReactScan />
           <FocusModeShell>

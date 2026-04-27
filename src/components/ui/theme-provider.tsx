@@ -20,15 +20,15 @@ function getSystemTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function getStoredTheme(): Theme | null {
-  if (typeof window === "undefined") return null;
+function getStoredTheme(): Theme {
+  if (typeof window === "undefined") return "light";
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "light" || stored === "dark" || stored === "system") return stored;
   } catch {
     // localStorage não disponível
   }
-  return null;
+  return "light";
 }
 
 function storeTheme(theme: Theme): void {
@@ -40,14 +40,14 @@ function storeTheme(theme: Theme): void {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("system");
+  const [theme, setThemeState] = useState<Theme>("light");
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
 
   // Initialize from localStorage
   useEffect(() => {
     const stored = getStoredTheme();
-    if (stored) {
+    if (stored !== "light") {
       setThemeState(stored);
     }
     setMounted(true);
