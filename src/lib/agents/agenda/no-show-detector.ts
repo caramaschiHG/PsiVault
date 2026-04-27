@@ -2,6 +2,11 @@ import type { Appointment, AppointmentStatus } from "../../appointments/model";
 
 const RELEVANT_STATUSES: AppointmentStatus[] = ["COMPLETED", "CONFIRMED", "NO_SHOW"];
 
+export interface NoShowCheckAppointment {
+  startsAt: Date;
+  status: AppointmentStatus;
+}
+
 /**
  * Detect whether a patient has `threshold` consecutive NO_SHOW appointments
  * in their recent history, with no COMPLETED or CONFIRMED appointment in between.
@@ -9,7 +14,7 @@ const RELEVANT_STATUSES: AppointmentStatus[] = ["COMPLETED", "CONFIRMED", "NO_SH
  * CANCELED and SCHEDULED appointments are ignored for streak calculation.
  */
 export function hasConsecutiveNoShows(
-  appointments: Appointment[],
+  appointments: NoShowCheckAppointment[],
   threshold = 2,
 ): boolean {
   const relevant = appointments
